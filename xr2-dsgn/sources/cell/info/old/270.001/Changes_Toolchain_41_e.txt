@@ -1,0 +1,373 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 270.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 270.001
+- Bugs fixed in Release 270.001
+
+======================================================================
+New Additions and Changes in Release 270.001
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+[Additions]
+(B#64647)
+- When the "strip all symbols" (-s) switch is used, the linker now also 
+  strips the ".debug_libgen_markfunc" section from the final output.
+
+(B#64872)
+- Improve dead stripping of exception-free builds when --no-exceptions is 
+  specified. In version 250.1, exception-handling data in the inputs has a 
+  negative impact on stripping effectiveness. Now the linker is able to 
+  remove the unnecessary exception-handling data when --no-exceptions is 
+  specified and consequently dead stripping is more effective than 
+  previously possible.
+
+(B#65265)
+- Implemented de-duplication of data elements in sections that are
+  marked as mergeable.
+
+[Specification Changes]
+(B#59683)
+- The linker no longer considers the absence of a .toc section to be an 
+  error in itself. Instead, it now issues an error if a TOC-relative 
+  relocation is encountered but no .toc section has been defined.
+
+- The output of the --Wall switch has been enhanced to be more verbose.
+  Unwanted warnings can be disabled by passing the --disable-warning 
+  switch after --Wall on the command line.
+
+[Bugfixes]
+(B#54148)
+- Fix for a problem with the processing of local symbols when dead stripping 
+  is enabled which would result in the error 'could not make reference to 
+  local symbol "x"' being emitted.
+
+(B#55109)
+- Fixed a bug where specifying files on the command line that were also 
+  specified in the linker script's REQUIRED_FILES element could result in a 
+  link error.
+
+(B#56590)
+- Fix for exception-handling tables when linking distinct instances of 
+  COMDAT functions by disabling the .eh_frame records for discarded 
+  instances.
+
+(B#58324)
+- Fixed a problem with the processing of the R_PPC64_ADDR16_LO_DS relocation 
+  which could cause surrounding code to be corrupted or the relocated 
+  value to be incorrect in some cases.
+
+(B#58495)
+- Fixed a rare crash when processing certain TOC relocations with dead 
+  stripping enabled.
+
+(B#60599)
+- After patching the PRX stub code sequence in "no TOC restore" mode, 
+  the linker now updates the corresponding symbol size to reflect 
+  the size of the new, larger, implementation.
+
+(B#61349)
+- Fix for a spurious "patch value out of range" error when creating 
+  relocatable output in certain conditions.
+
+(B#62396)
+- The linker no longer truncates 64-bit addends to 32-bits in relocatable
+  output. Previously when using relocatable objects containing 
+  negative offsets from symbols, unexpected link-time or run-time 
+  failures could occur.
+
+(B#63531)
+- Change the padding introduced by the "fill" linker script directive 
+  so that it uses four-byte fills by default (as per the GNU linker 
+  script documentation).
+
+(B#63645)
+- Fixed a rare stripping failure when --pad-debug-line is set too high. 
+  This lead to the linker reporting that --pad-debug-line should 
+  be specified.
+
+(B#64435)
+- Fixed the behavior of the --sn-no-dtors switch.
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+[Additions]
+<PPU/SPU>
+(B#64304)
+- The option -fignore-exceptions was added to ignore try/catch/throw
+  instead of erroring out when they are used.  -fignore-exceptions has
+  to be used with -fno-exceptions.
+
+(B#62999)
+- When length of an argument is more than 32KB,
+  -use-response-file option will be used automatically. (Windows only)
+
+<PPU>
+(B#46960)
+- Added support for wprintf format checking.
+
+(B#57983)
+- New option -mcallprof=<n> is implemented. This option directs PPU GCC 
+  to insert additional nops that SN Tuner replace with profiling code
+  sequences at runtime.
+  At SDK270, only -mcallprof=1 are available and enables function 
+  profiling by SN Tuner.
+  For details, please refer to SN Tuner documents.
+
+[Specification Changes]
+<PPU/SPU>
+(B#65985)
+- Providing CIL (Code Instrumentation at Link-Time) is terminated.
+  See also the technote 200811-20.
+
+    https://ps3.scedev.net/technotes/view/848
+
+<PPU>
+(B#57944)
+- The header file "ppu_intrinsics_gcc.h" 
+  in cell\target\ppu\include is moved into
+  cell\host-win32(/host-linux)\ppu\lib\gcc\ppu-lv2\4.1.1\include 
+  as "ppu_intrinsics.h".
+
+  Also, the header file "ppu_intrinsics_snc.h" 
+  in cell\target\ppu\include is moved
+  into cell\host-win32(/host-linux)\ppu\lib\gcc\ppu-lv2\4.1.1\include 
+  as "ppu_intrinsics.h".
+
+  The original file "ppu_intrinsics.h" in cell\target\ppu\include was
+  removed.
+
+  Because the compiler driver (gcc/snc) can find a header file automatically
+  in the directory which "ppu_intrinsics.h" is in, no source file 
+  modification is needed when the source file includes "ppu_intrinsics.h".
+  If "ppu_intrinsics_(gcc/snc).h" is included from a source file directly, 
+  please include a file "ppu_intrinsics.h" instead of these files.
+
+  See also the technote 200811-10.
+    https://ps3.scedev.net/technotes/view/837
+
+(B#59029)
+- In some cases, when producing CTR register based loops, GCC would produce
+  extra instructions; an add and a subtraction.  This has been fixed.
+
+(B#59119)
+- In some cases, GCC would produce a couple extra instructions for
+  converting integers to double.  This has now been fixed.
+
+(B#62513)
+- An union with just one type as its field was causing a load
+  hit store hazzard.  This has now been fixed.
+
+(B#54987)
+- In cases using inline functions with pass-by-value structs would
+  cause extra load and stores.  This has now been changed to get rid
+  of these loads and stores and is able to avoid a load hit store
+  hazzard.
+
+(B#62754)
+- In cases using inline functions with pass-by-value structs
+  containing arrays would cause extra load and stores.  This has
+  now been changed to get rid these loads and stores and is able to
+  avoid a load hit store hazzard.
+
+(B#63329)
+- In some cases GCC would produce a load hit store hazzard when trying to load a 0.0f
+  floating point constant.  This has now been changed to load the
+  constant directly from memory.
+
+(B#63471)
+- GCC would emit a vor for moving between vector registers, this has
+  now been changed to use vsldoi instead.  vsldoi is a vector permute
+  VSU type 2 instruction which can be scheduled with LSU instructions
+  unlike vor which cannot be.
+
+(B#46814)
+- vec_splat now accepts a non constant second argument.
+
+(B#64010)
+- In some cases GCC could optimize floating point multiplication
+  against a constant with not using that constant but this would not
+  happen with -mbase-toc or -mall-base-toc.  This has now been fixed.
+
+(B#64247)
+- When using vec_lvlx with an address, e.g. vec_lvlx (0, &scalar),
+  GCC was not optimizing it to be just a vec_promote (scalar, 0).
+  This has now changed to do that.
+
+(B#56399)
+- Compiling with -Os can generate code that causes a hardware
+  exception when accessing cache inhibited memory.  This has
+  been fixed.
+
+<SPU>
+(B#59949)
+- Load LR register earlier for a small performance improvement.
+
+(B#59948)
+- Merge floating point compare and absolute operations to generate
+  fcmeq instruction.
+
+(B#50837)
+- channel instructions were not getting scheduled efficiently.  This
+  has been fixed.
+
+(B#61722)
+- Code for handling fixups, global constructors and global
+  destructors was being linked into an exectuable when there were no
+  fixups, constructors or destructors to be handled.  This has been
+  fixed.
+
+(B#62450)
+- -fpic and -shared option for SPU toolchain now enables the fixup
+  system by default.
+  From SDK270, global constructors, global destructors and virtual 
+  function call work expectedly without implementing your own fixup
+  systems.
+  As a side effect, the size of a program compiled with -fpic or 
+  -shared options will increase. If the bigger code size is not acceptable,
+  you can remove the fixup system from executable file by specifying 
+  -mno-fixups option.
+
+
+[Bugfixes]
+<PPU/SPU>
+(B#2966)
+- AT_comp_dir attribute in debugging information did not handle quoted
+  back slash characters when using ccache or -save-temps.
+  This has been fixed.
+
+(B#60138)
+- An AND operation with operands that are NOT operations was being
+  optimized incorrectly.  This has been fixed.
+
+(B#41288)
+- If -use-response-file option is used, the following error occurred:
+
+    Command line : error: L0039: reference to undefined symbol se-response-file in file Command line option
+
+  The problem has been fixed by not passing -use-response-file option to the linker.
+  Note: SN linker does not implement -use-response-file option.
+
+(B#63621)
+- If the precompiled header was not compiled with -fno-strict-aliasing but
+  the sources are being compiled with -fno-strict-aliasing, GCC could produce
+  the following internal compiler error:
+
+    internal compiler error: in mems_in_disjoint_alias_sets_p, at alias.c:288
+
+  This has been fixed to reject the precompiled header.
+
+(B#63264)
+- When including a precompiled header twice, an internal compiler
+  error would happen.  This has been fixed.
+
+(B#57645)
+- When compiling with -traditional-cpp, C++ style comments on the
+  end of a preprocessor directive cause the compiler to crash.  
+  This has been fixed.
+
+(B#64678)
+- When using -fnon-call-exceptions, the compiler incorrectly removed 
+  floating point operations on vector floats and complex floats.
+  This has been fixed.
+
+<PPU>
+(B#61182)
+- In some cases with high stack sizes and vector types,
+  there would be an internal compiler error about an
+  unrecognizable insn with the form of 
+  "filename(linenum): error: unrecognizable insn: (insn N N N
+   filename:linenum (set (mem:V4SI (plus:DI (reg:DI N )
+                                            (const_int N))
+                         (reg:V4SI 3122)))".
+  This has now been fixed.
+
+(B#62484)
+- In some cases -Os would produce a word multiply with recording (mullw.)
+  instruction when a 32bit multiplication with a 32bit comparison
+  against 0 was required.  This has now been fixed.
+
+(B#63702)
+- The PPU intrinsics __protected_unlimited_stream_set and
+  __protected_stream_set were passing the incorrect value to
+  __dcbt_TH1000 for the UG argument, they were swapped around.
+  This has now been fixed.
+
+  Please refer to the technote 200903-02 for more details:
+    https://ps3.scedev.net/technotes/view/881
+
+(B#64919)
+- When using vec_splats with an integer constant, the value
+  returned might not be correct.  This has now been fixed.
+  Please refer to the technote 200902-08 for more details:
+
+    https://ps3.scedev.net/technotes/view/874
+
+(B#65524)
+- In some cases with a long long logical-and operation with a
+  constant, GCC would produce the following internal compiler error.
+    internal compiler error: in extract_insn, at recog.c:2087
+  This has now been fixed.
+
+(B#56626)
+- C++ exception handling might cause memory leaks.  
+  The problem was fixed at SDK250.  The library libsupc++.a became 
+  to use TLS (Thread Local Storage) by this fix.  See also B#65220 
+  in known bugs and limitations.
+
+<SPU>
+(B#58265)
+- The compiler failed with the following internal compiler error when the intrinsics
+  spu_convtf, spu_convts or spu_convtu were called with a non-literal
+  second argument.
+  ../../../../lib/spu/maths/vmath.h:482: internal compiler error: in extract_insn, at recog.c:2087
+  This has been fixed.
+
+(B#3291)
+- Zero extend operations were not getting optimized in somecases.
+  This has been fixed.
+
+(B#58677)
+- When compiling a file in which all functions use the section
+  attribute, and using the "-g -Wl,-q" options, the linker will
+  abort at elflink.c:7396.  This has been fixed.
+
+(B#63867)
+- Fixup data was not getting generated for symbols defined in the 
+  linker script or with --defsym option.  This has been fixed
+
+(B#66357)
+- Memory accesses were being ordered incorrectly when the restrict 
+  keyword is used in multiple functions that get inlined.  This has
+  been fixed.
+
+(B#16434)
+- attribute((always_inline)) becomes consistent with/without -fpic options.
+
+  *NOTE*
+  In case of attribuing always_inline to a function, please set 
+  the attrubte not before the functon definition, but on the funciton 
+  prototype. In first way, specfying -fpic option may cause different 
+  inline result.
+
+    NG:
+      __attribute__ ((always_inline)) int foo () {
+          ...
+      }
+
+    OK:
+      int foo () __attribute__ ((always_inline));
+      int foo () {
+          ...
+      }
+
+(B#65818)
+- R_SPU_ADDR18 relocations in an SPU DLL were not getting
+  the correct value when patched at run time.
+  This has been fixed.

@@ -1,0 +1,123 @@
+; SCE CONFIDENTIAL
+; Copyright (C) 2008 Sony Computer Entertainment Inc.
+; All Rights Reserved.
+;
+
+[Version] 
+Signature	= "$Windows NT$" 
+Class		= HIDClass
+ClassGuid	= {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider	= %SCEI% 
+CatalogFile	= sixaxis.cat
+DriverVer	= 12/08/2008
+
+[DestinationDirs] 
+sixaxis.Files.NTx86_12		= 12 
+sixaxis.Files.NTamd64_12	= 12 
+sixaxis.Files.NTia64_12		= 12 
+
+[Manufacturer] 
+%SCEI%=SCEI,NTx86,NTamd64,NTia64
+
+;  ******* x86 *******
+[SCEI.NTx86]
+%SixaxisDesc%	= sixaxis_Inst,USB\VID_054c&PID_0268
+
+[SourceDisksNames.NTx86]
+0	= %Desc_0%
+
+[SourceDisksFiles.NTx86]
+sixaxis.sys
+
+[sixaxis_Inst.NTx86] 
+CopyFiles		= sixaxis.Files.NTx86_12 
+
+[sixaxis.Files.NTx86_12] 
+sixaxis.sys
+
+[sixaxis_Inst.NTx86.Services] 
+AddService		= sixaxis,0x00000002,sixaxis_Service_InstNTx86
+
+[sixaxis_Service_InstNTx86]
+DisplayName		= %Service% 
+ServiceType		= %SERVICE_KERNEL_DRIVER% 
+StartType		= %SERVICE_DEMAND_START% 
+ErrorControl	= %SERVICE_ERROR_NORMAL% 
+ServiceBinary	= %10%\System32\Drivers\sixaxis.sys 
+
+;  ******* x64 *******
+[SCEI.NTamd64]
+%SixaxisDesc%	= sixaxis_Inst,USB\VID_054c&PID_0268
+
+[SourceDisksNames.NTamd64]
+0	= %Desc_0%
+
+[SourceDisksFiles.NTamd64]
+sixaxis_x64.sys
+
+[sixaxis_Inst.NTamd64] 
+CopyFiles		= sixaxis.Files.NTamd64 
+
+[sixaxis.Files.NTamd64] 
+sixaxis_x64.sys
+
+[sixaxis_Inst.NTamd64.Services] 
+AddService		= sixaxis,0x00000002,sixaxis_Service_InstNTamd64
+
+[sixaxis_Service_InstNTamd64]
+DisplayName		= %Service% 
+ServiceType		= %SERVICE_KERNEL_DRIVER% 
+StartType		= %SERVICE_DEMAND_START% 
+ErrorControl	= %SERVICE_ERROR_NORMAL% 
+ServiceBinary	= %10%\System32\Drivers\sixaxis_x64.sys 
+
+;  ******* ia64 *******
+[SCEI.NTia64]
+%SixaxisDesc%	= sixaxis_Inst,USB\VID_054c&PID_0268
+
+[SourceDisksNames.NTia64]
+0	= %Desc_0%
+
+[SourceDisksFiles.NTia64]
+sixaxis_ia64.sys
+
+[sixaxis_Inst.NTia64] 
+CopyFiles		= sixaxis.Files.NTia64_12 
+
+[sixaxis.Files.NTia64_12] 
+sixaxis_ia64.sys
+
+[sixaxis_Inst.NTia64.Services] 
+AddService		= sixaxis,0x00000002,sixaxis_Service_InstNTia64
+
+[sixaxis_Service_InstNTia64]
+DisplayName		= %Service% 
+ServiceType		= %SERVICE_KERNEL_DRIVER% 
+StartType		= %SERVICE_DEMAND_START% 
+ErrorControl	= %SERVICE_ERROR_NORMAL% 
+ServiceBinary	= %10%\System32\Drivers\sixaxis_ia64.sys 
+
+
+[Strings] 
+;  *******Localizable Strings******* 
+SCEI		= "Sony Computer Entertainment Inc." 
+Desc_0		= "Wireless controller for PLAYSTATION(R)3 - Driver Install Disk" 
+SixaxisDesc	= "Wireless controller for PLAYSTATION(R)3" 
+Service		= "Wireless controller for PLAYSTATION(R)3 Driver"
+
+;  *******Non Localizable Strings******* 
+SERVICE_BOOT_START		= 0x0 
+SERVICE_SYSTEM_START	= 0x1 
+SERVICE_AUTO_START		= 0x2 
+SERVICE_DEMAND_START	= 0x3 
+SERVICE_DISABLED		= 0x4 
+
+SERVICE_KERNEL_DRIVER	= 0x1 
+SERVICE_ERROR_IGNORE	= 0x0 
+SERVICE_ERROR_NORMAL	= 0x1 
+SERVICE_ERROR_SEVERE	= 0x2 
+SERVICE_ERROR_CRITICAL	= 0x3 
+
+REG_EXPAND_SZ			= 0x00020000 
+REG_DWORD				= 0x00010001 
+

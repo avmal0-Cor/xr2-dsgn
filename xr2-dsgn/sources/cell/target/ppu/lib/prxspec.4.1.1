@@ -1,0 +1,163 @@
+#
+# PRX System Library
+#
+# Copyright (C) 2007 Sony Computer Entertainment Inc.
+# All Rights Reserved.
+#
+# prxspecs
+#   specs for ppu-prx
+#
+# $Id: prxspec 45847 2008-07-29 12:33:15Z tei $
+#
+#      Date            Design      Log
+#  ----------------------------------------------------
+#      2006-02-27      isii        support -zgenstub, -zgenstubsrc, -zgenentry
+#                                  support fake prx gen
+#      2006-05-30      isii        use ppufixup, change path
+#      2006-06-01      isii        support -zgenprx (with -zgenstub)
+#      2007-04-16      isii        backport from ppu-lv2-gcc built-in specs
+#      2007-04-17      isii        add link_gcc_c_sequence_prx
+#                                  add startfile_prx, endfile_prx
+#                                  remove unused option -zgen-prx-with-libc
+#      2007-11-27      isii        '-zlevel=*' mean  -zgenstub
+#                                  remove *gen_stub_src:
+#                                  add -zshow-symbol-only
+#                                  '-o <outfile>' without -zshow-symbol-only mean -zgenprx 
+#      2007-12-26      isii        add -lsyscall in link_gcc_c_sequence_prx
+#      2007-12-26      isii        add ecrti.o etc. in *startfile_prx:
+#                                  add ecrtn.o etc. in *endfile_prx:
+#                                  add -llv2_stub in *link_gcc_c_sequence_prx:
+#                                  add -lc_stub in *link_gcc_c_sequence_prx:
+#      2008-01-16      isii        add -mprx-with-runtime
+#                                  remove -nostartfiles
+#      2008-01-17      isii        remove -lc_stub from *link_gcc_c_sequence_prx:
+#      2008-02-25      isii        *prelink_normal modify: for Bugzilla 47940
+#      2008-02-28      isii        add -zgc-sections
+#                                  rmove -zfix-rel24, -zno-fix-rel24
+#      2008-04-02      isii        add -zno-join-sections
+#      2008-04-14      isii        skip postlink
+#      2008-07-17      isii        add -zgenstubonly
+#                                      like -gzenstub and ignore -o
+#                                  remove -e option to prx
+#                                  add -Ttext=<addr>
+#                                  add -Tdata=<addr>
+#
+# Supprt options
+#
+###### Make naked PRX (without libc) ###################################
+#  ppu-lv2-gcc -mprx -o <prxfile) <inputfiles...>
+#
+###### Make stub archive ###############################################
+#  ppu-lv2-gcc -mprx -zgenstub <inputfiles...>
+#
+###### Make naked PRX & stub archive ####################################
+#  ppu-lv2-gcc -mprx -zgenstub -o <prxfile) <inputfiles...>
+#  ppu-lv2-gcc -mprx -zlevel={0|<n>|all} -o <prxfile) <inputfiles...>
+#
+## obsolete ......
+#  ppu-lv2-gcc -mprx -zgenstub -zgenprx -o <prxfile) <inputfiles...>
+#
+###### Make PRX with libc_stub  #########################################
+#  ppu-lv2-gcc -mprx-with-runtime -o <prxfile) <inputfiles...>
+#
+##############################################################################
+#
+*xxxlibgen:
+ppu-lv2-prx-libgen
+
+*xxxfixup:
+ppu-lv2-prx-fixup
+
+*link_gcc_c_sequence_prx:
+--start-group %G %{!nosyscall:-lsyscall} \
+                 %{!nolv2stub:-llv2_stub} --end-group
+
+*startfile_prx:
+%{mprx-with-runtime:\
+   ecrti.o%s prx_crt.o%s crtbegin.o%s \
+   %{shared:%e PRX dosen't support "-shared" option.}} 
+
+*endfile_prx:
+ %{mppuguid:%R/lib/crtid.o} \
+ %{mprx-with-runtime:crtend.o%s ecrtn.o%s}
+
+*export_objecs:
+
+
+*link_script:
+-T %{mlp64: %R/lib/prx64.xr; : %R/lib/prx32.xr} 
+
+*prelink_normal:
+    %(startfile_prx) \
+    %{static:} %{L*} %(link_libgcc) %(link_script) %o \
+    %(export_objecs) \
+    %{!nodefaultlibs:%(link_gcc_c_sequence_prx)} \
+    %(endfile_prx) 
+
+*prelink:
+  %(linker) %l -dc -r %X %{t} %{u*} %(prelink_normal) 
+
+*postlink:
+  %(linker) %{Map=*:-Map %*} -dc -r %X %{x} 
+
+*libgen_common_options:
+  %{zv:-v} %{zdump:--dump} \
+  %{zversionlog-dir=*:--versionlog-dir=%*} 
+
+*libgen_ent_options:
+  %{zweak-entry:--weak-entry} %{zno-weak-entry:--no-weak-entry} \
+  %{zweak-entry=*:--weak-entry=%*} 
+
+*libgen_stub_options:
+  %{zlevel=*:-l %*} \
+  %{zweak-stub:--weak-stub} %{zno-weak-stub:--no-weak-stub} \
+  %{zweak-stub=*:--weak-stub=%*} %{zstub-prefix=*:--stub-prefix=%*} 
+
+*gen_entry_source:
+  %(prelink) -o %g.psp.rela.o 
+    %(xxxlibgen) %(libgen_common_options) %(libgen_ent_options) \
+        %{o*:-e %*} \
+        %{zgenstub|zlevel=*:--stub-archive %(libgen_stub_options)} %g.psp.rela.o
+
+*gen_stub_archive:
+  %(prelink) -o %g.psp.rela.o 
+    %(xxxlibgen) %(libgen_common_options) %(libgen_stub_options) \
+        --stub-archive  %{zgenstubsrc:--stub-src} %g.psp.rela.o 
+
+*with_addr_prx_or_pfx:
+  %{zgenpfx:%{o*:-f %*}} \
+  %{!zgenpfx:%{s:%{o*}} %{!s:%{o*:-r %*}}}
+
+*gen_prx:
+  %(prelink) -o %g.psp.rela.o 
+    %(xxxlibgen) %(libgen_common_options) %(libgen_ent_options) \
+        -e %g.lib.ent.s \
+        %{zgenstub|zlevel=*:--stub-archive %(libgen_stub_options)} %g.psp.rela.o 
+    as %a %g.lib.ent.s -o %g.lib.ent.o 
+    %(xxxfixup) %{zv:-v} %{zgc-sections:--gc-sections} \
+        %{zno-join-sections:--no-join-sections} \
+        %{!Ttext=*:%{s:%{o*}} %{!s:%{o*:-r %*}}} \
+        %{Ttext=*:%{Ttext=*:-t %*} %{Tdata=*:--st %*} %(with_addr_prx_or_pfx)} \
+        %g.psp.rela.o %g.lib.ent.o 
+
+*gen_symbol:
+  %(prelink) -o %g.psp.rela.o 
+  %(xxxfixup) --show-symbol-only %{o*} %g.psp.rela.o 
+
+*gen_prx_or_symbol:
+  %{!zshow-symbol-only:%(gen_prx)} \
+  %{zshow-symbol-only:%(gen_symbol)}
+
+*gen_prx_or_stub:
+  %{o*|zgenprx|zshow-symbol-only:%(gen_prx_or_symbol)} \
+  %{!o*:%{!zgenprx:%{!zshow-symbol-only:%{zlevel=*|zgenstub:%(gen_stub_archive)}}}}
+
+*prx_link_command:
+%{!fsyntax-only:\
+  %{!c:%{!M:%{!MM:%{!E:%{!S:\
+        %{!zgenentry:\
+           %{!zgenstubonly:%(gen_prx_or_stub)}\
+           %{zgenstubonly:%(gen_stub_archive)}}\
+        %{zgenentry:%(gen_entry_source)} \
+ }}}}}} 
+

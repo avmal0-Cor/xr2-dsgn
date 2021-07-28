@@ -1,0 +1,700 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 210.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 210.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 210.001
+======================================================================
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< Content Search Utility >
+- The following bug has been fixed.
+
+  - (B#43980)
+    An error occurs as described below:
+    1. Execute cellSearchStartContentSearch() or 
+       cellSearchStartContentSearchInList() with the 
+       CELL_SEARCH_SORTKEY_IMPORTEDDATE macro specified to the argument 
+       "sortKey".
+    2.Execute cellSearchGetMusicSelectionContext() with the searchId that
+      is obtained in step 1.
+    3.When cellMusicSetSelectionContext() is executed with the context 
+      obtained in step 2, an error occurs.
+
+< Remote Play Utility >
+- The following bug has been fixed.
+  The software for the communication processor in the Reference Tool 
+  should be updated to the CP package Version 1.3.0.
+
+  - (B#39730)
+    The Reference Tool cannot recognize a disc after performing remote 
+    start.
+
+< AV Chat Utility >
+- The following bug has been fixed.
+
+  - (B#44805)
+    When the following procedure is used to set the ownership so that 
+    it is automatically yielded, the ownership is not yielded correctly.
+
+    1. Load the AV chat utility
+    2. All participants of the AV chat execute cellSysutilAvcSetAttribute() 
+       by setting CELL_SYSUTIL_AVC_ROOM_PRIVILEGE_TYPE_AUTO_GRANT to 
+       the second argument "param" of cellSysutilAvcSetAttribute().
+    3. Execute cellSysutilAvcJoinRequest()
+
+< Game Data Utility >
+- The following bug has been fixed.
+
+ - When cellGameDataCheckCreate2() is executed, the data status callback 
+   (CellGameDataStatCallback) is called.
+   When a parameter of PARAM.SFO is changed using the member "setParam" of the 
+   third argument "set" of this callback, an extra parameter is incorrectly 
+   added to PARAM.SFO. 
+
+< HDD Boot Game Utility >
+- The following bug has been fixed.
+
+ - When cellHddGameCheck() is executed, the data status callback 
+   (CellHddGameStatCallback) is called.
+   When a parameter of PARAM.SFO is changed using the member "setParam" of the 
+   third argument "set" of this callback, an extra parameter is incorrectly 
+   added to PARAM.SFO. 
+
+< Save Data Utility >
+- samples/sdk/sysutil/savedata/user
+  - (B#43773)
+    In main.c, the "break" sentence is described twice in the case label 
+    of the switch sentence causing a warning message to be output. 
+    This problem has been fixed.
+
+- samples/sdk/sysutil/savedata/user/Makefile
+  samples/sdk/sysutil/savedata/delete/Makefile
+  samples/sdk/sysutil/savedata/copy/Makefile 
+  - In the Makefile, when it is compiled using 
+    the SNC compiler, an error occurred. This problem has been fixed. 
+
+    The -Wpadded option is specified as GCC_PPU_CFLAGS, not as PPU_CFLAGS.
+
+< User Infromation Utility >
+- samples/sdk/sysutil/userinfo
+  - (Bug#43777)
+    In main.c, the "break" sentence is described twice in the case label 
+    of the switch sentence causing a warning message to be output. This
+    problem has been fixed.
+
+- samples/sdk/sysutil/userinfo
+  - In the samples/sdk/sysutil/userinfo/Makefile, when it is compiled using 
+    the SNC compiler, an error occurred. This problem has been fixed. 
+
+    The -Wpadded option is specified as GCC_PPU_CFLAGS, not as PPU_CFLAGS.
+
+< Storage Data Utility >
+- samples/sdk/sysutil/storagedata
+
+  - In the samples/sdk/sysutil/storagedata/Makefile, when it is compiled using 
+    the SNC compiler, an error occurred. This problem has been fixed. 
+
+    The -Wpadded option is specified as GCC_PPU_CFLAGS, not as PPU_CFLAGS.
+
+< Music Utility >
+- The following bug has been fixed:
+
+  - When an UI-based utility such as the Web Browser or the Onscreen 
+    Keyboard Dialog utilities is booted and then 
+    cellMusicSetSelectionContext() is executed, the utility becomes 
+    unavailable.
+    Note that this problem does not occur with the UI that is used to 
+    select a content.
+
+- The following bug has been fixed:
+
+  1. When music content information is being searched using the content 
+     search utility, a selection context is obtained with the sort by 
+     imported date specified as the sort key.
+  2. When the selection context obtained in step 1 is specified to the 
+     argument of cellMusicSetSelectionContext(), and the function is 
+     executed, an error message CELL_MUSIC_ERROR_INVALID_CONTEXT is 
+     returned.
+
+- The following bug has been fixed.
+
+  - When either of music_export, photo_export or video_export utilities is
+    ececuted while playing a music file, it fails to release the memory 
+    container that is used by the utility.
+
+- The following bug has been fixed.
+
+  - When a content is selected and played for the first time, 
+    cellMusicGetPlaybackStatus() returns an error message 
+    CELL_MUSIC_ERROR_GENERIC.
+
+< Web Browser Utility >
+- The following bug has been fixed.
+
+  - The upper limit of the number of game process threads is limited to 60
+    during the period from the browser is booted until it is terminated.
+
+- The following bug has been fixed.
+
+  - A combo box is not displayed correctly.
+
+- The following bug has been fixed.
+
+  - When an image is decoded using the heap area for contents close to 
+    the upper limit, it may hang up.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#42794)
+    When authorization of the SPU SELF is failed, sys_spu_image_open()
+    and sys_spu_image_open_by_fd() return ETIMEDOUT.
+
+- The following bug has been fixed.
+
+  - (B#39543)
+    When an interruption thread accesses the area for which 
+    the page fault notification is enabled, the Lv2 kernel gets panic. 
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#43347)
+    The following callback functions of CellSailSoundAdapter and 
+    CellSailGraphicsAdapter cannot be called:
+    CellSailSoundAdapterFuncMakeup
+    CellSailSoundAdapterFuncCleanup
+    CellSailGraphicsAdapterFuncMakeup
+    CellSailGraphicsAdapterFuncCleanup
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- (B#42807)
+  -fno-strict-aliasing has been added to the 
+   host-linux/Cg/samples/getprofile sample as a build option so as 
+   to avoid a warning message to be output. 
+ 
+- (B#44062)
+  sce-cgcstrip crashes when an unsupported binary is input. 
+  This problem has been fixed.
+
+- When the "-texformat" option is used with compile_program_from_string(), 
+  it hangs up. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- (B#44330)
+  cellCgbGetVertexAttributOutputMask() has been renamed:
+  (Before change)cellCgbGetVertexAttributOutputMask()
+  (After change)cellCgbGetVertexAttributeOutputMask()
+
+  Note that both names can be used with SDK210, however,
+  cellCgbGetVertexAttributOutputMask() will be removed in SDK220.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- cg.h that is included in gcm_struct.h has been deleted and moved to 
+  gcm_spu.h and gcm_tool.h.
+  With the PPU version, cg.h is delicately included from gcm.h and 
+  gcm_struct.h. This problem has been fixed.
+
+- The following bug has been fixed.
+
+  - A warning message is displayed with the following functions when 
+    compiling:
+    cellGcmSetConvertSwizzleFormat()
+    cellGcmInlineTransfer()
+    cellGcmSetDrawArrays()
+    cellGcmSetConvertSwizzleFormat()
+    cellGcmSetTransferImage()
+    cellGcmSetTransferData()
+    cellGcmSetTransferImage()
+    cellGcmSetTransferData()
+
+- The following bug has been fixed.
+
+  - In cellGcmSetVertexProgramParameter(), when CG_FLOAT, CG_FLOAT1, 
+    CG_FLOAT2 or CG_FLOAT3 is specified to the Cg parameter type, memory 
+    access is wrongly taken place. 
+
+- In cellGcmSetVertexData4f() and cellGcmSetVertexProgramParameter(), the 
+  internal code has been optimized so that an unnecessary LHS does not 
+  occur.
+
+- When the debug version of cellGcmSetInlineTransferPointer() and 
+  cellGcmSetInlineTransferAlignedPointer() is executed, 
+  CELL_GCM_DEBUG_FINISH() is executed internally. Therefore, the command
+  is immediately sent to RSX(TM). This problem has been fixed.
+
+- The following bug has been fixed.
+
+  - When cellGcmUnbindZcull() is executed, the unbind setting may not be 
+    able to be established correctly.
+
+- The following bug has been fixed.
+
+  - When the following functions end in error, the lightweight mutex, that
+    is used internally, is locked and an error code is returned without 
+    unlocking it. Therefore, other functions that uses the lightweight 
+    mutex cannot be called:
+
+    cellGcmMapMainMemory()
+    cellGcmSortRemapEaIoAddress()
+    cellGcmMapEaIoAddress()
+    cellGcmUnmapIoAddress()
+    cellGcmUnmapEaIoAddress()
+
+    Following functions cannot be called because they use the lightweight 
+    mutex:
+    cellGcmBindZcull()
+    cellGcmUnbindZcull()
+    cellGcmSetTileInfo()
+    cellGcmUnbindTile()
+
+- When using the SN compiler, an error "error 1045-D" occurs when 
+  gcm_helper.h is included. This problem has been fixed.
+  Also, a declaration "pragma" has been added to gcm_helper.h to avoid 
+  this problem.
+
+- The following bug has been fixed.
+
+  - When the samples located under samples/sdk/graphics are built using 
+    the SN compiler, many warning messages are displayed.
+
+- The following bug has been fixed.
+
+  - In the samples/sdk/graphics/gcm/zcull sample, the display may be 
+    corrupted at execution time.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------- 
+- When the member variable of the PSGLinitOptions structure is greater 
+  than 0 and FALSE(0) is set to the member variable initialzieSPUs, 
+  sys_spu_initialize() should be executed explicitly before psglInit().
+  However, even when sys_spu_initialize() is not called before psglInit(), 
+  an error is not returned. 
+  This problem has been fixed so that it asserts within psglInit().
+
+- When the member variable maxSPUs of the PSGLinitOptions structure is 
+  set with 0 and psglInit() is executed, the behavior of the PSGL library 
+  is not stable. This problem has been fixed. 
+
+  (Example setting)
+  PSGLinitOptions.maxSPUs = 0;
+  PSGLinitOptions.initializeSPUs = FALSE;
+  PSGLinitOptions.enable = PSGL_INIT_INITIALIZE_SPUS | PSGL_INIT_MAX_SPUS;
+
+- When GL_MULTISAMPLING_4X_SQUARE_CENTERED_SCE is specified as the multi 
+  sampling mode using the following function, an asset occurs on an irregular 
+  base. This problem has been fixed:
+  psglCreateDeviceAuto()
+  psglCreateDeviceExtended()
+  glBufferSurfaceSCE()
+  glFramebufferParameteriSCE()
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In dds2gtf, when dds in the G16R16 format is input, it is output 
+    using the Y16_X16 format, not D8R8G8B8 format.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#44386)
+    When establishing a PPPoE connection, if Secondary DNS Server IP 
+    Address Option is rejected, an IP address cannot be obtained.
+
+----------------------------------------------------------------------
+NP Matching Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+   - (B#34287)
+     On the Reference Tool whose boot parameter is set to the debugger mode, 
+     when the game application, that does not have sceNpMatchingDestroyCtx() 
+     and sceNpTerm() in the termination processing, is booted and then 
+     terminated via "Quit Game" on the termination confirmation dialog that 
+     is displayed by holding the PS button down, the NP Matching Utility 
+     resource will not be released. 
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When a room that belongs to the lobby is created with 0 specified to 
+    the worldId member of SceNpMatching2CreateJoinRoomRequest, a zombie 
+    room, that has no room member, may remain after a member exited the 
+    room. 
+
+----------------------------------------------------------------------
+NP Clan Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In sceNpClansCreateClan(), a space can be wrongly specified to the 
+    clan tag name argument. 
+
+----------------------------------------------------------------------
+NP In-Game Commerce Utility.
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - Game applications hung up with the following steps using 
+    the NP In-Game commerce utility.
+
+    1. Enable the "NP Debug" located under the "Debug Settings" in 
+       the "Settings" column on the system software.
+    2. Start the game application
+    3. Specify 12 or more SKU (Stock Keeping Unit) (*1) and call 
+       sceNpCommerceDoCheckoutStartAsync().
+
+       (*1)Specify a list of 12 or more SKU IDs to the second argument 
+           sku_ids.
+           Specify the value 12 or more (the number of sku_ids) to the 
+           third argument sku_num.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#44153)
+    With the DUALSHOCK(R)3 wireless controller, although a system dialog
+    such as the termination confirmation dialog, that is displayed when 
+    the PS button is pressed while it is vibrating, is opened, the 
+    vibration does not stop.
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- The following bug has been fixed: 
+
+  - A line feed is not added to the last line of libpad.h.
+
+- The following bug has been fixed.
+
+  - Some macros contained in libpad are not described in libpad.h.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#43492)
+    When a device is inserted/ejected repeatedly, the system may hang up.
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- samples/sdk/sound/snd3/playsmf/
+  samples/sdk/sound/snd3/playsmf_mixer/
+  samples/sdk/sound/snd3/runhorse/
+  samples/sdk/sound/snd3/runhorse_mixer/
+  - When cellPadGetData() is executed and if a controller is not plugged, 
+    it may behave incorrectly. This problem has been fixed.
+  - (B#41927)
+    When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+----------------------------------------------------------------------
+libsynth2
+----------------------------------------------------------------------
+- samples/sdk/sound/synth2/whole/
+  samples/sdk/sound/synth2/whole_mixer/
+  - (B#41927)
+    When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+----------------------------------------------------------------------
+libaudio
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#42450)
+    In cellAudioPortOpen(), when more audio ports than the maximum 
+    number of the ports are generated, an unexpected error value is 
+    returned.
+
+- samples/sdk/sound/audio/playaudio/
+  samples/sdk/sound/audio/play2nd/
+  samples/sdk/sound/audio/2in1out/
+  - (B#41927)
+    When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- samples/sdk/sound/mixer/check8ch/
+  samples/sdk/sound/mixer/chstrip/
+  samples/sdk/sound/mixer/ssplayer/
+  samples/sdk/sound/mixer/surbus/
+  - (B#41927)
+    When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+----------------------------------------------------------------------
+libscream
+----------------------------------------------------------------------
+- samples/sdk/sound/scream/scream_routing
+  samples/sdk/sound/scream/simple_scream
+  - When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+- When libmstream and libscream are in use, panning is correctly implemented 
+  with the same channel configuration. 
+
+- When CELL_SCREAM_MASTER_VOLUME_GLOBAL is passed to the first argument 
+  "which" of cellScreamSetMasterVolume(), the volume in the master volume 
+  group is not set correctly. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - With the samples under samples/sdk/sound/multistream, the ProDG 
+    solution file that uses libfw cannot be built. 
+
+- The following bug has been fixed.
+
+  - When the number of buses to be used is set to less than 32 and 
+    the library is initialized followed by execution 
+    of cellMSStreamClearRouting(),an assert occurs. 
+
+- The following bug has been fixed.
+
+  - I3DL2 reverb DSP has a problem with the initalization of the I3DL2 
+    reverb memory.
+    Please call memset with a value of 0 on the 16-byte aligned memory 
+    allocated before being passed to the cellMSFXI3DL2Init() function.
+
+- The following bug has been fixed.
+
+  - When the CELL_MS_ROUTE_ALL_OFF flag is set to the fourth argument "onOff" 
+    of cellMSCoreSetRouting(), the Dry and Wet volumes are not set correctly. 
+
+- The following bug has been fixed.
+
+  - PCM float32 data (time domain) cannot be played.
+
+- The following bug has been fixed.
+
+  - When the EQ is used with either of Dry or Wet path settings, a correct 
+    result is not output. 
+
+- The following bug has been fixed.
+
+  - The MultiStream compressor DSP effect cannot be used in the time domain 
+    mode.
+
+- The following bug has been fixed.
+
+  - If a parameter is changed when the I3DL2 reverb is in use, DMA transfer 
+    with incorrect alignment is taken place.
+
+- The following bug has been fixed.
+
+  - When calling the cellMSSystemConfigureSysUtilEx function in 200 and 
+    passing the CELL_MS_AUDIOMODESELECT_SUPPORTSDOLBY and 
+    CELL_MS_AUDIOMODESELECT_SUPPORTSDTS flags with 
+    the CELL_MS_AUDIOMODESELECT_PREFERDOLBY or 
+    CELL_MS_AUDIOMODESELECT_PREFERDTS flag, if the audio output mode is 
+    set to HDMI then Dolby(TM) Digital Interactive Encoding or 
+    DTS Interactive is always selected even if 6 channel LPCM is available.
+    However, LPCM should be selected, in this instance, instead.
+
+----------------------------------------------------------------------
+libusbpspcm
+----------------------------------------------------------------------
+- samples/sdk/usbpspcm/file_transfer
+  - An unnecessary variable has been deleted.
+  - (B#43014)
+    When the SN compiler is used to compile the sample programs, a warning 
+    message is displayed. This problem has been fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<Common for libspurs>
+- The following bug has been fixed:
+
+  - (B#43683)
+    When a special character is included in the SPU ELF file name when 
+    the file is input into the spu_elf-to-ppu_obj command, an invalid 
+    symbol is created in the resulting PPU object output file.
+
+- The following bug has been fixed.
+
+  - (B#44216)
+    The following samples can not be build using the Visual Studio 2005:
+    samples/sdk/spu_library/libspurs/task/task_poll
+    samples/sdk/spu_library/libspurs/advanced/job_astar
+
+<libspurs core>
+- The following bug has been fixed.
+
+  - (B#43571,B#43596)
+    cellSpursAddWorkload() does not initialize the work load signal 
+    information when registering a work load.
+
+- The following bug has been fixed.
+
+  - (B#42948)
+    When using the Tuner or the PA, if the maximum number of traces that 
+    can be obtained is exceeded, cellSpursInitialize() or 
+    cellSpursInitializeWithAttribute() returns EBUSY, and a SPURS instance
+    cannot be created.
+
+<libspurs task>
+- The following bug has been fixed.
+
+  - (B#44397)
+    When the following conditions are met, 
+    cellSpursLFQueueAttachLv2EventQueue() returns 
+    CELL_SPURS_TASK_ERROR_STAT:
+    - SYS_PROCESS_PARAM is not set.
+    - CELL_SPURS_LFQUEUE_ANY2ANY is specified to the argument "direction" 
+      of cellSpursLFQueueInitialize() for initialization.
+
+- The following bug has been fixed.
+
+  - (B#42842)
+    When cellSpursEventFlagWait() is called from the PPU thread, an 
+    infinite loop may occur within the function.
+    This problem may occur when the following conditions are all met at 
+    the time of (3).
+
+    (1) CELL_SPURS_EVENT_FLAG_ANY2ANY is specified to the fourth argument 
+        "direction" of cellSpursEventFlagInitialize() and a SPURS event flag 
+        is initialized.
+
+    (2) cellSpursEventFlagWait() is called for the SPURS event flag described 
+        in (1) so the SPURS task is in a wait state.
+
+    (3) cellSpursEventFlagWait() is called for the SPURS event flag described 
+        in (1) from the PPU thread, but the release condition from the wait 
+        state is not met.
+
+<libspurs job>
+- The following bug has been fixed.
+
+  - (B#44420)
+    In target/common/include/cell/spurs/job_descriptor.h, the definition 
+    of DEFINE_TYPE_CELL_SPURS_JOB is not correct.
+
+- The following bug has been fixed.
+
+  - (B#43445)
+    The stack size of when a job is executed is set to the size that is 
+    48 bytes larger than the actual size.
+
+- The following bug has been fixed.
+
+  - (B#44486)
+    samples/sdk/spu_library/libspurs/advanced/job_dynamic_job_submit
+    An incorrect command is written into the command list that is 
+    generated dynamically.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#41083) PPU
+    From SDK200 onwards, although fflush(NULL) is successfully completed, 
+    0 is not returned.
+    To avoid this problem, specify each stream to the argument and call 
+    fflush.
+
+- The following bug has been fixed.
+
+  - (B#37727) PPU and SPU
+    deque.clear() in the "deque" header file and vector.clear() in the 
+    "vector" header file release an area incorrectly.
+
+- The following bug has been fixed.
+
+  - (B#40869) PPU
+    When a program that includes stdlib.h is compiled using the following 
+    option, a warning message is displayed:
+    -Wsystem-headers -Wnested-externs -Wredundant-decls
+
+- The following bug has been fixed.
+
+  - (B#40881) PPU
+    In the xlocale header, the following warning message is displayed:
+    missing initializer for member 'std::_Mbstatet::_State'
+
+- The following bug has been fixed.
+
+  - (B#42013) PPU
+    memcpy16() that has been added to SDK200 does not work correctly 
+    when the copy size is less than 128 bytes.
+
+- (B#42595) PPU
+  The implementation of typeinfo::operator==() has been improved to speed 
+  up the comparison.
+
+- The following bug has been fixed.
+
+  - (B#30599) SPU 
+    - Depending on the order by which the math.h header file and 
+      the vector header file of C++ STL are included, a syntax error occurs. 
+      When including both, please be sure to include math.h first. 
+
+      Example)
+      /* OK */
+      #include <math.h>
+      #include <vector>
+
+      /* NG */
+      #include <vector>
+      #include <math.h>
+
+- The following bug has been fixed.
+
+  - (B#43987) PPU
+    When a null character is passed to the second argument of strrchr() 
+    that is contained in the string.h header file, a null pointer is 
+    returned.
+
+----------------------------------------------------------------------
+Sample Programs(cell/samples)
+----------------------------------------------------------------------
+- samples/sdk/graphics/gcm
+  samples/sdk/graphics/psgl
+  samples/sdk/hid
+  samples/sdk/sound/audio
+  samples/sdk/sound/mixer
+  samples/sdk/sound/snd3
+  samples/sdk/sound/synth2
+  samples/sdk/sound/scream
+  samples/sdk/sound/multistream
+
+  In the project files and solution files of each sample, the same GUID 
+  was used. It has been fixed to use a unique GUID.
+

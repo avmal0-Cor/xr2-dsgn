@@ -1,0 +1,53 @@
+/*   SCE CONFIDENTIAL                                       */
+/*   PlayStation(R)3 Programmer Tool Runtime Library 310.001 */
+/*   Copyright (C) 2006 Sony Computer Entertainment Inc.    */
+/*   All Rights Reserved.                                   */
+#ifndef __CELL_MOUSE_ERROR_H__
+#define __CELL_MOUSE_ERROR_H__
+
+#include <cell/error.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/*
+  CELL_ERROR_FACILITY_HID       0x012
+  libmouse : 0x8012_1201 - 0x8012_12ff
+*/
+
+#define CELL_MOUSE_MAKE_ERROR(status) \
+	CELL_ERROR_MAKE_ERROR(CELL_ERROR_FACILITY_HID, status)
+
+#define CELL_MOUSE_OK	CELL_OK
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1201) */
+#define CELL_MOUSE_ERROR_FATAL						CELL_ERROR_CAST(0x80121201)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1202) */
+#define CELL_MOUSE_ERROR_INVALID_PARAMETER			CELL_ERROR_CAST(0x80121202)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1203) */
+#define CELL_MOUSE_ERROR_ALREADY_INITIALIZED		CELL_ERROR_CAST(0x80121203)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1204) */
+#define CELL_MOUSE_ERROR_UNINITIALIZED				CELL_ERROR_CAST(0x80121204)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1205) */
+#define CELL_MOUSE_ERROR_RESOURCE_ALLOCATION_FAILED	CELL_ERROR_CAST(0x80121205)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1206) */
+#define CELL_MOUSE_ERROR_DATA_READ_FAILED			CELL_ERROR_CAST(0x80121206)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1207) */
+#define CELL_MOUSE_ERROR_NO_DEVICE					CELL_ERROR_CAST(0x80121207)
+
+/* ERR: CELL_MOUSE_MAKE_ERROR(0x1208) */
+#define CELL_MOUSE_ERROR_SYS_SETTING_FAILED			CELL_ERROR_CAST(0x80121208)
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /*__CELL_MOUSE_ERROR_H__ */
+

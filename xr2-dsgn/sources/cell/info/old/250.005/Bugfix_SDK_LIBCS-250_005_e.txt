@@ -1,0 +1,29 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 250.005
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 250.005 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 250.005
+======================================================================
+----------------------------------------------------------------------
+C/C++ Standard Library
+----------------------------------------------------------------------
+- (B#63487) PPU
+  When using libcs.a, memcmp() might return 0 even when the values of
+  the compared memory areas do not match. This problem has been fixed.
+  Please refer to the technote 200811-04 for more details:
+  https://ps3.scedev.net/technotes/view/830
+
+- (B#63772) PPU
+  When using the following functions of libcs.a, a sign of the return
+  value may be reversed. This problem has been fixed.
+    - strcmp()
+    - strncmp()
+    - strcasecmp()
+    - strncasecmp()
+

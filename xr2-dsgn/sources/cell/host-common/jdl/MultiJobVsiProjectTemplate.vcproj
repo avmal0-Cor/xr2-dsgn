@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+%(IF_NOT_EXIST:VSI_VERSION_NUMBER)\
+%( DEFINE:VSI_VERSION_NUMBER)8.00%(END)\
+%(END)\
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="$(VSI_VERSION_NUMBER)"
+	Name="$(class)_jobs"
+	ProjectGUID="{%(GUIDHASH)$(class)_jobs%(END)}"%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)
+	TargetFrameworkVersion="196613"%(END)>
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:7.10)\
+	<ToolFiles>
+	</ToolFiles>
+%(END)\
+	<Configurations>
+		<Configuration
+			Name="PS3 Debug|Win32"
+			OutputDirectory="PS3_Debug"
+			IntermediateDirectory="PS3_Debug"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);undefined">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="$(spursJobBuildFlag) $(picBuildFlag) $(jobCompileFlagsDebug)"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;%(IF_EXIST:AdditionalIncludePathSpu)%(FOR_TOKENS:AdditionalIncludePathSpu);&quot;$(TOKEN)&quot;%(END)%(END)"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;_DEBUG;__CELL_ASSERT__;__GCC__;SPU;__MULTI_SPURS__%(FOR_TOKENS:AdditionalDefinitionsSpu);$(TOKEN)%(END)"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="$(spursJobBuildFlag) $(picBuildFlag) $(jobLinkFlagsDebug)"
+				AdditionalDependencies="%(IF_EXIST:AdditionalLibrariesSpu)$(AdditionalLibrariesSpu)%(END)"
+				OutputFile="$($)(OutDir)$(\)$($)(ProjectName).lib"
+				AdditionalLibraryDirectories="%(IF_EXIST:AdditionalLibraryPathSpu)%(FOR_TOKENS:AdditionalLibraryPathSpu);&quot;$(TOKEN)&quot;%(END)%(END)"
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+%(IF_EQUAL:spursJobBinary2:1)\
+				MidlCommandFile="--format=jobbin2"
+%(END)\
+				ProgramDatabaseFile=""
+				ImportLibrary="$($)(TargetPath)"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+		<Configuration
+			Name="PS3 Release|Win32"
+			OutputDirectory="PS3_Release"
+			IntermediateDirectory="PS3_Release"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);undefined">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="$(spursJobBuildFlag) $(picBuildFlag) $(jobCompileFlagsOpt)"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;%(IF_EXIST:AdditionalIncludePathSpu)%(FOR_TOKENS:AdditionalIncludePathSpu);&quot;$(TOKEN)&quot;%(END)%(END)"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;NDEBUG;__GCC__;SPU;__MULTI_SPURS__%(FOR_TOKENS:AdditionalDefinitionsSpu);$(TOKEN)%(END)"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="$(spursJobBuildFlag) $(picBuildFlag) $(jobLinkFlagsOpt)"
+				AdditionalDependencies="%(IF_EXIST:AdditionalLibrariesSpu)$(AdditionalLibrariesSpu)%(END)"
+				OutputFile="$($)(OutDir)$(\)$($)(ProjectName).lib"
+				AdditionalLibraryDirectories="%(IF_EXIST:AdditionalLibraryPathSpu)%(FOR_TOKENS:AdditionalLibraryPathSpu);&quot;$(TOKEN)&quot;%(END)%(END)"
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+%(IF_EQUAL:spursJobBinary2:1)\
+				MidlCommandFile="--format=jobbin2"
+%(END)\
+				ProgramDatabaseFile=""
+				ImportLibrary="$($)(TargetPath)"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+	</Configurations>
+	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{%(GUIDHASH)$(class)_lib%(END)}"
+			RelativePathToProject=".\$(class)_lib.vcproj"
+		/>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;cc;s;asm">
+%(FOR_METHODS)%(IF_EQUAL:ppuCall:0)%(IF_NOT_EQUAL:genJob:0)\
+			<File
+				%(WINDOWS_PATH)RelativePath="$(build2JdlPath)$(jdl2SpuCppPath)$(managedFilePrefix)$(JobFileName_macro)$(jobFilePostfix).cpp"%(END)>
+			</File>
+%(END)%(END)%(END)\
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp">
+		</Filter>
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+		<File
+			RelativePath=".\vsi.nul"
+			>
+			<FileConfiguration
+				Name="PS3 Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description=""
+					CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					Outputs="$($)(IntDir)\vsi.out"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="PS3 Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description=""
+					CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					Outputs="$($)(IntDir)\vsi.out"
+				/>
+			</FileConfiguration>
+		</File>
+%(END)\
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+

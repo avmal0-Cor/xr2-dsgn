@@ -1,0 +1,426 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 132.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+  - FOOT SW
+
+  The wireless feature (Bluetooth(R)/Wireless LAN) can only be used 
+  on Reference Tools DEH-R1040 and later, which have the necessary 
+  authorization tools.
+  The antenna for the wireless feature is bundled with DEH-1040 and 
+  later Reference Tools. Do not attempt to connect DEH-R1030 and 
+  earlier Reference Tools.
+
+- For specifications regarding the Reference Tool, please refer to 
+  info/PS3-FAQ_*.pdf.
+
+- Currently, the status does not change even if the DRIVE SELECT 
+  switch of the front panel is pressed. 
+
+  However, by resetting (or rebooting) the Reference Tool after 
+  switching between "BD emulator (HDD)" and "BD drive" in 
+  "Blu-ray Disc access" of "Boot parameters" on the Administration 
+  Tool, it is possible to switch the LED to be illuminated on 
+  the front panel ("HDD drive LED" or "Blu-ray Disc drive LED"). 
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- Since a change has been made so that a process termination wait occurs 
+  when the power off processing is performed in the case of when booted 
+  from the debugger, with some of the samples that do not support 
+  the termination processing of game applications, a timeout occurs 
+  and the system is forcibly terminated with a warning sound when 
+  the power off processing is performed in the case of when booted from 
+  the debugger. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Web Browser Utility>
+- Files cannot be downloaded with the downloader. 
+
+- When an image is decoded using the heap area for contents close to 
+  the upper limit, it may hang up.
+
+- The handler onMouseOver/onMouseOut of JavaScript does not work 
+  properly. Use onFocus/onBlur instead.
+
+- The performance may be slow when using ClickableMap.
+
+----------------------------------------------------------------------
+BD Emulator (HDD)
+----------------------------------------------------------------------
+- When using the BD emulator on Windows, dtcfsutil.exe does not operate 
+  on the msys. Please use dtcfsutil.exe on the command prompt. 
+  There is no problem when using the BD emulator on Linux.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+<cellftp>
+- The -u option of the put command does not work correctly.
+
+- Although the option -u of the copy command or the copydir command 
+  is specified, it does not work correctly if the copy destination is HOSTFS.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with 
+  sys_memory_container_create(), an ID that is the same as that of 
+  the memory container that has already been allocated is returned 
+  for a new memory container. When this occurs, the older memory 
+  container may not be destroyed with sys_memory_container_destroy() 
+  and may not be retrieved by the system even at the time of game 
+  process termination. 
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created 
+  with a game process at the same time is less than 10. 
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libvdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input.
+  Therefore, if the monitor setting is not performed appropriately 
+  in advance with the setmonitor utility, the samples will display 
+  an warning message. 
+
+<libdmux>
+- When calling cellDmuxDisableEs(), please make sure that the video/audio 
+  decoder is not decoding the applicable ES (Elementary Stream) before 
+  calling. 
+  Specifically, it is recommended to call cellDmuxDisableEs() after 
+  CELL_VDEC_MSG_TYPE_AUDONE/CELL_ADEC_MSG_TYPE_AUDONE for the AU input 
+  to the video/audio decoder is received or after 
+  cellVdecClose()/cellAdecClose() is called. 
+
+- The message CELL_DMUX_MSG_TYPE_DEMUX_DONE may not be sent when 
+  demuxer is closed in the following sequence:
+  1. demuxer is running with the presence of valid ESs
+  2. Disable all the valid ES Handles by cellDmuxDisableEs()
+  3. Wait for CELL_DMUX_MSG_TYPE_DEMUX_DONE message(stop the 
+     self-running state)
+  4. Close demuxer by calling cellDmuxClose()
+  * Note that this problem also occurs in a sequence where 
+    cellDmuxResetStream() is called before and after step 2.
+  To avoid this problem, do not wait for CELL_DMUX_MSG_TYPE_DEMUX_DONE 
+  message(stop the self-running state) in step 3.
+
+<libvpost>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+<libjpgdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+<libpngdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+- Even if the information of sCAL chunk exists in the stream, 
+  the bit supported by dataOutInfo->chunkInformation is not validated. 
+
+<libadec>
+- SPURS stops with an exceptional event when usign ATRAC3plus decoder.
+
+  Details:
+  SPURS may stop with an exceptional event when ATRAC3plus decoder is in use.
+  This problem may occur when either one of the following conditions is met:
+
+  - libsail is used to play ATRAC3plus data that is created by Stream Composer.
+  - libadec is used to decode the same data as above directly.
+
+  Note that this problem does not occur when you use libatrac3plus to play 
+  data created by at3tool.
+
+  Workaround
+  Do not include ATRAC3plus data in PAMF file.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- In CellSailPlayerInitialize(), video is not started in the PAL 
+  output environment when CELL_SAIL_PLAYER_PRESET_AV_SYNC is set.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- With the following functions, hangul characters cannot be rendered 
+  to the correct base line position. 
+  When using hangul characters, please do not use them. 
+
+  Functions for getting outline glyph
+  cellFontGenerateCharGlyph()
+  cellFontGenerateCharGlyphVertical()
+
+  Functions for rendering from outline glyph
+  cellFontGlyphRenderImage()
+  cellFontGlyphRenderImageHorizontal()
+  cellFontGlyphRenderImageVertical()
+
+  Functions for vertical rendering
+  cellFontRenderCharGlyphImageVertical()
+
+- The initial size of the rendering work buffer is allocated as 
+  the buffer initial size that is specified with the argument 
+  CellFontRendererConfig of cellFontCreateRenderer(), but when 
+  a rendering function if called, it is changed to the buffer size 
+  that becomes necessary at that time. Therefore, it is meaningless 
+  to specify the initial size. 
+  (With CellFontRendererConfig_setAllocateBuffer(&config,initSize,maxSize),
+  it is not possible to control the memory allocation 
+  operation even when initSize == maxSize.)
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- If the following compile options are specified when compiling 
+  a program on the PPU side, many warnings may be output. 
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs 
+  if -fsingle-precision-constant is specified as the compile option. 
+
+- When including the system header, include it outside extern "C" or 
+  extern "C++". 
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C". 
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below: 
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+  * If atexit function is used in a C++ global constructor, the behavior 
+    is different from the C++ standard.  All the registered functions are 
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their 
+  instances in ELF, and pass the pointers to them to PRX.  If they are 
+  created in PRX, a DSI (data storage interrupt) may occur in function 
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If rounding mode is set by function fesetround in fenv.h, there is a 
+  bug that the setting is effective in only the operations on slice 1 of 
+  vector double type.  Round to nearest even mode (default) is used for 
+  the operations on double type and on slice 0 of vector double type.
+
+  The problem can be worked around by using the following code instead 
+  of fesetround.  Replace FE_TOWARDZERO with the mode to be set.
+  vector unsigned int r=spu_mffpscr();
+  r=spu_sel(r,spu_splats(((unsigned int)FE_TOWARDZERO*5)<<8),
+            ((vector unsigned int){0x0000FF00,0,0,0}));
+  spu_mtfpscr(r);
+  See also technical notes "Rounding control of SPU 
+  double-precision floating-point operations".
+
+<PPU/SPU>
+- If programs that include header stdlib.h are compiled with any of the 
+  following options, errors will be reported at link-time (PPU side) or 
+  compile-time (SPU side, C++).
+  -D_NO_INLINE_DEFINITIONS
+  -std=c89
+  -std=gnu89
+  -std=c++98
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be 
+  destroyed.  SPU ABI allows accessing memory at negative offsets from 
+  stack pointer up to -2000 as well as positive offsets, but using 
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf 
+  functions, etc.
+
+<PPU/SPU>
+- The following macro names will be changed because they generally 
+  overlap with the names that are defined when creating an application.
+
+  CPOLY(x)        ppu/include/bits/sincos_c.h
+  POW2(x)         ppu/include/bits/sincos_c.h
+  SPOLY(x)        ppu/include/bits/sincos_c.h
+  M_PI            ppu/include/bits/sincos_c.h, spu/include/bits/sincos_c.h
+  LOWER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MATRIX_A        ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  UPPER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MAX_RESULT      ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LN2           ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LOG2E         ppu/include/bits/f_expf.h, spu/include/bits/f_expf.h
+  M_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800_QWORDS  ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  VERSION_1       spu/include/bits/strncmp.h
+  VERSION_2       spu/include/bits/strncmp.h
+  VERSION_3       spu/include/bits/strncmp.h
+  VERSION_4       spu/include/bits/strncmp.h
+
+<PPU>
+- When a program is compiled with -Wshadow option, a warning message may be 
+  output because the standard header file has a wrong description.
+
+<PPU>
+- powf(0.1f, 46.0f) returns "INFINITY"; it should return "0.0f" instead.
+  powf(0.001f, -15.0f) returns "0.0f"; it should return "INFINITY" instead.
+  powf(-INFINITY, y) returns "0.0f" in condition that the argument y is 
+  a negative odd integer; it should return "-0.0f" instead.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- The following constant macros are to be deleted in the future version 
+  since they are not supported by RSX(TM).
+  CELL_GCM_BLEND_COLOR = (0x8005),
+  CELL_GCM_BLEND_EQUATION = (0x8009),
+
+----------------------------------------------------------------------
+libgcm/PSGL
+----------------------------------------------------------------------
+- Flip completion notice is returned before completion.
+  For details, see the Technical Note 200609-23.
+  https://ps3.scedev.net/technotes/view/320/
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libdaisy>
+- When the template arguments tOutPort, tInPort and tMode are specified 
+  at the time of instance creation using the cell::Daisy::Glue template 
+  class as shown below, QUEUE_IS_BUSY may be retuned repeatedly instead 
+  of TERMINATED(correct return value) even though all the data flow 
+  processes are completed when the function step() is called for the instance.
+
+  tOutPort
+  Instance with tMode = COPY(Default value) specified when this instance 
+  is created using the cell::Daisy::Pipe::OutPort template class or 
+  the cell::Daisy::GatherPipe::OutPort template class.
+  
+  tInPort
+  Instance with tMode = REFERENCE specified when this instance is created 
+  using the cell::Daisy::Pipe::InPort template class or 
+  the cell::Daisy::ScatterPipe::InPort template class
+
+  tMode = ONE_PORT
+
+<libspurs>
+- QSortSubWithFetch() that is found in the following sample program 
+  may write into an area immediately after the data array to be sorted 
+  unexpectedly.
+  samples/spu_library/libspurs/advanced/task_sort
+
+----------------------------------------------------------------------
+SPU ELF Binary Translator (replace_hbr.pl)
+----------------------------------------------------------------------
+- The target areas of the binary translator depend on whether or not
+  an elf file contains section headers.
+
+  - If an elf file contains section headers,
+    the targets are executable sections.
+
+  - If an elf file contains no section headers,
+    the targets are executable segments.
+
+  When an SPU program is written in assember, please be careful not to
+  locate any data in the above sections or segments because they might
+  be replaced by the binary translator.
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+<libpad>
+(Added in Version 132.002)
+- cellPadLddRegisterController() that register a custom controller 
+  always returns CELL_PAD_ERROR_TOO_MANY_DEVICES incorrectly.
+  Although CELL_PAD_ERROR_TOO_MANY_DEVICES is returned, the custom 
+  controller is mistakenly registered with the system.
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USB Driver>
+- When registration and deletion of an extended LDD are repeatedly 
+  performed, the probe function may not be called at the registration.
+
+- When performing isochronous IN transfer with a Full-Speed device, 
+  data whose size per frame exceeds 512 bytes cannot be transferred 
+  correctly. 
+  This problem will be fixed in a future release. 
+
+- Multi isochronous transfer of a High-Speed device is not supported. 
+  This problem will be fixed in a future release. 
+
+- From SDK090, the usbd/usbhphone sample is attached to LDD within 
+  the system. Therefore, it does not operate. 
+
+- When connecting or disconnecting a device to a USB port of the 
+  machine body, other USB devices already connected may be 
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB 
+  ports of the machine body.
+

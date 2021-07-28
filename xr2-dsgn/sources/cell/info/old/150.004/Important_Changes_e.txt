@@ -1,0 +1,631 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 150.004
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 New Librarys and New Tools
+----------------------------------------------------------------------
+Registry Database Utilities
+===========================
+- As utilities for investigating the problems that are related to system
+  internal data, the following have been added: 
+  - Utility for getting a registry (system internal data) as a file 
+    cell/target/images/registry_backup.self
+  - Utility for getting database data (system internal data) as a file 
+    cell/target/images/db_backup.self
+
+libprof
+=======
+- The library for libprof provided in Performance Analyzer Tools package
+  are now included in the SDK package. 
+  Please note that the file path of libprof.sprx has been changed 
+  accordingly. 
+  Paths in the SDK package
+    cell/target/ppu/lib/libprof_stub.a 
+    cell/target/tool/ppu/prx/libprof.sprx
+
+Storage Data Utility
+====================
+- The storage data utility is a system utility that supports file 
+  exchanges between the internal HDD and a recording media such 
+  as the Memory Stick(TM).
+
+----------------------------------------------------------------------
+2 libsysmodule
+----------------------------------------------------------------------
+<New Feature>
+- An ID for loading the AV chat utility extension module 
+  (CELL_SYSMODULE_SYSUTIL_AVCHAT) has been added. 
+
+----------------------------------------------------------------------
+3 System Software (GUI)
+----------------------------------------------------------------------
+<New Feature>
+- It has become possible to display the following character codes with 
+  the system software: 
+  - Mathematical symbols: U+2206, U+2219, U+2248, U+2264, U+2265
+  - Hangul compatibility jamo: U+3131 - U+318E
+  - Hangul bracketed characters: U+3200 - U+321C
+
+- The following menus have been added to the system software: 
+
+  - Settings -> System Settings -> NP Debug   : Off/On 
+    If "NP Debug" is "On", the notification of the NP communication ID 
+    that is specified with the title application is displayed, 
+    and a delay will occur forcibly for two seconds after the communication
+    transaction of the NP score ranking. 
+
+  - Settings -> System Settings -> Exception Handler   : Off/On 
+    If "Exception Handler" is "On", the liblv2dbg (exception handling thread)
+    feature becomes valid with the Reference Tool or the Debugging Station. 
+
+<Specification Change>
+- It has been changed so as to use the HTTP Proxy setting if it was set 
+  when setting the clock with the following method:  
+    Settings -> Date and Time Settings -> Date and Time -> Set via Internet
+
+----------------------------------------------------------------------
+4 System Utilities (libsysutil)
+----------------------------------------------------------------------
+On-screen Keyboard Dialog Utility
+=================================
+<New Feature>
+- A feature of inputting Korean has been added. Korean panel 
+  (CELL_OSKDIALOG_PANELMODE_KOREAN) has been added to the input panels
+  to be specified with the member allowOskPanelFlg of the structure 
+  CellOskDialogParam. 
+
+- A function for adding a panel (language) to be supported by 
+  the on-screen keyboard dialog, cellOskDialogAddSupportLanguage(),
+  has been added. When supporting Korean input, it must be specified 
+  with this function. 
+
+- A function for getting the size of the on-screen keyboard dialog,
+  cellOskDialogGetSize(), has been added. 
+
+<Sample Change> (samples/sysutil/osk_dialog)
+- The sample has been changed so as to support Korean input and use 
+  cellOskDialogAddSupportLanguage() and cellOskDialogGetSize(). 
+
+Message Dialog Utility
+======================
+<New Feature>
+- The following function, which has been obtained by adding features 
+  to the conventional function, has been added:  
+    cellMsgDialogOpen2() 
+  The basic method of using it is the same as the conventional function,
+  but the following dialog features have been added.  
+  The conventional function will be left for compatibility, but please 
+  use the above function in a title application..
+    - Sound effects upon dialog startup
+    - Button types
+    - Disable the Back button
+
+<Sample Change> (samples/sysutil/msgdialog)
+- It has been changed so as to use cellMsgDialogOpen2(). 
+
+Save Data Utility
+=================
+<New Feature>
+- The following functions, which have been obtained by adding features 
+  to the conventional functions, have been added:  
+    cellSaveDataListSave2() 
+    cellSaveDataListLoad2() 
+    cellSaveDataFixedSave2() 
+    cellSaveDataFixedLoad2() 
+    cellSaveDataAutoSave2() 
+    cellSaveDataAutoLoad2() 
+    cellSaveDataDelete2() 
+  The basic methods of using them are the same as the conventional 
+  functions, but the following features have been added.  
+  The conventional functions will be left for compatibility, 
+  but please use the above functions in a title application. 
+    - Perform the processing till the end, even when the power is 
+      turned off. 
+    - Specify the user specified data (void *userdata) to be passed to
+      various callbacks.  
+      However, for cellSaveDataDelete2(), there is no userdata since 
+      there is no callback. 
+    - When called from different threads at the same time, return 
+      CELL_SAVEDATA_ERROR_BUSY and terminate the function that was called
+      later. 
+
+- Functions for performing autosave/autoload in procedures similar to 
+  those of fixed save/fixed load have been added.  
+  For details, please refer to "Save Data Utility Reference".  
+    cellSaveDataListAutoSave() 
+    cellSaveDataListAutoLoad()
+
+<Specification Change>
+- The member name of the structure CellSaveDataCBResult has been changed:  
+    Before: CellSaveDataCBResult::reserved 
+    After: CellSaveDataCBResult::userdata 
+  Since the size of the structure CellSaveDataCBResult does not change,
+  the binary compatibility will be maintained. However, please note that 
+  the code must be modified to compile a title application that uses 
+  the conventional save data utility in the environment of SDK150. 
+
+Game Data Utility
+=================
+<New Feature>
+- A function for getting the size of the game data that has just been 
+  checked/created, cellGameDataGetSizeKB(), has been added. 
+  For details, please refer to "Game Data Utility Reference". 
+
+<Sample Change> (samples/sysutil/gamedata)
+- It has been changed so as to use cellGameDataGetSizeKB(). 
+
+AV Chat Utility
+===============
+<New Feature>
+- The extended features of the AV chat utility are provided in the PRX
+  format module (libsysutil_avc_ext_stub.a). With a title application, 
+  please use them by linking libsysutil_avc_ext_stub.a statically.  
+    target/ppu/lib/libsysutil_avc_ext_stub.a 
+    target/ppu/include/sysutil/sysutil_avc_ext.h
+
+- It has become possible to control the displayed position, size, etc.
+  of the video chat participant screen from the title application side.  
+    cellSysutilAvcExtSetWindowPosition() 
+    cellSysutilAvcExtGetWindowPosition() 
+    cellSysutilAvcExtSetWindowRotation() 
+    cellSysutilAvcExtGetWindowRotation() 
+    cellSysutilAvcExtSetWindowRotation() 
+    cellSysutilAvcExtGetWindowSize() 
+    cellSysutilAvcExtShowWindow() 
+    cellSysutilAvcExtHideWindow() 
+    cellSysutilAvcExtGetWindowShowStatus() 
+    cellSysutilAvcSetWindowZorder() 
+  When using the above functions in a title application, the AV chat 
+  utility extension module must be loaded. 
+
+- cellSysutilAvcExtGetSurfacePointer() has been added so as to be able
+  to get the video data that is played in a video chat from the title 
+  application side. With this feature, it has become possible to process 
+  the video and display it freely on the title application side. 
+  When using this in a title application, the AV chat utility extension 
+  module must be loaded. 
+
+<Sample Change> (samples/sysutil/avc)
+- The sample program has been changed so that the feature of controlling 
+  the display position, size, etc. of the video chat participant screen 
+  from the title application side and the feature of getting the video data
+  that is played in a video chat from the title application side are used. 
+
+System Cache Utility
+====================
+<New Feature>
+- A function for initializing the system cache area that has just 
+  be mounted, cellSysCacheClear(), has been added. When the title 
+  application finds an error in an existing file while using the system
+  cache and wants to destroy the whole system cache, it is possible to 
+  clear the contents of the cache partition without changing the cache ID.
+  For details, please refer to "System Cache Utility Reference" and 
+  "System Cache Utility Overview". 
+
+- The feature of determining if the system cache area is broken 
+  at the time of mounting  the system cache area has been supported. 
+  For details, please refer to "System Cache Utility Overview". 
+
+<Sample Change> (samples/sysutil/syscache)
+- It has been changed so as to use cellSysCacheClear(). 
+
+Video Setting Utility
+=====================
+<New Feature>
+- By expanding and outputting from the following display buffer sizes 
+  that are comparatively small, it has become possible to output 1080i and
+  1080p. The filter that is used when expanding is equivalent to bilinear.
+  According to this, title applications have become possible to output 
+  1080p/1080i with less memory and rendering cost.  
+    1600x1080 
+    1440x1080 
+    1280x1080 
+    960x1080
+
+- As a constant that represents the video output port, a macro constant
+  that indicates the output to 
+  the network device (PSP(TM) (PlayStation(R)Portable)), 
+  CELL_VIDEO_OUT_PORT_NETWORK, has been added.  
+  The current SDK does not support the function of 
+  CELL_VIDEO_OUT_PORT_NETWORK, which will be officially included 
+  in the future version upgrade. 
+
+<Specification Change>
+- According to the addition of the feature that is related to the output
+  of 1080p/1080i, the specification has been changed. When the information
+  of the video output device was obtained with cellVideoOutGetDeviceInfo(),
+  the resolution of the structure CellVideoOutDeviceInfo was the value that
+  was obtained by converting the hardware scaler from 1280x720 to 1920x1080.
+  However, a change has been made so that this conversion will not 
+  be performed. 
+
+<Sample Change> (samples/sysutil/video/resolution)
+- It has been changed so as to use the resolutions 1600x1080, 1440x1080,
+  1280x1080, 960x1080, and 720x576. 
+
+Audio Setting Utility
+=====================
+<New Feature>
+- As a constant that represents the audio output port, a macro constant 
+  that indicates the output to 
+  the network device (PSP(TM) (PlayStation(R)Portable)), 
+  CELL_AUDIO_OUT_PORT_NETWORK, has been added.  
+  The current SDK does not support the function of CELL_AUDIO_OUT_PORT_NETWORK,
+  which will be officially included in the future version upgrade. 
+
+- With the following functions, it has become possible to get the 
+  information of when CELL_AUDIO_OUT_SECONDARY is specified with
+  the argument audioOut:  
+    cellAudioOutGetNumberOfDevice() 
+    cellAudioOutGetDeviceInfo() 
+    cellAudioOutGetState() 
+    cellAudioOutGetSoundAvailability()
+
+<Specification Change>
+- When the resolution was changed, the audio setting was reset. 
+  However, it has been changed so as to retain the audio setting even 
+  when the resolution is changed. 
+
+----------------------------------------------------------------------
+5 Network Platform
+----------------------------------------------------------------------
+General
+=======
+<New Feature>
+- Even when more than one PLAYSTATION(R)3 console is connected to 
+  the same NAT router that has the UPnP feature, it has become possible 
+  to use the UPnP feature at the same time for up to 16 PLAYSTATION(R)3 
+  consoles. 
+
+NP Basic Utility
+================
+<New Feature>
+- Function for registering the NP communication ID and the handler 
+  by distinguishing whether the contact is offline or the contact is
+  online but not in the same NP communication ID,
+  sceNpBasicRegisterContextSensitiveHandler(), has been added.  
+  According to this, SCE_NP_BASIC_EVENT_OUT_OF_CONTEXT has been added 
+  as an event of when the contact is connected to the NP network 
+  but not in the same NP communication ID. 
+
+- The following functions for getting the information of a data attached
+  message have been added:  
+    sceNpBasicGetMessageAttachmentEntryCount() 
+    sceNpBasicGetMessageAttachmentEntry()
+- An event of when a friend is deleted from the list, 
+  SCE_NP_BASIC_EVENT_FRIEND_REMOVED, has been added. 
+
+NP Score Ranking Utility
+========================
+<New Feature>
+- Function for setting the timeout time of the ranking communication 
+  processing, sceNpScoreSetTimeout(), has been added. 
+
+NP Signaling Utility
+====================
+<New Feature>
+- A function for completely terminating a connection, 
+  sceNpSignalingTerminateConnection(), has been added. 
+
+NP Matching Utility
+===================
+<New Feature>
+- A function for getting the room list (sceNpMatchingGetRoomListLimitGUI())
+  and a function for joining a room (sceNpMatchingJoinRoomGUI()) have been
+  added.  
+  According to this, the following structures and GUI events have 
+  been added.  
+  
+  GUI events 
+    SCE_NP_MATCHING_GUI_EVENT_JOIN_ROOM 
+    SCE_NP_MATCHING_GUI_EVENT_GET_ROOM_LIST_LIMIT 
+
+  Structures 
+    SceNpMatchingReqRange 
+    SceNpMatchingRange 
+    SceNpMatchingRoomList
+
+----------------------------------------------------------------------
+6 Cell OS Lv-2
+----------------------------------------------------------------------
+<New Feature>
+- The process of detecting the hang-up status that occurs when the SPU 
+  fails to fetch instruction and the process of restoring it have been 
+  added.
+  When it is detected, a message such as below is output to TTY:
+    SPE hang is detected: GUID afd2584f80e90b3b, NPC 00000980 
+  The detection is performed by using the feature of the performance 
+  monitor of the PA Suite that is provided in a separate package.  
+  Therefore, please note that the detection cannot be performed while 
+  the performance monitor is being used.
+
+----------------------------------------------------------------------
+7 File System
+----------------------------------------------------------------------
+<New Feature>
+cell/target/images/cellftp.self
+===============================
+- An option for displaying the subdirectory recursively, -R, has been
+  added to the ls command.  
+    Example)  COMMAND> ls -R
+
+----------------------------------------------------------------------
+8 SPU Runtime
+----------------------------------------------------------------------
+libspurs
+========
+<New Feature>
+- With the command cell_spurs_print_taskset of the SPURS GDB script, 
+  a change has been made so as to display the list of tasks within 
+  a task set. 
+
+- With the command cell_spurs_print_task of the SPURS GDB script, 
+  a change has been made so as to display the backtrace of a task. 
+
+<Specification Change>
+- A change has been made so as to return the error code 
+  CELL_SPURS_JOB_ERROR_JOB_DESCRIPTOR when the value of the reserved 
+  area of the structure CellSpursJobHeader is not 0. 
+
+libdaisy
+========
+<Specification Change>
+- With the template class cell::Daisy::Buffer::Local, it has become 
+  possible to specify a type, whose size exceeds 16KB, for the template
+  argument tType. 
+
+----------------------------------------------------------------------
+9 libusbd
+----------------------------------------------------------------------
+<New Feature>
+- A function for carrying out high-bandwidth isochronous transfer 
+  for a USB high-speed device (three transactions for a micro-frame,
+  maximum payload of 1024 bytes), cellUsbdHSIsochronousTransfer(),
+  has been added.  
+  According to this, structures cellUsbdIsochHSRequest and 
+  CellUsbdIsochHSPswLen have also been added. 
+
+----------------------------------------------------------------------
+10 HID
+----------------------------------------------------------------------
+libkb
+=====
+<New Feature>
+- Korean keyboard layout, CELL_KB_MAPPING_KOREAN_KOREA, has been added.
+  If the display language setting of the system software is Korean, 
+  CELL_KB_MAPPING_KOREAN_KOREA should be specified for the member 
+  arrange of the structure CellKbConfig. 
+
+----------------------------------------------------------------------
+11 Network
+----------------------------------------------------------------------
+libnet
+======
+<Specification Change>
+- With TCP, the default value of the socket send/receive buffer size 
+  has been changed from 160KB to 65535Byte. 
+
+----------------------------------------------------------------------
+12 libgcm
+----------------------------------------------------------------------
+<New Feature>
+- The following functions have been added:  
+    cellGcmGetCurrentField() 
+    cellGcmCgGetEmbeddedConstantOffset() 
+    cellGcmCgGetEmbeddedConstantCount() 
+    cellGcmSetDepthFormat() 
+    cellGcmSetBlendOptimization()
+
+- With the following functions, Cg program parameter types CG_FLOAT3x4 
+  and CG_FLOAT4x3 have been supported:  
+    cellGcmSetVertexProgramParameter() 
+    cellGcmSetFragmentProgramParameter() 
+    cellGcmSetFragmentProgramParameterPointer()
+
+- Constants to be set with format of cellGcmSetDepthFormat(), 
+  CELL_GCM_DEPTH_FORMAT_FIXED and CELL_GCM_DEPTH_FORMAT_FLOAT, 
+  have been added. 
+
+<Specification Changes>
+- The argument of cellGcmSetFragmentProgramParameterPointer() that 
+  is not being used, const float *value, has been deleted. 
+
+- The command generation of cellGcmSetDrawArrays() has been reviewed,
+  and the required buffer size has been reduced to about half. 
+
+- libgcm_cmddbg.a has been changed so as to assert when the value of
+  the argument index is 4 or more with the following functions:  
+    cellGcmSetVertexTexture() 
+    cellGcmSetVertexTextureAddress() 
+    cellGcmSetVertexTextureControl() 
+    cellGcmSetVertexTextureBorderColor()
+
+- The arguments of cellGcmSetTextureOptimization() that are not being
+  used, reserved0 and reserved1, have been renamed to iso and aniso 
+  respectively and have been changed so as to perform the following
+  settings:  
+    iso: Isotropic filter LOD calculation optimization flag 
+    aniso: Anisotropic filter LOD calculation optimization flag 
+
+  In addition, constants to be used with these arguments have been added:
+    CELL_GCM_TEXTURE_ISO_LOW 
+    CELL_GCM_TEXTURE_ISO_HIGH 
+    CELL_GCM_TEXTURE_ANISO_LOW 
+    CELL_GCM_TEXTURE_ANISO_HIGH
+
+- The graphics error output message has been reviewed, and information
+  has been added. 
+
+<Sample Changes> (samples/gcm/)
+- The sample names have been changed. 
+    ---------------------------------------------
+    Before         ------> After
+    ---------------------------------------------
+    ConvertSwizzle ------> convert_swizzle
+    Cube           ------> fw_cube
+    DepthRead      ------> depth_read
+    Dice           ------> fw_dice
+    flipImmediate  ------> flip_immediate
+    Fog            ------> fw_fog
+    gcmVtxAttr     ------> fw_vertex_attribute
+    Human          ------> human
+    MipMap         ------> fw_mipmap
+    MSAA           ------> msaa
+    MultiTexture   ------> fw_multi_texture
+    pmZcull        ------> pm_zcull
+    RenderToTexture------> fw_render_to_texture
+    StencilReflect ------> fw_stencil_reflect
+    UserClip       ------> user_clip
+    VertexTexture  ------> fw_vertex_texture
+    VideoTexturing ------> fw_video_texturing
+    Dice-spu       ------> fw_dice_spu
+    ---------------------------------------------
+
+- The texture to be displayed with the sample fw_video_texturing 
+  has been changed. 
+
+----------------------------------------------------------------------
+13 GTF
+----------------------------------------------------------------------
+<Specification Changes>
+- A change has been made so as to output all of the outputs of 
+  dds2gtf.exe to stdout. 
+
+- The Linux version of dds2gtf and the Windows version source code 
+  have been added below samples/gtf/dds2gtf. 
+
+----------------------------------------------------------------------
+14 PSGL
+----------------------------------------------------------------------
+<New Feature>
+- It has become possible to specify triple buffer when creating 
+  a PSGL device. When calling psglCreateDeviceExtended(), please specify 
+  PSGL_BUFFERING_MODE_TRIPLE for the member variable bufferingMode of the 
+  structure PSGLdeviceParameters. 
+----------------------------------------------------------------------
+15 sce-cgc
+----------------------------------------------------------------------
+<New Feature>
+- Options for controlling code generation have been added: 
+    -fuse-ge-plane: Option for using "Greater Than" in the function 
+                    that performs comparison with clip plane
+    -fuse-lt-plane: Option for using "Less Than" in the function that 
+                    performs comparison with clip plane
+    -fenable-bx2  : Option for enabling bx2 suffix for TEX instruction
+    -fkeep-unused : Option for not deleting a parameter even when there 
+                    is  a parameter that is not being used within a vertex 
+                    program
+- A change has been made so as to perform the optimization that uses 
+  a DPH instruction. 
+
+----------------------------------------------------------------------
+16 codec
+----------------------------------------------------------------------
+libdmux
+=======
+<Sample Change> (samples/codec/pamf_dmux)
+- A change has been made so that, when the size of the PCM data that is
+  output from the Audio decoder is 0, that PCM data is not output and 
+  is destroyed. 
+
+libjpgdec
+=========
+<Sample Changes>
+- With the samples under samples/codec/jpg_dec, the following processes 
+  have been added: 
+  - Set the macro SYS_PROCESS_PARAM that sets the priority and stack 
+    size of the primary PPU thread
+  - Check an event that is related to the system utilities
+
+- With jpgDecCbCtrlStrm() that performs the stream division and input 
+  in the sample samples/codec/jpg_dec/jdec_ppu_callback, a change has 
+  been made so that exit() will not be performed when the stream size 
+  becomes 0. 
+
+libpngdec
+=========
+<Sample Changes>
+- With the samples under samples/codec/png_dec, the following processes
+  have been added: 
+  - Set the macro SYS_PROCESS_PARAM that sets the priority and stack 
+    size of the primary PPU thread
+  - Check an event that is related to the system utilities
+
+- With pngDecCbCtrlStrm() that performs the stream division and input 
+  in the sample samples/codec/png_dec/pngdec_ppu_callback, a change 
+   has been made so that exit() will not be performed when the stream 
+   size becomes 0. 
+
+----------------------------------------------------------------------
+17 Sound Related
+----------------------------------------------------------------------
+MultiStream
+===========
+<New Feature>
+- The following functions have been added:  
+    cellMSStreamGetRoutingWetDry() 
+    cellMSStreamSetRoutingDry() 
+    cellMSStreamSetRoutingWet() 
+    cellMSSystemConfigureSysUtil()
+
+- Distortion DSP Effect and Soft Clipping Distortion DSP Effect 
+  have been added. 
+
+- DSP effects that enable the complicated routing between buses have 
+  been added:  
+    Auxiliary Return DSP Effect 
+    Auxiliary Send DSP Effect
+
+<Sample Changes> (samples/sound/multistream)
+- With samples other than eq_sample, rain_sample, and surround_sample,
+  a change has been made so as to terminate the sample by using the system
+  callback function. 
+
+- With the samples simple_XXXX, files to be used commonly have been added: 
+    samples/sound/multistream/common/mscommon.cpp
+    samples/sound/multistream/common/mscommon.h
+
+----------------------------------------------------------------------
+18 Others
+----------------------------------------------------------------------
+<Specification Change> (cell/host-linux/bin, cell/host-win32/bin)
+- SPU ELF conversion script (replace_hbr.pl) has been deleted. 
+
+----------------------------------------------------------------------
+19 Sample Programs
+----------------------------------------------------------------------
+<New Addition>
+samples/sysutil/storagedata
+- This sample demonstrates how to write and capture data between 
+  a storage media and the HDD by using the storage data utility. 
+
+samples/gcm/duck
+- This sample demonstrates how to set a shader variable by using 
+  the header that is output with sce-cgcdisasm. 
+
+<samples/mk Change>
+- The SPU_REPLACE_HBR_ENABLE option has been deleted. 
+
+<Addition of Project Files>
+For ProDG for PLAYSTATION(R)3, project files have been added for some of
+the following sample programs. 
+As for the unsupported sample programs, project files will be added as soon
+as they become ready. 
+    samepls/lv2/contig_mem_map
+    samepls/lv2/contig_mem_map_and_container
+    samples/gcm/pmZcull
+    samples/gcm/Human
+    samples/gcm/Fog
+    samples/gcm/Dice-spu
+
+<Changes of the Project Files>
+With the following project files, SNC Toolchain has been supported: 
+    samples/lv2
+    samples/gcm
+    samples/gtf
+

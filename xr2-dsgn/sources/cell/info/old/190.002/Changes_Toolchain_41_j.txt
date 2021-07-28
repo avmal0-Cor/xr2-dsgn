@@ -1,0 +1,240 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 190.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+PLAYSTATION(R)3 Programmer Tool Toolchain 190.002 (based on GCC4.1.1)
+正式版をリリースいたします。
+
+GCC4.1.1での新規機能については、「Cell OS Lv-2 ツールチェーン ユーザガイド」
+のドキュメントを参照してください。
+
+以下にPLAYSTATION(R)3 Reference Tool ツールチェーンパッケージの変更点と
+不具合修正を記述します。
+
+- Release 190.002 の変更点
+- Release 190.002 の不具合修正
+
+======================================================================
+Release 190.002 の変更点
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+GCC4.1.1への移行に伴う変更点については、「Cell OS Lv-2 ツールチェーン 
+ユーザガイド」のドキュメントにも記載してありますので、必ず参照してください。
+
+<PPU/SPU共通>
+- Code Instrumentation at Link-Time (CIL) をリリースします。
+  これに伴い、以下のファイルが追加になりました。
+  CILの詳細については、「Code Instrumentation at Link-Time (CIL)ユーザガイド」を
+  参照してください。
+
+  cell/host-linux/ppu/include/cil/cil.h
+  cell/host-linux/spu/include/cil/cil.h
+  cell/host-linux/ppu/lib/libcilppu.a
+  cell/host-linux/spu/lib/libcilspu.a
+  cell/host-linux/ppu/lib/cil/ppu-lv2/libcilrt.a
+  cell/host-linux/spu/lib/cil/spu-lv2/libcilrt.a
+  cell/host-win32/ppu/include/cil/cil.h
+  cell/host-win32/spu/include/cil/cil.h
+  cell/host-win32/ppu/lib/cilppu.lib
+  cell/host-win32/ppu/lib/cilppu.dll
+  cell/host-win32/ppu/lib/cilppu.def
+  cell/host-win32/spu/lib/cilspu.lib
+  cell/host-win32/spu/lib/cilspu.dll
+  cell/host-win32/spu/lib/cilspu.def
+  cell/host-win32/ppu/lib/cil/ppu-lv2/libcilrt.a
+  cell/host-win32/spu/lib/cil/spu-lv2/libcilrt.a
+
+- 以下のコマンドは別パッケージで提供しているPerformance analyzer tools 
+  180.002 の機能として組み込まれたため、ToolChainパッケージから削除しました。
+
+  cell/host-linux/ppu/bin/ppu-lv2-gprof 
+  cell/host-linux/spu/bin/spu-lv2-gprof 
+  cell/host-win32/ppu/bin/ppu-lv2-gprof.exe
+  cell/host-win32/spu/bin/spu-lv2-gprof.exe
+
+<PPU側>
+- Toolchain 180.002までのコンパイラオプション仕様では、例外処理を無効にする
+  オプション( -fno-exceptions )とRTTIを無効にするオプション( -fno-rtti )を、
+  個別に指定することはできず、両方同時に指定する必要がありました。
+  Toolchain 190.002より、これらのコンパイラオプションの仕様を以下のように
+  変更しました。
+
+    - -fno-exceptionsのみ指定した場合 :
+        例外処理は無効となり、RTTIは有効となる
+    - -fno-exceptionsと-fno-rttiを指定した場合 :
+        例外処理とRTTIの両方とも無効となる
+    - どちらも指定しない場合 :
+        例外処理とRTTIの両方が有効となる
+
+  (注意)
+    ゲームアプリケーションプログラムのリンクを行う場合には、
+    必ず上記オプションの組み合わせが同じ指定のオブジェクト、ライブラリ同士で
+    行ってください。
+    オプションの組み合わせが混在したものでリンクを行った場合、
+    リンクできないあるいはゲームアプリケーションプログラムが不正な振る舞い
+    をします。
+
+----------------------------------------------------------------------
+GDB 
+----------------------------------------------------------------------
+なし
+
+======================================================================
+Release 190.002 の不具合修正
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+
+[GCC4.0.2からGCC4.1.1への移行による不具合修正]
+
+<PPU/SPU共通>
+- C/C++言語拡張仕様書では、()を使うベクタリテラルで使用できるのは、
+  定数式(定数を含む)のみとなっています。(vector signed int)(x)のように、
+  それ以外の式を使用した場合には、GCC4.0.2では誤動作するにもかかわらず、
+  警告を表示していませんでした。GCC4.1.1では、警告を表示するようになりました。
+
+- GCC4.0.2では、(vector unsigned int)1 のような記述は、ベクタリテラルとして
+  認識されていましたが、C/C++言語拡張仕様書では許されていない方法でした。
+  GCC4.1.1では、そのような記述に警告を表示するようになりました。
+
+- 以下の不具合を修正しました。
+  - Windows環境で-MMDオプションを使用してコンパイルする時に、-Iオプションで
+    システムヘッダへのパスを指定すると、出力される.dファイル中に、
+    そのパスに存在するヘッダファイル名が含まれます。
+
+- 以下の不具合を修正しました。
+  - 例のコードのようなプログラムをコンパイルした場合、const変数a,bが
+    .dataセクションではなく、.bssセクションに置かれることがあります。
+
+    例)
+    const vector unsigned int a = (vector unsigned int)(vector signed int)
+                                  {1,2,3,4};
+    const vector float b = (vector float)(vector unsigned int){1,2,3,4};
+
+- 以下の不具合を修正しました。
+  - 有限回の空ループ文についての最適化が十分ではありません。
+
+
+- 以下の不具合を修正しました。
+  - 例のコードのようなプログラムをコンパイルした場合に、警告がコンソール
+    上へ出力されます。
+
+    例)
+    template<typename T>
+    struct A {
+      int f(int y) {
+        return ({ int t=y+1; t; });
+      }
+    };
+
+<PPU側>
+- 以下の不具合を修正しました。
+  - プリコンパイルヘッダを作成するために、altivec.hを使うヘッダファイルを
+   "-x c-header"をつけてコンパイルした場合、それを利用するプログラムの
+    コンパイルでエラーとなる場合があります。
+
+- 以下のようなプログラムをコンパイルすると、internal compiler errorが
+  発生するという不具合を修正しました。
+  typedef struct _st {
+      int iIndex : 24;
+  } st;
+  void f(void)
+  {
+      st *next = ((void *)0);
+      const static int constreg[] = { 0,};
+      next->iIndex = constreg[0];
+  }
+
+- 以下の不具合を修正しました。
+  - クラスのstatic変数に対して__thread指定子を利用したプログラムで、
+    その変数の定義と参照を異なるソースファイルに置いた場合、リンク時に
+    以下のようなエラーが発生します。
+
+    エラー： R_PPC64_ADDR32 used with TLS symbol A::x
+
+    <__thread指定子を利用したプログラム例>
+
+      --- test1.cpp ---
+        class A {
+        public:
+          static __thread int x;
+        };
+        int main() {
+          return A::x;
+        }
+      -----------------
+
+      --- test2.cpp ---
+        class A {
+        public:
+          static __thread int x;
+        };
+        __thread int A::x=1;
+      -----------------
+
+- 以下の例のように、PPU組み込み関数__lwbrxなどを使用すると、internal 
+  compiler errorが発生するという不具合を修正しました。
+    #include <stdio.h>
+    #include <ppu_intrinsics.h>
+
+  int main(void)
+  {
+    unsigned int x = 0x01234567;
+    x = __lwbrx(&x);
+    printf("%08x\n", x);
+    return 0;
+  }
+
+<SPU側>
+- 以下の不具合を修正しました。
+  - システムヘッダ"spu_internals.h"をインクルードしたプログラムを
+    そのヘッダファイルへのパスを-Iオプションで指定してコンパイルした場合、
+    警告がコンソール上へ出力されます。
+
+    C:\support>spu-lv2-gcc -Wall -I%SCE_PS3_ROOT%/target/spu/include -c main.cpp
+    C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: specifying
+     vector types with __attribute__ ((mode)) is deprecated
+    C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: use
+    __attribute__ ((vector_size)) instead
+
+- 以下の不具合を修正しました。
+  - コンパイラオプション-mspurs-jobを使用し、リンクするオブジェクトの
+    アセンブリソース中で、以下のようにテキストセクションに16バイトを超える
+    アラインメント指定を行った場合、job_start.oが正しい位置にリンクされない
+    という不具合があります。
+
+       .section .text,"ax",@progbits
+       .align 5
+        .globl foo
+        .type  foo, @function  foo:
+            :
+[GCC4.1.1beta2からの不具合修正]
+
+<PPU/SPU共通>
+- 以下の例をコンパイルするとinternal compiler errorが発生する
+  という不具合を修正しました。
+    int test (const unsigned char *buf) {
+      int a = 0xffff;
+      int b = 0xffff;
+      int k = 100;
+      while (k--) {
+        a += *buf++;
+        b += a;
+      }
+      return (a | b);
+    }
+
+<PPU側>
+- 余計なclrldi(rldicl)命令の出力を抑制するようにしました。
+
+<SPU側>
+- cell/spurs.hの関数cellSpursJobGetCacheListまたはcellSpursJobGetInputListを
+  使用するプログラムをコンパイルすると、internal compiler errorが発生する
+  という不具合を修正しました。
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+なし

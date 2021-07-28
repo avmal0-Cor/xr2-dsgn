@@ -1,0 +1,327 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 230.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+Please see the new features, changes and notes below that were added 
+to the Reference Tool SDK package:.
+
+----------------------------------------------------------------------
+New Libraries and Tools
+----------------------------------------------------------------------
+NP IN-GAME Commerce 2 Utility
+=============================
+This is a system utility which provides features to browse / purchase
+the products sold in the PLAYSTATION(R)Store(title store)
+
+Note that the NP IN-GAME Commerce 2 Utility is provided as beta version. 
+Thus, this can not be used for game applications to be submitted as masters.
+
+As for the differences from the NP IN-GAME Commerce Utility and 
+the detailed features, please see the "NP IN-GAME Commerce 2 Overview" 
+and the "NP IN-GAME Commerce 2 Reference" documents. 
+
+----------------------------------------------------------------------
+System Software (GUI)
+----------------------------------------------------------------------
+New Features
+
+- The following menus have been added to the System Software. 
+ Please see the "System Software Overview" document for more details. 
+
+  - Settings -> Debug Settings -> PLAYSTATION(R)Store Ad Clock
+
+    - In the "Title Store Preview(Store)" of the "Network" column,
+      you can alter the time to display an advertisement. 
+      However, please do not change the value under the present situation. 
+
+  - PLAYSTATION(R) Network -> Title Store Preview (inGame)
+
+    - Provides a title store preview feature.
+      This feature displays the In-Game catalog for the title store. 
+
+  - PLAYSTATION(R) Network -> Title Store Preview (Store)
+
+    - Provides a title store preview feature. 
+     This feature displays the Global catalog for the regional store. 
+
+----------------------------------------------------------------------
+libsysmodule
+----------------------------------------------------------------------
+Common 
+======
+New Feature 
+
+- IDs that load a module have been added:
+  -------------------------------------------------------------------
+  ID                                      Description
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_SYSUTIL_GAME_EXEC        PLAYSTATION(R)Home Coordination Utility
+  CELL_SYSMODULE_SYSUTIL_NP_COMMERCE2 NP  IN-GAME Commerce 2 Utility
+  -------------------------------------------------------------------
+
+----------------------------------------------------------------------
+System Utility (libsysutil)
+----------------------------------------------------------------------
+On-screen Keyboard Dialog Utility
+=================================
+Specification Changes 
+
+- In SDK220 (System Software version 2.20), the need for passing 
+  the memory container to the on-screen keyboard dialog utility 
+  was eliminated. However a symptom was found that the operation 
+  became less responsive at Japanese input. 
+
+  As a workaround, a modification has been made so as to use the memory
+  container when the memory container ID is passed to the first argument
+  "container" of cellOskDialogLoadAsync().
+
+  (In SDK220, it was not used even when the memory container ID was passed.)
+  If you emphasis the operation responsivity of Japanese input, 
+  please pass the memory container ID to the first argument "container"
+  of cellOskDialogLoadAsync() and use the function.
+
+  This specification change depends on the system software version in use. 
+  As for details, please see the chart below:
+  --------------------------------------------------------------------------
+  System Software Version   | Specification of the On-screen Keyboard
+                            | Dialog Utility
+  --------------------------------------------------------------------------
+  version 2.10 and before   | Use the memory container (the memory container
+                            | ID must be set)
+  version 2.20              | Not use the memory container
+  version 2.30 or later     | Support both cases when using/not 
+                            | using the memory container
+  --------------------------------------------------------------------------
+
+  As is described above, under the environment of the System Software 
+  version 2.20, the memory container ID is ignored and the memory container 
+  is not used even when the memory container ID is passed to the first 
+  argument "container" of cellOskDialogLoadAsync(). 
+  So, deterioration in the operation responsivity inevitably occurs.
+
+  The required sizes to use the memory container are as below: 
+  In the next release, they will be added to the "On-screen Keyboard Dialog 
+  Utility Reference" document. 
+
+  * 5MB
+    Includes any of the default configuration, Japanese / Hiragana / Katakana
+     / Full width alphabet / Full width numeric panels 
+
+  * 3MB
+    Includes any of the default configuration (Japanese prohibited), German /
+    English / Spanish / French / Italian / Dutch / Portuguese / Russian / 
+    Danish / Swedish / Norwegian / Finnish / Chinese (Traditional /Simplified) /
+    URL panels 
+
+  * 2MB
+    Not applicable to the descriptions above
+
+  An example below shows how to obtain the minimum required size of 
+  the memory container from the panel flag in use:
+
+  (Example)
+  int GetContainerSize( unsigned int allowOskPanelFlg ){
+    if(
+      (allowOskPanelFlg == CELL_OSKDIALOG_PANELMODE_DEFAULT)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE_HIRAGANA)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE_KATAKANA)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ALPHABET_FULL_WIDTH)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_NUMERAL_FULL_WIDTH)	)
+    {
+      return (5 * 1024 * 1024);
+    }
+    else if(
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DEFAULT_NO_JAPANESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_GERMAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ENGLISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SPANISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_FRENCH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ITALIAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DUTCH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_PORTUGUESE)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_RUSSIAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DANISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SWEDISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_NORWEGIAN)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_FINNISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_CHINA_TRADITIONAL)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_TRADITIONAL_CHINESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SIMPLIFIED_CHINESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_URL)			)
+    {
+      return (3 * 1024 * 1024);
+    }
+    else
+    {
+      return (2 * 1024 * 1024);
+    }
+  }
+
+PLAYSTATION(R)Home Coordination Utility
+=======================================
+Sample Change (cell/samples/sdk/sysutil/gameexec)
+
+- The module IDs of the PLAYSTATION(R)Home Coordination Utility have
+  been added to the cell/target/ppu/include/cell/sysmodule.h. Along
+  with this addition, the following description has been removed from
+  the sample. 
+
+    #define CELL_SYSMODULE_SYSUTIL_GAME_EXEC 0x0037
+
+----------------------------------------------------------------------
+PLAYSTATION(R)Network (NP)
+----------------------------------------------------------------------
+NP Commerce Utility
+==========================
+
+New Feature 
+
+- A "Purchase Game" feature has been added.
+  This feature supports the following business model in the 
+  PLAYSTATION(R)Network commerce service. 
+
+  - Distributes free trial packages to sell priced license keys as needed.
+
+  Along with this, the following functions have been added: 
+
+  - sceNpDrmVerifyUpgradeLicense()
+  - sceNpDrmVerifyUpgradeLicense2()
+  - sceNpDrmExecuteGamePurchase()
+
+  Please see the "NP DRM Overview" and the "NP DRM Reference" documents
+  for more details.
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+libpad for Windows
+==================
+
+New Features 
+
+-The following new features, which were added to the SDK220 libpad, 
+  have also been added to the libpad for Windows.
+
+  - A cellPadGetInfo2() function and CellPadGetInfo2 structure have been
+    added to obtain the controller information collectively.
+    They are the renewed function/structure from the cellPadGetInfo() and
+    the CellPadInfo so that they can obtain the controller information
+    more easily. 
+    The difference in specification between the new cellPadGetInfo2() 
+    and the ordinary cellPadGetInfo() are as below: 
+
+    1.Using the cellPadGetInfo2(), notification of the changed
+      controller port No. can be obtained now. 
+
+      - (Before)
+          There was no way to know the changes in the controller port No.
+          by the system dialog etc. 
+      - (In SDK220 and Later)
+          If you call cellPadGetInfo2() after the controller port No.
+          is changed by the system dialog etc., you can get the result 
+          via the port_status[i] member of the CellPadInfo2 structure,
+          specified for the argument. As for the changes in the port No.,
+          you can check by the value in the CELL_PAD_STATUS_ASSIGN_CHANGES
+          field for the port_status[i]. 
+
+    2.Setting information about the pressure-sensitivity mode and 
+      the six-axis sensor mode is now available. 
+
+      - (Before)
+          There was no way to obtain the information about the controller
+          port, set by cellPadSetPressMode and cellPadSetSensorMode().
+
+      - (In SDK220 and Later)
+          Information about the controller port, set by cellPadSetPressMode()
+          and cellPadSetSensorMode() is now available by cellPadGetInfo2().
+          The setting information of the controller port is stored in the
+          port_setting member of the CellPadInfo2 structure, set as 
+          an argument. 
+
+    3.Information about the performance of connected controller is now 
+      available.
+
+      - (Before)
+          In order to obtain the performance information about the controller
+          (if it has pressure-sensitivity or six-axis sensor features),
+          you had to call cellPadGetCapabilityInfo().
+
+      - (In SDK220 and Later)
+          By calling cellPadGetInfo2(), you can obtain the performance
+          information about the controller via the device_capability member
+          of the CellPadInfo2 structure, set as an argument. 
+
+    4.Abolishment of vender ID and product ID
+
+      - (Before)
+          The vender ID/product ID were included in the information about
+          the structure CellPadInfo, which is specified as an argument of
+          cellPadGetInfo(), however identifying the controller from these
+          IDs were prohibited. 
+
+      - (In SDK220 and Later)
+          The vender ID/product ID are not included in the structure
+          CellPadInfo2, which is specified as an argument of 
+          cellPadGetInfo2().
+          Instead, you can identify the controller using 
+          the device_capability member of the CellPadInfo2 structure. 
+
+    - Also, the following functions and the structure are to be abolished.
+      In game applications, please use cellPadGetInfo2() and CellPadInfo2
+      structure for migration. 
+      Functions 
+        - cellPadGetInfo()
+        - cellPadInfoPressMode()
+        - cellPadInfoSensorMode()
+        - cellPadGetCapabilityInfo()
+      Structure 
+        - CellPadInfo
+
+- The following new features, which were added to the SDK220 libpad, 
+  have also been added to the libpad for Windows.
+
+  - cellPadSetPortSetting() function has been added to set the port mode. 
+    This function enables you to set the pressure-sensitivity feature or
+    sensor mode collectively, that were set with cellPadSetPressMode() and
+    cellPadSetSensorMode() before. 
+
+    Also, cellPadSetPressMode() and cellPadSetSensorMode() are to be abolished
+    in the future. In game applications, please use cellPadSetPortSetting()
+    for migration. 
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+New Features 
+
+-  -hlslopt and -dhlslopt options have been added to pass an optional 
+   string to the HLSL compiler. 
+
+-  A -d3dx option has been added to specify version of the d3dx dll 
+  when measuring the  HLSL. This option is used in the latest FX Composer 2. 
+
+Specification Change 
+
+- The PC notation on the instruction display for the fragment program 
+  measurement has been changed to the decimal number so that it conforms
+  with the PC notation on the scheduling display.
+----------------------------------------------------------------------
+Sample Programs
+----------------------------------------------------------------------
+New Samples 
+============
+
+- samples/sdk/network/np/np_gui_commerce2
+  A sample to browse the product catalog and to handle purchase 
+  processing using the PLAYSTATION(R)Network libraries
+
+- samples/sdk/network/np/game_purchase
+  A sample which includes the process of the "Purchase Game" feature,
+  based on the Message Dialog Utility sample 
+
+----------------------------------------------------------------------
+
+
+

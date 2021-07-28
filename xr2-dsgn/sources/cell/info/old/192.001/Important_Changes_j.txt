@@ -1,0 +1,79 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 192.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 Control Console
+----------------------------------------------------------------------
+<仕様変更>
+- Variable Tracking処理において、関数が呼ばれると空のvariableグループの
+  削除を行う関数、cellConsoleVariableRemoveGroup()を追加しました。
+  この関数は、空のグループの１つを削除する関数となります。
+  なお、group # 0のような、デフォルトグループは削除できませんので、
+  ご注意ください。 
+  variableグループのvariableをすべて削除する場合は、初めに
+  cellConsoleVariableRemove()で削除してください。
+
+- variable_tracker.hにおいて、cellConsoleVariableAddBool()の使用を
+  促すため、C言語のbool型のtypedefが使われていました。しかしながら、
+  "bool"はC++の予約語であるため、C言語のbool型のtypedefの記述がSWIGのような
+  ソース解析ツールを使用した場合に混乱してしまう恐れがありました。 
+  CellConsoleBoolean型を追加することで、上記問題を解決しました。
+  CellConsoleBoolean型は、C言語の場合には"unsigned char"として定義し、
+  C++の場合には"bool"として定義します。 
+  また、以下の共用体および関数でCellConsoleBoolean型を使用するようにしました。
+
+    <共用体>
+    - CellConsoleVariableValueUnion
+
+    <関数>
+    - cellConsoleVariableAddBool()
+    - cellConsoleVariableAddValidatedBool()
+
+----------------------------------------------------------------------
+2 HID
+----------------------------------------------------------------------
+libpad
+======
+<新規機能>
+- 振動機能搭載ワイヤレスコントローラ(SIXAXIS)(仮)の振動制御を行うために
+  以下の関数、および構造体を追加しました。
+  - cellPadSetActDirect()  ： 振動データの送信
+  - CellPadActParam        ： アクチュエータパラメータ
+
+<仕様変更>
+- 構造体cellPadGetCapabilityInfoにおいて、振動機能搭載ワイヤレス
+  コントローラ(SIXAXIS)(仮)を判別するためのフラグフィールド
+  CELL_PAD_CAPABILITY_ACTUATOR を追加しました。
+
+<サンプルの変更(cell/samples/sdk/hid/pad)>
+- 振動機能搭載ワイヤレスコントローラ(SIXAXIS)(仮)の処理を追加しました。
+
+----------------------------------------------------------------------
+3 codec
+----------------------------------------------------------------------
+libsail
+<仕様変更>
+- 再生するPAMFファイルに含まれるビデオエレメンタリーストリームがMPEG-2 
+  1280x720p 59.94Hz の場合、MPEG-2 ビデオ規格に準拠してlibvdecを MP@HL 
+  でオープンしていました（libsailは内部でlibvdecを使用しています）。 
+  libvdec実装仕様上、上記属性のMPEG-2ビデオストリームを MP@H-14で
+  オープンしても問題がないことが判明しましたので、そのように制御を
+  変更しました。この変更により、上記属性のMPEG-2ビデオストリームにおいて、
+  使用メモリ量が約3MBほど削減されます。 
+  なお、この変更が既存のタイトルに影響を与えることはありません。
+
+----------------------------------------------------------------------
+4 libresc
+----------------------------------------------------------------------
+<新規機能>
+- 公開用librescのライブラリソースコードの中に、以下ファイルを追加しました。
+  - cell/target/ppu/src/resc/src/libresc.vcproj 
+      ProDG for PLAYSTATION(r)3用 プロジェクトファイル
+  - cell/target/ppu/src/resc/libresc.sln 
+      VisualStudio 2003 用 solutionファイル
+

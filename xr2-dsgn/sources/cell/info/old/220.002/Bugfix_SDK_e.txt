@@ -1,0 +1,821 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 220.002
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 220.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 220.002
+======================================================================
+----------------------------------------------------------------------
+dt Command
+----------------------------------------------------------------------
+- In the Windows version of dtcfilesv.exe, when a file name is 
+  specified to cellFsRmdir(), an error code EINVAL was returned which 
+  is now fixed to return ENOTDIR.
+
+----------------------------------------------------------------------
+System Software(GUI)
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#44945)
+    The process memory information of the core dump does not support 
+    the virtual memory area. It will be supported in the future release.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< SubDisplay Utility>
+- The following bug has been fixed.
+
+  - A hang up may occur when repeatedly starting and stopping remote play 
+    with the subdisplay utility.
+   (Technical Notes ID:200801-01 https://ps3.scedev.net/technotes/view/666)
+
+< User Infromation Utility >
+- In the following APIs, the restriction that the initial focus position 
+  cannot be specified has been removed.
+
+     cellUserInfoSelectUser_SetList()
+     cellUserInfoSelectUser_ListType()
+
+  Set the user ID, on which you want to initially focus, to the member 
+  variable "focus" of the CellUserInfoListSet and the CellUserInfoTypeSet
+  structures respectively.
+
+< AV Chat Utility >
+- The stability of the behavior of when users joins and leaves from a 
+  room has been improved.
+
+< Music Utility >
+- The following bug has been fixed.
+
+  - (B#45128)
+    A hung-up may occur in a game application when the playback feature 
+    of the music utility and the NP friend list utility are used 
+    at the same time.
+    This problem occurs with the following steps.
+ 
+    1. Call cellMusicInitialize() to initialize the playback feature.
+    2. A hung-up may occur in a game application when trying to call 
+       the GUI of the NP friend list utility after calling sceNpFriendlist() 
+       or sceNpFriendlistCustom().
+   (Technical Notes ID:200712-01  https://ps3.scedev.net/technotes/view/649)
+
+- The following bug has been fixed.
+
+  - (B#45617)
+    cellMusicSetPlaybackCommand(CELL_MUSIC_PB_CMD_PLAY) may return 
+    CELL_MUSIC_ERROR_NO_ACTIVE_CONTENT.
+    This problem may occur with the following procedure:
+
+    1. cellMusicSetSelectionContext() is called and the callback is also ended normally.
+    2. When cellMusicSetPlaybackCommand() is called immediately after step 1. above, CELL_MUSIC_ERROR_NO_ACTIVE_CONTENT will be returned.
+
+<Save Data Utility>
+- In the samples/sdk/sysutil/savedata/basic sample, the member of the 
+  structure "reserved" is not initialized correctly. This problem has been
+  fixed.
+
+   <SDK210 and before>
+   memset( setBuf.reserved, 0, sizeof(setBuf.reserved)/sizeof(setBuf.reserved[0]) );
+
+   <SDK220 and later>
+   memset( setBuf.reserved, 0, sizeof(setBuf.reserved) );
+
+- The following bug has been fixed.
+
+  - The option that omits the confirmation dialog displayed at the start/end
+    of the cellSaveDataFixedDelete() processing does not work. 
+
+    The option that omits the confirmation dialog:
+    - CELL_SAVEDATA_OPTION_NOCONFIRM
+    - CELL_SAVEDATA_CBRESULT_OK_LAST_NOCONFIRM
+
+- The following functions rarely display a list with the system default 
+  thumbnails. This problem has been fixed.
+
+  cellSaveDataListSave2(), cellSaveDataListLoad2(), cellSaveDataDelete2(),
+  cellSaveDataListDelete(), cellSaveDataListImport(), cellSaveDataListExport(),
+  cellSaveDataFixedImport(), cellSaveDataFixedExport(),
+  cellSaveDataUserListSave(), cellSaveDataUserListLoad(), cellSaveDataUserListDelete(),
+  cellSaveDataUserListImport(), cellSaveDataUserListExport(),
+  cellSaveDataUserFixedImport(), cellSaveDataUserFixedExport()
+
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#43301)
+    When the kernel work area for the network is insufficient and then 
+    the send function or such is executed, the library may be blocked 
+    permanently.
+
+----------------------------------------------------------------------
+NP Friend List Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#45128)
+    A hung-up may occur in a game application when the playback feature 
+    of the music utility and the NP friend list utility are used 
+    at the same time.
+    This problem occurs with the following steps.
+ 
+    1. Call cellMusicInitialize() to initialize the playback feature.
+    2. A hung-up may occur in a game application when trying to call 
+       the GUI of the NP friend list utility after calling sceNpFriendlist() 
+       or sceNpFriendlistCustom().
+   (Technical Notes ID:200712-01  https://ps3.scedev.net/technotes/view/649)
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When calling sceNpBasicSendMessageGui() with 
+    SCE_NP_BASIC_MESSAGE_MAIN_TYPE_INVITE specified to mainType in the 
+    SceNpBasicMessageDetails structure, 
+    the SCE_NP_BASIC_EVENT_SEND_ATTACHMENT_RESULT event occurs where
+    the SCE_NP_BASIC_EVENT_SEND_INVITATION_RESULT event is expected.
+
+    When specifying SCE_NP_BASIC_MESSAGE_MAIN_TYPE_INVITE to mainType 
+    in the SceNpBasicMessageDetails structure, please handle 
+    the SCE_NP_BASIC_EVENT_SEND_ATTACHMENT_RESULT event and the 
+    SCE_NP_BASIC_EVENT_SEND_INVITATION_RESULT event in the same manner.
+   (Technical Notes ID:200712-07   https://ps3.scedev.net/technotes/view/655)
+
+----------------------------------------------------------------------
+NP Matching2 Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - A macro which does not actually exist 
+    [SCE_NP_MATCHING2_GET_SERVER_NUMBER()] is included 
+    in ComponentMatching2World.cpp.
+    (Technical Notes ID:200801-07 https://ps3.scedev.net/technotes/view/672)
+
+- The following bug has been fixed.
+
+  - If the signaling option parameter is set after creating a room,
+    establishing P2P connections may fail between the room members.
+    (Technical Notes ID:200801-10 https://ps3.scedev.net/technotes/view/675)
+
+- The following bug has been fixed.
+
+  - If a sign-out from the PLAYSTATION(R)Network accidentally occurs due to 
+    unplugged cable etc. and sceNpMatching2ContextStop() is called under a 
+    status in which the context can no longer be used,
+    SCE_NP_MATCHING2_ERROR_CONTEXT_UNAVAILABLE error is returned.
+    (Technical Notes ID:200802-03 https://ps3.scedev.net/technotes/view/690)
+
+- The following bug has been fixed.
+
+  - When attempting to join a room with a different server ID and world number,
+    sceNpMatching2JoinRoom()  returns an  
+    SCE_NP_MATCHING2_SERVER_ERROR_NO_SUCH_ROOM error and joining the 
+    room fails.
+    (Technical Notes ID:200803-07 https://ps3.scedev.net/technotes/view/700)
+
+- The following bug has been fixed.
+
+  - When searching for a room using sceNpMatching2SearchRoom(), a search based 
+    on the NAT type of the user may not be correctly carried out.
+    This bug occurs when the following settings are made to the second 
+    argument of sceNpMatching2SearchRoom(), the reqParam member
+    (SceNpMatching2SearchRoomRequest structure).
+    
+      - A setting has been made for intFilter (integer attribute search 
+        conditions)
+      - option (room search options) has been set with 
+         SCE_NP_MATCHING2_SEARCH_ROOM_OPTION_NAT_TYPE_FILTER
+
+    When both of the above conditions are met, a search based on the NAT type 
+    of the user is not performed.
+    Instead, the search result will be the same as when 
+    sceNpMatching2SearchRoom() is executed without the option specification of 
+    SCE_NP_MATCHING2_SEARCH_ROOM_OPTION_NAT_TYPE_FILTER.
+    (Technical Notes ID:200803-12 https://ps3.scedev.net/technotes/view/705)
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- The live server for the clan enabled ranking has been made available. 
+  Accordingly, a game title that uses the clan enabled ranking can be 
+  mastered up.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+(B#47279)
+-  When an application is build using the C compiler(not C++) with the 
+   optimization option -00 specified, if the inline function of libgcm 
+   is used within the application, an error may occur. This problem has 
+   been fixed.
+
+   In gcm_function_macros.h, the declaration "extern inline" has been 
+   changed to "extern inline __attribute__((always_inline)).
+
+(B#47264)
+   - When the most significant bit of the input value is set to ON for 
+     the CELL_GCM_ENDIAN_SWAP() macro that is used within the libgcm 
+     offline tool library, a correct graphics command is not output. 
+     This problem has been fixed.
+
+(B#46304)
+- The cellGcmSetFragmentProgramParameter() function has been optimized.
+   - It has been modified so that cellGcmSwap16Float32() is called per 
+     parameter, not per built-in constant.
+
+----------------------------------------------------------------------
+sce-cgcdisasm
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#45820)
+    The sce-cgcdisasm tool may crash when it is used on micro code 
+    of certain fragment shaders.          
+    (Technical Notes ID:200712-12 https://ps3.scedev.net/technotes/view/660)
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- (B#45740)
+  When a code that contains a multiply-accumulate(MAD) is optimized, 
+  the computation processing fails. This problem has been fixed.
+
+- (B#46302)
+  An optimization that eliminates a simple redundant processing such 
+  as e+0, e*1 is not performed. This problem has been fixed.
+
+- The following bug has been fixed.
+
+  - (B#44332)
+    When the vertex shader is compiled using the -cgb option at runtime
+    (when compile_program_from_string() is used), 0 is returned to 
+    attributeOutputMask and userClipMask. 
+    Note that this problem occurs only with the libraries for PLAYSTATION(R)3, 
+    not with the libraries for Windows/Linux.
+
+----------------------------------------------------------------------
+libresc
+----------------------------------------------------------------------
+- In samples/sdk/graphics/resc/combination, the following bugs have 
+  been fixed.
+
+  - In the Hsync mode, because the frame rate has been increased, 
+    the menu also moves quickly and becomes difficult to operate. 
+
+  - In the VisualStudio "PS3 Debug" configuration, the debug version of 
+    libresc (build rather than the source) is not used.
+
+  - The ON/OFF of the dst tile (a tile that can be written into the 
+    libresc work buffer) does not work correctly.
+
+  - When an incorrect register count (smaller than the default value 
+    which means that 3 or less is set for the PAL interlace filter or 
+    the like) is set, it hangs up.
+
+  - When "adjust aspect ratio" is changed to "vertical ratio" from the 
+    menu and the interaced filter table is not rebuilt afterward, the 
+    screen conversion is done on a wrong table. 
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- dds2gtf now supports the swizzle output in the following input 
+  formats:
+  - L16
+  - G16R16
+  - A8R8, A8L8
+  - X1R5G5B5
+
+- dds2gtf cannot convert the following input formats correctly. This 
+  problem has been fixed.
+  - DXT2, DXT4
+  - A4R4G4B4
+
+- The following bug has been fixed.
+
+  - (B#46184)
+    The expression for calculating the size of DXT1-format textures 
+    in Line 81 of samples/common/gtf/src/gtfutils.c contains the 
+    following mistake.
+
+    Incorrect:  size = (w+3)/4 * (h+3)/4 * 8;
+    Correct:    size = ((w+3)/4) * ((h+3)/4) * 8;
+   (Technical Notes ID:200801-02 https://ps3.scedev.net/technotes/view/667)
+
+- The following bug has been fixed.
+
+  - In dds2gtf, when an option '-64' is specified, conversion is not 
+    performed correctly.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- From SDK200.002 onwards, some external fonts are unable to be opened.
+  This problem has been fixed.
+
+- When cellFontOpenFontInstance() and cellFontClose() are used in 
+  combination, the library is blocked regardless of the user's 
+  intention. This problem has been fixed.
+
+  This problem occurs when a function, that accesses the same font file 
+  as the one handled by an instance of CellFont, is running in another 
+  thread.
+  It occurs even when the function that is running in another thread is 
+  a rendering function or such that do not compete directly with the 
+  open/close operations.
+  Due to this modification, the problem that the library is blocked when 
+  an instance is opened/closed for the font that is being rendered in 
+  another thread has been fixed.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#35440)
+    When a removal media is ejected, cellFsRead() may return 
+    CELL_FS_EBADF instead of CELL_FS_EIO.
+
+  - (B#37202)
+    The execution of cellFsClose() toward an fd may be performed before
+    the execution of cellFsRead()/cellFsWrite() toward the same fd by 
+    another thread.
+
+  - (B#44367)
+    When the Blu-ray DISC is ejected and a file on the Blu-ray DISC is closed 
+    at the same time, a file descriptor may leak. 
+   (Technical Notes ID:200711-17  https://ps3.scedev.net/technotes/view/643)
+
+  - (B#45866)
+    A deadlock may occur when a pointer to a virtual memory area is used 
+    for the argument of functions thet operate Cell File System(CFS).
+   (Technical Notes ID:200712-15  https://ps3.scedev.net/technotes/view/663)
+
+  - (B#47788)
+    In CFS(SYS_DEV_HDD0), although the number of files or directories 
+    that are opened by cellFsOpen() or cellFsOpendir() at the same time 
+    is 32 or more, an error is not returned.
+
+  - (B#48814)
+    When a file access to the CFS(SYS_DEV_HDD0) is measured using 
+    libperf, a kernel stack overflow may occur depending on the timing.
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- It crashes when the memory pool is not sufficient. This problem has 
+  been fixed.
+
+- It has been fixed so that the KEEP ALIVE connection is not 
+  disconnected when the status code is either 204, 205 or 304.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#45632)
+    When a small value is set to the timeout value of sys_lwcond_wait(),
+    a dead lock occurs.
+
+  - (B#45302)
+    SYS_TIMEBASE_GET() returns a warning message.
+
+  - (B#45866)
+    When a file operation function is executed toward the CFS and its 
+    argument is specified with a pointer to the virtual memory area, a 
+    deadlock occurs.
+
+  - (B#46519)
+    The user memory is reduced when generating a virtual memory.
+
+  - (B#44945)
+    sys_memory_get_page_attribute() does not support the virtual memory 
+    area.
+    A return value for when a virtual memory area address is passed is not 
+    defined.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#45766)
+  When the CELL_SAIL_PARAMETER_ENABLE_VPOST parameter is specified 
+  using cellSailPlayerSetParameter() and the scaling that uses libvpost 
+  is enabled, an open error may occur. This problem has been fixed.
+
+----------------------------------------------------------------------
+libpamf
+----------------------------------------------------------------------
+- (B#46389)
+  In cellPamfVerify() and cellPamfReaderInitialize(), a PAMF file that
+  is 4GB or larger is determined as a incorrect file. This problem has 
+  been fixed.
+  
+- (B#46389)
+  The samples/sdk/codec/pamf_list sample can now handle a PAMF file 
+  that is 4GB or larger.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs core>
+- (B#45117)
+  When an exception occurs on the SPU, cellSpursFinalize() may hang up. 
+  This problem has been fixed.
+
+- (B#46180)
+  When the priority of the PPU thread of the SPURS handler is lower than 
+  that of the application thread, it rarely crashes depending on the 
+  timing. This problem has been fixed.
+
+<libspurs task>
+- (B#44589)
+  The interface of CellSpursLFQueue calls an unnecessary system call. 
+  This problem has been fixed. 
+
+- (B#40956)
+  When the SPURS task is in the WAIT state because of CellSpursLFQueue, 
+  the cause of the error is not obtainable from the debugger. This 
+  problem has been fixed.
+
+<libspurs job>
+- (B#43119)
+  In the libadhocJobSubmit.a library of 
+  the samples/sdk/spu_library/libspurs/advanced/job_dynamic_job_submit sample, 
+  the performance of a code that inserts a job is low. 
+  This problem has been fixed.
+
+- (B#44398)
+  Although the CELL_SPURS_JOB_BINARY_CACHE_INHIBIT attribute is added
+  to the job binary, an unnecessary .data section is reloaded within 
+  the crt that is being linked using 
+
+- (B#46189)
+  When calling cellSpursJobInitialize() in a SPURS job, the value
+  placed immediately after the job binary on the local storage may
+  be destroyed.
+  (Technical Notes ID:200801-09 https://ps3.scedev.net/technotes/view/674) 
+
+- (B#46781)
+  When an input data is not specified with the ListDMA format but with
+  non 16 bytes aligned data, cellSpursJobGetPointerList() returns an 
+  incorrect pointer to an area on the LS. This problem has been fixed.
+
+< libatomic >
+- (B#46973)
+  Due to a bug in the compiler, the set of cellAtomic functions for 
+  the ppu do not work correctly. To avoid this problem, the 
+  implementation that uses the inline assembler has been changed to 
+  the one that uses the ppu_intrinsics.
+
+< libdaisy >
+- (B#44589)
+  The interface of the cell:Daisy::Inpipe class calls an unnecessary 
+  system call. This problem has been fixed.
+
+< libdma >
+- (B#45962)
+  The variable name that is used by the macro within cell/dma.h may 
+  conflict with a user defined variable. This problem has been fixed.
+
+< libsync >
+- (B#44589) 
+  The interface of CellSyncLFQueue calls an unnecessary system call. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libaudio
+----------------------------------------------------------------------
+- Although a value is specified to the 3rd argument of 
+  cellAudioAddData(), it is always treated as 256 within the libaudio. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- In the samples/sdk/sound/multistream/simple_i3dl2 sample, a warning 
+  message is output because an implicit definition is declared. 
+  This problem has been fixed.
+
+- In the multistream samples, a warning message indicating that 
+  an unexpected type is used is output when using the following functions.
+  This problem has been fixed.
+
+   cellMSDSPLoadDSPFromMemory()
+   cellMSDSPLoadDSPFromFile()
+
+- In the samples/sdk/sound/multistream/common/mscommon.cpp sample, 
+  the value in the portNum variable and the declaration type do not match 
+  because signed and unsigned are assigned respectively. 
+  This problem has been fixed. 
+  Accordingly, the variable name has been changed from portNum to 
+  returnPortNum. 
+
+- When the multiple sub bus routing is used in the Time Domain only mode, 
+  the first 512 samples of the stream data are skipped. When the single bus 
+  routing is used, this problem no longer occurs. 
+
+- The following problem has been fixed:
+
+  - Because a user cannot optionally set the rolloff curve of the envelope, 
+    the sound is not played when a listener is set to the same position 
+    as the sound source.
+
+- The following problem has been fixed:
+
+  -In cellMSSystemConfigureSysUtilEx(), when both Dolby(TM) Digital Bit Stream 
+  and DTS Digital Surround of the 5.1 channel are available, it does not work 
+  correctly although the preferred mode flag is set because the function 
+  does not fallback to the alternative multi channel mode.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#47504)
+    Although a PS3 compliant USB controller other than the SIXAXIS 
+    wireless controller and the DUALSHOCK 3 wireless controller executes 
+    cellPadSetPressMode() and cellPadSetSensorMode(), the pressure 
+    sensitivity mode and the sensor mode are enabled.
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- The following bugs have been fixed.
+
+  - In the SIXAXIS wireless controller and 
+    the DUALSHOCK 3 wireless controller, the value of the accelerated 
+    velocity sensor (X axis) is inverted. 
+
+  - In the DUALSHOCK 3 wireless controller, the value of the angular 
+    velocity sensor is inverted.
+
+  - When a specific operation is carried out using the driver 
+    configuration tool, the setting editor is not displayed.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The transfer completion callback functions for the Isochronous 
+  transfer, CellUsbdIsochDoneCallback and CellUsbdHSIsochDoneCallback, 
+  have no correct completion code reflected to their argument "result". 
+  This problem has been fixed.
+
+- When 0 is set to the argument Packets[i].len of the transfer request 
+  structures for the Isochronous transfer, CellUsbdIsochRequest and 
+  CellUsbdHSIsochRequest, the system hangs up. This problem has been 
+  fixed.
+
+- When performing the OUT transfer using cellUsbdBulkTransfer() or 
+  cellUsbdInterruptTransfer(), if NULL is set to the argument buf and 
+  1 or more or 64 K bytes or less is specified to the argument len, the
+  system hangs up. This problem has been fixed. 
+
+- The following bug has been fixed.
+
+  - A hang may occur when consecutively transferring data using 
+    cellUsbdBulkTransfer() and cellUsbdIsochronousTransfer() before 
+    a data transfer completion callback is returned.
+    (Technical Notes ID:200712-11 https://ps3.scedev.net/technotes/view/659)
+
+- cellUsbdIsochronousTransfer() cannot transfer data that is 4KB or 
+  more. This problem has been fixed.
+
+----------------------------------------------------------------------
+PRX
+----------------------------------------------------------------------
+- In the samples/sdk/prx/simple-cxx/main/Makefile, an invalid option 
+  -o is contained in -zgenstub. This has been removed.
+
+  (Before)
+   $(PPU_CXX) -mprx $^  $(CXX_EXPORT_LIBS) -zgenentry -o simple-cxx_libent.s
+   $(PPU_CXX) -mprx $^  $(CXX_EXPORT_LIBS) -zgenstub -zlevel=all $(LIBS) -o $@
+
+  (After)
+   $(PPU_CXX) -zgenentry -mprx $^  $(CXX_EXPORT_LIBS) -o simple-cxx_libent.s
+   $(PPU_CXX) -mprx $^  $(CXX_EXPORT_LIBS) -zgenstub -zlevel=all $(LIBS)
+
+----------------------------------------------------------------------
+PhysicsEffectsSamples(samples/tutorial/PhysicsEffects)
+----------------------------------------------------------------------
+- When the intersection detection is performed for the ray and the 
+  height field, it refers to the outside the scope of the field. This 
+  problem has been fixed.
+
+- When handling a keyframed rigid body, the position and the speed are 
+  updated at the same time. This has been changed to update only the 
+  speed.
+
+- The AABB division algorism of MeshUtil::autoGenerateLargeTriMesh has 
+  been fixed.
+
+- When the AABB collision detection is performed for the ray and if the 
+  starting point of the ray resides within the AABB, the check fails. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libscream
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - The scream library is normally updated and synchronised with MultiStream 
+    using the cellScreamMSSync function. This function is normally called 
+    separately from update functions such as cellScreamSetMasterVolume.
+    (Technical Notes ID:200710-07  https://ps3.scedev.net/technotes/view/619)
+
+- (B#48791)
+  When specifying "Use LFE channel" or "Centre only" for a 
+  waveform grain in the SCREAM GUI, these grains would not correctly 
+  route to the LFE and centre channels respectively (for output 
+  configurations that support these channels at runtime).
+  Panning of sounds was not effected.
+  This has been fixed.  Routing of LFE and centre channels is now correct.
+
+----------------------------------------------------------------------
+NVShaderPerf version 2.0 2008-1-30 version
+----------------------------------------------------------------------
+The bugfixes made from NVShaderPerf 2.0(2007-12-05 edition) are as 
+shown below:
+
+- When calculating the vertex throughput, the number of VPE units 
+  is used incorrectly. 
+  To fix this problem, the number of VPE units has been changed from 7 to 8.
+  Due to this change, the throughput value has been improved when compared 
+  with the previous version.
+
+- The float value that is specified after the following options is not read 
+  correctly. This problem has been fixed. 
+  - minrand
+  - maxrand
+  - errthresh
+
+- When the IFE instruction is contained in the fragment program, 
+  the following results are displayed incorrectly. This problem has been fixed.
+  - Number of cycles
+  - Number of registers used
+  - Pixel count
+
+- The bug has been fixed, that the following case is not treated as equivalent 
+  (to show differences) when the fpdiff option is used.
+  - Case: A process, equivalent to the dp2 instruction, is being performed 
+    by combining the mul/add instructions.
+
+  Also, as for the dp2a, dp3 and dp4, they are not related to this bug, 
+  since they are not treated equally from the beginning.
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- When cellConsolePerfDataSetColumnList() and cellConsolePerfDataSetColumns() 
+  are called, a buffer overrun may occur. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+(B#45016)
+- The Tiled area may not be set correctly casing performance degradation. 
+  This problem has been fixed. 
+
+(B#11808)
+- Although GL_SYSTEM_DRAW_SCE is set to the sixth argument "usage" 
+  of the glBufferSurfaceSCE() function, a surface is created on 
+  the local memory, not on the main memory. This problem has been fixed. 
+
+(B#43970)
+- When a drawing command that is created using glDrawElements(), 
+  glDrawRangeElements() and  glDrawArrays() is sent to RSX(TM) 
+  to perform drawing, it may hang up. 
+  More specifically, the problem occurs when each data type is not aligned 
+  appropriately, for example, when the data types of vertexes and attributes 
+  of the vertexes are "float" and "unsigned byte" respectively, and these 
+  data are interleaved, the vertex data (float) that is placed after 
+  the attribute data may not be 4 byte aligned causing a possible hang up. 
+  This problem has been fixed. 
+
+(B#44040)
+- A vertex attribute that is specified as an unsigned byte data is converted 
+  within the library, however the conversion processing is not necessary. 
+  This has been removed. 
+
+(B#44908)
+- The following problem has been fixed so that the Swizzled setting is not 
+  reflected to the color buffer when it is in combination of the 16 bit depth 
+  buffer and the 32bit color buffer. 
+   - When the 16 bit depth buffer is used, the priority will be set 
+     in the order of Tiled -> Swizzled -> Linear within the library.
+     When Swizzled is used, the number of pixel bits of the color buffer 
+     and the depth buffer must be same(restriction of the RSX(TM) hardware). 
+     As a result, when the 32 bit color and the 16bit depth buffer are used 
+     together, and the Swizzeld setting is implicitly used, RSX(TM) may crash.
+
+(B#45096)
+- A workaround has been applied to glBeginConditionalRenderingSCE() because 
+  RSX(TM) may hang up when performing conditional rendering. 
+  Please refer to the Workaround (1) described in the following technote 
+  for more details. 
+  
+  "RSX(R) hangs up when performing conditional rendering"
+  https://ps3.scedev.net/technotes/view/614
+
+(B#46654)
+- The threshold that controls update of the Zcull is not set correctly. 
+  More specifically, the threshold is updated based on the Slope-based algorism
+   within the library, however, the variable that is used in the algorism is 
+  not updated correctly. 
+  This problem has been fixed so that the drawing performance may be improved.
+
+(B#26451)
+- When the same texture name that is generated using glGenTextures() is used 
+  repeatedly, an asset occurs with glGenerateMipmapOES(). 
+  This problem has been fixed.
+  This problem occurs under the following conditions: 
+  - Debug version of the PSGL library is in use( no problem occurs with 
+    the opt version)
+  - The size of the texture that is specified later is smaller than the one 
+    specified first (when the level of the mipmap that is generated 
+    by glGenerateMipmapOES()is lower.) 
+
+    (Example)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 128,128,0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    /* An 8 level texture (1x1 - 128x128) is generated. */
+    glGenerateMipmapOES(GL_TEXTURE_2D);
+
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0,0, 64,64,0);
+    /* A 7 level texture (1x1 - 64x64) is generated. */
+    /* Because the mipmap level is one lower than the one generated by 
+       the first glGenerateMipmapOES(), an assert occurs. */
+    glGenerateMipmapOES(GL_TEXTURE_2D);
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#45423/B#45529) PPU/SPU
+    When a source file is compiled under a specific condition, 
+    the following message is output. 
+    It is output as an error, not as a warning when the -Werror option 
+    is specified.
+
+    --------------------------------------------------------------
+    In file included from C:/usr/local/cell/target/ppu/include/bits/sce_math.h:13,
+                   from C:/usr/local/cell/target/ppu/include/math.h:1468,
+                   from c:/usr/local/cell/target/ppu/src/PSGL/jetstream/src/Image.cpp:17 :
+    C:/usr/local/cell/target/ppu/include/vec_types.h(44,1): warning: "vec_uint4" redefined
+    --------------------------------------------------------------
+
+    This problem occurs when the following conditions (a)-(c) are all met:
+    (a) The windows version is used to compile the file.
+    (b) The SN VSI is in use or the VSI is not in use but the -Wsystem-headers 
+        option is specified. 
+    (c) The header files stdlib.h and vec_types.h are included in this order.
+
+    [Workaround] 
+    To avoid this problem, the source file should be rewritten in the following 
+    order so that the condition (c) will not be met: 
+       #include <vec_types.h>
+       #include <stdlib.h>
+
+- The following limitation has been fixed.
+
+  - (B#45857) PPU
+    If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+- (B#45283) PPU/SPU
+  If a program using class deque in header deque or class list in header
+  list was compiled with option -Wcast-qual, warnings are displayed.
+  This problem has been fixed.
+
+- (B#45749) PPU/SPU
+  Including header complex.h after header complex caused many errors.
+  This problem has been fixed.
+
+- (B#46241) PPU/SPU
+  strtod("1000",NULL) returned an incorrect result.
+  This problem has been fixed.
+
+- (B#45669) PPU
+  If class ifstream in header fstream was used, tellg() did not work
+  correctly. This problem has been fixed.
+
+- (B#44610) PPU
+  Function memcpy16() in header string.h did not exposed to the global
+  namespace. This problem has been fixed.
+
+- (B#46860) PPU
+  If log2f() in header math.h was used, an error was reported at link
+  time. This problem has been fixed.
+

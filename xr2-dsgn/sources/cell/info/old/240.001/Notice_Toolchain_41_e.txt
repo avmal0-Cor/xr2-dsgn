@@ -1,0 +1,148 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 240.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+The following are known bugs and limitations on PLAYSTATION(R)3 Programmer
+Tool Toolchain package.
+
+New updates have the release version of this package.
+
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+(B#41363)
+- The dead code and data stripping implementation in the SN Systems linker
+  requires that all object files and libraries are built with the SDK200 or
+  later toolchains.  Any object files or libraries built with earlier
+  versions will not be dead stripped.
+
+  If you rely on libraries built with earlier versions of the toolchain
+  (such as middleware), please contact developer support for a tool which
+  can be used to update these to enable dead stripping.
+
+(B#41250)
+- The SN Systems linker and the CIL cannot be used together.
+  In SDK 200, the PPU uses the SN Systems linker by default, therefore, 
+  the CIL sample also cannot be used. 
+  When you wish to use the CIL for the PPU program, specify 
+  "--app-final-ld-flags -mno-sn-ld" option to the ppu-lv2-cil command. 
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU>
+(Added to Release 240.001)
+(B#54688)
+- If a function with variable arguemnts receives a structure with
+  __attribute__((aligned (N))) and a long long or long double, there is
+  a problem that va_arg macro accesses incorrect values in some cases.
+
+- When 2 programs such as the codes in the example below are compiled, 
+  a different code is generated respectively.
+
+  Example)
+  --- program1 -----
+   A foo;
+   B bar;
+   foo = *reinterpret_cast<A *>(&bar);
+  --- program2 ----
+   A foo;
+   B bar;
+   *reinterpret_cast<B *>(&foo) = bar;
+
+- When the following cast is performed, the program does not work 
+  correctly.
+
+  dist += a->b[0] * (*reinterpret_cast< const vec_t * >
+  ( reinterpret_cast< const byte * >(arg)+ c->d[0] ));
+
+- When a program such as the code in the example below, which uses the 
+  __may_alias__ attribute within the template is compiled, an internal 
+  compiler error occurs.
+
+  Example)
+  template <typename T>
+  void f() 
+  { 
+    typedef T __attribute__((__may_alias__)) A;
+  }
+
+- Although an optimization process is performed when compiling a program,
+  the clrldi instruction which is not required may be output.
+
+- When a program that contains the VMX instruction is compiled, the 
+  optimization is not performed efficiently. 
+  Accordingly, an unnecessary instruction may be left within the 
+  internal processing of the loop statement. When this problem occurs,
+  describe the processing of the loop statement using the asm statement.
+
+- In PPU program, even when "align" is specified to the variable 
+  assigned to the TLS area, the alignment process may not be performed.
+  This behavior is defined by the specifications of Cell OS Lv-2.
+  Please do not specify "align".
+
+- When calling other functions from the PPU program in the assembly 
+  language, the following should be noted to set the correct value 
+  for TOC pointer(r2).
+
+  (1) Always insert nop instruction after bl instruction. By doing so,
+      when the function to be called uses a different TOC pointer, 
+      the linker will generate a linkage code to replace nop with an 
+      appropriate instruction.
+
+      Example:
+                 bl              .foo
+                 nop
+
+  (2) Always include ".toc" section (can be empty) in the assembler
+      source file. This is a current restriction of the linker.
+     
+      Example: Put the following at the beginning of the file
+           .section        ".toc","aw"
+           .section        ".text"
+
+<SPU>
+- If a position independent code (PIC) is generated using the -fpic option,
+  C++ virtual functions cannot be used.
+
+- According to chapter 7 of "Cell OS Lv-2 C/C++ Language Extensions 
+  for SPU", when the type of an operand within an expression is double 
+  and the operand is a denormal number, it should be considered as 0.0 
+  or -0.0. However, with the current compiler, the optimization result 
+  may not adhere to this. 
+
+- If the -funroll-loops option and the -frerun-cse-before-sched option 
+  are specified at the same time, an incorrect code is generated. 
+  Please do not specify the -frerun-cse-before-sched option. 
+
+- If an object or elf that includes the brsl instruction is disassembled 
+  with spu-lv2-objdump, not the value to be added to $pc, but the address
+  that is obtained by adding s18 and $pc is displayed with the "brsl rt,
+  s18" instruction. 
+
+<PPU/SPU>
+- When the header file that uses a C++ anonymous namespace is precompiled
+  and multiple object files that use the header file are linked,
+  the following error is displayed: 
+
+    multiple definition of `(anonymous namespace)::x'
+
+- When a header file is pre-compiled with -MD or -MMD options, a 
+  dependency file to be generated incorrectly contains the dependency
+  infomation of the .o file. 
+  In such a case, explicitly specify the output file at the pre-compiling
+  process as shown below:
+
+   Example: ppu-lv2-gcc -MMD test.h -o test.h.gch
+
+- If vmx2spu.h or spu2vmx.h is used from C programs, errors are
+  displayed. To avoid the problem, please use it from C++ programs.
+
+- When a program with a comment, as in the example below, is compiled, 
+  a warning message is output to the console.
+
+  Example)
+  //int blahblah;\
+  //int behbeh;
+

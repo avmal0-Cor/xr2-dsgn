@@ -1,0 +1,577 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 190.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 190.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 190.002
+======================================================================
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< Remote Play Utility >
+- The following problem has been fixed.
+
+  - When the TV monitor is connected via HDMI and the remote play 
+    is performed with the TV monitor turned OFF, the remote play 
+    may not work correctly. 
+
+    Specific information is as shown below: 
+
+    When the remote play enabled game is started up on the system software 
+    that is displayed on the PSP(TM)(PlayStation(R)Portable) during 
+    the remote play, it will enter into an infinite WAIT state 
+    until the TV monitor is turned ON.
+
+< Subdisplay Utility >
+- The following problem has been fixed.
+
+  - The following constant is not defined in the header. 
+    target/ppu/include/sysutil/sysutil_subdisplay.h
+    #define CELL_SUBDISPLAY_ERROR_ZERO_REGISTERED ( 0x80029813 )
+
+    This will be added to the next release.
+    Note that the following constant will be left to keep the compatibility:
+    target/ppu/include/sysutil/sysutil_subdisplay.h
+    #define CELL_REMOTEPLAY_ERROR_ZERO_REGISTERED ( 0x80029813 )
+
+< Photo Utility >
+- The following restrictions has been removed from SDK190 onwards:
+
+  - Only the "export function" to the photo column of the system software 
+    is supported. 
+    "import function" and "decode function" from the photo column of 
+    the system software will be supported in the future. 
+
+- The following problem has been fixed.
+
+  - When cellPhotoExportFinalize() is executed immediately after 
+    a photo file is registered in the system software by executing 
+    cellPhotoExportFromFile(), the application may hang up. 
+
+< Message Dialog Utility >
+- The following problem has been fixed.
+
+  - When the progress bar related API of the message dialog utility 
+    is called, the processing may be blocked for a long time.
+
+<  On-Screen Keyboard Utility >
+- The following problem has been fixed: 
+
+   - When releasing the memory container used by the On-Screen Keyboard 
+     utility, if the callback function with the CELL_SYSUTIL_OSKDIALOG_UNLOADED
+      status is called, sys_memory_container_destroy() may return EBUSY.
+
+< Save Data Utility >
+- The following problem has been fixed.
+
+  - The save data utility that runs on the SDK180 system software returns 
+    an incorrect error value instead of a specific value that should have been 
+    returned. 
+
+    The applicable functions are as shown below:
+    cellSaveDataListSave2()
+    cellSaveDataListLoad2()
+    cellSaveDataFixedSave2()
+    cellSaveDataFixedLoad2()
+    cellSaveDataAutoSave2()
+    cellSaveDataAutoLoad2()
+    cellSaveDataListAutoSave()
+    cellSaveDataListAutoLoad()
+
+< Video Setting Utility >
+- The following bug has been fixed.
+
+  - In the sample code to change the resolution, the usage of libgcm is not 
+    correct.
+
+< Audio Setting Utility >
+- The following bug has been fixed: 
+
+  - In cellAudioInRegisterDevice(), when the same type as the one used 
+    by the device registered as an audio input device on the system software's 
+    peripheral settings is specified,  and the type registered with the device 
+    number is deleted using cellAudioInUnregisterDevice(), then the device is 
+    re-registered using cellAudioInRegisterDevice(), the device number will 
+    differ from the previous call. 
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - The definition of the SYS_SPU_THREAD_ARGUMENT_LET_32/16/8(x) macro 
+    within cell/target/ppu/include/sys/spu_thread.h was not correct. 
+
+    The behavior may not be as expected depending on the argument passed 
+    due to the wrong macro definition as shown below:
+
+    Wrong:
+    #define SYS_SPU_THREAD_ARGUMENT_LET_8(x) (((uint64_t)x) << 32U)
+    #define SYS_SPU_THREAD_ARGUMENT_LET_16(x) (((uint64_t)x) << 32U)
+    #define SYS_SPU_THREAD_ARGUMENT_LET_32(x) (((uint64_t)x) << 32U)
+
+    Correct:
+    #define SYS_SPU_THREAD_ARGUMENT_LET_8(x) (((uint64_t)(x)) << 32U)
+    #define SYS_SPU_THREAD_ARGUMENT_LET_16(x) (((uint64_t)(x)) << 32U)
+    #define SYS_SPU_THREAD_ARGUMENT_LET_32(x) (((uint64_t)(x)) << 32U)
+
+- The following problem has been fixed: 
+
+   - When executing sys_mmapper_unmap_memory(), if the physical memory 
+     mapped to the specified address is mapped to another physical 
+     memory by other thread, a kernel panic may occur.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When the first name is resolved (by calling gethostbyname()), 
+    the Hypervisor mode performs its processing for about 8msec. 
+    Therefore, the execution right could not be moved to the user thread 
+    for a long period of time causing the sound to be interrupted or 
+    a noise while playing back the BGM or the SE.
+
+- The following problem has been fixed.
+
+  - When the network state is "TCP window full(the value of "window" 
+    in the TCP header is 0)" and socketclose() is called, the connection 
+    cannot be closed immediately. 
+
+    The caller of socketclose()(client) can handle its processing 
+    as if the connection is closed, however, the server assumes that 
+    the connection is still open. As a result, you may have to wait 
+    until the TCP timeout when sending data.
+
+----------------------------------------------------------------------
+libnetctl
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When cellNetCtlAddHandler() or cellNetCtlDelHandler() is called 
+    following 2 calls of cellNetCtlInit() and 
+    CELL_NET_CTL_ERROR_NOT_TERMINATED error occurrence in the second call, 
+    ESRCH error will be returned. 
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When the reset button of the SIXAXIS(TM) wireless controller 
+    that is connected by Bluetooth(R) is pressed, button data for 
+    an unpressed button may be sent. 
+
+    Please use the reset button on the top of the back face of 
+    the SIXAXIS(TM) wireless controller.
+
+----------------------------------------------------------------------
+libkb
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - In libkb, when the keys are typed very quickly, a buffer overrun 
+    may occur.Consequently, an abnormal key data may be returned.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When performing the Isochronous transfer using 
+    cellUsbdIsochronousTransfer() and the transfer size is 
+    an odd-numbered byte, the data length when the transfer is completed 
+    (variable length "len" of the CellUsbdIsochPswLen structure) may not 
+    be returned correctly.
+
+- The following problem has been fixed.
+
+  - When an invalid device that may have overcurrent (a short-circuited 
+    device or the like) is connected to an USB port, the USB port may become 
+    unavailable until the system is rebooted.
+
+    When an invalid device is connected to either one of the USB ports of 
+    the PS3 console, only the connected port may become unavailable. 
+    Note that if an USB hub is connected to the PS3 console and an invalid 
+    device is connected to either one of the USB hub ports, all the USB hub 
+    ports may become unavailable.
+
+- The following problem has been fixed.
+
+  - When the process is terminated without deleting the extended LDD, 
+    a deadlock may occur on the USB driver.
+    Not only the USB device but also the whole system may become completely 
+    unavailable due to this deadlock. 
+
+- The following problem has been fixed.
+
+  - In libusbd, when the pipe that is used to transfer data is closed 
+    at the same time as the transfer is completed, the completion 
+    callback function for the transfer in other pipe may not be called.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs task>
+- The following problem has been fixed.
+
+  - In the SPURS lock free queue, when the following functions are called 
+    from multiple PPU threads at the same time, an error is not returned: 
+    cellSpursLFQueuePush()
+    cellSpursLFQueuePop()
+    Do not call them from multiple PPU threads at the same time, 
+    otherwise any one of the PPU threads may not return from the above function.
+- The following problem has been fixed.
+
+  - It is not allowed by the specifications to attach the event queue to 
+    the SPURS lock free queue that is initialized for SPU-SPU communication.
+    However, cellSpursLFQueueAttachLv2EventQueue() function returns CELL_OK 
+    for such operation. 
+
+    Note that when the same operation is performed in SDK170 or before, 
+    cellSpursLFQueueAttachLv2EventQueue() function returns the error code 
+    CELL_SPURS_TASK_ERROR_PERM.
+
+    This bug will be fixed in the future SDK. Do not execute 
+    cellSpursLFQueueAttachLv2EventQueue() function for the SPURS lock free 
+    queue that is initialized for SPU-SPU communication. 
+
+- The GDB script did not support the workload synchronization object.
+  This problem has been fixed. 
+
+<libspurs job>
+- The following problem has been fixed.
+
+  - In Job 2.0, when executing a job that is built by specifying 
+    the alignment size that exceeds 16 bytes for the text section 
+    within the job module source,the following functions return 
+    CELL_SPURS_JOB_ERROR_PERM. 
+    - cellSpursJoinJobChain()
+    - cellSpursJobChainGetError()
+
+- The following problem has been fixed.
+
+  - When handling the JOBLIST command processing, the following processing 
+    of the SPURS kernel and the system service are not executed. 
+
+    - Preemption of the workload (Transfer the execution right to other 
+      workload)
+    - Add and shutdown the workload
+    - Change the workload priority
+    - Initialize and discard the SPURS trace 
+
+    Due to this problem, on the SPU that grabs the first "maxGrabbedJob" 
+    number of the JOBLIST command jobs, theses processing delays until 
+    the execution of all the grabbed jobs are completed.
+
+    Note that maxGrabbedJob is an argument specified by 
+    cellSpursJobChainAttributeInitialize() or cellSpursCreateJobChain() 
+    and indicates the maximum number of jobs that a single SPU can 
+    grab at a time.  
+
+- When the GUARD command was rewritten while the job streamer was not 
+  running, an SPU exception could occur. 
+  This problem has been fixed. 
+
+- The following problem has been fixed.
+
+  - The inline function of the SPU cellSpursJobGetPointerList() does not 
+    return CELL_OK correctly.
+    It returns an appropriate error code in the case of an error, however 
+    an undefined value is returned instead of CELL_OK when it ended normally. 
+
+- cellSpursJobStartNextJob() was not functioning correctly. 
+  This problem has been fixed.
+
+- The following problem has been fixed.
+
+  - In the samples/spu_library/libspurs/advanced/job_dynamic_job_submit 
+    sample, when the PS button is pressed after 
+    collision_effect/ParallelOptimization.self is executed, 
+    then the program is terminated via the menu screen, the SPURS may 
+    end in error.
+
+    The following message is displayed to the TTY when it ended in error: 
+
+    system notification: CELL_SYSUTIL_REQUEST_EXITGAME
+    SPU : get command : CMD_EXIT
+    SPU : get command : CMD_EXIT
+    SPU : get command : CMD_EXIT
+    SPU : get command : CMD_EXIT
+    SPU : get command : CMD_EXIT
+    Finalizing the spu printf handler
+    cellSpursFinalize failed : -2143222006
+    SPURS cleanup failed.
+
+- In the samples/spu_library/libspurs/advanced/job_dynamic_job_submit sample, 
+  assert() was used incorrectly. This problem has been fixed.
+
+- The following problem has been fixed.
+
+  - When the start address of the BSS area of the job (= __bss_start) or 
+    the size (_end - __bss_start) is not a multiple of 16 bytes and 
+    cellSpursJobInitialize() is called, an infinite loop occurs within the 
+    function. 
+
+<libdaisy>
+- When the error check feature for debugging was disabled using libdaisy, 
+  the function to display a message was incorrectly linked. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+   - In cellGcmSetInlineTransferPointer(), an odd-numbered word size 
+     cannot be transferred. 
+
+- The following problem has been fixed: 
+
+   - In cellGcmSetVertexProgramParameterBlock(), 
+     cellGcmSetVertexProgramConstants() and cellGcmSetPolygonStipplePattern(), 
+     memcpy is incorrectly called. 
+
+- The following problem has been fixed: 
+
+   - In cellGcmCgGetCgbFragmentProgramConfiguration(), the value registerCount 
+     is ORed in the fragmentControl member of the Cgb structure. 
+
+- The following problem has been fixed: 
+
+   - In the argument check feature of the debug version of 
+     cellGcmSetStencilFunc() and cellGcmSetPointSpriteControl(), 
+     it ends in error even with a correct argument. 
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+  - There is a bug in when obtaining the name length within 
+    cellCgbMapGetName().
+    It may cause memory corruption when the buffer size 
+    in the name argument is not enough.
+
+----------------------------------------------------------------------
+NP Signaling
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - Immediately after an IP address is obtained, network information 
+    (external IP address, NAT type, etc) is collected using the STUN 
+    protocol. If the NP signaling library activates a connection
+    (sceNpSignalingActivateConnection()) during this period, a DEAD 
+    event will be returned and the connection activation fails. 
+
+    The network information collection completes within 30 seconds. 
+    However, when the wired connection is selected and the automatic 
+    sign-in is enabled in the network settings, all the processings 
+    from the IP address acquisition to the sign-in are performed 
+    continuously after the network cable is connected. 
+    Therefore, those processings will be done within few seconds and 
+    it is likely to have a problem especially when a match making is 
+    performed immediately after that. 
+
+- The following problem has been fixed.
+
+  - From SDK 180 onwards, the following macros can be specified to 
+    the argument "code" of sceNpSignalingGetConnectionInfo(): 
+
+      SCE_NP_SIGNALING_CONN_INFO_BANDWIDTH   Estimated bandwidth (byte/second) 
+      SCE_NP_SIGNALING_CONN_INFO_PEER_NPID   NP ID of a peer
+
+    In sceNpSignalingGetConnectionInfo() section of the NP Signaling 
+    Reference document, it describes that only SCE_NP_SIGNALING_CONN_INFO_RTT 
+    can be specified, but this description is wrong.
+    From SDK 180 onwards, all 3 macros are available. 
+
+- The following problem has been fixed: 
+
+  - In the network environment connected to some NAT type 3 routers, 
+    when the communication is established by UDPP2P, the socket resource 
+    and the receiving buffer within the kernel are not released causing 
+    the communication to be unstable. 
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+   - In cellFontInit(), when the cache buffer size specified to the size 
+     member of the CellFontConfig argument is set to less than 24 bytes, 
+     an error is not returned and it will operate with memory leak. 
+
+  When the cache buffer size is specified with less than 24 byte, 
+  it now returns CELL_FONT_ERROR_INVALID_CACHE_BUFFER.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When the PAMF file header exceeds 2KB, the movie playback using 
+    libsail may hang up in mid-flow.
+
+----------------------------------------------------------------------
+libresc
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+   - In the 576i/p mode, when cellRescAdjustAspectRatio() is called 
+     to adjust the scaling ratio using the following modes that performs 
+     the interpolation conversion, the output image may be corrupted.
+
+      CELL_RESC_PAL_60_INTERPOLATE                = 2
+      CELL_RESC_PAL_60_INTERPOLATE_30_DROP        = 3
+      CELL_RESC_PAL_60_INTERPOLATE_DROP_FLEXIBLE  = 4
+
+----------------------------------------------------------------------
+dtcfilesv
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - In host-win32/dtcfilesv.exe, the value of the directory information 
+    d_namlen obtained by executing cellFsReaddir() toward the HOSTFS 
+    does not match with the value in d_name. 
+    This problem occurs only with the Windows version of dtcfilesv command.
+
+- The following problem has been fixed: 
+
+   - In the host-win32/bin/dtcfilesv.exe, when a Japanese character is 
+     contained in the path name of the directory, it fails to boot 
+     dtcfilesv.exe. 
+
+- The following problem has been fixed: 
+
+   - In the host-win32/bin/dtcfilesv.exe, when using SYS_APP_HOME, the 
+     specified file path that contains a drive name cannot be treated 
+     correctly. 
+
+- The following problem has been fixed: 
+
+   - In the host-win32/bin/dtcfilesv.exe, when attempting to open the 
+     host_root directory by cellFsOpen(), ENOENT is returned instead 
+     of EISDIR which is the expected value.
+
+----------------------------------------------------------------------
+dtnetm
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+   - When the loglevel of the DECI3 packet is set to 5, it is aborted.
+
+----------------------------------------------------------------------
+dtlib
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+   - Memory leak occurs in the host-win32/bin/dtlib.dll and 
+     the host-win32/bin/dtlib_2005.dll. 
+
+- The following problem has been fixed: 
+
+   - The receive size of the DCMP_STATUS packet is wrong. 
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<PPU/SPU>
+- The following problem has been fixed: 
+
+   - When compiling a program that performs include of math.h or 
+     simd and the option -pedantic or the -pedantic-errors is specified,
+     a warning or an error may be displayed. 
+
+<PPU>
+- The following problem has been fixed: 
+
+   - In the printf function of stdio.hm, when the conversion specification 
+     %vhhu, %vhho or %vhhx is used in the printf function of stdio.hm, 
+     the values of the last 8 elements are not displayed correctly. 
+
+<PPU/SPU>
+- The following problem has been fixed: 
+
+   - In the lrint and the lround functions of tgmath.h, when the argument 
+     is the double type, an incorrect value is returned. 
+
+<PPU/SPU>
+- The following bug has been fixed: 
+
+  - When a value bigger than -35.0 and less than -34.0 is specified to 
+    the following arguments of math.h, an incorrect value is returned.
+    tgammaf, lgammaf
+
+[Note on migrating from GCC4.0.2 to GCC4.1.1]
+- Although O_CREAT is specified to the second argument of the open function of 
+  fcntl.h, if a program has no specification to the third argument "mode" 
+  incorrectly, it may look as though it is running correctly with GCC4.0.2, 
+  but may behave unexpectedly after migrated to GCC4.1.1. In such case, 
+  specify a value to the third argument "mode". 
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When playing back mp3 data, the sound was not output correctly. 
+    MP3 playback has been improved with better error handling.
+
+- The following bug has been fixed: 
+
+  - The pitch member of the CellMSInfo structure was sometimes 
+    ignored when calling the cellMSStreamSetInfo function.
+
+- The thread priority settings used by the sample has been fixed. 
+  Accordingly, the following problem has been fixed: 
+
+   - The samples under cell/samples/sdk/sound/multistream may crash 
+     when dtpoff is performed. 
+
+----------------------------------------------------------------------
+CgTutorial Sample
+----------------------------------------------------------------------
+- Accordingly to the sample directory structure change, it has been 
+  changed to refer to the texture file or the vertex data file using 
+  the absolute path when loading from the host machine. 
+
+- The warning message is now not displayed when the GCC4.1.1 is used 
+  within the external declaration of the Cg program. 
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- The following bug has been fixed:
+
+   - In the "Variable Tracker", the variable of int64_t/uint64_t types 
+     can not be obtained or set correctly.
+
+- The following bug has been fixed:
+
+   - In "Variable Tracker", when a negative value is set to the variable 
+     of uint8_t type, an error message "Invalid uint8 value" is displayed 
+     and the value cannot be set.
+
+- The following bug has been fixed:
+
+   - In "Variable Tracker", when a variable of a negative value variable 
+     is displayed, a value that exceeds the upper limit of the type is 
+     displayed.(The upper/lower limit of the type is not take into 
+     consideration)
+     (e.g)int8_t   i8_1  = -1;
+          uint8_t ui8_t1 = 0;
+
+     # print
+     (int8) i8_1: -1 (0xffffffff)
+     (uint8) ui8_1: 0 (0x00)
+
+- The following bug has been fixed:
+
+   - Each time the network is connected or disconnected, 17KB of memory leak 
+     occurs. 

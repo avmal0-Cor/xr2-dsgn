@@ -1,0 +1,2239 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 310.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+新規ライブラリ
+----------------------------------------------------------------------
+
+liblsguard
+==========
+
+SPU プログラムのデバッグを支援するライブラリ
+
+SPU プログラムが自身のローカルストレージ (以降、LS) を破壊するバグを
+早期に検出する、以下の機能を提供します。
+
+  - 書き込み許可領域 (*1) の管理
+  - 書き込み許可領域外のハッシュ値 (チェックサム) 計算
+  - 書き込みアクセスの事前正当性検査
+
+    (*1) 書き込み許可領域とは、SPU プログラムが内容を変更しても
+         LS 破壊 (*2) とならないような LS 領域
+
+    (*2) LS 破壊とは、SPU プログラムのリードオンリーデータ領域や
+         コード領域が誤ったポインタアクセスや DMA 転送によって書き
+         換えられてしまう危険性のあるバグ
+
+liblsguard の使用は下記のリソースを消費するため、
+SPU プログラムにオーバーヘッドをもたらします。
+
+  - LS (コードとデータ合わせて約2キロバイトのメモリを消費)
+  - SPU 時間 (ハッシュ値を計算するとき、1回につき最大で約9マイクロ秒を消費)
+
+詳細については、「liblsguard 概要」および「liblsguard リファレンス」を
+参照ください。
+
+サンプルの追加
+
+- cell\samples\sdk\spu_library\liblsguard\spurs_job
+  SPURS ジョブにおいて liblsguard を使用する方法、および
+  安全にDMA転送を行うためのラッパー関数を示すサンプル
+
+----------------------------------------------------------------------
+dtコマンド(cell\host-win32\bin)
+----------------------------------------------------------------------
+
+新規機能
+
+- dtnetm.exe において、ターゲットシステムのネットワークエミュレーション
+  の設定に関連する、以下のメッセージに対応しました。
+
+  - TSMP_CODE_GET_TEST_PARAM
+  - TSMP_CODE_GET_TEST_PARAMR
+  - TSMP_CODE_SET_TEST_PARAM
+  - TSMP_CODE_SET_TEST_PARAMR
+
+仕様変更
+
+- vcredist_x86.exe を更新しました。
+
+---------------------------------------------------------------------- 
+BD エミュレータ
+---------------------------------------------------------------------- 
+
+仕様変更
+
+- USB-HDDが未接続時のタイムアウト値を、30秒から15秒に変更しました。
+
+---------------------------------------------------------------------- 
+コントロールコンソール
+---------------------------------------------------------------------- 
+
+新規機能
+
+- フロントエンドアプリケーションで互換モードに 0x31000000 を指定した場合、
+  変数の説明が参照可能となります。
+  いったん互換モードが設定された場合、その変数の説明が
+  print コマンドや _dump_variables コマンドの出力に表示されます。
+
+----------------------------------------------------------------------
+システムソフトウェア(GUI)
+----------------------------------------------------------------------
+
+新規機能
+
+<システムソフトウェア(GUI)のメニュー>
+
+- [設定] -> [Debug Settings] -> [Fake HDD Access Speed]  : [Off]/On
+
+  システムソフトウェアの Debug Settings に HDD 速度低下エミューレーション
+  設定項目を追加します。本機能は Reference Tool のみ利用することが可能
+  で、 Reference Tool の HDD 速度を、PlayStation(R)3 本体と同程度の速度に
+  エミュレーションすることが可能になり、PlayStation(R)3 本体により近い
+  環境で開発を行うことが可能になります。
+
+- [設定] -> [Debug Settings] -> [Crash Report]   : Off/[On]
+
+  システムソフトウェアにおいてクラッシュが発生した際、レポート送信の
+  有効 / 無効を設定する機能を提供します。レポート送信のための操作画面が
+  開発に不都合となる場合、これを無効にすることができます。
+
+- [設定] -> [本体設定] -> [表示言語] : Polski
+
+  ポーランド語の選択肢を追加しました。
+
+- [PlayStation(R)Network] -> [アカウント管理] -> [Facebook]
+
+  PlayStation(R)Network と Facebook の連携機能を提供します。
+  - トロフィー情報の公開
+    獲得したトロフィー情報を Facebook に公開できます。
+  - 購入情報の公開
+    PlayStation(R)Store で購入した商品の情報を Facebook に公開できます。
+  - ゲームイベント情報の公開
+    ゲームで発生したイベント情報を Facebook に公開できます。
+
+  Facebook アカウントの登録・削除、および各機能の設定は、
+  [PlayStation(R)Network] -> [アカウント管理] -> [Facebook] 
+  から行うことができます。
+
+仕様変更
+
+- システムユーティリティのデバッグメッセージ出力機能の追加
+
+  システムユーティリティのリソース競合が発生し、
+  システムユーティリティがリターンコード CELL_SYSUTIL_ERROR_BUSY を
+  返して失敗するようなケースで、以下のようなデバッグメッセージを
+  出力するようにしました。
+
+  System Warning : old sysutil still running, new sysutil cannot run.
+
+
+<コアダンプ機能>
+
+仕様変更
+
+- コアファイルのデータフォーマットを Version 5 から Version 6 に更新しました。
+  変更点は以下の通りです。
+
+  - RSX(R) デバッグ情報のデータフォーマットを Version 1 から Version 2 に更新し、
+    ダンプ対象「RSX(R)デバッグ情報」に含まれる情報を追加しました。
+
+    コアファイルバージョンの対応付けは、以下となります。
+
+      ----------------------------------------------------------
+        コアファイルバージョン  |  RSX(R) デバッグ情報バージョン
+      ----------------------------------------------------------
+        Version 5 以前          |  Version 1
+      ----------------------------------------------------------
+        Version 6               |  Version 2
+      ----------------------------------------------------------
+
+    なお、システムソフトウェアの
+
+    [設定] -> [Debug Settings] -> [Release Check Mode]
+
+    が「Release Mode」になっている場合は、Ver、SZフィールドにのみ有効なデータ
+    が格納され、Debug Info フィールドに格納されるデータは無効となります。
+
+    - Debug Info フィールド
+      - libdbgrsx の新規機能追加に伴い、Interrupt Error Status フィールド に
+        格納される値として、割り込みエラーステータス MISC エラーを追加しました。 
+
+      - Interrupt Misc Error Status フィールドを追加しました。
+        Interrupt Error Status が MISC エラーの場合にのみ有効になります。
+        MISC Error Status 情報を表す、以下のいずれかの値
+        (複合してセットされる場合もある) がセットされます。
+
+        - User Interrupt (cellGcmDumpGraphicsError()による割り込み)
+        - System Overlay (フリップ時のエラーによる割り込みを示し、
+                          graphics error 3と同じ)
+
+      - libdbgrsx の新規機能追加に伴い、Bundle State ユニットに格納される
+        Bundle State 情報の数は、以下のようになりました。
+
+        - RSX(R) Debug Info Version 1 の場合
+          110 (Bundle State ID 0x6E までの情報を格納) 
+
+        - RSX(R) Debug Info Version 2 の場合
+          132 (Bundle State ID 0x84 までの情報を格納。
+               余った部分は Reserved 領域で現在は 0 が入っている)
+
+        なお、RSX(R) Debug Info Version 1 では、
+        Bundle State ID 0x6F 以降の Bundle State 情報は出力されません。
+
+      - GCM Info ユニットを追加しました。
+        (Debug Info フィールドの GCM Info フィールド) 
+        本ユニットには、GCM の管理情報が格納されます。
+
+      - Label Info ユニットを追加しました。
+        (Debug Info フィールドの Label Info フィールド) 
+        本ユニットには、ローカルメモリ中のラベル情報が格納されます。
+        0 番目から 255 番目まで順番に保持します。
+
+      - Report Info ユニットを追加しました。
+        (Debug Info フィールドの Report Info フィールド)
+        本ユニットには、ローカルメモリにおける CellGcmReportData
+        と同じ情報が格納されます。
+
+  データフォーマット項目の詳細については、「コアダンプ 概要」を参照ください。
+
+----------------------------------------------------------------------
+システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+
+全体
+====
+
+新規機能
+
+- システムソフトウェア(GUI)のメニュー [表示言語] に、
+  ポーランド語の選択肢を追加しました。
+
+  この変更に伴い、sysutil_common.h で定義している表示言語に、
+  ポーランド語を表す識別子 CELL_SYSUTIL_LANG_POLISH
+  を追加しました。
+
+仕様変更
+
+- システムユーティリティのデバッグメッセージ出力機能の追加
+
+  システムユーティリティのリソース競合が発生し、
+  システムユーティリティがリターンコード CELL_SYSUTIL_ERROR_BUSY を
+  返して失敗するようなケースで、以下のようなデバッグメッセージを
+  出力するようにしました。
+
+  System Warning : old sysutil still running, new sysutil cannot run.
+
+ゲームコンテンツユーティリティ
+==============================
+
+新規機能
+
+- アプリケーション側で用意したメモリを介して、
+  テーマを PlayStation(R)3 にインストールする関数
+  cellGameThemeInstallFromBuffer() を追加しました。
+
+- PARAM.SFO の文字列型パラメータ取得、設定用 ID に、
+  ポーランド語タイトル名を表す
+  CELL_GAME_PARAMID_TITLE_POLISH を追加しました。
+
+仕様変更
+
+- デバッガモードで HDD 起動ゲームを起動する際、
+  システムソフトウェアのメニューで、
+
+  [設定] -> [Debug Settings] -> [Game Type (Debugger)]
+
+  を [PARAM.SFO] に設定している場合、
+  関数 cellGameBootCheck() の引数 dirName にて受け取る
+  ディレクトリ名の仕様を、以下のように変更しました。
+  
+    (変更前)
+     [設定] -> [Debug Settings] -> [GameContentUtil dirName (Debugger)] の設定
+    
+    (変更後)
+     [PARAM.SFO] の TITLE_ID
+
+サンプルの変更(cell\samples\sdk\sysutil\gamecontent)
+
+- 新規関数 cellGameThemeInstallFromBuffer() を使用して、
+  メモリを介して、テーマをインストールする機能を追加しました。
+
+- 新規追加の CELL_GAME_PARAMID_TITLE_POLISH を使用して、
+  ポーランド語タイトル名にアクセスするようにしました。
+
+- サンプルデータの読み込み先に、cellGameContentPermit() から
+  取得したパス名を使用するようにしました。
+
+オンスクリーンキーボードダイアログユーティリティ
+================================================
+
+新規機能
+
+- ポーランド語パネルを追加しました。
+  これに伴い、以下のマクロ定数を追加しました。
+
+    CELL_OSKDIALOG_PANELMODE_POLISH
+
+メッセージダイアログユーティリティ
+==================================
+
+新規機能
+
+- エラー番号指定で表示されるメッセージを、ポーランド語に対応しました。
+
+システムBGM
+===========
+
+新規機能
+
+- システムBGMの音楽再生状態を取得するための、
+  以下の構造体を追加しました。
+
+    CellSysutilBgmPlaybackStatus2
+
+- 上記構造体を引数として、現在のシステムBGMの
+  音楽再生状態を取得する、以下の関数を追加しました。
+
+    cellSysutilGetBgmPlaybackStatus2()
+
+  cellSysutilGetBgmPlaybackStatus()を使用して、
+  システムBGM機能による音楽再生状態を取得するよりも、
+  低負荷で実行できます。
+
+  なお、システムBGMの関数リファレンスは、
+  「システムユーティリティ共通API リファレンス」で
+  提供しておりますので、ご注意ください。
+
+サンプルの変更(cell\samples\sdk\sysutil\bgmplayback)
+
+- 新規関数 cellSysutilGetBgmPlaybackStatus2() を使用して、
+  現在のシステムBGM機能の音楽再生状態を取得する機能を追加しました。
+
+録画ユーティリティ
+==================
+
+新規機能
+
+- システムワークロードを利用して、アプリケーションが生成した
+  SPURS インスタンスを使用した録画処理が可能になりました。
+
+  これに伴い、以下を追加しました。
+
+  - CellRecSpursParam
+    アプリケーションが生成した SPURS を使用するためのパラメータを
+    設定する構造体
+
+  - CellRecOption のメンバ option に指定できる定数
+
+    - CELL_REC_OPTION_SPURS
+      アプリケーションが生成した SPURS を使用するために、
+      CellRecSpursParam へのポインタを指定
+
+  - 録画ユーティリティのオプションパラメータ CellRecOption のメンバ
+
+    - value.pSpursParam
+      CellRecSpursParam へのポインタ
+
+  - 録画中の動画に関する情報を取得する関数 cellRecGetInfo() の
+    第1引数に指定できる定数
+
+    - CELL_REC_INFO_SPURS_SYSTEMWORKLOAD_ID
+
+      この定数を指定すると、アプリケーションが生成した SPURS を
+      使用する場合に録画ユーティリティが生成する、
+      システムワークロードの ID を取得することができます。
+
+  <機能拡張による改善点>
+
+  - アプリケーションが生成した SPURS インスタンスの使用
+
+    SPURS インスタンスをユーティリティ内部で生成しないため、
+    SPURS インスタンスの切替コストを削減できます。
+
+  - 録画ユーティリティによる SPU 処理の最大 SPU 使用率の指定
+
+    最大 SPU 使用率を、アプリケーションが、1 - 100 の値で
+    指定できるようになりました。
+
+    その結果、録画の負荷を抑えて、アプリケーションの処理を
+    優先させることができます。
+
+    指定した SPU 使用率で録画の処理が間に合わなかった場合、
+    画や音が途切れた動画が生成されますので、ご注意ください。
+
+サンプルの変更(cell\samples\sdk\sysutil\recording\basic)
+
+- アプリケーションが生成した SPURS を、ユーティリティに渡して
+  録画するコードを追加しました。
+
+  上記コードを有効にするには、main.c の以下の行を有効にしてください。
+
+    //#define ENABLE_SPURS_OPTION
+
+リモートプレイユーティリティ
+============================
+
+新規機能
+
+- リモートプレイからアプリケーションに戻る関数、
+  cellRemotePlayBreak() を追加しました。
+
+  上記関数を利用することで、アプリケーションを終了することなく、
+  リモートプレイからアプリケーションに戻ることができます。
+
+  上記関数を利用した際は、アプリケーションに戻った後も、
+  解像度と音声出力が、リモートプレイ用の設定のままになっています。
+
+  必ずアプリケーションに戻った直後に、ビデオ設定ユーティリティと
+  オーディオ設定ユーティリティを使用して、適切な値に
+  設定しなおしてください。
+
+
+コンテンツ検索ユーティリティ
+============================
+
+仕様変更
+
+- ポーランド語のコンテンツ情報検索に対応しました。
+
+カスタムテーマユーティリティ
+============================
+
+新規機能
+
+- テーマの情報表示に対応している言語に、ポーランド語を追加しました。
+
+  これに伴い、テーマファイル (*.xml) 内 <localizedinfo> タグの
+  「locale」属性に、ポーランド語 (「pl」) を指定できるようになりました。
+
+- システムソフトウェアの画面に表示されるアイコンのうち、
+  カスタマイズできるものとして、PSP(R)go 用のアイコンを追加しました。
+
+  これに伴い、テーマファイル (*.xml) 内 <icon> タグの「id」属性に、
+  PSP(R)go 用のテクスチャ (「icon_psp」) を指定できるようになりました。
+
+- テーマファイルに含めることができる情報として、
+
+    テーマの更新日時 (YYYYMMDDHHMMSS形式の文字列)
+
+  を追加しました。
+
+  これに伴い、テーマファイル (*.xml) 内 <info>/<localizedinfo> タグに
+  「mtime」属性を記述することで、テーマファイルの更新日時を
+  指定できるようになりました。
+
+- RAF (Rich Appearance Format) の actor に、Zソートの属性を追加しました。
+
+  シーンファイル (*.xml) 内に、actor 要素の zsort 属性として、
+  以下の値を指定できます。
+
+    unspecified / back_to_front / front_to_back
+
+- RAF の material に、以下のエフェクト種類を追加しました。
+
+  - basic_lighting_alpha_0
+  - basic_lighting_edge_lit_alpha_0
+  - basic_lighting_alpha_add
+
+  シーンファイル (*.xml) 内に、material 要素の effect 属性として、
+  上記の値を指定できます。
+
+- RAF の model に設定できるデータとして、頂点ごとの色を追加しました。
+
+  シーンファイル (*.xml) 内に、model 要素の vertex_color 属性として、
+  以下の値を指定できます。
+
+    enable / disable
+
+仕様変更
+
+- RAF の model 1個に対して設定できる animation の個数を、
+  4個から 8個に変更しました。
+
+サンプルの変更(cell\samples\util\theme\simple)
+
+- テクスチャの名前を変更しました。
+
+バックグラウンドダウンロードユーティリティ
+==========================================
+
+新規機能
+
+- BGDL (バックグラウンドダウンロード) の動作モードを設定する関数
+  cellBGDLSetMode() を追加しました。
+
+  動作モードには、以下の enum 値を設定できます。
+
+    ---------------------------------------------------------------
+    enum 値                        説明
+    ---------------------------------------------------------------
+    CELL_BGDL_MODE_AUTO            BGDL の許可/不許可を自動制御する
+                                   (デフォルト値)
+    CELL_BGDL_MODE_ALWAYS_ALLOW    BGDL を常に許可する
+    ---------------------------------------------------------------
+
+  デフォルトでは、BGDL の許可/不許可はシステムが自動制御しており、
+  ゲームアプリケーションがネットワーク接続を使用している場合は、
+  不許可 (BGDL は待機状態) とするようになります。
+
+  動作モードに、上記 CELL_BGDL_MODE_ALWAYS_ALLOW を設定することにより、
+  ゲームアプリケーションのネットワーク接続状況に関わらず、
+  BGDL を許可するようになります。
+
+- BGDL の動作モードを取得する関数 cellBGDLGetMode() を追加しました。
+
+サンプルの変更(cell\samples\sdk\sysutil\bgdl)
+
+- 新規関数 cellBGDLSetMode() および cellBGDLGetMode() を使用して、
+  BGDL の動作モードを設定、取得する処理を追加しました。
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+
+PRX
+===
+
+サンプルの変更(cell\samples\sdk\prx\simple-cxx)
+
+- 以下の機能を利用するように変更しました。
+
+  - -mprx-with-runtime オプションを用いることによる
+    グローバルコンストラクタとグローバルデストラクタの呼び出し
+
+  - PRX の利用していないコードを削減するための、以下のオプションの使用
+
+    - GCC : -ffunction-sections, -fdata-sections
+      GNU LD : -zgc-sections
+
+    - SNリンカ: --strip-unused-data, --strip-duplicates
+
+  - PRX がユーザ定義の関数を公開して ELF から呼び出す
+
+  - PRX にて iostream を使用する
+
+  - ELF が libc および libm を公開し、PRX からダイナミックリンクする
+
+  - ELF がユーザ定義の関数を公開して PRX から呼び出す
+
+  - SNC / SNリンカを使用して PRX を作成する
+
+  なお、ProDG Visual Studio Integration のアクティブソリューション構成、
+  「PS3 SNC Debug」、「PS3 SNC Release」は、本サンプルのみ SNC に対応して
+  います。
+
+----------------------------------------------------------------------
+C/C++_Standard_Library
+----------------------------------------------------------------------
+
+新規機能
+
+<SPU>
+
+- SPU が使用するスタック領域とヒープ領域のサイズに
+  制限をかけられるようになりました。
+
+  ヘッダ stdlib.h に追加されたマクロ CELL_SPU_LS_PARAM をご使用ください。
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+
+仕様変更
+
+- cell::Fiber::Ppu::Util::Runtime クラスの initialize() メソッドに
+  以下の引数を追加しました。
+
+  - autoCheckFlags
+    cellFiberPpuCheckFlags() を定期的かつ自動的に呼び出すかどうかのフラグ
+
+  - autoCheckFlagsIntervalUsec
+    自動呼出しの時間間隔(マイクロ秒単位)
+
+  これにより、cellFiberPpuCheckFlags() の自動呼出し設定が可能に
+  なりました。
+
+- cell::Fiber::Ppu::Util::Runtime クラスの createFiber() メソッドに
+  以下の引数を追加しました。
+
+  - callback
+    ファイバー終了時に呼び出されるコールバック関数へのポインタ
+
+  これにより、ファイバー終了時に呼び出されるコールバック関数を指定できる
+  ようになりました。
+
+* 上記の仕様変更内容は、「libfiber PPUファイバー リファレンス」には
+  記載されておりません。
+  今後のリリースにて追記される予定ですので、ご了承ください。
+
+----------------------------------------------------------------------
+ファイルシステム
+----------------------------------------------------------------------
+
+libfs
+=====
+
+新規機能
+
+- 以下の列挙型および関数を追加しました。
+
+  CellFsDiscReadRetryType
+    オプティカルディスク読み込みエラー発生時の、システム内部の
+    リトライ動作を表す列挙型で、以下のように定義されています。
+
+    -------------------------------------------------------------
+    列挙値                           説明
+    -------------------------------------------------------------
+    CELL_FS_DISC_READ_RETRY_NONE     システム内部のリトライを
+                                     行わない
+    CELL_FS_DISC_READ_RETRY_DEFAULT  システム内部のリトライを行う
+    -------------------------------------------------------------
+
+  cellFsSetDiscReadRetrySetting()
+    オプティカルディスク読み込みエラー発生時の、システム内部のリトライの
+    設定を行う関数
+
+    引数 (retry_type) に列挙型 CellFsDiscReadRetryType の列挙値を
+    指定することで、システム内部のリトライ設定を行います。
+    設定された内容は、本関数の実行後に発生した読み取りエラーに対して
+    適用されます。
+
+    なお、自動リトライを無効にする場合は、ディスクの交換に対応する場合と
+    同様に、アプリケーションで適切なリトライ処理を行ってください。
+
+libfios
+=======
+
+新規機能
+
+- FIOS のプロファイリングが可能になりました。
+
+  FIOS の初期化パラメータ fios_parameters のメンバ profiling に、
+  列挙型 e_PROFILING で定義されているプロファイリング値を設定してください。
+
+- スケジューラクラス cell::fios::scheduler において、
+  プリフェッチオペレーションを任意のタイミングで
+  サスペンド / レジュームすることができる、
+  以下のパブリックインスタンスメソッドを追加しました。
+
+    suspendPrefetch()
+    resumePrefetch()
+
+- cell::fios::op::getError() を使用することにより、
+  オペレーションのエラーコード取得が、
+  より簡単に行えるようになりました。
+
+仕様変更
+
+- SDK300 の「Notice_SDK_*.txt」(*) で告知させていただいた通り、
+  cell::fios::fios_parameters::sharedPath を削除しました。
+
+  今後、パス名を管理するためのバッファ確保は、常に静的に行われます。
+
+  (*) 参照先 : cell\info\old\300.001\Notice_SDK_*.txt
+
+    -------------------------------------------------------------------------
+    libfios
+    -------------------------------------------------------------------------
+    - fios_parameters::sharedPath は将来のSDKにおいて削除される予定ですので、
+     「真」に設定しないでください。 
+    -------------------------------------------------------------------------
+
+SDATA
+=====
+
+仕様変更
+
+- SDATA の形式を改善した結果、非圧縮の SDATA の読み出し速度が
+  向上しました。
+
+----------------------------------------------------------------------
+SPU Runtime
+----------------------------------------------------------------------
+
+SPUプログラム作成支援ツール
+===========================
+
+新規機能
+
+- spu_elf-to-ppu_obj コマンドにおいて、以下の機能またはオプションを
+  追加しました。 
+
+  - SPU ELF ファイル内の R_SPU_PPU32, R_SPU_PPU64 型リロケーションを、
+    R_PPC64_ADDR32, R_PPC64_ADDR64 型リロケーションに変換して
+    PPU オブジェクトファイルに埋め込む機能
+
+  - SPURS ジョブを jobbin2 形式で埋め込むオプション --format=jobbin2 
+
+  - SPURS タスクを埋め込む際に自動生成された SPURS タスクのバイナリ情報を
+    格納する CellSpursTaskBinInfo 構造体のインスタンスを、
+    同時に埋め込む機能
+
+  - 埋め込む SPU ELF ファイルが libovis を使用している際に、
+    libovis 用のオーバーレイテーブルを同時に埋め込む機能
+
+  - SPU ELFを埋め込む際の strip の強度を指定するオプション --strip-mode
+
+  - SPUプログラム以外のデータの埋め込み機能を抑制するオプション
+    --disable-extra-data
+
+仕様変更
+
+- spu_elf-to-ppu_obj.exe コマンドにおいて、以下の仕様変更を行いました。
+
+  - 埋め込む SPU プログラムのバージョン情報を PPU のロードされないセクション
+    に入れるようにしました。
+
+    * こちらは Disc Image Generator for PlayStation(R)3 における
+      バージョンチェックのための対応です。
+      ps3cmd.exe で veri_file した際に、spu_elf-to-ppu_obj コマンドで
+      埋め込んだ SPU プログラムのバージョン情報が、ログファイルに出力される
+      ようになります。
+
+  - 正確に入力プログラムのタイプを判定できるよう、SPU ELF ヘッダの
+    e_flags を参照するようにしました。
+
+libspurs_Job
+============
+
+<全般>
+
+新規機能
+
+- ジョブディスクリプタ設定用マクロ CELL_SPURS_JOB_TYPE_BINARY2 を
+  追加しました。
+
+  構造体 CellSpursJobHeader のメンバ変数 jobType に
+  CELL_SPURS_JOB_TYPE_BINARY2 を論理和で設定することで、
+  jobbin2 形式のバイナリイメージをジョブディスクリプタに
+  指定することができます。
+
+- CRT 付き Job2.0 をビルドする際に、構造体 CellSpursJobHeader の
+  メンバ変数 jobType に CELL_SPURS_JOB_TYPE_MEMORY_CHECK を論理和で設定し、
+  リンカオプションに -llsguard を指定して liblsguard をリンクすると、
+  バッファオーバーランチェックに加えて、自動的に以下の処理を
+  行うようになりました。
+
+    (1) SPU のローカルストレージ上の全書き込み禁止領域を liblsguard に
+        設定し、その領域のハッシュ値を計算
+    (2) (1)の後、ジョブを実行
+    (3) (2)の後、再度全書き込み禁止領域のハッシュ値を再計算し、
+        ジョブ実行前の値との比較結果が不一致の場合に ASSERT 停止する
+
+- jobbin2 形式のバイナリイメージから抽出したバイナリ情報を
+  指定されたジョブディスクリプタのヘッダ部にセットする関数
+  cellSpursJobHeaderSetJobbin2Param() を追加しました。 
+
+- 以下のマクロを追加しました。
+
+  - CELL_SPURS_JOB_LIST_ALIGN
+  - CELL_SPURS_JOB_LIST_SIZE
+
+- C++ インターフェースに、以下のクラスを追加しました。
+
+  - cell::Spurs::JobList
+  - cell::Spurs::JobListStub
+
+  上記クラスは「libspurs C++ リファレンス」に記載されておりません。
+  今後のリリースにおいて追記する予定です。ご了承ください。
+
+  cell::Spurs::JobList および cell::Spurs::JobListStub は、
+  cellSpursJobList に相当する C++ 用クラスです。
+  initialize メソッドを使用することで、cellSpursJobList の
+  それぞれのメンバに値を設定することが出来ます。
+
+仕様変更
+
+- 構造体 CellSpursJobHeader に jobbin2 形式のバイナリイメージに関する情報を
+  セットするメンバ変数 binaryInfo を追加しました。
+
+- 構造体 CellSpursJobContext2 にジョブディスクリプタのサイズを格納する
+  メンバ変数 sizeJobDescriptorを追加しました。
+
+サンプルの変更
+
+- cell\samples\sdk\spu_library\libspurs\job
+  
+  job_joblist サンプルにおいて、C++ インターフェース(cell::Spurs::JobList)を
+  使用するようにしました。
+
+- cell\samples\sdk\spu_library\libspurs\job および
+  cell\samples\sdk\spu_library\libspurs\jobqueue 
+  以下の全てのサンプルにおいて、
+  jobbin2 フォーマットを使用するようにしました。
+
+<ジョブチェイン>
+
+新規機能
+
+- SPURS ジョブチェインにおいて、jobbin2 形式のジョブバイナリを
+  実行できるようになりました。
+
+- 指定したジョブチェインアトリビュートに、ジョブ実行時の不正な
+  ローカルストレージ破壊をチェックするように設定する関数
+  cellSpursJobChainAttributeSetJobTypeMemoryCheck()
+  を追加しました。
+
+  これにより、バッファオーバーランチェックと、liblsguard をリンクしてある
+  場合には書き込み禁止領域へのハッシュ値チェックが有効になります。
+
+- C++ インターフェースの JobChainStub クラス、および JobGuardStub クラスに、
+  以下のメンバ関数を追加しました。
+
+  - setObject
+    スタブクラスにターゲットオブジェクトを設定
+
+  - getObject 
+    スタブクラスのターゲットオブジェクトを取得
+
+- C++ インターフェースに cell::Spurs::JobChainAttribute クラスを追加しました。
+
+  上記クラスは「libspurs C++ リファレンス」に記載されておりません。
+  今後のリリースにおいて追記する予定です。ご了承ください。
+
+  cell::Spurs::JobChainAttribute は、cellSpursJobChainAttribute に相当する
+  C++ 用クラスです。
+
+<ジョブキュー>
+
+新規機能
+
+- SPURS ジョブキューにおいて、jobbin2 形式のジョブバイナリを
+  実行できるようになりました。
+
+- SPU がフェッチする全てのジョブに対し、バッファーオーバランチェックを
+  行うかどうかの設定が可能になりました。
+  これに伴い、以下の関数および引数を追加しました。
+
+  [C インターフェース]
+    - cellSpursJobQueueAttributeSetIsJobTypeMemoryCheck() 
+
+  [C++ インターフェース]
+    引数 isJobTypeMemoryCheck を以下のメソッドで指定
+    - cell::Spurs::JobQueue::JobQueueBase::create()
+    - cell::Spurs::JobQueue::JobQueue::create()
+
+  どちらのインターフェースにおいても、liblsguard をリンクしてある場合には、
+  さらに書き込み禁止領域へのハッシュ値チェックが有効になります。
+
+- パイプラインで実行中のジョブを含め、各 SPU が保持するジョブ数の上限値を
+  ジョブキュー作成時に指定する機能を追加しました。
+  これに伴い、以下の関数、引数を追加しました。
+
+  [C インターフェース]
+    - cellSpursJobQueueAttributeSetGrabParameters()
+
+  [C++ インターフェース]
+    - JobQueue::create() メソッドの maxNumJobsOnASpu 引数
+
+- cell::Spurs::Job テンプレートクラス、および
+  cell::Spurs::JobTypeOf テンプレートクラスに、以下のメソッドを
+  追加しました。
+
+   - setJobbin2Param()
+     jobbin2 形式バイナリイメージの情報をジョブディスクリプタにセット
+
+   - checkForJobChain()
+     ジョブディスクリプタのチェック(ジョブチェイン用)
+
+   - cehckForJobQueue()
+     ジョブディスクリプタのチェック(ジョブキュー用)
+
+- エクスクルーシブ属性付ジョブコマンドをジョブキューに投入することにより、
+  SPU 上で後続のジョブのグラブを制限できる機能を追加しました。
+  これに伴い、以下の関数を追加しました。
+
+    - cellSpursJobQueuePortPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::pushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::pushExclusiveJob()
+      ポートを通したエクスクルーシブ属性付ジョブコマンドの投入(ブロッキング)
+
+    - cellSpursJobQueuePortTryPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::tryPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::tryPushExclusiveJob()
+      ポートを通したエクスクルーシブ属性付ジョブコマンドの投入(ノンブロッキング)
+    - cellSpursJobQueuePortCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::copyPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::copyPushExclusiveJob()
+      バッファ付きポートを通したエクスクルーシブ属性付ジョブコマンド
+      の投入(ブロッキング)
+
+    - cellSpursJobQueuePortTryCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::tryCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::tryCopyPushExclusiveJob()
+      バッファ付きポートを通したエクスクルーシブ属性付ジョブコマンド
+      の投入(ノンブロッキング)
+
+    - cellSpursJobQueuePushExclusiveJob()
+    - cell::Spurs::JobQueue::JobQueue::pushExclusiveJob()
+      エクスクルーシブ属性付ジョブコマンドを投入(ブロッキング)
+
+    - cellSpursJobQueueTryPushExclusiveJob()
+    - cell::Spurs::JobQueue::JobQueue::tryPushExclusiveJob()
+      エクスクルーシブ属性付ジョブコマンドを投入(ノンブロッキング)
+
+- 以下の不具合修正に伴い、ポートの初期化をする関数
+  cellSpursJobQueuePortInitialize() のエラーコードに
+  CELL_SPURS_JOB_ERROR_STAT を追加しました。
+
+  - 未初期化もしくは廃棄済の SPURS ジョブキューにポートを接続しようとした場合、
+    SPURS が内部で assert を起こす問題を解決し、適切なエラーを返すように
+    修正しました。
+
+仕様変更
+
+- 以下の関数、およびメソッドを用いて投入される SYNC コマンドに
+  複数のタグを同時に指定できるようになりました。
+ 
+  - cellSpursJobQueuePushSync()
+  - cellSpursJobQueueTryPushSync()
+  - cellSpursJobQueuePortPushSync()
+  - cellSpursJobQueuePortTryPushSync()
+
+  - cell::Spurs::JobQueue::JobQueue::pushSync()
+  - cell::Spurs::JobQueue::JobQueue::tryPushSync()
+  - cell::Spurs::JobQueue::Port:pushSync()
+  - cell::Spurs::JobQueue::Port:tryPushSync()
+
+サンプルの追加
+
+- cell\samples\tutorial\SpursTutorial\JobQueue\
+ 「SPURS チュートリアル」ドキュメントにおけるジョブキューの解説が参照する
+  以下のサンプルを追加しました。
+
+  - 0_Initialization_and_Finalization
+    SPURS とジョブキューの初期化、および終了のみ行うサンプル
+
+  - 1_HelloJob
+    最もシンプルなジョブのサンプル
+
+  - 2_Input_and_Output
+    ジョブプログラミングの基本であるジョブディスクリプタの記述方法と、
+    各種バッファの使用方法を示したサンプル
+
+  - 3_Multiple_Job_Pushers
+    アプリケーションの複数の PPU スレッドからジョブを実行させる方法
+    を示したサンプル
+
+- cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_task_push_job
+  SPURS タスクから SPURS ジョブキューに SPURS ジョブキュージョブを
+  投入する方法を示すサンプル
+
+- cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_fiber_push_job
+  PPU ファイバーから SPURS ジョブキューにジョブを投入する方法、および
+  SPURS ジョブキューに関した PPU ファイバーのコンテキスト切替を示すサンプル
+
+サンプルの変更
+
+- 以下のサンプルプログラムについて、
+  SPURS ジョブキューの push インターフェースを呼んでいる箇所を 
+  pushJob インターフェースに変更しました。
+
+  - cell\samples\sdk\fiber\advanced\ppu_job_queue
+  - cell\samples\sdk\fiber\flag
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_hello
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_sync_command
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_hello_and_yield
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\compatibility_with_job2.0
+
+libspurs_Task
+=============
+
+新規機能
+
+- SPURS タスクのバイナリ情報を格納する構造体 CellSpursTaskBinInfo を
+  追加しました。
+
+- SPURS タスクセット2 に新しく SPURS タスクを生成する関数およびメンバ関数
+  を追加しました。
+
+  - cellSpursCreateTask2WithBinInfo()
+  - cell::Spurs::Taskset2::createTask2WithBinInfo() 
+
+  これらは cellSpursCreateTask2() および cell::Spurs::Taskset2::createTask2()
+  と機能は同等ですが、CellSpursTaskBinInfo 構造体を利用することにより、
+  より容易にタスクを生成することが出来ます。
+
+- cell::Spurs::Taskset2::createTask2() のオーバーロード関数を追加しました。 
+
+- タスクを実行中の SPURS にワークロードフラグがセットされるまで待つ関数
+  cellSpursTaskReceiveWorkloadFlag() を追加しました。
+
+- SPURS タスクに名前を付ける機能を追加しました。
+  これに伴い、以下を追加しました。
+
+  - CELL_SPURS_MAX_TASK_NAME_LENGTH
+    タスク名の長さの最大値を設定するマクロ
+
+  - 構造体 CellSpursTaskAttribute2 のメンバ name
+    タスク名 (終端の NULL 文字を含めて最大32文字) を指定します。
+
+  - CellSpursTaskNameBuffer
+    SPURS タスク名用の領域を示す構造体
+
+  - 構造体 CellSpursTasksetAttribute2 のメンバ taskNameBuffer
+    タスク名用の領域で、この変数に CellSpursTaskNameBuffer 型変数のポインタ
+    をセットすると、タスクの命名機能が有効になり、デバッグ時に参照できるように
+    なります。
+
+- 以下のクラスを追加しました。
+
+  - cell::Spurs::Semaphore
+    CellSpursSemaphore 型の C++ 用ラッパークラス
+
+  - cell::Spurs::SemaphoreStub
+    ポインタを介して Semaphore を操作するクラス
+
+  - cell::Spurs::LFQueuePushContainer
+    CellSpursLFQueuePushContainer 型の C++ 用ラッパークラス
+
+  - cell::Spurs::LFQueuePopContainer 
+    CellSpursLFQueuePopContainer 型の C++ 用ラッパークラス
+
+  - cell::Spurs::TaskAttribute2
+    SPURS タスク2 の設定を行うための構造体
+
+  - cell::Spurs::TasksetAttribute2
+    SPURS タスクセット2 のカスタマイズを行うための構造体
+
+仕様変更
+
+- SPURS タスク専用インターフェースが SPURS タスク以外の SPU プログラムから
+  呼ばれた場合に、エラーコードが返るようにしました。
+
+サンプルの変更
+
+- cell\samples\sdk\spu_library\libspurs\task
+  C++ インターフェースを使用するよう変更しました。
+  また、新規に追加された構造体 CellSpursTaskBinInfo を利用して
+  タスクを生成するように変更しました。
+
+- cell\samples\sdk\spu_library\libspurs\task\task_switch_optimization
+  タスクのコンテキストスイッチの最適化方式が改善されたため、
+  古い方式を使用しているサンプルを削除しました。
+
+  併せて cell\samples\sdk\spu_library\libspurs\task 以下の全てのサンプルを、
+  新しい最適化方式に修正しました。
+
+libspurs
+========
+
+<全般>
+
+新規機能
+
+- PPU のシンボルを SPU プログラム内から参照するためのマクロ
+  CELL_SPURS_PPU_SYM を追加しました。
+
+  このマクロを SPU プログラム中に記述することにより、
+  引数 ppusym で指定した PPU シンボルの値を参照することができます。
+
+  このマクロは、SPURS タスク、または SPURS ジョブに静的リンクされる
+  SPU プログラム内でのみ使用可能です。
+
+<コア>
+
+新規機能
+
+- SPURS C++ インターフェースに、以下のクラスを追加しました。
+
+  - cell::Spurs::SpursAttribute
+
+  CellSpursAttribute 型の C++ 用ラッパークラスです。
+  PPU で使用することができます。
+
+- SPURS C++ インタフェースに、cell::Spurs::Spurs::initialize() の
+  オーバーロード関数を追加しました。
+
+  * 本関数は、「libspurs C++ リファレンス」には記載されておりません。
+    今後のリリースにて追記される予定ですので、ご了承ください。
+
+  SPURS インスタンスの初期化を行うに際し cellSpursInitialize() ではなく、
+  cellSpursInitializeWithAttribute() の使用を推奨しております。
+
+  今回、コードの可読性も踏まえ、cellSpursInitializeWithAttribute() 
+  に相当する cell::Spurs::Spurs::initiaize() を追加しました。
+
+  つまり、今回追加されたオーバーロード関数
+
+  cell::Spurs::Spurs::initialize()
+
+  は
+
+  cell::Spurs::Spurs::initializeWithAttribute()
+
+  の別名となります。
+
+<ポリシーモジュール>
+
+新規機能
+
+- ワークロードフラグの受信者を登録および登録解除する関数で、
+  関数呼び出し時に存在していたワークロードフラグを消去しない、
+  以下の関数を追加しました。
+
+  - cellSpursSetWorkloadFlagReceiver2()
+  - cellSpursUnsetWorkloadFlagReceiver2()
+  - cellSpursModuleSetWorkloadFlagReceiver2()
+  - cellSpursModuleUnsetWorkloadFlagReceiver2()
+
+libsync2
+========
+
+新規機能
+
+- SPURS ジョブキュージョブからブロッキング関数を呼び出すために必要な
+  コンテキスト保存領域を削減できるようになりました。
+
+  「libsync2 概要」の「SPURSジョブキュージョブによるブロッキング関数の呼び出し」
+  を参照ください。
+
+仕様変更
+
+- ブロッキング関数が SPURS タスクから呼び出されたとき、
+  コンテキスト保存領域が不足している場合は
+  エラーが返るようになりました。
+
+JDL (ジョブ定義言語) Tool 
+=========================
+
+新規機能
+
+- jobbin2 形式バイナリイメージをサポートしました。
+
+- ジョブキュージョブの生成をサポートしました。
+
+- SPU でのジョブ生成をサポートしました。
+
+- ジョブ実行後に、その返り値を取得するメソッド getResult() を追加しました。
+
+- Visual Studio 2008 をサポートしました。
+
+- ジョブリストの投入をサポートしました。
+
+- JDL 変数代入式の右辺値に、JDL 変数参照を指定できるようになりました。
+
+- JDL が生成するファイルを、標準出力にストリームアウトする機能を追加しました。
+
+- バッファキーワードのサイズ指定において、要素数での指定が可能なモードを
+  追加しました。
+
+- JDL が出力するファイルのうち、ユーザ編集が可能なファイルは、JDL ファイルを
+  変更して再度 JDL を実行してもファイルが生成されず変更が反映されませんでした。
+  これはユーザ編集によるファイル変更結果が失われるのを防ぐためです。
+  しかしながら、SDK310 以降では JDL 変数 genJobImpl に 2 をセットすることで、
+  ユーザ編集が可能なファイルについてもファイルが再生成されるようになりました。
+  この場合、ユーザによる変更箇所は温存され、JDL によって自動生成された部分のみが
+  更新されます。
+
+仕様変更
+
+- JDL のエラーメッセージを Visual Studio でパース可能な形式に変更しました。
+
+サンプルの追加
+
+- cell\samples\tutorial\FunctionOffloadToSpu
+
+  - create_job_by_spu
+    SPUからジョブを作成して投入する方法を示すサンプル
+
+  - 6_fiber_iterator
+    現在のPPUスレッド上でファイバーを実行する方法を示すサンプル
+
+  - 7_submit_job_from_spu
+    メインジョブから三次元布シミュレーションサブジョブを投入する方法
+    を示すサンプル
+
+サンプルの変更
+
+- cell\samples\sdk\jdl\06_advanced_buffers
+  新規機能の JobList サポートの使用方法を示すよう変更しました。
+  
+- cell\samples\tutorial\FunctionOffloadToSpu
+  Function Offload チュートリアルサンプルのうち、これまで
+  オフロードに JDL を使用しないバージョンのサンプルも提供しておりました。
+  しかしながら、上記サンプルを使用するメリットがなくなったことから、
+  参照期間を終了させていただき、以下のようにサンプルを変更しました。
+
+
+       [変更前]                       [変更後]
+  ------------------------------------------------------------------
+     3_offload_to_spu            -> JDLを使用するよう書き換え
+     4_gather_functions          -> JDLを使用するよう書き換え
+                                    (ほぼ以前の5_offload_by_jdlと同様の内容)
+     5_offload_by_jdl            -> 削除
+     6_async_offload_by_jdl      -> 5_async_offload に変更
+     method_call_by_jdl          -> method_call に変更
+     offload_with_swcache_by_jdl -> offload_with_swcache に変更
+     ppu_call_by_jdl             -> ppu_call に変更
+     virtual_function_offload    -> 削除
+     virtual_method_call_by_jdl  -> virtual_method_call に変更
+  ------------------------------------------------------------------
+
+----------------------------------------------------------------------
+Network
+----------------------------------------------------------------------
+
+libnet
+======
+
+新規機能
+
+- ネットワークエミュレーションのパラメータを設定、取得するための、
+  以下の構造体を追加しました。
+
+    sys_net_test_param_t
+
+- 上記構造体を引数として、ネットワークエミュレーションの
+  パラメータを設定、取得する、以下の関数を追加しました。
+
+  - sys_net_set_netemu_test_param()
+    ネットワークエミュレーションのパラメータ設定
+    UDPP2P のソケットに対しても、ネットワークエミュレーションの適用が可能
+
+  - sys_net_get_netemu_test_param()
+    現在設定されているネットワークエミュレーションのパラメータ取得
+
+- ソケットオプションを設定、取得する以下の関数に、
+  ソケットオプション IP_TOS (Type of Service (TOS) フィールド値) を
+  追加しました。
+
+    setsockopt()
+    getsockopt()
+
+librudp
+=======
+
+新規機能
+
+- ブロッキング中の cellRudpPollWait() を中断させる、
+  以下の関数を追加しました。
+
+    cellRudpPollCancel()
+
+  cellRudpPollWait() でイベントの待ち受けをしているときに、別スレッドから
+  上記関数が呼び出されると、cellRudpPollWait() を呼び出し中のスレッドは
+  ブロッキング状態から直ちに解放され、cellRudpPollWait() は、
+  CELL_RUDP_ERROR_CANCELLED を返してリターンされます。
+
+  ポーリングを行っているスレッドで、ネットワークイベント以外の処理を
+  直ちに実行したい場合などに便利です。
+
+- 一般的な TCP でもサポートされている、キープアライブ機能を追加しました。
+
+  これに伴い、コンテキストオプションを設定する関数 cellRudpSetOption() と、
+  現在設定されているコンテキストオプションを取得する関数 cellRudpGetOption() 
+  に、以下のコンテキストオプションを追加しました。
+
+    CELL_RUDP_OPTION_KEEP_ALIVE_INTERVAL
+    キープアライブインターバル
+
+    CELL_RUDP_OPTION_KEEP_ALIVE_TIMEOUT
+    キープアライブタイムアウト時間
+
+  なお、基底レイヤに NP シグナリングユーティリティを利用している場合は、
+  UDPP2P レイヤでキープアライブが行われているので、
+  通常は、本機能を利用する必要はありません。
+  
+  ユーザ独自の NAT 越え機能 (あるいは、ピア アドレス交換機能) を
+  利用している場合に、本機能が有効な場合があります。
+
+----------------------------------------------------------------------
+PlayStation(R)Network (NP)
+----------------------------------------------------------------------
+
+NPベーシック
+============
+
+新規機能
+
+- sceNpBasicSendMessageGui() に引数として渡す
+  構造体 SceNpBasicMessageDetails のメンバ msgFeatures に、
+  SCE_NP_BASIC_MESSAGE_FEATURES_ASSUME_SEND を指定することにより、
+  システムソフトウェアの提供する GUI において、
+  ユーザが編集操作をせずに送信ボタンを押したものとして、
+  自動的に進めることができる機能を追加しました。
+
+  このとき、構造体 SceNpBasicMessageDetails のメンバ mainType には、
+  SCE_NP_BASIC_MESSAGE_MAIN_TYPE_URL_ATTACHMENT (添付 URL 付きメッセージ)
+  以外の値を指定してください。
+
+サンプルの変更(cell\samples\sdk\network\np\np_basic)
+
+- 上記 SCE_NP_BASIC_MESSAGE_FEATURES_ASSUME_SEND を指定した
+  送信メニューを追加しました。
+
+NPシグナリング
+==============
+
+サンプルの追加
+
+- cell\samples\sdk\network\np\np_signaling_rudp
+
+  cell\samples\sdk\network\np\np_signaling の P2P 通信について、
+  librudp を使用するように変更を加えたサンプル
+
+
+NPルックアップ
+==============
+
+新規機能
+
+- 以下の API で取得される、ユーザが設定した「よく使う言語」を
+  まとめた構造体 SceNpMyLanguages のメンバ language1、language2、
+  language3 に設定される値に、SCE_NP_LANG_POLISH (ポーランド語)
+  を追加しました。
+
+    sceNpLookupUserProfile()
+    sceNpLookupUserProfileAsync()
+    sceNpLookupUserProfileWithAvatarSize()
+    sceNpLookupUserProfileWithAvatarSizeAsync()
+
+  PlayStation(R)Network サーバの「よく使う言語」を「ポーランド語」に
+  設定した場合、SDK310 より前の環境で作成したゲームタイトルは
+  「ポーランド語」(SCE_NP_LANG_POLISH) に対応していないため、
+  SCE_NP_LANG_ENGLISH に変換されて渡されます。
+
+  なお、上記 SCE_NP_LANG_POLISH については、
+  「NPライブラリ共通API リファレンス」にて提供しておりますので、
+  ご注意ください。
+
+NP IN-GAMEコマース2
+===================
+
+新規機能
+
+- プロダクトコード入力処理をインゲームで行う、
+  以下の関数を追加しました。
+
+  - sceNpCommerce2DoProductCodeStartAsync()
+    プロダクトコード入力処理の開始
+
+  - sceNpCommerce2DoProductCodeFinishAsync()
+    プロダクトコード入力処理の終了
+
+  また、上記関数 sceNpCommerce2DoProductCodeStartAsync() の
+  引数 param に指定する、以下のパラメータ構造体を追加しました。
+
+    SceNpCommerce2ProductCodeParam
+
+サンプルの変更(cell\samples\sdk\network\np\np_gui_commerce2)
+
+- SDK300 でトップ画面に追加した、
+
+    プロダクトコード入力モードのストアブラウズを行うメニュー
+
+  を削除し、代わりに、以下のモードを追加しました。
+
+    インゲームプロダクトコード入力モード
+
+NP DRM
+======
+
+注意事項
+
+  「ゲームディスク仕様書」および「NPDRMパッケージ作成規定」の
+  ドキュメントにおいて、ディスクバインド形式コンテンツ「DiscBind」に
+  関する記載を追記しておりますが、この機能の導入開始時期は後日正式に
+  ご案内致します。
+
+  詳細につきましては、弊社バブリッシャーリレーション部まで
+  お問い合わせください。
+
+
+仕様変更
+
+- NPDRM EDATA のフォーマットを、version 3 に更新しました。
+  これにより、非圧縮フォーマットでは、version 2 よりも
+  読み出し速度を改善しました。
+
+  NPDRM EDATA version 3 は、SDK300 以前の
+  システムソフトウェア(GUI)では、読み出すことができません。
+
+  make_edata_npdrm コマンドに --format2 または --format1 オプションを
+  指定することで、強制的に SDK300 以前の SDK と同じフォーマットを
+  得ることも可能ですが、特別な事情がない限り、version 3 の使用を
+  推奨します。
+
+  なお、NPDRM EDATA のバージョンは、-i (--info) オプションで、
+  file version として確認できます。
+
+- ポーランド語のコンテンツ情報ファイルの梱包に対応しました。
+
+NP トロフィー
+=============
+
+新規機能
+
+- トロフィー情報をトロフィーサーバに同期するタイミングで、
+  トロフィー獲得情報を Facebook へ投稿する機能を追加しました。
+
+  これに伴い、システムソフトウェア(GUI)に、以下のメニューを追加しました。
+
+  [PlayStation(R)Network] -> [アカウント管理] -> [Facebook] -> 
+  [トロフィー情報の公開]
+
+  上記メニューで、トロフィー情報の公開設定を [入] に設定すると、
+  トロフィー獲得情報が、Facebook の「Wall」に投稿されます。
+
+  ただし、トロフィーシステムは、開発用トロフィーサーバを
+  提供していませんので、開発用環境でトロフィー獲得情報が
+  Facebook へ投稿されることはありません。
+
+  なお、Facebook への投稿は、トロフィーシステムが自動的に行いますので、
+  開発者側で特別な対応は必要ありません。
+
+----------------------------------------------------------------------
+libhead_tracker
+----------------------------------------------------------------------
+
+新規機能
+
+- libhead_tracker の初期化属性を格納する構造体 CellHeadTrackerAttribute 
+  に、以下のメンバを追加しました。
+  これらのメンバでは、追跡可能な頭部の傾き (roll角) の限界閾値、最大値、
+  最小値を設定します。
+
+  - setThreshOfHeadRoll
+  - maxOfHeadRoll
+  - minOfHeadRoll
+
+- PPU 側で、画像フォーマット変換のための管理データを生成する、
+  以下の関数を追加しました。
+
+    cellHeadTrackerSetDataOfExecConvertImageRAW8ToYUV444()
+
+- SPU 側で、画像フォーマットの変換 (RAW8 -> YUV444) を行う、
+  以下の関数を追加しました。
+
+    cellHeadTrackerExecConvertImageRAW8ToYUV444()
+
+  あらかじめ PPU 側で、上記関数 
+  cellHeadTrackerSetDataOfExecConvertImageRAW8ToYUV444()
+  を使用して生成した管理データを、適宜の方法で SPU 側のメモリに
+  転送しておき、そのアドレスを引数 data に指定してください。
+
+- 入力画像のマスク処理方法を設定する関数
+  cellHeadTrackerSetModeForMaskOfInputImage() を追加しました。
+
+  これに伴い、上記関数の引数 mode に、以下の値を追加しました。
+
+  - CELL_HEAD_TRACKER_MASK_OFF
+    入力画像のマスク処理を行わない設定
+
+  - CELL_HEAD_TRACKER_MASK_BY_BACKGROUND_IMAGE
+    登録された背景画像を使用した、従来の背景差分処理によって
+    入力画像をマスク処理し、追跡性能を向上させる設定
+
+  - CELL_HEAD_TRACKER_MASK_BY_DYNAMIC_BACKGROUND_IMAGE
+    内部で自動的に学習、生成される背景画像を使用した背景差分処理によって
+    入力画像をマスク処理し、追跡性能を向上させる設定
+    (デフォルト)
+
+- キャリブレーションの結果 (輪郭抽出パラメータ) を
+  取得または設定する、以下の関数を追加しました。
+
+  - cellHeadTrackerGetCalibrationParam()
+    キャリブレーションの結果 (輪郭抽出パラメータ) の取得
+
+  - cellHeadTrackerSetCalibrationParam()
+    キャリブレーションの結果 (輪郭抽出パラメータ) の設定
+
+  cellHeadTrackerGetCalibrationParam() を使用して取得した
+  輪郭抽出パラメータを、cellHeadTrackerSetCalibrationParam() を使用して
+  設定することで、キャリブレーションをスキップして追跡を開始する
+  ことができます。
+
+- 中間生成画像 (輪郭 (エッジ) 画像やマスク領域画像) を取得する、
+  以下の関数を追加しました。
+
+  - cellHeadTrackerGetPtrOfEdgeImage()
+    入力画像から輪郭抽出パラメータに従って生成された
+    輪郭 (エッジ) 画像を取得する関数
+
+    上記関数で得られる輪郭 (エッジ) 画像は、背景画像を使用した
+    背景差分処理によりマスク処理が施されています。
+
+    マスク処理を無効にしたい場合は、
+    上記 cellHeadTrackerSetModeForMaskOfInputImage() の引数 mode に、
+    CELL_HEAD_TRACKER_MASK_OFF を設定してください。
+
+  - cellHeadTrackerGetPtrOfMaskImage()
+    ライブラリ内部で生成、または登録された背景画像を使用した
+    背景差分処理によって生成されるマスク領域画像を取得する関数
+
+仕様変更
+
+- 以下の関数の引数で指定する、各 SPURS タスクが使用する
+ DMA タグの ID の数を、3 個から 4 個に変更しました。
+
+  - cellHeadTrackerInitConvertImageWithSetDMATag()
+    画像変換処理モジュールの SPURS タスクを初期化する関数
+
+  - cellHeadTrackerInitTrackingWithSetDMATag()
+    追跡処理モジュールの SPURS タスクを初期化する関数
+
+サンプルの変更(cell\samples\sdk\vision\head_tracker\head_tracker_camera)
+
+- 以下の処理を追加しました。
+
+  - 内部で自動的に学習、生成される背景画像を使用した背景差分処理によって
+    入力画像をマスク処理し、追跡性能を向上させる処理
+
+  - 以下の新規関数を使用してキャリブレーションをスキップし、
+    追跡を開始する処理
+
+    - cellHeadTrackerGetCalibrationParam()
+    - cellHeadTrackerSetCalibrationParam()
+
+- RAW8 VGA フォーマットのカメラ入力に対応しました。
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+
+新規機能
+
+- 顔属性判別で判別できる属性の種類が追加され、以下の 8 種類になりました。
+
+    笑顔
+    右目開閉度
+    左目開閉度
+    性別
+    大人 (子供、大人)
+    赤ちゃん
+    老人
+    メガネ
+
+  これに伴い、以下の関数、マクロ定数を追加しました。
+
+    [関数]
+      cellFacePartsAttributeEx()
+      顔検出によって得られた顔領域から、目、鼻、口のパーツ検出および
+      全属性判別を行う
+
+      cellFaceAttribExGetDictEa()
+      全属性判別用辞書データを取得する
+
+      cellFaceUtilPartsAttribExParamInitialize()
+      パーツ検出、全属性判別パラメータを初期化する
+
+    [マクロ定数]
+      CELL_FACE_ATTRIB_ID_REYEOPEN
+      CELL_FACE_ATTRIB_ID_LEYEOPEN
+      CELL_FACE_ATTRIB_ID_GENDER
+      CELL_FACE_ATTRIB_ID_ADULT
+      CELL_FACE_ATTRIB_ID_BABY
+      CELL_FACE_ATTRIB_ID_ELDER
+      CELL_FACE_ATTRIB_ID_GLASS
+
+- 詳細パーツ検出の安定化のためのポスト処理 (詳細パーツ検出の形状補正)
+  を導入しました。
+  これに伴い、以下の関数、構造体を追加しました。
+
+    [関数]
+      cellFaceAllPartsShapeConstraint()
+      詳細パーツ検出の形状補正処理を行う
+
+      cellFaceAllPartsShapeGetDictEa()
+      詳細パーツ検出の形状補正用辞書データを取得する
+
+      cellFaceUtilAllPartsWithShapeConstraintParamInitialize()
+      形状補正付き詳細パーツ検出パラメータを初期化する
+
+      cellFaceUtilAllPartsShapeParamInitialize()
+      詳細パーツ検出の形状補正処理パラメータを初期化する
+
+    [構造体]
+      CellFaceAllPartsShapeParam
+
+- 顔特徴量の類似度から個人識別を行う、顔識別機能を追加しました。
+  これに伴い、以下の関数、構造体、およびマクロ定数を追加しました。
+
+    [関数]
+      cellFaceFeature()
+      顔特徴量の算出
+
+      cellFaceSimilarity()
+      顔特徴量の類似度の計算
+
+      cellFaceSimilarityGetDictEa()
+      顔特徴量の類似度計算用辞書データの取得
+
+      cellFaceUtilFeatureParamInitialize()
+      顔特徴量計算パラメータの初期化
+
+      cellFaceUtilSimilarityParamInitialize()
+      類似度計算パラメータの初期化
+
+    [構造体]
+      CellFaceFeature
+      CellFaceFeatureParam
+      CellFaceSimilarityParam
+
+    [マクロ定数]
+      CELL_FACE_FEATURE_SIZE
+
+- libface ライブラリ内部で使用する DMA タグ番号のカスタマイズ機能を
+  追加しました。
+  これに伴い、以下の関数、およびエラーコードを追加しました。
+
+    [関数]
+      cellFaceSetDmaTag()
+      
+
+    [エラーコード]
+      CELL_FACE_ERROR_DMA_TAG
+
+仕様変更
+
+- 顔属性判別で判別できる属性が 8 種類になったことに伴い、
+  マクロ定数 CELL_FACE_ATTRIB_NUM_MAX の値を 1 から 8 に変更しました。
+
+- 構造体 CellFacePosition のメンバ uint8_t padding[8] を float shift[2] に
+  変更しました。
+  shift 配列は、libface ライブラリ内部で使用します。 
+
+- 構造体 CellFaceUtilReturnValue は、libface ライブラリ本体と直接関連性を
+  持たず、実質的にサンプルコードと同等の位置づけであったため、
+  libface ライブラリ API としては廃止しました。
+
+  ゲームアプリケーションで構造体 CellFaceUtilReturnValue を
+  使用している場合は、この構造体部分のコードを変更する必要があります。
+  cell\samples\sdk\vision\face\sample_face_util サンプルを参考に、
+  ゲームアプリケーションのコードの変更をお願いいたします。 
+
+サンプルの追加
+
+- cell\samples\sdk\vision\face\face_recognition_still
+  静止画 (jpg/png) から顔検出を行った後、それぞれの顔について
+  パーツ検出、詳細パーツ検出と属性判別を同時に行い、
+  さらに顔識別を行うサンプル
+
+サンプルの変更(cell\samples\sdk\vision\face)
+
+- sample_face_util (*1) サンプルにおいて、以下の変更を行いました。
+
+  - 構造体 CellSpursTaskset2 に対応しました。
+    全てのサンプルにおいて、これに対応する変更を行いました。
+
+  - 新規追加された SPU ライブラリ関数
+
+      cellFaceAllPartsShapeConstraint()
+      cellFacePartsAttributeEx()
+      cellFaceFeature()
+      cellFaceSimilarity()
+
+    を実行するためのソースコード付き PPU サンプルラッパー関数として、
+    以下の関数および関連する低レベル関数群を追加しました。
+
+      sampleFaceUtilAllPartsShape()
+      sampleFaceUtilPartsAttribEx()
+      sampleFaceUtilFeature()
+      sampleFaceUtilSimilarity()
+
+  - 上記仕様変更の構造体 CellFaceUtilReturnValue の廃止に伴い、
+    CellFaceUtilReturnValue を使用していたサンプルコードを変更しました。
+
+- sample_face_draw (*2) サンプルにおいて、以下の変更を行いました。
+
+  - 顔検出結果を立方体で表現するよう変更しました。
+  - パーツ検出結果に基づく補正顔領域を立方体で表現するよう変更しました。
+  - 全てのサンプルにおいて、これに対応する変更を行いました。
+
+- face_recognition_camera_multi_spu サンプルにおいて、以下の変更を行いました。
+  
+  - sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+  - 個人識別の機能を追加し、全面的にコードを書き換えました。
+
+- face_recognition_camera_local_search サンプルにおいて、
+  以下の変更を行いました。
+  
+  - sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+  - 個人識別の機能を追加し、全面的にコードを書き換えました。
+  - 顔検出の全体サーチをバックグラウンドで実行する部分の実装については、
+    全体サーチ専用の PPU スレッドの中で顔検出終了待ちを行う PPU スレッド版と、
+    PPU スレッドを使用せずメインループ中で全体サーチの終了をポーリングする
+    非 PPU スレッド版の 2 種類を用意しました。
+
+- attribute_classify_camera サンプルにおいて、以下の変更を行いました。
+  
+  - sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+  - 詳細パーツ検出の形状補正を行うように変更しました。
+  - 8 種類の顔属性判別結果を表示するように変更しました。
+  - PlayStation(R)Eye のカメラゲインを調整できるように変更しました。
+
+- attribute_classify_still サンプルにおいて、以下の変更を行いました。
+  
+  - sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+  - 8 種類の顔属性判別結果を表示するように変更しました。
+
+- face_detection_still サンプルにおいて、
+  sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+
+- parts_detection_still サンプルにおいて、以下の変更を行いました。
+  
+  - sample_face_util (*1), sample_face_draw (*2) の変更に対応しました。
+  - 詳細パーツ検出の形状補正を行うように変更しました。
+
+- sample_camera_util サンプルにおいて、
+  PlayStation(R)Eye のカメラゲインを調整できるように変更しました。
+
+- sample_misc_utils サンプルにおいて、以下の変更を行いました。
+
+  - 個人識別に関するデバッグ表示を追加しました。
+  - カメラ入力系サンプルの操作方法に関する表示を変更しました。
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+
+libkb
+=====
+
+新規機能
+
+- フランス語キーボード(ベルギー配列)をサポートしました。
+  ------------------------------------------------------
+  表示言語             | マクロ
+  ------------------------------------------------------
+  フランス語(ベルギー) | CELL_KB_MAPPING_BELGIAN_BELGIUM
+  ------------------------------------------------------
+
+- ポーランド語キーボードをサポートしました。
+  -----------------------------------------------------
+  表示言語     | マクロ
+  -----------------------------------------------------
+  ポーランド語 | CELL_KB_MAPPING_POLISH_POLAND
+  -----------------------------------------------------
+
+libkey2char
+===========
+
+新規機能
+
+- 以下のキーボードタイプに対応しました。
+
+  - フランス語キーボード (ベルギー)
+  - ポーランド語キーボード
+
+- 通常、cellKey2CharOpen() が呼び出された際に、libkey2char の内部で
+  自動的にキーボードタイプが決定されますが、ワイヤレスキーパッドを含む
+  複数のキーボードを接続している場合に、キーボードタイプが正しく
+  決定されない場合があります。
+
+  このような場合に、適切なキーボードタイプを設定できるように、
+  キーボードタイプを設定する関数 cellKey2CharSetArrangement()
+  を追加しました。
+
+  正しく複数のキーボードを制御するには、cellKey2CharOpen() を呼び出した後、
+  cellKbGetConfiguration() で取得したキーボードタイプを
+  cellKey2CharSetArrangement() で設定してください。
+
+  cellKbGetConfiguration() の詳細については、「libkb リファレンス」を
+  参照ください。
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+
+新規機能
+
+- USB マイクロフォンまたはヘッドセットからの、raw ストリーム入力のレイテンシを
+  削減して再生を行う関数、cellMicStartEx() を追加しました。
+
+  cellMicStartEx() の引数 iFlagsに与える設定フラグにより、このレイテンシが、
+  1ms、2ms、4ms に下がります (ただし、スレッドのタイミングによっては、
+  設定フラグの2倍の値までしか、実際のレイテンシが下がらない場合もあります)。
+
+  DSP ストリームの場合は、内部の DSP 処理時間にも依存しますので、
+  明確な差は出ません。
+
+  ---------------------------------------------------------------------------
+  cellMicStartEx()に設定するフラグ  説明
+  ---------------------------------------------------------------------------
+  CELL_MIC_STARTFLAG_LATENCY_1     1ミリ秒のrawストリームレイテンシを要求する
+  CELL_MIC_STARTFLAG_LATENCY_2     2ミリ秒のrawストリームレイテンシを要求する
+  CELL_MIC_STARTFLAG_LATENCY_4     4ミリ秒のrawストリームレイテンシを要求する
+  ---------------------------------------------------------------------------
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+
+新規機能
+
+- デバイスリリース番号を含むデバイス ID を取得するために指定する定数
+  CELL_CAMERA_DEVICEID2 を追加しました。
+
+  上記定数を、cellCameraGetAttribute() の第2引数 attrib に指定することにより、
+  PlayStation(R)2専用EyeToy(TM)USBカメラ、および PlayStation(R)Eye の
+  ベンダID とプロダクトID に加え、デバイスリリース番号を
+  取得できるようになりました。
+
+- UVC カメラのベンダ固有機能である Extension Unit に関する、
+  以下の関数を追加しました。
+
+  - cellCameraPrepExtensionUnit()
+    Extension Unit の準備
+
+    第2引数 guidExtensionCode に、対象の Extension Unit で
+    定義されているベンダ固有の識別子を指定します。
+
+    Extension Unit 識別子は、16バイトの GUID 型ですが、
+    第2引数 guidExtensionCode へは、バイト配列で指定してください 
+    (各バイトの順序に注意してください)。
+
+  - cellCameraCtrlExtensionUnit()
+    Extension Unit の制御
+
+    第4引数 wLength に、デバイスに渡すパラメータのサイズを指定します。
+    パラメータのサイズは、16 バイトまでに制限されています。
+
+  - cellCameraGetExtensionUnit()
+    Extension Unit の、現在の設定の取得
+
+    第3引数 wLength に指定する、デバイスに渡すパラメータのサイズは、
+    16 バイトまでに制限されています。
+
+  - cellCameraSetExtensionUnit()
+    Extension Unit の設定
+
+    第3引数 wLength に指定する、デバイスに渡すパラメータのサイズは、
+    16 バイトまでに制限されています。
+
+----------------------------------------------------------------------
+libl10n
+----------------------------------------------------------------------
+
+新規機能
+
+- 符号化方式を表すデータ型 (L10nCode) に、以下の定義を追加しました。
+
+  -----------------------------------------------------------------------------
+  マクロ            : 説明
+  -----------------------------------------------------------------------------
+  L10N_CODEPAGE_737 : Microsoft CodePage737 (OEM - Greek)
+  L10N_CODEPAGE_775 : Microsoft CodePage775 (OEM - Baltic)
+  L10N_CODEPAGE_852 : Microsoft CodePage852 (OEM - Latin 2)
+  L10N_CODEPAGE_855 : Microsoft CodePage855 (OEM - Cyrillic)
+  L10N_CODEPAGE_857 : Microsoft CodePage857 (OEM - Turkish)
+  L10N_CODEPAGE_858 : Microsoft CodePage858 (OEM - Multilingual Latin I + Euro)
+  L10N_CODEPAGE_860 : Microsoft CodePage860 (OEM - Portugese)
+  L10N_CODEPAGE_861 : Microsoft CodePage861 (OEM - Icelandic)
+  L10N_CODEPAGE_865 : Microsoft CodePage865 (OEM - Nordic)
+  L10N_CODEPAGE_869 : Microsoft CodePage869 (OEM - Greek 2)
+  L10N_CODEPAGE_1250: Microsoft CodePage1250 (ANSI - Central European)
+  L10N_CODEPAGE_1253: Microsoft CodePage1253 (ANSI - Greek)
+  L10N_CODEPAGE_1254: Microsoft CodePage1254 (ANSI - Turkish)
+  L10N_CODEPAGE_1257: Microsoft CodePage1257 (ANSI - Baltic)
+  -----------------------------------------------------------------------------
+
+サンプルの変更(cell\samples\sdk\l10n)
+
+- 符号化方式を表すデータ型 (L10nCode) の拡張に伴い、サンプルにおいても
+  新規に追加した L10nCode を使用したコードにしました。
+
+- 実行ファイルの拡張子を、「*.elf/*.self」から、「*.ppu.elf/*.ppu.self」に
+  変更しました。
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+
+新規機能
+
+- ラウンド系書体のフォントセットの拡張を行いました。
+  以下の東欧諸国の言語に対応したフォントセットを取り扱えるようになりました。
+
+  - ポーランド語
+  - チェコ語
+  - スロバキア語
+  - ハンガリー語
+  - スロベニア語
+  - クロアチア語
+  - ルーマニア語
+  - ギリシャ語
+  - トルコ語
+  - エストニア語
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+
+新規機能
+
+- どのブロックでエラーが発生しているかを示す、
+  ブロック割り込みステータスを取得する関数
+  cellDbgRsxGetInterruptErrorStatus() の引数 status が指す変数に
+  格納される値に、CELL_DBG_RSX_INTERRUPT_ERROR_STATUS_ID_MISC 
+  を追加しました。
+
+  CELL_DBG_RSX_INTERRUPT_ERROR_STATUS_ID_MISC は、
+  システムソフトウェアやユーザによるエラーの際に取得されます。
+
+  これに伴い、その他のエラーの要因を示す割り込みステータスを取得する関数
+  cellDbgRsxGetInterruptMiscErrorStatus()、および、左記関数の引数 status 
+  が指す変数に格納される、以下の値を追加しました。
+
+  - CELL_DBG_RSX_INTERRUPT_MISC_ERROR_STATUS_ID_DUMP
+    cellGcmDumpGraphicsError()の呼び出しによるエラー
+
+  - CELL_DBG_RSX_INTERRUPT_MISC_ERROR_STATUS_ID_SYSTEM_OVERLAY
+    システムソフトウェアによる上書き描画が失敗したときに発生します。
+    Graphics error 3と同等です。
+
+- GRAPHICS ブロック中の各ユニットに設定されている
+  グラフィックスエンジンの状態を示す、バンドルステートを取得する関数
+  cellDbgRsxGetGraphicsBundleState() に、以下のバンドルステートを
+  追加しました。
+
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_COLOR_MASK_MRT
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_DATA_ARRAY_FORMAT
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_DATA_ARRAY_OFFSET
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_A
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_B
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_C
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_D
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_ZETA
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FRONT_FACE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CULL_FACE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CULL_FACE_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_LINE_WIDTH
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_LINE_SMOOTH_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_OFFSET_FILL_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_OFFSET_LINE_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_SMOOTH_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FRONT_POLYGON_MODE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_POLYGON_MODE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TWO_SIDE_LIGHT_EN
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTROL0
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_DEPTH_BOUNDS_TEST_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FREQUENCY_DIVIDER_OPERATION
+
+サンプルの変更(cell\samples\sdk\graphics\dbgrsx\dbgrsxutil)
+
+- 上記の新規関数、マクロ、およびバンドルステートに対応しました。
+
+- readrsxcore について、エラーごとに関連レジスタと説明を表示する機能を
+  追加しました。
+
+- readrsxcore を更新し、新しいコアダンプフォーマットに対応しました。
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+
+新規機能
+
+- #pragma regcount を追加しました。
+
+  これに伴い、コマンドラインオプションの代わりに、
+  ソース内プラグマを使用して、レジスタ数を設定できるようになりました。
+
+  コマンドラインで指定された -regcount オプションは、
+  プラグマで指定されたものより優先されます。
+
+- 以下の 2 つのキャプチャオプションを追加しました。
+
+    -capture-srcfilename
+    -capture-outfilename
+
+  上記キャプチャオプションは、libcgc でのキャプチャ時のみに使用します。
+
+  一意のソースファイル名か、またはシェーダ出力ファイル名を指定できます。
+
+  従来は、libcgc でのキャプチャは、ソースファイル名や
+  シェーダ出力ファイル名の命名に関する情報がなかったため、
+  常にソースファイルを「src.cg」として、シェーダ出力ファイルを
+  「ucode.(v|f)po」として格納していました。
+
+- cgc キャプチャ使用時のインクルードハンドラ (includeHandler) の
+  サポートを追加しました。
+
+  従来は、インクルードハンドラ (includeHandler) からデータを
+  キャプチャするには、-capture-preprocess を指定する必要がありました。
+
+  インクルードハンドラ (includeHandler) から返されるデータは、
+  #include の後のファイル名に関連付けられるようになりました。
+
+- オプション -capture-brstrip を追加しました。
+
+  このオプションを指定すると、コンパイラは、シェーダを区別するために
+  必要な追加データを格納し、フラグメントシェーダの「分岐除去」後処理を
+  行うことができるようにします。
+
+  この動作は、環境変数 SCECGC_CAPTUREBRSTRIP を設定して有効化することも
+  できます。
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+
+新規機能
+
+<PPU 用ライブラリ>
+
+- RSX(R)ハードウェアスクリーン座標系の Z 座標におけるクリップ範囲を設定する関数
+  cellGcmSetClipMinMax() を追加しました。
+  cellGcmSetViewport() によるビューポート設定後、クリップ範囲のみを変更する
+  場合に使用します。
+
+- cellGcmSetTileInfo() で設定した Tiled 領域の情報、および
+  cellGcmBindZcull() で設定した ZcullRegion の情報を取得する、
+  以下の関数と構造体を追加しました。
+
+    [関数]
+      cellGcmGetTileInfo()
+      cellGcmGetZcullInfo()
+
+    [構造体]
+      CellGcmTileInfo
+      CellGcmZcullInfo
+
+- バーテクスシェーダに渡す定数頂点属性データを設定する、
+  以下の関数を追加しました。
+
+    cellGcmSetVertexData3f()
+    cellGcmSetVertexData2f()
+    cellGcmSetVertexData1f()
+    cellGcmSetVertexData4s()
+    cellGcmSetVertexDataScaled4s()
+    cellGcmSetVertexData2s()
+    cellGcmSetVertexData4ub()
+
+- 先行するレンダリング処理の終了待ちを行う関数、
+  cellGcmSetWaitForIdle() を追加しました。
+
+- コアダンプによってコアファイルに出力される情報として、
+  libgcm が内部で持っている情報 (デフォルトコマンドバッファの位置や
+  コールバック関数など) を追加しました。
+
+  追加した情報の詳細は、「コアダンプ 概要」の
+  「RSX(R)デバッグ情報のデータフォーマット」、「GCM Infoユニット」を
+  参照してください。
+
+- PlayStation(R)3 GPAD 用の関数を追加しました。
+
+  - cellGcmGpadGetStatus() 
+    PlayStation(R)3 GPAD の現在の状態を取得する関数
+
+  - cellGcmGpadNotifyCaptureSurface()
+    PlayStation(R)3 GPAD に対してビデオキャプチャしたいサーフェスデータの
+    登録を行う関数
+
+- RSX(R) のローカルメモリを実効アドレス空間にマッピングする関数
+  cellGcmMapLocalMemory() を追加しました。
+
+- ディスプレイ出力バッファ情報を取得する、以下の関数と構造体を追加しました。
+
+    [関数]
+      cellGcmGetDisplayInfo()
+      ディスプレイ出力バッファ情報を取得
+
+      cellGcmGetCurrentDisplayBufferId()
+      cellGcmSetDisplayBuffer() で設定されたディスプレイ出力バッファのうち、
+      現在ディスプレイ出力中のバッファ ID を取得
+
+    [構造体]
+      CellGcmDisplayInfo
+
+- アドレス、オフセット、サイズなどをアラインする関数
+  cellGcmAlign() を追加しました。
+  引数 value を基に、引数 alignment の倍数にアラインした値を返します。
+
+  これに伴い、引数 alignment に指定する以下のマクロを追加しました。
+
+    CELL_GCM_ZCULL_ALIGN_OFFSET
+    CELL_GCM_ZCULL_ALIGN_WIDTH
+    CELL_GCM_ZCULL_ALIGN_HEIGHT
+    CELL_GCM_ZCULL_ALIGN_CULLSTART
+    CELL_GCM_TILE_ALIGN_OFFSET
+    CELL_GCM_TILE_ALIGN_SIZE
+    CELL_GCM_TILE_LOCAL_ALIGN_HEIGHT
+    CELL_GCM_TILE_MAIN_ALIGN_HEIGHT
+    CELL_GCM_FRAGMENT_UCODE_LOCAL_ALIGN_OFFSET
+    CELL_GCM_FRAGMENT_UCODE_MAIN_ALIGN_OFFSET
+    CELL_GCM_SURFACE_LINEAR_ALIGN_OFFSET
+    CELL_GCM_SURFACE_SWIZZLE_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_SWIZZLE_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_CUBEMAP_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_SWIZZLED_CUBEMAP_FACE_ALIGN_OFFSET
+
+<SPU 用ライブラリ>
+
+- 実効アドレスからオフセット値に変換する関数 
+  cellGcmSpuAddressToOffset() を追加しました。
+  SPU ライブラリ用にアドレス変換を行う、SPU 専用関数の 1 つです。
+
+- Cg関数 (cellGcmCgXXXXXX()) の SPU 版を追加しました。
+
+- 描画コマンド生成関数におけるコマンドバッファの制御モードの 1 つ、
+  MeasureSize モードを追加しました。
+
+  上記モードのコマンド生成関数は、引数 size の値にコマンドのサイズを
+  加算した結果を返り値として返します。
+  上記モードのコマンド生成関数を続けて呼び出すことで、
+  コマンドバッファに必要なメモリサイズを直接取得することができます。
+
+- 転送サイズ 4 バイトの DMA put/DMA get 用パラメータを取得する、
+  以下の関数を追加しました。
+
+    cellGcmSpuGetDmaPutVecUint4Ls()
+    cellGcmSpuGetDmaGetVecUint4Ls()
+
+- ラベル、レポートデータ、ノーティファイデータの実効アドレスを取得する、
+  以下の関数を追加しました。
+
+    cellGcmSpuGetLabelAddress()
+    cellGcmSpuGetReportDataAddressLocation()
+    cellGcmSpuGetNotifyDataAddress()
+
+- 以下の関数を SPU に最適化しました。
+
+  - cellGcmSetWriteTextureLabel()
+    テクスチャ参照完了時のラベル値更新の設定
+
+  - cellGcmSetInvalidateVertexCache()
+    バーテクスシェーダのプリトランスフォームキャッシュ、
+    ポストトランスフォームキャッシュの両方を無効化
+
+  - cellGcmSetVertexDataArray()
+    バーテクスシェーダに渡す頂点属性データの設定
+
+  - cellGcmSetDrawIndexArray()
+    インデックスを用いたプリミティブのレンダリング
+
+仕様変更
+
+  デバッグコールバック関数へのポインタ gCellGcmDebugCheckCallback に
+  NULL を設定した状態で、引数チェックを有効にした場合に、
+  不適切なパラメータが発見されると、従来は無限ループが発生しましたが、
+  アサートするようにしました。
+
+サンプルの変更(cell\samples)
+
+- sdk\graphics\gcm\msaa\ds2x のサンプルにおいて、
+  不要なパラメータを削除しました。
+
+- sdk\graphics\gcm のサンプルにおいて、
+  新規関数 cellGcmAlign() と引数 alignment に指定する
+  マクロを使用するようにしました。
+
+- common\gcmutil のサンプルにおいて、
+  以下の新規関数を使用するようにしました。
+
+    cellGcmGetTileInfo()
+    cellGcmGetZcullInfo()
+
+----------------------------------------------------------------------
+サウンド関連
+----------------------------------------------------------------------
+
+libaudio
+========
+
+新規機能
+
+- Audio Serverに、オーディオミックス処理の前にイベントを発行する
+  仕組みを追加しました。
+  これに伴い、以下の関数とマクロを追加しました。
+
+    [関数]
+    cellAudioSetNotifyEventQueueEx()
+      オーディオイベント取得用キューの登録
+
+    cellAudioRemoveNotifyEventQueueEx()
+      オーディオイベント取得用キューの削除
+
+    cellAudioSendAck()
+      オーディオミックス処理前のオーディオ出力データの準備ができたことの通知
+
+    [マクロ]
+    CELL_AUDIO_EVENTFLAG_BEFOREMIX
+      ミックス前のオーディオ通知を要求するフラグ
+
+- オーディオ信号の更新通知を受け取るためのイベントキューを生成する関数
+  cellAudioCreateNotifyEventQueueEx() を追加しました。
+
+  cellAudioCreateNotifyEventQueue() と本関数の違いは、
+  生成するイベントキューを引数 iFlags で選択できる点です。
+
+  SPUイベントキューを生成するには、引数 iFlags に新規マクロ、
+  CELL_AUDIO_CREATEEVENTFLAG_SPU を指定します。
+  PPUイベントキューを生成するには、引数 iFlags に 0 を指定します。
+  この場合は、cellAudioCreateNotifyEventQueue()と同じ機能です。
+
+サンプルの追加
+
+- cell\samples\sdk\sound\audio\EventBased
+  PPU スレッドとSPU スレッドにおけるオーディオイベントの使い方を示すサンプル
+
+libmstream
+==========
+
+新規機能
+
+- コンプレッサ DSP エフェクトに、ソフトニーとハードニーのコンプレッサ 
+  オプションを構造体 CellMSFXCompressorInfo の以下のメンバで提供します。
+
+    float softKnee;
+    int flags;
+
+  メンバ softKnee には、ニーがアクティブになる範囲をデシベルで指定します。 
+  ソフトニーは、指定した範囲から徐々に圧縮率を増加させるよう動作します。 
+  softKnee の値が 0.0f の場合は、ハードニーとなります。
+ 
+  メンバ flags には、以下の新規マクロの論理和を設定します。 
+
+   - 検知モードの切り替え用マクロ 
+       #define CELL_MSFX_COMPRESSOR_RMS_MODE               (0) 
+       #define CELL_MSFX_COMPRESSOR_PEAK_MODE              (1) 
+
+       ただし、ピークモードは、タイムドメインコンプレッサでのみ、
+       サポートされます。
+
+   - マルチチャネル計算の切り替え用マクロ 
+       #define CELL_MSFX_COMPRESSOR_CHAN_VOLUMES_AVERAGE   (0) 
+       #define CELL_MSFX_COMPRESSOR_CHAN_VOLUMES_MAX       (2) 
+
+----------------------------------------------------------------------
+codec
+----------------------------------------------------------------------
+
+libsail
+=======
+
+新規機能
+
+- 構造体 CellSailStartCommand のメンバ flags に指定するフラグに、
+  CELL_SAIL_START_FLAG_STICKY を追加しました。
+  ストリームの遷移などが発生しても再生開始コマンドを無効にしない場合、
+  このフラグを使用します。
+
+- 録画ユーティリティや libsail_rec の MPEG-4 Advanced Coding Efficiency(M4HD) 
+  を使って作成されたムービーの再生に対応しました。
+
+- 入力ストリームが MP4 ファイルの場合に、MPEG-4 AVC High Profile の
+  ビデオ再生に対応しました。
+
+----------------------------------------------------------------------
+サンプルプログラム (cell\samples)
+----------------------------------------------------------------------
+
+サンプルの追加
+
+- cell\samples\tutorial\performance_tips\Cell\advanced\motion_sample
+  vectormath および SPURS ジョブキューを使用したモーションサンプル
+
+- cell\samples\tutorial\performance_tips\SpuMixUse
+  PlayStation(R)Edge ジオメトリと物理シミュレーションという
+  種類の異なる処理を、SPU で効率的に実行させるサンプル
+
+----------------------------------------------------------------------

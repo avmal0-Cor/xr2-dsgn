@@ -1,0 +1,817 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 200.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 200.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 200.002
+======================================================================
+----------------------------------------------------------------------
+System Software(GUI)
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#39844,B#39847,B#40752)
+    When the core dump function is enabled, 
+    the created core file may be output in an incomplete state.
+    Because of this, debug using the core file may not be properly carried out.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< Game Update Utility >
+- The following bug has been fixed.
+
+  - When Game Update Utility samples restart after downloading/installing 
+    a patch, the error 0x80028f50 may occur. 
+
+< Recording Utility >
+- The following bug has been fixed.
+
+  - In the samples/sdk/sysutil/recording sample, it cannot perform 
+    recording when a temporary directory does not exist.
+
+< Photo Utility >
+- The following bug has been fixed.
+
+  - When an image whose width is very wide(about 6000 pixels) is decoded, 
+    it may hang up.
+
+< Video Utility >
+- The following bug has been fixed.
+
+  - After exporting a file using the video utility, if the directory where 
+    the exported file is stored becomes empty, the directory will be deleted. 
+
+<Save Data Utility>
+- The following bug has been fixed.
+
+  - Once the data is deleted using cellSaveDataListDelete(),the button 
+    navigation  "Enter" at the bottom of the screen will disappear. 
+
+- The following bug has been fixed.
+
+  - Once the data is copied using cellSaveDataListImport(),the button 
+    navigation "Enter" at the bottom of the screen will disappear. 
+
+< Remote Play Utility >
+- The following bug has been fixed.
+  
+  - (B#41072)
+    When PLAYSTATION(R)3 and a monitor are connected using a HDMI-DVI 
+    cable, the game application cannot be booted in the remote play mode.
+
+- The following bug has been fixed.
+  
+  - (B#41193)
+    When the wired address of the network settings is set to 192.168.52.*,
+    the address cannot be obtained from AP.
+
+- The following bug has been fixed.
+  
+  - (B#40865)
+    When the game application is booted in the remote play mode and 
+    cellAudioOutGetState() is executed, 
+    CELL_AUDIO_OUT_OUTPUT_STATE_DISABLED is always returned to state.
+
+< Sub Display Utility >
+- The following bug has been fixed.
+
+  - A peer (PSP(TM) being connected) is not correctly disconnected using 
+    cellSubDisplayStop().
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- (B#40753)
+  The update frequency of vibration data when 
+  the DUALSHOCK(R)3 wireless controller is connected to a USB port 
+  has been improved.
+
+- The following bug has been fixed.
+
+  - (B#40025)
+    When the assignment of the DUALSHOCK(R)3 wireless controller is 
+    changed while it is vibrating, it keeps vibrating.
+
+- The following bug has been fixed.
+
+  - (B#40025)
+    Although cellPadEnd() is called while 
+    the DUALSHOCK(R)3 wireless controller is vibrating, it does not stop 
+    vibrating.
+
+- The following bug has been fixed.
+
+  - (B#22856, B#38216)
+    When a multipurpose USB controller is plugged, the left stick may be
+    input to upper left slightly.
+
+- The following bug has been fixed.
+
+  - (B#36560)
+    When a certain multipurpose USB controller is plugged, the left stick 
+    is kept inputting to upper left and such condition is not resolved 
+    until the controller is operated.
+
+----------------------------------------------------------------------
+libkb
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#40561)
+    When any one of modifier keys such as ALT, CTRL and SHIFT is pressed 
+    independently in a packet mode, data cannot be obtained.
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#39669)
+    When playing a SMF file, an argument when it is played back earlier
+    remains.
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#38337)
+    When cellHttpClientPollConnections() is executed for a transaction 
+    that is generated as "https", the status of whether the receive data 
+    exists may not be obtained correctly. 
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#37745)
+    Although an incorrect value is set to an area that is specified to
+    struct pollfd of socketpoll(), it ends normally.
+
+- The following bug has been fixed.
+
+  - (B#38687)
+    In sys_net_get_sockinfo(), the P2P socket information is not correct.
+
+- The following bug has been fixed.
+
+  - (B#40313)
+    When there is not enough kernel work area and also the send size is 
+    32 KB or more, it may not return form the send function or such.
+
+- (B#39986)
+  In samples/sdk/network/net/network/echo_p2p.c, the output method of 
+  a drop rate that exceeds 100% when echo_p2p_set_test_param is executed 
+  has been changed.
+
+----------------------------------------------------------------------
+libnetctl
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When a user who has not signed in PLAYSTATION(R)Network starts the 
+    Network Start Dialog Utility, an error code 0x80130182 is obtained 
+    when cellNetCtlNetStartDialogUnloadAsync() is executed although it 
+    is displayed as 0x80130183 on the screen.
+
+  It now returns an error code CELL_NET_CTL_ERROR_NP_NO_ACCOUNT(0x80130183).
+
+- The following bug has been fixed.
+
+  - When the Network Start Dialog Utility is started having the Ethernet 
+    cable unplugged, an error code 0x80130182 is obtained when 
+    cellNetCtlNetStartDialogUnloadAsync() is executed although it is 
+    displayed as 0x80130186 on the screen.
+
+  It now returns an error code 
+  CELL_NET_CTL_ERROR_NET_CABLE_NOT_CONNECTED(0x80130186).
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#39826)
+    When font open is failed due to lack of memory or a file IO error, 
+    the open function does not return a correct error cause or the memory 
+    that is reserved during file open is not released correctly.
+
+- In fonts.c of the samples/sdk/font/fw_cubeWithFont sample, the warning 
+  avoidance code for an unused variable descried in the sample callback 
+  has been changed appropriately as shown below:
+   obj=NULL; => (void)obj;
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When there is not enough resource within libusbd, the system hangs 
+    up.
+
+- The following bug has been fixed.
+
+  - When a data size that straddles over the 4KB alignment multiple times
+    is set to the argument "len" and cellUsbdBulkTransfer() is executed to
+    send the data, the system may hang up. 
+
+- The following bug has been fixed.
+
+  - When calling cellUsbdGetDeviceSpeed(), it may access an invalid memory.
+
+- The following bug has been fixed.
+
+  - When calling cellUsbdRegisterLdd(), it may access an invalid memory.
+
+- The following bug has been fixed.
+
+  - When cellUsbdBulkTransfer() fails, a memory leak may occur.
+
+- The following bug has been fixed.
+
+  - When a device is disconnected while cellUsbdInit() is being executed, 
+    the function may fail.
+
+- The following bug has been fixed.
+
+   - When cellUsbdRegisterExtraLDD() is continuously called more than 
+     once, the function may fail.
+
+----------------------------------------------------------------------
+NP Matching
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In samples/sdk/network/np/np_game, the main menu is not displayed 
+    immediately after the sample is started.
+
+- The following bug has been fixed.
+
+  - The return value of the NP matching API may be more than 0 
+    in a successful case: 
+    This phenomenon occurs in the following 2 APIs: 
+      - sceNpMatchingGetResult()
+      - sceNpMatchingGetRoomMemberListLocal()
+
+    This problem occurs when other than NULL is set to the argument buf 
+    of the above APIs and the resulting data size obtained when they are 
+    executed is more than 0. 
+
+----------------------------------------------------------------------
+NP Lookup utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - The return value 0 that indicates the completion of the asynchronous 
+    processing is returned only once from sceNpLookupPollAsync(). 
+    When sceNpLookupPollAsync() is called again for the same processing, a 
+    return value 1 is returned. Therefore, when checking the processing 
+    status in multiple locations, a processing completion flag should be 
+    prepared by the application.
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - The return value 0 that indicates the completion of the asynchronous 
+    processing is returned only once from sceNpScorePollAsync(). 
+    When sceNpScorePollAsync() is called again for the same processing, a 
+    return value 1 is returned. Therefore, when checking the processing 
+    status in multiple locations, a processing completion flag should be 
+    prepared by the application.
+
+----------------------------------------------------------------------
+NP DRM Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When sceNpDrmOpen() or sceNpDrmIsAvailable() is executed, a timing 
+    dependent error occurs.
+
+----------------------------------------------------------------------
+NP Commerce
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - sceNpCommerceGetProductCategoryStart() does not behave correctly when 
+    CELL_SYSUTIL_LANG_CHINESE_T is specified to the 3rd argument "lang_code". 
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs job>
+- The following bug has been fixed.
+
+  - (B#40536)
+    When switching from a JobChain with lower priority to another 
+    with higher priority, the SPU may not perform anything 
+    for a period of time.
+
+- The following bug has been fixed.
+
+  - (B#36272)
+    In the SPURS job, more SPU jobs than the number of SPUs specified 
+    to the Ready Count may be executed. 
+
+- The following bug has been fixed.
+
+  - (B#30052)
+    When cellSpursKickJobChain() is called while the SPURS jobchain is 
+    in a wait state by the GURD or SYNC commands, it may use an unnecessary 
+    SPU while waiting.
+    Note that this problem does not occur in cellSpursRunJobChain() of Job 2.0.
+
+- The following bug has been fixed. 
+
+  - (B#38107)
+    When a SPURS job that is set not to cache the job binary is executed,
+    an SPU thread exception(Unknown signal 0x0) may occur. 
+
+- The following bug has been fixed.
+
+  - (B#41344)
+    In the SPURS job, data is corrupted and the performance becomes undefined 
+    when 4 pieces of read only data are specified to the job descriptor but 
+    more than 8 cache buffers including job binaries are required for the job 
+    that is executed by the same SPU consecutively.
+
+< Policy module >
+- The following bug has been fixed.
+
+  - (B#39008)
+    cellSpursModulePoll() may request to hand over an SPU when it is not 
+    necessary.
+
+<libspurs task >
+- (B#34191)
+  In the SPURS task lock free queue, when an access that does not follow 
+  what is specified to the direction parameter is made from the task, 
+  the behavior becomes undefined. This problem has been fixed and it now 
+  returns an error message CELL_SPURS_TASK_ERROR_PERM. 
+
+- The following bug has been fixed.
+
+  - (B#37073)
+    The cell_spurs_print_event_flag_info of the GDB script for PPU displays 
+    the task set and the SPURS address the other way around.
+
+- The following bug has been fixed.
+
+  - (B#37556)
+    When multiple PPU threads call cellSpursEventFlagSet() for the same 
+    event flag at the same time, an incorrect event may be passed to 
+    the SPURS task. 
+
+- (B#40041)
+  When the lock free queue is called from multiple PPU threads, it may hang up 
+  or assert. This problem has been fixed and it now returns an error 
+  (CELL_SPURS_TASK_ERROR_BUSY).
+
+- The following bug has been fixed.
+
+  - (B#38936) 
+    When more than 16 tasks access the lock free queue, tasks in a wait state 
+    may not be activated. 
+
+<libsync>
+- The following bug has been fixed.
+
+  - (B#38713)
+    cellSyncMutexTryLock() returns CELL_SYNC_ERROR_BUSY for cases that are not 
+    specified.
+
+- The following bug has been fixed.
+
+  - (B#40041)
+    When the lock free queue is not multithread safe and multiple PPU threads 
+    add and obtain data for the queue, it may hang up or assert.
+
+- (B#38993)
+  In the lock free queue, when an access that does not follow what is 
+  specified  to the direction parameter is made from the SPU, the behavior 
+  becomes undefined. This problem has been fixed and it now returns an error 
+  message CELL_SYNC_ERROR_PERM.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#37725)
+    The performance of the lightweight mutex (lwmutex) associated with 
+    the lightweight condition variable (lwcond) may be degraded. 
+
+    This problem occurs when a PPU thread that is executing sys_lwcond_wait() 
+    does not exists when sys_lwcond_signal() is called. This will degrade 
+    the performance of sys_lwmutex_lock()/unlock() that will be taken place 
+    afterworlds.
+    The performance degradation is observed in a sequence where no waiting 
+    thread exists
+    in lwmutex. Specifically, the performance will be degraded as shown below:
+
+    In sys_lwmutex_lock() : Approximately from 0.17 usec to 1.9 usec
+    In sys_lwmutex_unlock() : Approximately from 0.18 usec to 1.0 usec
+
+    The workarounda is as shown below: 
+
+    -  When there is 1 waiter thread 
+       Use sys_lwcond_signal_all
+
+    -  When multiple waiter threads exist 
+       1) Execute sys_lwcond_signal() only when there is a thread waiting
+       2) Use sys_lwcond_signal_to()
+
+- The following bug has been fixed.
+  
+  - (B#38774)
+    Although DMA write is performed for a page that is mapped in read-only
+    mode by the SPU thread or the Raw SPU, an exception or a page fault 
+    does not occur.
+
+- The following bug has been fixed.
+  
+  - (B#38378)
+    When a target address of a page fault notification is passed to the 
+    system call to which a process address should have been passed as an 
+    argument, event notification is not performed.
+    (* Note that a known bug and a restriction have been newly added after
+     this problem is resolved. Please refer to info/Notice_SDK_*.pdf for 
+     more details.)
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In the cellGcmSetVertexTexture() inline function, when 
+    -Wextra -Wsystem-headers is added as a compile option to perform 
+    compilation, a warning message is output.
+
+- When one of the following functions is called before cellGcmInit(), it
+  may hang up. This problem has been fixed.
+
+  Also note that when one of the following functions is called before 
+  cellGcmInit(), it now returns 0.
+
+  cellGcmGetLastFlipTime()
+  cellGcmGetLastSecondVTime()
+  cellGcmGetVBlankCount()
+  cellGcmGetFlipStatus()
+  cellGcmGetCurrentField()
+
+  When one of the following functions is called before cellGcmInit(), it 
+  now returns from the function without performing any processing:
+
+  cellGcmResetFlipStatus()
+  cellGcmSetFlipStatus()
+
+- The following bug has been fixed.
+
+  - When RSX(TM) returns graphics error 512, the stack memory is corrupted
+    and it hangs up.
+
+- The following bug has been fixed.
+
+  - The width("inW" member variable) and the height("inH" member variable
+    ), that are specified to the argument scale(CellGcmTransferScale 
+    structure) of the cellGcmSetTransferScaleSwizzle() function, are 
+    handled the other way around within the function. Accordingly, data 
+    can be transferred correctly only when the same value is specified to 
+    inW and inH.
+
+- When outputting a graphics error, the offset value of the Tiled area on 
+  the local memory is now displayed correctly.
+
+- The following bug has been fixed.
+
+  - When an address whose effective address is 0x80000000 or more is IO-mapped 
+    and cellGcmSortRemapEaIoAddress() is called, an error occurs. 
+
+- The following bug has been fixed.
+
+  - In the samples/sdk/graphics/gcm/msaa/ds4x sample, it hangs up with a 
+    specific resolution.
+
+- In the samples/sdk/graphics/gcm/fw_cube sample, it has been fixed 
+  so that it works correctly when the SNC PPU Toolchain is used.
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- The following functions may return a different command from the Runtime 
+  Library when an offline library is used. This problem has been fixed.
+  cellGcmSetBlendEquation()
+  cellGcmSetBlendFunc()
+  cellGcmSetLineStipplePattern()
+  cellGcmSetScissor()
+  cellGcmSetViewport()
+  cellGcmSetTextureBorderColor()
+  cellGcmSetTextureFilter()
+  cellGcmSetTextureAddress()
+  cellGcmSetTextureControl()
+  cellGcmSetTextureOptimization()
+  cellGcmSetTexture()
+  cellGcmSetDrawArrays()
+  cellGcmSetDrawIndexArray()
+  cellGcmSetDrawBegin()
+  cellGcmSetVertexData4f()
+  cellGcmSetVertexDataArray()
+  cellGcmSetFrequencyDividerOperation()
+  cellGcmSetZcullControl()
+  cellGcmSetZcullLimit()
+  cellGcmSetScullControl()
+  cellGcmSetVertexTexture()
+  cellGcmSetVertexTextureAddress()
+  cellGcmSetVertexTextureFilter()
+  cellGcmSetVertexTextureControl()
+  cellGcmSetVertexTextureBorderColor()
+  cellGcmSetDrawInlineArray()
+  cellGcmSetDrawInlineIndexArray32()
+  cellGcmSetDrawInlineIndexArray16()
+  cellGcmSetTextureRemap()
+  cellGcmSetTransferDataFormat()
+  cellGcmSetAnisoSpread()
+  cellGcmSetTextureAddressAnisoBias()
+  cellGcmSetVertexDataArrayFormat()
+  cellGcmSetVertexDataArrayOffset()
+  cellGcmSetFragmentProgramControl()
+  cellGcmSetFlip()
+  cellGcmSetVertexProgramLoad()
+  cellGcmSetSurface()
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#35472) SPU
+    In spu_printf(), when %% is contained in the output format string, 
+    the argument and the conversion specification do not correspond 
+    each other correctly.
+
+- The following bug has been fixed.
+
+  - (B#36947) PPU
+    Unsupported functions tmpnam() and tmpfile() still remain in stdio.h, 
+    cstdio and libc.a.
+
+- The following bug has been fixed.
+
+  - (B#39006) SPU
+    When spu_printf() is called from a Raw SPU program, it is output to 
+    the standard output which should have been output to 
+    SYS_TTYP_SPU_STDOUT.
+
+- The following bug has been fixed.
+
+  - (B#38829) PPU
+    The following single token vector data types must have different 
+    mappings from the SPU, however, when math.h is included, the same 
+    mapping as the SPU is wrongly defined:
+
+    vec_llong2, vec_ullong2, vec_double2
+
+- The following bug has been fixed.
+
+  - (B#36163) PPU and SPU
+    The header bitset may display a warning message.
+
+- The following bug has been fixed.
+
+  - (B#36457) SPU
+    In the SPURS job program, an assert macro can not be used.
+
+- The following bug has been fixed.
+
+  - (B#39248) PPU and SPU
+    The header vector may display a warning message.
+
+- The following bug has been fixed.
+
+  - (B#28961) PPU and SPU
+    When the slist::previous function of the header slist is used, a 
+    compile error is returned.
+
+- The following bug has been fixed.
+
+  - (B#39823) PPU and SPU
+    The header xocinfo and wchar.h may display an error message.
+
+- (B#40520) PPU
+  The following headers have been fixed to support SN Systems compilers:
+     bits/f_llrintf.h
+     bits/f_lrintf.h
+     bits/f_nearbyintf.h
+     bits/f_rintf.h
+     bits/f_sqrtf.h
+
+- The following bug has been fixed.
+
+  - (B#40776) PPU
+    When fastmath.h is included, rintf() and nearbyintf() return an 
+    incorrect value.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#8290)
+    Although GL_MULTISAMPLING_4X_SQUARE_CENTERED_SCE is specified to the 
+    argument GL_MULTISAMPLING_4X_SQUARE_CENTERED_SCE of the following 
+    functions, it is handled as GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE:
+  
+    - When GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE is specified to the 
+      third argument param of glFramebufferParameteriSCE()
+    - When GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE is specified to the 
+      third argument multisamplingMode of psglCreateDeviceAuto()
+    - When GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE is specified to 
+      multisamplingMode that is a member variable of the first argument 
+      parameters of psglCreateDeviceExtended()
+    - When GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE is specified to the 
+      fourth argument multisamplingMode of glBufferSurfaceSCE()
+    - When GL_MULTISAMPLING_4X_SQUARE_ROTATED_SCE is specified to the 
+      third argument param of glTexParameterf()
+
+- The following bug has been fixed.
+
+  - (B#37083)
+    Although the data is placed on the system memory, the following 
+    message may be output indicating that the data is copied back from 
+    the local memory to the system memory:
+
+    "Copying back texture %d from GPU"
+    (*)%d indicates a texture name generated by glGenTextures().
+
+    - When GL_SYSTEM_DRAW_SCE is specified to the fourth argument of 
+      glBufferData()
+    - When GL_SYSTEM_DRAW_SCE is specified o the sixth argument of 
+      glBufferSurfaceSCE()
+
+- The following bug has been fixed.
+
+  - (B#36917)
+    When GL_RGB5_A1 or GL_RGB5 is specified to the argument internalformat
+    of the following functions, the game application may be asserted:
+
+    - glRenderbufferStorageOES()
+    - glTexImage2D()
+    - glTexImage3D()
+
+- The following bug has been fixed.
+
+  - (B#39596)
+    When GL_LUMINANCE is specified to the argument format and GL_INTENSITY
+    to the argument internalformat of the following functions, unnecessary
+    data is copied in each function:
+
+    - glTexImage2D()
+    - glTexImage3D()
+    - glTexSubImage2D()
+    - glTexSubImage3D()
+    - gluBuild2DMipmaps()
+
+- The following bug has been fixed.
+
+  - When an inappropriate multisampling mode is specified to the following
+    arguments, the compression mode of a Tiled area that is set internally
+    is set incorrectly:
+
+    - Third argument "param" of glFramebufferParameteriSCE()
+    - Third argument "multisamplingMode" of psglCreateDeviceAuto()
+    - Member variable "multisamplingMode" of the argument "parameters" of 
+      psglCreateDeviceExtended()
+
+- The following bug has been fixed.
+
+  - (B#38276)
+    When a parameter of a shader that is copied using cgCopyProgram() is 
+    changed, a parameter of the copy source is also changed. Also, when a 
+    parameter of a shader of the copy source is changed, a parameter of a 
+    shader that has been copied earlier is also changed.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- The following bug has been fixed. 
+
+   - In the following samples, when a camera device is not connected 
+     and the PS button is pressed, the termination confirmation dialog 
+     is not displayed.
+
+     samples/sdk/camera/simple
+     samples/sdk/camera/eyetoy2_raw_to_rgba
+     samples/sdk/camera/eyetoy2_raw_to_yuv
+     samples/sdk/camera/yuv422_to_rgba
+     samples/sdk/camera/yuv422_to_yuv
+
+- The following bug has been fixed. 
+
+   - When other USB device is plugged/unplugged, some video frames will 
+     be lost.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- The solution file and the project file for Visual Studio of 
+  each libmic sample have been fixed.
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- (B#40563)
+  The command line parsing code of the perf_gui sample has been
+  corrected to remove a crash if the "-d" parameter was specified without
+  providing an IP address.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- The following bug has been fixed. 
+
+  - When attempting to list a file or folder that results in an
+    error (e.g. ENOENT), other FTP sessions can be affected
+
+----------------------------------------------------------------------
+libscream
+----------------------------------------------------------------------
+- The initialization processing of the post send filter has been fixed.
+
+- The sample data and the sample code have been fixed so that 
+   samples/sdk/sound/scream/scream_routing runs correctly.
+
+- The following bug has been fixed.
+
+  - (B#41375)
+    In cellScreamSetSoundParamsEx(), when CELL_SCREAM_FLT_BQ_LPF/HPF is 
+    specified, a correct filter is not specified. 
+
+- The following bug has been fixed.
+
+  - (B#42674)
+    When generating sound data, a noise is produced in the post send filter.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In the simple_createdsp_xx samples, an incorrect path to 
+    object files used in PS3Release mode causes the linker to fail.
+
+- The following bug has been fixed.
+
+  - The samples/sdk/sound/multistream/simple_createdsp_xx sample fails 
+    to load the .pic files. 
+
+- The following bug has been fixed.
+
+  - The Makefile of the samples/sdk/sound/multistream/simple_createdsp_xx 
+    sample cannot be cleaned correctly.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- When setting multiple texture units using the "texformat" option, 
+  only the last setting is enabled. This problem has been fixed as follows: 
+
+  <"format" is set to all texture units. >
+  -texformat d <format>
+
+  <"format" is set only to the texture unit specified to "number unit".>
+  -texformat <unit number> <format>
+
+- The following bug has been fixed. 
+
+  - The "isReferenced" field of a parameter that is not used in 
+    the shader may be mistakenly set. This problem may cause the parameter 
+    not to be stripped correctly by sce-cgcstrip.
+
+- The following bug has been fixed. 
+
+  - (B#40582)
+    A slightly inefficient microcode may be generated.
+
+- The following bug has been fixed. 
+
+  - (B#40934)
+    In the fragment shader, texture fetch may not be performed correctly. 
+    As a result, an invalid COLOR may be output.
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When creating a cgb file of the vertex shader, a default value 
+    of an array element may be deleted mistakenly.
+
+

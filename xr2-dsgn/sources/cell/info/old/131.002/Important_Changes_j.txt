@@ -1,0 +1,376 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 システムソフトウェア(GUI)
+----------------------------------------------------------------------
+<仕様変更>
+- ゲーム起動時に行う解像度変更の優先度を以下のように変更しました。 
+   旧）1080p > 720p > 1080i > SD解像度 
+   新）1080p > 1080i > 720p > SD解像度
+
+- システムソフトウェアを起動した際の表示について以下の仕様変更を
+  行いました。
+  - 複数のユーザーが登録されており、且つ、自動ログインするユーザーが
+    いない状態でシステムソフトウェアを起動すると「ログイン画面」が
+    表示されるようにしました。
+  - 登録されているユーザーが１人の場合や、自動ログインをするユーザーが
+    登録されていない場合に、システムソフトウェアを起動すると
+   「ゲームデータ管理」のアイコンがフォーカスされます。
+
+----------------------------------------------------------------------
+2 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+セーブデータユーティリティ
+==========================
+<サンプルの変更(samples/sysutil/savedata)>
+- SYS_PROCESS_PARAM()を追加しました。
+
+----------------------------------------------------------------------
+3 Network
+----------------------------------------------------------------------
+全体
+====
+<仕様変更>
+- 同一のNATルータに接続された複数のPLAYSTATION(R)3からUPnP機能を
+  利用するための準備として、TCP/UDP ポート番号 49152-49166 の15個を
+  システム予約としました。
+
+----------------------------------------------------------------------
+4 Cell OS Lv-2
+----------------------------------------------------------------------
+<新規機能>
+- 条件変数で待機している特定のPPUスレッドへのシグナル送信を行う関数
+  sys_cond_signal_to()をcell/target/ppu/include/sys/synchronization.hに
+  追加しました。
+
+<サンプルの変更(samples/lv2)>
+- プライマリPPUスレッドの優先度やスタックサイズを明示的に指定するように
+  変更しました。
+
+----------------------------------------------------------------------
+5 ファイルシステム
+----------------------------------------------------------------------
+<サンプルの変更>
+- 以下のサンプルにおいてSYS_PROCESS_PARAM(1001,0x10000) を追加しました。
+    samples/libfs/discfs/aio 
+    samples/libfs/discfs/simple 
+    samples/libfs/general/aio 
+    samples/libfs/general/simple 
+    samples/libfs/general/stream
+----------------------------------------------------------------------
+6 SPU Runtime
+----------------------------------------------------------------------
+libspurs
+========
+<サンプルの変更(samples/spu_library/libspurs/advanced/task_sort)>
+- データのプリフェッチ機能を追加しました。
+
+- List DMAを利用してデータソートの結果を書き出すように変更しました。
+
+- データの並び替えが行われた箇所のみ抽出し、その結果を書き出す機能を
+  追加しました。
+
+----------------------------------------------------------------------
+7 HID
+----------------------------------------------------------------------
+libpad
+======
+<新規機能>
+- セーブデータユーティリティなどにおけるGUI 画面の操作を、ゲームタイトル
+  独自のドライバーにてハンドリングしているコントローラ(LDDコントローラ)で
+  行うための関数を追加しました。 
+    cellPadLddRegisterController()    LDDコントローラの登録 
+    cellPadLddDataInsert()           ボタンデータのシステムへの通知 
+    cellPadLddUnregisterController()  LDDコントローラの登録抹消
+
+----------------------------------------------------------------------
+8 libgcm
+----------------------------------------------------------------------
+<新規機能>
+- 以下の関数を追加しました。 
+    cellGcmSortRemapEaIoAddress() 
+    cellGcmMapEaIoAddress() 
+    cellGcmUnmapIoAddress() 
+    cellGcmUnmapEaIoAddress() 
+    cellGcmSetDrawInlineArray() 
+    cellGcmSetDrawInlineIndexArray32() 
+    cellGcmSetDrawInlineIndexArray16() 
+    cellGcmSetFogMode() 
+    cellGcmSetFogParams() 
+    cellGcmGetLastSecondVTime()
+
+- cellGcmSetBlendEquation()の引数colorで指定するブレンド演算式に以下の
+  定数マクロを追加しました。 
+    CELL_GCM_FUNC_REVERSE_SUBTRACT_SIGNED 
+    CELL_GCM_FUNC_FUNC_ADD_SIGNED 
+    CELL_GCM_FUNC_REVERSE_ADD_SIGNED
+
+- cellGcmSetFogMode()の引数modeで指定するフォグモードに以下の定数マクロを
+  追加しました。
+    CELL_GCM_FOG_MODE_LINEAR 
+    CELL_GCM_FOG_MODE_EXP 
+    CELL_GCM_FOG_MODE_EXP2 
+    CELL_GCM_FOG_MODE_EXP_ABS 
+    CELL_GCM_FOG_MODE_EXP2_ABS 
+    CELL_GCM_FOG_MODE_LINEAR_ABS
+
+<仕様変更>
+- cellGcmMapMainMemory()においてIOページテーブルエントリの空きが
+  無くなった場合、エラーコードCELL_GCM_ERROR_NO_IO_PAGE_TABLEを
+  返すように変更しました。
+
+<サンプルの変更（samples/gcm）>
+- samples/gcmのサンプルにおいて以下の変更を行いました。
+  - atexit()を使ってコールバックを登録し、プロセス終了時にフリップ終了と
+    RSX(R)終了処理を行うようにしました。
+  - SYS_PROCESS_PARAM()を追加しました。
+
+- samples/gcm/Humanにおいて、頂点ライティングサンプル、フラグメント
+  ライティングサンプル、法線マップライティングサンプル、3つの描画結果を
+  同時に表示するサンプルの4つに分かれていたサンプルを1つに統合しました。
+
+- samples/gcm/commonユーティリティでFP16サーフェスをディスプレイバッファに
+  設定する以下の関数を追加しました。 
+    cellGcmUtilEnableFP16Surface() 
+    cellGcmInitDisplay() 
+    cellGcmUtilResetDisplayBuffer() 
+  また、以下のシェーダファイルの追加も行いました。 
+    samples/gcm/common/quad_clear_fpshader.cg 
+    samples/gcm/common/quad_clear_vpshader.cg
+
+----------------------------------------------------------------------
+9 libgcm_pm
+----------------------------------------------------------------------
+<新規機能>
+- cellGcmSetPerfMonEvent()で設定する計測対象のイベントを追加しました。 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_TESTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_TESTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_REJECTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_REJECTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_STENCIL_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_STENCIL_CULLED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_ACCEPTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_ACCEPTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NOT_CULLED_BUT_FAILS_ZTEST_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NOT_CULLED_BUT_FAILS_ZTEST_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_DEPTH_BOUNDS_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_DEPTH_BOUNDS_CULLED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NEAR_FAR_CLIPPED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NEAR_FAR_CLIPPED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_CULLED_2 
+
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET1_MISS_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET1_REQUEST_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET2_MISS_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET2_REQUEST_COUNT 
+ 
+    CELL_GCM_PM_MCLK_FB_RW_COUNT1 
+    CELL_GCM_PM_MCLK_FB_RW_COUNT2 
+    CELL_GCM_PM_MCLK_COMPRESSED_FAST_CLEAR 
+    CELL_GCM_PM_MCLK_EXPANDED_FAST_CLEAR
+----------------------------------------------------------------------
+10 libresc
+----------------------------------------------------------------------
+<新規機能>
+- インターレースフィルター（アンチフリッカー）機能を追加しました。 
+  これに伴い、CellRescInitConfig構造体のinterlaceModeメンバの追加と
+  cellRescCreateInterlaceTable()の追加しました。
+
+- 解像度変更に用いるフラグメントシェーダのレジスタカウントを設定、
+  取得できる関数を追加しました。 
+    cellRescSetRegisterCount() 
+    cellRescGetRegisterCount()
+
+- テレビの個体ごとや、SD/HDのモードごとに異なるオーバースキャンレートの
+  差異を調節する機能を追加しました。 
+    cellRescAdjustAspectRatio()
+
+- CellRescInitConfig.palTemporalModeで指定するPAL変換時のフレームレート
+  変換モードにCELL_RESC_PAL_60_INTERPOLATE_DROP_FLEXIBLEを追加しました。
+  これに伴い、cellRescSetPalInterpolateDropFlexRatio()も追加しました。
+
+<仕様変更>
+- cellRescGcmSurface2RescSrc()において引数gcmSurfaceでポインタ指定する
+  CellGcmSurface構造体のantialiaseメンバが設定されていた場合に、width, 
+  heightの値を2倍して構造体CellRescSrcに値を設定するよう変更しました。 
+
+  SDK131より前のSDKでビルドしたアプリケーションをSDK131の環境で実行した
+  場合は、以前の仕様通りwidth, heightをそのままの値で構造体CellRescSrcに
+  設定します。
+
+----------------------------------------------------------------------
+11 PSGL
+----------------------------------------------------------------------
+<新規機能>
+- glTextureReferenceSCE()の引数internalFormatにGL_BGRAの指定が出来る
+  ようになりました。
+
+- PSGL HUDライブラリの"Memory View"にてPSGLが、どの程度メインメモリを
+  消費しているか確認出来るようにしました。
+
+<仕様変更>
+- cell/samples/graphics/Advanced/ReflectAndRefractではterraincubemap.ddsを
+  使うようにした為、以下のファイルを削除しました。 
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negx_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negy_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negz_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posx_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posy_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posz_0001.png
+
+----------------------------------------------------------------------
+12 サウンド関連
+----------------------------------------------------------------------
+libaudio
+========
+<サンプルの変更(samples/sound/audio)>
+- サンプルplayaudioおよびplay2ndにおいて以下の変更を行いました。
+  - 終了時に cellGcmFinish() を呼ぶなど、各ライブラリの終了処理を
+    行うようにしました。
+  - SYS_PROCESS_PARAM()を追加しました。
+  - エラー時のエラーコードの値を16進数で出力するようにしました。
+  - 外部サウンドファイルの読み込みが、ディスクメディアからも読み込める
+    ようになりました。
+
+- サンプルplay2ndにおいてサンプルプログラム中からシステム設定ダイアログを
+  開けるようにしました。
+
+libmixer
+========
+<サンプルの変更(samples/sound/mixer)>
+- サンプル check8ch, chstrip, ssplayer および surbus において以下の変更を
+  行いました。
+  - コントローラのPSボタン（ANALOGボタン）長押しによる、アプリケーション
+    の終了処理を行うようにしました。
+  - 終了時に cellGcmFinish() を呼ぶなど、各ライブラリの終了処理を行うように
+    しました。
+  - SYS_PROCESS_PARAM()を追加しました。
+  - エラー時のエラーコードの値を16進数で出力するようにしました。
+
+- サンプルssplayerにおいて外部サウンドファイルの読み込みが、ディスク
+  メディアからも読み込めるようになりました。
+
+libsynth2
+=========
+<サンプルの変更(samples/sound/synth2/whole)>
+- コントローラのPSボタン（ANALOGボタン）長押しによる、アプリケーションの
+  終了処理を行うようにしました。
+
+- 終了時に cellGcmFinish() を呼ぶなど、各ライブラリの終了処理を行うように
+  しました。
+- SYS_PROCESS_PARAM()を追加しました。
+
+- エラー時のエラーコードの値を16進数で出力するようにしました。
+
+- 外部サウンドファイルの読み込みが、ディスクメディアからも読み込めるように
+  なりました。
+
+libsnd3
+=======
+<サンプルの変更(samples/sound/snd3)>
+- コントローラのPSボタン（ANALOGボタン）長押しによる、アプリケーションの
+  終了処理を行うようにしました。
+
+- 終了時に cellGcmFinish() を呼ぶなど、各ライブラリの終了処理を行うように
+  しました。
+
+- SYS_PROCESS_PARAM()を追加しました。
+
+- エラー時のエラーコードの値を16進数で出力するようにしました。
+
+- 外部サウンドファイルの読み込みが、ディスクメディアからも読み込める
+  ようになりました。
+
+----------------------------------------------------------------------
+13 codec
+----------------------------------------------------------------------
+libpamf
+=======
+<サンプルの変更(samples/codec/pamf_dmux)>
+- SYS_PROCESS_PARAM()を追加しました。
+
+libsail
+=======
+<サンプルの変更(samples/streaming/simple_player)>
+- SYS_PROCESS_PARAM()を追加しました。
+
+- simple_player.hの内容をsimple_player.cppに移動し、simple_player.hを
+  削除しました。
+
+- cellGcmSetWaitLabel()を使わないコードに変更しました。#ifdefマクロを
+  用いて、従来のcellGcmSetWaitLabel()のコードにも切り替えることが出来ます。
+
+- #ifdefマクロを用いてLPCMからDolby(TM) Digital interactive encodingに
+  切り替えられるように変更しました。
+
+----------------------------------------------------------------------
+14 GCCの仕様変更に伴うSDK側のファイル追加
+----------------------------------------------------------------------
+- ToolChain 131のGCCではSN Systems製コンパイラ対応を行いました。
+  GCCとSN Systems製コンパイラの差分を吸収するため、以下のラッパーヘッダ
+  ファイルをSDKパッケージに追加しました。
+
+  PPU側:
+    target/ppu/include/ppu_intrinsics.h
+    target/ppu/include/spu2vmx.h
+    target/ppu/include/si2vmx.h
+  SPU側:
+    target/spu/include/spu_intrinsics.h
+    target/spu/include/spu_mfcio.h
+    target/spu/include/vmx2spu.h 
+
+----------------------------------------------------------------------
+15 samples/tutorial/CgTutorialサンプル
+----------------------------------------------------------------------
+<新規追加>
+- libgcmを使用したサンプルを追加いたしました。 
+  これに伴い、samples/tutorial/CgTutorial以下のファイル構成を変更しました。
+    変更：samples/tutorial/CgTutorial以下のファイルを 
+          samples/tutorial/CgTutorial/PSGL以下に移動 
+    追加：samples/tutorial/CgTutorial/GCM
+
+----------------------------------------------------------------------
+16 サンプルプログラム
+----------------------------------------------------------------------
+<新規追加>
+- samples/spu_library/libspurs/advanced/performance 
+  libspursの関数のパフォーマンスを計測するサンプル
+
+- samples/streaming/psgl_player 
+  libsailを使ったシンプルなムービープレーヤ(PSGL版)のサンプル
+
+- samples/gcm/Fog 
+  RSX(R)のフォグ機能を使ったサンプル
+
+- samples/gcm/pmZcull  
+  パフォーマンスライブラリを使ってZcull の効果を計測するサンプル
+
+- samples/mic/feedback_gui 
+  feedback サンプルをベースにして、音声機器設定メニューを呼び出し機能や、
+  マイク入力をヘッドセットなどの第2音声出力に出力する機能を追加したサンプル
+
+- samples/tutorial/SpuGeometricProcess 
+  SPU(Spu Thread Group, SPURS Jobs)を用いて頂点の空間転換及び
+  ポリゴンカリングを行うサンプル
+
+<プロジェクトファイルの追加>
+ProDG for PLAYSTATION(R)3用に以下のサンプルプログラムの一部に対して
+プロジェクトファイルを追加しました。
+未対応のサンプルプログラムについては準備が出来次第、追加を行っていく
+予定です。
+    samples/sysutil/discgame/discchange
+    samples/sysutil/discgame/getbootdiscinfo
+    samples/graphics/
+    samples/gcm/ConvertSwizzle
+    samples/gcm/MSAA/ds2x
+    samples/gcm/MSAA/ds4x
+    samples/gcm/zcull
+    samples/streaming/simple_player
+

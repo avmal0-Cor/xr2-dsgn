@@ -1,0 +1,2272 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 310.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+Please see the New Features, changes and notes below that have been 
+added to the Reference Tool SDK package.
+
+----------------------------------------------------------------------
+New Libraries
+----------------------------------------------------------------------
+
+liblsguard
+==========
+
+This library supports debugging of a SPU program.
+
+It provides the following features to detect a bug where the SPU program 
+destroys its local storage(called as LS) at an early stage:
+
+  - Manage a write-enabled area (*1)
+  - Calculate the hash value(checksum) other than that of the write-enabled 
+    areas
+  - Check the validity check of the write access in advance
+
+    (*1) The write-enabled area is an LS area where the LS corruption (*2) 
+         does not occur (*2) even when the content of the SPU program is 
+         changed.
+
+    (*2) The LS corruption is a bug where the read only data area or code area 
+         of the SPU program may be rewritten by an incorrect pointer access 
+         or DMA transfer.
+
+Because the use of liblsguard consumes the following resource, an overhead will
+be added to the SPU program.
+
+  - LS (consumes about 2 kilo bytes of LS memory for both the code and the data)
+  - SPU time (about 9 micro seconds is consumed at maximum when calculating a 
+    hash value each time)
+
+Please refer to the "liblsguard Overview" and the "liblsguard Reference" 
+documents for more details.
+
+New Sample
+
+- cell\samples\sdk\spu_library\liblsguard\spurs_job
+  This sample demonstrates a wrapper function that performs a DMA transfer 
+  securely and how to use liblsguard in the SPURS job.
+
+----------------------------------------------------------------------
+dt Command(cell\host-win32\bin)
+----------------------------------------------------------------------
+
+New Feature
+
+- dtnetm.exe now supports the following messages that relate to the 
+  network emulation settings of the target system:
+
+  - TSMP_CODE_GET_TEST_PARAM
+  - TSMP_CODE_GET_TEST_PARAMR
+  - TSMP_CODE_SET_TEST_PARAM
+  - TSMP_CODE_SET_TEST_PARAMR
+
+Specification Change
+
+- vcredist_x86.exe has been updated.
+
+---------------------------------------------------------------------- 
+BD Emulator
+---------------------------------------------------------------------- 
+
+Specification Change
+
+- The timeout value of when the USB-HDD is not connected has been changed 
+  from 30 to 15 seconds.
+
+---------------------------------------------------------------------- 
+Control Console
+---------------------------------------------------------------------- 
+
+New Feature
+
+- Variable descriptions can be now referred to by setting 0x31000000 to the 
+  compatibility mode from the front end application.
+  Once the compatibility mode is set, the descriptions are shown in
+  the output of the "print" and the "_dump_variables" commands.
+
+----------------------------------------------------------------------
+System Software (GUI)
+----------------------------------------------------------------------
+
+New Features
+
+<Menu of the System Software (GUI)>
+
+- [Settings] -> [Debug Settings] -> [Fake HDD Access Speed]  : [Off]/On
+
+  A setting item for the HDD low speed emulation has been added to 
+  the Debug Settings of the system software. Because only the Reference Tool 
+  can use this feature, the HDD speed of the Reference Tool can be emulated 
+  to have the same speed level as PlayStation(R)3 and so it is now possible 
+  to develop in a more PlayStation(R)3 like environment.
+
+- [Settings] -> [Debug Settings] -> [Crash Report]   : Off/[On]
+
+  A feature has been added to enable/disable the feature to send a report 
+  when the system software crashes, therefore it is now possible to disable 
+  the report sending feature when the operation screen of the feature is 
+  disturbing development. 
+
+- [Settings] -> [System Settings] -> [System Language] : Polski
+
+  Polish has been added as an option.
+
+- [PlayStation(R)Network] -> [Account Management] -> [Facebook]
+
+  The following features that realize coordination between 
+  PlayStation(R)Network and Facebook have been added:
+  - Share Trophy Information
+    Publish acquired trophy information to Facebook
+  - Share Purchase Information
+    Publish information of a product that is purchased from 
+    PlayStation(R)Store to Facebook
+  - Share Game Event Information
+    Publish information of an event that occurred within the game to Facebook
+
+  Registration/deletion of a Facebook account and setting of each feature 
+  can be carried out from 
+  [PlayStation(R)Network] -> [Account Management] -> [Facebook]. 
+
+Specification Change
+
+- A debug message output feature has been added to the system utilities.
+
+  When a resource conflict occurs among system utilities, if the system utility
+  run later fails returning the return code CELL_SYSUTIL_ERROR_BUSY, the 
+  following debug message is now output.
+
+  System Warning : old sysutil still running, new sysutil cannot run.
+
+
+<Core Dump Features>
+
+Specification Change
+
+- The version of the data format of the core file has been changed from 
+  Version 5 to Version 6.
+  The changes made are as described below:
+
+  - The data format has been updated from Version 1 to Version2 to add more 
+    data to the dump target "RSX(TM) Debug Data".
+
+    The associations with the core file versions are as shown below:
+
+      ----------------------------------------------------------
+        Core file version       |  RSX(TM) debug data version
+      ----------------------------------------------------------
+        Version 5 or before     |  Version 1
+      ----------------------------------------------------------
+        Version 6               |  Version 2
+      ----------------------------------------------------------
+
+    Note that when [Settings] -> [Debug Settings] -> [Release Check Mode] is 
+    set to [Release Mode] on the system software, only the Ver and SZ fields 
+    will have valid data and data stored in the Debug Info field will be 
+    invalid.
+
+    - Debug Info field
+      - Due to the feature addition to libdbgrsx, "MISC error" has been 
+        added as a value that can be stored in the Interrupt Error Status field. 
+      - An Interrupt Misc Error Status field has been added.
+        This field is enabled only when the Interrupt Error Status is a MISC 
+        error. Either of the following values (or both of them) that indicates 
+        the MISC Error Status is set:
+
+        - User Interrupt (Interrupt by cellGcmDumpGraphicsError())
+        - System Overlay (Interrupt by an error at the time of flip execution
+                          and equivalent to "graphics error 3".)
+
+      - Due to the feature addition to libdbgrsx, the number of Bundle State 
+        data that is stored in the Bundle State unit has been changed as shown 
+        below:
+
+        - In the case of RSX(TM) Debug Info Version 1
+          110 (Store data up to Bundle State ID 0x6E) 
+
+        - In the case of RSX(TM) Debug Info Version 2
+          132 (Store data up to Bundle State ID 0x84 and the rest is handled as
+               a Reserved area and currently 0 is contained)
+
+        Note that RSX(TM) Debug Info Version 1 does not output Bundle State 
+        data beyond Bundle State ID 0x6F.
+
+      - A GCM Info unit has been added.
+        (GCM Info field in the Debug Info field) 
+        This unit stores GCM management data.
+
+      - A Label Info unit has been added.
+        (Label Info field in the Debug Info field) 
+        Label data of the local memory is stored in this unit. The units are 
+        stored in the order from 0 to 255.
+
+      - A Report Info unit has been added.
+        (Report Info field in the Debug Info field)
+        The data stored in this unit is the same as that stored in 
+        CellGcmReportData on the local memory. 
+
+  Please refer to the "Core Dump Overview" document for more information on the
+  data format items.
+
+----------------------------------------------------------------------
+System Utility (libsysutil)
+----------------------------------------------------------------------
+
+Common
+======
+
+New Function
+
+- A selection of Polish has been added to the [System Language] menu on the 
+  system software(GUI).
+
+  Due to this change, a CELL_SYSUTIL_LANG_POLISH specifier has been added as a 
+  system language defined in sysutil_common.h.
+
+Specification Change
+
+- A debug message output feature has been added to the system utilities.
+
+  When a resource conflict occurs among system utilities, if the system utility
+  run later fails returning the return code CELL_SYSUTIL_ERROR_BUSY, the 
+  following debug message is now output.
+
+  System Warning : old sysutil still running, new sysutil cannot run.
+
+
+Game Contents Utility
+=====================
+
+New Features
+
+- A function cellGameThemeInstallFromBuffer() has been added to install a 
+  theme into PlayStation(R)3 via the memory prepared by the game application.
+
+- CELL_GAME_PARAMID_TITLE_POLISH that indicates a title name in Polish has been 
+  added as an ID to obtain and set a string type parameter of PARAM.SFO.
+
+Specification Change
+
+- The directory name received via the argument dirName of the function 
+  cellGameBootCheck() has been changed for when an HDD boot game is booted in 
+  the debugger mode and [PARAM.SFO] is set to [Settings] -> [Debug Settings] ->
+  [Game Type (Debugger)] as shown below:
+ 
+    (Before change)
+     [Settings] -> [Debug Settings] -> [GameContentUtil dirName (Debugger)] 
+    
+    (After change)
+     TITLE_ID of [PARAM.SFO]
+
+Sample Changes(cell\samples\sdk\sysutil\gamecontent)
+
+- A feature has been added to install a theme via the memory using the newly 
+  added function cellGameThemeInstallFromBuffer().
+
+- It now accesses a title name in polish using the newly added 
+  CELL_GAME_PARAMID_TITLE_POLISH.
+
+- It now uses the path name obtained via cellGameContentPermit() as a read 
+  destination of sample data.
+
+
+Onscreen Keyboard Dialog Utility
+================================
+
+New Feature
+- A Polish panel has been added.
+  Due to this addition, the following macro constant has been added:
+
+    CELL_OSKDIALOG_PANELMODE_POLISH
+
+Message Dialogue Utility
+========================
+
+New Feature
+
+- Polish has been supported for the messages displayed when each error 
+  number is specified.
+
+System BGM
+==========
+
+New Feature
+
+- The following structure has been added to obtain the state of music playback 
+  by the system BGM:
+
+    CellSysutilBgmPlaybackStatus2
+
+- The following function has been added to obtain the current state of music 
+  playback by the system BGM using the above structure as an argument:
+
+    cellSysutilGetBgmPlaybackStatus2()
+
+  This realizes acquisition of the state of music playback by the system BGM 
+  feature with lower load than when compared to 
+  cellSysutilGetBgmPlaybackStatus().
+
+  Note that the function reference for the system BGM is provided in the 
+  "System Utilities Common API Reference".
+
+Sample Change(cell\samples\sdk\sysutil\bgmplayback)
+
+- A feature has been added to obtain the current state of music playback by 
+  the system BGM feature using the new function 
+  cellSysutilGetBgmPlaybackStatus2().
+
+Recording Utility
+=================
+
+New Feature
+
+- A recording processing using a SPURS instance that is generated by the 
+  application is now available using the system workload.
+
+  Accordingly, the followings have been added:
+
+  - CellRecSpursParam
+    Structure that sets a parameter for using the SPURS generated by the 
+    application
+
+  - Constant that can be specified to the member "option" of CellRecOption
+
+    - CELL_REC_OPTION_SPURS
+      Specify a pointer to CellRecSpursParam for using the SPURS generated by 
+      the application
+
+  - Member of the CellRecOption option parameter of the Recording utility
+
+    - value.pSpursParam
+      Pointer to CellRecSpursParam
+
+  - Constant that can be specified to the first argument of the function 
+    cellRecGetInfo() that obtains information about the movie that is being 
+    recorded
+
+    - CELL_REC_INFO_SPURS_SYSTEMWORKLOAD_ID
+
+      When this constant is specified, it will be possible to obtain the ID of 
+      the system workload that is generated by the Recording utility when the 
+      SPURS generated by the application is in use.
+
+  <Improvements Made by the Function Enhancement>
+
+  - Use of the SPURS instance generated by the application
+
+    Because the SPURS instance is not generated within the utility, the 
+    cost of SPURS instance switching between the utility and the application 
+    can be reduced.
+
+  - Specification of the maximum SPU usage by the Recording utility
+
+    The maximum SPU usage can be specified as 1 to 100 by the application.
+
+    As a result, the application processing can be given priority reducing the 
+    recording load. 
+
+    Please note that when the recording processing delayed due to the SPU usage
+    specified, a movie generated will have a skipping image or sound.
+
+Sample Change(cell\samples\sdk\sysutil\recording\basic)
+
+- A code has been added to pass the SPURS generated by the application and 
+  start recording.
+
+  To enable this code, enable the following line in main.c:
+
+    //#define ENABLE_SPURS_OPTION
+
+Remote Play Utility
+===================
+
+New feature 
+- A cellRemotePlayBreak() function has been added to return back from the 
+  remote play to the application. 
+
+  By using the above function, it is possible to return back from the remote 
+  play to the application without terminating the application. 
+
+  When the above function is called, the resolution and audio output settings 
+  remain as that of the remote play even after it returned back to the 
+  application.
+
+  Please make sure to reset to the appropriate value of the application by 
+  using Video Configuration utility and Audio Configuration utility 
+  immediately after it retuned back to the application.
+
+Contents Search Utility
+=======================
+
+Specification Change
+
+- Content search in Polish has been supported.
+
+Custom Theme Utility
+====================
+
+New Features
+
+- Polish has been added as a language that supports theme data display.
+
+  As a result, it has been enabled to specify Polish("pl") to the attribute 
+  "locale" of the <localizedinfo> tag that can be found in a theme file (*.xml).
+
+- An icon for PSP(R)go has been added as a customizable icon displayed on the 
+  system software screen.
+
+  As a result, it has been enabled to specify a texture for PSP(R)go 
+  ("icon_psp") to the "id" attribute of the <icon> tag that can be found in a 
+  theme file(*.xml).
+
+- The following data that can be contained in a theme file has been added:
+
+    Update date/time of a theme(string in the YYYYMMDDHHMMSS format)
+
+  As a result, it has been enabled to specify the update date/time of a theme 
+  file by describing the "mtime" attribute to the <info>/<localizedinfo> tag 
+  that can be found in the theme file(*.xml).
+
+- A Z sort attribute has been added to "actor" of RAF (Rich Appearance Format).
+
+  The following values can be specified as the "zsort" attribute of the "actor"
+  element:
+
+    unspecified / back_to_front / front_to_back
+
+- The following effect types have been added to "material" of RAF:
+
+  - basic_lighting_alpha_0
+  - basic_lighting_edge_lit_alpha_0
+  - basic_lighting_alpha_add
+
+  Either of above values can be specified within a scene file as the "effect 
+  attribute" of the "material" element.
+
+- Colors of each vertex have been added as data settable to "model" of RAF.
+
+  The following values can be specified as the vertex_color attribute of the 
+  model element within a scene file(*.xml):
+
+    enable / disable
+
+Specification Changes
+
+- The number of animations settable to a single model of RAF has been increased
+  from 4 to 8.
+
+Sample Change(cell\samples\util\theme\simple)
+
+- A texture name has been changed.
+
+Background Download Utility
+===========================
+
+New Features
+
+- A function cellBGDLSetMode() has been added to set the operation mode of
+  BGDL (background download).
+
+  The following enum values can be specified to the operation mode:
+
+    ---------------------------------------------------------------
+    enum value                     Description
+    ---------------------------------------------------------------
+    CELL_BGDL_MODE_AUTO            Automatically control whether to 
+                                   enable/disable BGDL
+                                   (default value)
+    CELL_BGDL_MODE_ALWAYS_ALLOW    Always enable BGDL
+    ---------------------------------------------------------------
+
+  By default, the system automatically controls whether BGDL is enabled or 
+  disabled. When the game application is using the network connection, it 
+  is disabled (BDGL is in the WAIT state).
+
+  By setting the above CELL_BGDL_MODE_ALWAYS_ALLOW to the operation mode, BGDL 
+  is disabled regardless of whether the game application is connecting to the 
+  network.
+
+- A function cellBGDLGetMode()  has been added to obtain the operation mode of 
+  BGDL.
+
+Sample Change(cell\samples\sdk\sysutil\bgdl)
+
+- Processing to set and obtain the operation mode of BGDL by using the new 
+  functions cellBGDLSetMode() and cellBGDLGetMode() have been added.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+
+PRX
+===
+
+Sample Change(cell\samples\sdk\prx\simple-cxx)
+
+- It has been changed to use the following features:
+
+  - Use the -mprx-with-runtime option to call global constructors and global 
+    destructors
+
+  - Use the following options to reduce codes that do not use the PRX
+
+    - GCC : -ffunction-sections, -fdata-sections
+      GNU LD : -zgc-sections
+
+    - SN linker: --strip-unused-data, --strip-duplicates
+
+  - PRX exports user-defined functions, which are then called by an ELF
+
+  - Use iostream with PRX
+
+  - ELF exports libc and libm, which are linked dynamically from a PRX
+
+  - ELF exports user-defined functions, which are then called by a PRX
+
+  - Create a PRX using the SNC or the SN linkers
+
+  Note that the active solution configurations of the ProDG Visual Studio 
+  Integration "PS3 SNC Debug" and "PS3 SNC Release" are supported by SNC only 
+  in this sample.
+
+----------------------------------------------------------------------
+C/C++_Standard_Library
+----------------------------------------------------------------------
+
+New Feature
+
+<SPU>
+
+- The size of the stack and heap areas that SPU uses can now be limited.
+  Please use CELL_SPU_LS_PARAM macro that has been added to stdlib.h header.
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+
+Specification Changes
+
+- The following arguments have been added to the initialize() method of the 
+  cell::Fiber::Ppu::Util::Runtime class:
+
+  - autoCheckFlags
+    Flag to show whether to call cellFiberPpuCheckFlags() periodically 
+    and automatically.
+
+  - autoCheckFlagsIntervalUsec
+    Time interval of the automatic calls (in micro seconds)
+
+  Due to this addition, the automatic call of cellFiberPpuCheckFlags() can be 
+  now set.
+
+- The following argument has been added to the createFiber() method of the 
+  cell::Fiber::Ppu::Util::Runtime class:
+
+  - callback
+    Pointer to the callback function to be called when terminating the fiber
+
+  Due to this addition, the callback function to be called when terminating 
+  the fiber can be now specified.
+
+* These specification changes are not described in the "libfiber PPU Fiber Reference"
+  document, but will be added in the next release.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+
+libfs
+=====
+
+New Feature
+
+- The following enumerated type and function have been added:
+
+  CellFsDiscReadRetryType
+    This enumerated type indicates the retry operation to be conducted within 
+    the system when an optical disc read error occurs and is defined as shown 
+    below:
+
+    -------------------------------------------------------------
+    Enumerated Value                 Description
+    -------------------------------------------------------------
+    CELL_FS_DISC_READ_RETRY_NONE     Do not retry within the system
+    CELL_FS_DISC_READ_RETRY_DEFAULT  Retry within the system
+    -------------------------------------------------------------
+
+  cellFsSetDiscReadRetrySetting()
+    This function sets the retry operation to be conducted within the system 
+    when an optical disc read error occurs.
+
+    When an enumerated value of the enumerated type CellFsDiscReadRetryType is 
+    specified to the argument (retry_type), the reset operation within the 
+    system is set.
+    After this function is executed, what is set here is applied to what should
+    be done in response to a possible read error.
+
+    Note that when disabling the automatic retry, please apply an appropriate 
+    retry processing by the application like it is done when a disc replacement
+    is carried out.
+
+libfios
+=======
+
+New Features
+
+- FIOS profiling is now available.
+
+  Please set cell::fios::fios_parameters::profiling to the values defined in 
+  cell::fios::e_PROFILING.
+
+- The following public instance methods have been added.
+  These public instance methods can suspend or resume prefetch operations
+  at any time.
+
+    suspendPrefetch()
+    resumePrefetch()
+
+- cell::fios::op::getError() simply returns an error code of an operation.
+
+Specification Change
+
+- According to the announcement in "Notice_SDK_*.txt" document (*) of SDK300, 
+  cell::fios::fios_parameters::sharedPath has been removed.
+
+  Buffers for path name management are now always statically allocated.
+
+  (*) Reference: cell\info\old\300.001\Notice_SDK_*.txt
+
+    -------------------------------------------------------------------------
+    libfios
+    -------------------------------------------------------------------------
+    - fios_parameters::sharedPath is now obsoleted. Don't set it true,
+      since it will be removed in the future SDK.
+    -------------------------------------------------------------------------
+
+SDATA
+=====
+
+Specification Change
+
+- As a result of the improvement in the format of SDATA, the read speed 
+  of uncompressed SDATA has been improved.
+
+----------------------------------------------------------------------
+SPU Runtime
+----------------------------------------------------------------------
+
+SPU Program Support Tools
+=========================
+
+New Feature
+
+- The following features and options have been added to the spu_elf-to-ppu_obj 
+  command:
+
+  - Feature to convert the R_SPU_PPU32 and the R_SPU_PPU64 type relocations 
+    within the SPU ELF file into the R_PPC64_ADDR32 and the R_PPC64_ADDR64 
+    type relocations and embed them into the PPU object file
+
+  - --format=jobbin2 option to embed a SPURS job in the form of jobbin2
+
+  - Feature to embed the instance of the CellSpursTaskBinInfo structure that 
+    stores binary information of the SPURS task that is automatically generated
+    at the same time when embedding the SPURS task
+
+  - Feature to embed the overlay table for libovis at the same time when the 
+    SPU ELF file to be embedded uses libovis
+
+  - --strip-mode option to specify the strength of the "strip" when 
+    embedding an SPU ELF
+
+  - --disable-extra-data option to control the feature that embeds data other 
+    than that of the SPU program
+
+Specification Change
+
+- The following specification changes have been made in the 
+  spu_elf-to-ppu_obj command:
+
+  - The version information of the SPU program to be embedded is now contained 
+    in the section of the PPU that is not loaded.
+
+    * This support is to check the version of the Disc Image Generator for 
+      PlayStation(R)3.
+      When the veri_file command is executed in ps3cmd.exe, 
+      the version information of the SPU program that is embedded 
+      by using the spu_elf-to-ppu_obj command will be output to the log file.
+
+  -  e_flags of the SPU ELF header is now referred to in order to correctly
+     determine the type of the input program.
+
+libspurs_Job
+============
+
+<Common>
+
+New Features
+
+- A macro CELL_SPURS_JOB_TYPE_BINARY2 has been added to set a job descriptor.
+
+  By setting an OR of CELL_SPURS_JOB_TYPE_BINARY2 to the member variable 
+  jobType of the structure CellSpursJobHeader, a binary image in the jobbin2 
+  format can be specified to the job descriptor.
+
+- When building Job2.0 that has CRT attached, if an OR of 
+  CELL_SPURS_JOB_TYPE_MEMORY_CHECK is set to the member variable jobType of the
+  structure CellSpursJobHeader, and liblsguard is linked with -llsguard 
+  specified as a linker option, the following processing is now automatically
+  performed in addition to the buffer overrun check:
+
+    (1) Set all the write protected areas on the SPU local storage to 
+        liblsguard and calculate a hash value of the areas
+    (2) After (1) is conducted, execute a job
+    (3) After (2) is conducted, re-calculate the hash value of the all write 
+        protected areas and if the values before/after the job execution do not
+        match, the job is asserted.
+
+- A function cellSpursJobHeaderSetJobbin2Param() has been added to set the 
+  binary data extracted from a binary image in the jobbin2 format to the 
+  header part of the specified job descriptor.
+
+- The following macros have been added:
+
+  - CELL_SPURS_JOB_LIST_ALIGN
+  - CELL_SPURS_JOB_LIST_SIZE
+
+- The following classes have been added to the C++ interface:
+
+  - cell::Spurs::JobList
+  - cell::Spurs::JobListStub
+
+  Please note that the above classes are not described 
+  in the "libspurs C++ Reference" document but will be added 
+  in the future release.
+
+  cell::Spurs::JobList and cell::Spurs::JobListStub are classes for C++ and 
+  equivalent to cellSpursJobList.
+  By using the "initialize" method, a value can be set to each members of 
+  cellSpursJobList.
+
+Specification Changes
+
+- A member variable binaryInfo has been added to set information related to a 
+  binary image in the jobbin2 format to the structure CellSpursJobHeader.
+
+- A member variable sizeJobDescriptor has been added to store a job descriptor 
+  size to the structure CellSpursJobContext2.
+
+Sample Changes
+
+- cell\samples\sdk\spu_library\libspurs\job
+  
+  The job_joblist sample has been changed to use the C++ interface
+  (cell::Spurs::JobList).
+
+- cell\samples\sdk\spu_library\libspurs\job and 
+  cell\samples\sdk\spu_library\libspurs\jobqueue 
+  All samples under these paths have been changed to use the jobbin2 format.
+
+<Jobchain>
+
+New Features
+
+- The SPURS jobchanin has been enabled to execute a job binary in the jobbin2 
+  format.
+
+- A function cellSpursJobChainAttributeSetJobTypeMemoryCheck() has been added 
+  to set a check to the specified jobchain attribute to see whether the local 
+  storage is destroyed illegally when a job is executed.
+
+  As a result, when the buffer overrun check and liblsguard are linked, the 
+  hash value check of the write protected areas will be enabled.
+
+- The following member functions have been added to the JobChainStub and 
+  the JobGuardStub classes of the C++ interface.
+
+  - setObject
+    Set a target object to the stab class
+
+  - getObject 
+    Obtain a target object of the stab class
+
+- A cell::Spurs::JobChainAttribute class has been added to the C++ interface.
+
+  Note that the above classes are not described in the "libspurs C++ Reference"
+  document but will be added in the future release.
+
+  cell::Spurs::JobChainAttribute is a class for C++ and equivalent to 
+  cellSpursJobChainAttribute.
+
+<Job Queue>
+
+New Features
+
+- In the SPURS job queue, a job binary in the jobbin2 format can now be 
+  executed.
+
+- To all the jobs that are fetched by the SPU can now be set whether to 
+  perform the buffer overrun check.
+  Accordingly, the following function and argument have been added:
+
+  [C Interface]
+    - cellSpursJobQueueAttributeSetIsJobTypeMemoryCheck() 
+
+  [C++ Interface]
+    Specify the isJobTypeMemoryCheck argument via the following methods:
+    - cell::Spurs::JobQueue::JobQueueBase::create()
+    - cell::Spurs::JobQueue::JobQueue::create()
+
+  With either interfaces, when liblsguard is linked, the hash value check of 
+  the write protected areas will be also enabled.
+
+- Features have been added to specify the maximum number of jobs that can be 
+  held by each SPU(including a job being executed within the pipeline) at the 
+  time of a job queue job creation. 
+
+  [C Interface]
+    - cellSpursJobQueueAttributeSetGrabParameters()
+
+  [C++ Interface]
+    - Argument maxNumJobsOnASpu of the JobQueue::create() method
+
+- The following methods have been added to the cell::Spurs::Job and the 
+  cell::Spurs::JobTypeOf template classes:
+
+   - setJobbin2Param()
+     Set information of a binary data image in the jobbin2 format to the job 
+     descriptor.
+
+   - checkForJobChain()
+     Check the job descriptor(for job chain)
+
+   - cehckForJobQueue()
+     Check the job descriptor(for job  queue)
+
+- A feature has been added to limit a grab of a successive job on the SPU by 
+  pushing a job command with the exclusive attribute attached to the job queue.  
+  Accordingly, the following functions have been added:
+
+    - cellSpursJobQueuePortPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::pushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::pushExclusiveJob()
+      Push a job command with the exclusive attribute attached via the port
+      (blocking)
+
+    - cellSpursJobQueuePortTryPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::tryPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::tryPushExclusiveJob()
+      Push a job command with the exclusive attribute attached via the port
+      (non-blocking)
+
+    - cellSpursJobQueuePortCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::copyPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::copyPushExclusiveJob()
+      Push a job command with the exclusive attribute attached via the port 
+      that has a buffer(blocking)
+      
+    - cellSpursJobQueuePortTryCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::Port::tryCopyPushExclusiveJob()
+    - cell::Spurs::JobQueue::PortContainer::tryCopyPushExclusiveJob()
+      Push a job command with the exclusive attribute attached via the port 
+      that has a buffer(non-blocking)
+
+    - cellSpursJobQueuePushExclusiveJob()
+    - cell::Spurs::JobQueue::JobQueue::pushExclusiveJob()
+      Push a job command with the exclusive attribute attached(blocking)
+
+    - cellSpursJobQueueTryPushExclusiveJob()
+    - cell::Spurs::JobQueue::JobQueue::tryPushExclusiveJob()
+      Push a job command with the exclusive attribute attached(non-blocking)
+
+- As a result of the following bugfix, CELL_SPURS_JOB_ERROR_STAT has been added
+  as an error code of cellSpursJobQueuePortInitialize() function that 
+  initializes a port.
+
+  - When attempting to connect a port to an uninitialized or a removed SPURS 
+    job queue, an assert occurred within the SPURS. This problem has been fixed 
+    and an appropriate error is now returned.
+
+Specification Change
+
+- Multiple tags can now be specified to the SYNC command that is pushed by 
+  using the following functions and the methods simultaneously:
+ 
+  - cellSpursJobQueuePushSync()
+  - cellSpursJobQueueTryPushSync()
+  - cellSpursJobQueuePortPushSync()
+  - cellSpursJobQueuePortTryPushSync()
+
+  - cell::Spurs::JobQueue::JobQueue::pushSync()
+  - cell::Spurs::JobQueue::JobQueue::tryPushSync()
+  - cell::Spurs::JobQueue::Port:pushSync()
+  - cell::Spurs::JobQueue::Port:tryPushSync()
+
+New Samples
+
+- cell\samples\tutorial\SpursTutorial\JobQueue\
+  The following samples that are being referred to in the job queue description
+  in the "SPURS Tutorial" document have been added:
+
+  - 0_Initialization_and_Finalization
+    Sample to initialize and finalize the SPURS and the job queue
+
+  - 1_HelloJob
+    Simplest job sample
+
+  - 2_Input_and_Output
+    Sample that shows how to describe the job descriptor that is the basis for 
+    job programming and how to use each buffer
+
+  - 3_Multiple_Job_Pushers
+    Sample that shows how to execute a job from multiple PPU threads of the 
+    application
+
+- cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_task_push_job
+  Sample that shows how to push a SPURS job queue job to the SPURS job queue 
+  from a SPURS task
+
+- cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_fiber_push_job
+  Sample that shows the context switching of the PPU fiber that relates to the 
+  SPURS job queue and how to push a job to the SPURS job queue from the PPU 
+  fiber
+
+Sample Change
+
+- In the following sample programs, the part that calls the "push" interface 
+  of the SPURS job queue has been changed to call the pushJob interface:
+
+  - cell\samples\sdk\fiber\advanced\ppu_job_queue
+  - cell\samples\sdk\fiber\flag
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_hello
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_sync_command
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_hello_and_yield
+  - cell\samples\sdk\spu_library\libspurs\jobqueue\compatibility_with_job2.0
+
+libspurs_Task
+=============
+
+New Features
+
+- A structure CellSpursTaskBinInfo has been added to store binary data of a
+  SPURS task.
+
+- A new function and a member function have been added to the SPURS task set 2 
+  to generate a SPURS task:
+
+  - cellSpursCreateTask2WithBinInfo()
+  - cell::Spurs::Taskset2::createTask2WithBinInfo() 
+
+  The above function and member function provide the same features as 
+  cellSpursCreateTask2() and cell::Spurs::Taskset2::createTask2() respectively,
+  however, they can generate a task more easily by using the 
+  CellSpursTaskBinInfo structure.
+
+- An overload function cell::Spurs::Taskset2::createTask2() has been added.
+
+- A function cellSpursTaskReceiveWorkloadFlag() has been added to wait until a 
+  workload flag is set to the SPURS that is executing the task.
+
+- A feature to name a SPURS task has been added.
+  Accordingly, the followings have been added:
+
+  - CELL_SPURS_MAX_TASK_NAME_LENGTH
+    Macro to set the maximum length of the task name
+
+  - Member "name" of the structure CellSpursTaskAttribute2
+    Specify a task name (Up to 32 characters including the NULL character at 
+    the end) 
+
+  - CellSpursTaskNameBuffer
+    Structure that indicates the area for the SPURS task name
+
+  - Member "taskNameBuffer" of the structure CellSpursTasksetAttribute2
+    Area for the task name. When a variable pointer in the 
+    CellSpursTaskNameBuffer type is set to this variable, the task naming 
+    feature is enabled and it will be enabled to refer to it at the time of 
+    debug.
+
+- The following classes have been added:
+
+  - cell::Spurs::Semaphore
+    Wrapper class for C++ in the CellSpursSemaphore type
+
+  - cell::Spurs::SemaphoreStub
+    Class to operate the semaphore via a pointer
+
+  - cell::Spurs::LFQueuePushContainer
+    Wrapper class for C++ in the CellSpursLFQueuePushContainer type
+
+  - cell::Spurs::LFQueuePopContainer 
+    Wrapper class for C++ in the CellSpursLFQueuePopContainer type
+
+  - cell::Spurs::TaskAttribute2
+    Structure to set the SPURS task2
+
+  - cell::Spurs::TasksetAttribute2
+    Structure to customize the SPURS taskset2
+
+Specification Change
+
+- When the SPURS task interface is called from an SPU program other than a 
+  SPURS task, an error code is now returned.
+
+Sample Changes
+- cell\samples\sdk\spu_library\libspurs\task
+  It has been changed to use the C++ interface.
+  Also, it now uses the newly added structure CellSpursTaskBinInfo to crease 
+  a task.
+
+- cell\samples\sdk\spu_library\libspurs\task\task_switch_optimization
+  Because the optimization method for the task context switching has been 
+  improved, samples that use the old method have been deleted.
+
+  Along with that, all samples under cell\samples\sdk\spu_library\libspurs\task
+  have been changed to use the new optimization method.
+
+libspurs
+========
+
+<Common>
+
+New Feature
+
+- A macro CELL_SPURS_PPU_SYM has been added to refer to a PPU symbol from 
+  within an SPU program.
+
+  By describing this macro within the SPU program, it will be possible to refer
+  to the PPU symbol value specified via the argument ppusym.
+
+  This macro is available only within the SPU program that is statically linked
+  to a SPURS task or a SPURS job.
+
+<Core>
+
+New Features
+
+- The following class has been added to the SPURS C++ interface:
+
+  - cell::Spurs::SpursAttribute
+
+  This is a wrapper class for C++ in the CellSpursAttribute type and can be 
+  used by the PPU.
+
+- An overload function cell::Spurs::Spurs::initialize() has been added to the 
+  SPURS C++ interface.
+
+  * This function is not described in the "libspurs C++ Reference" document, but
+    will be added in the next release.
+
+  It is recommended to use cellSpursInitializeWithAttribute() instead of 
+  cellSpursInitialize() when initializing an SPURS instance.
+
+  In this release, cell::Spurs::Spurs::initiaize() that is equivalent to 
+  cellSpursInitializeWithAttribute() has been also added so as to keep the 
+  readability.
+
+  Specifically, the cell::Spurs::Spurs::initialize() overload function that has
+  been added in this release is provided as an alias of 
+  cell::Spurs::Spurs::initializeWithAttribute(). 
+
+<Policy Module>
+
+New Feature
+
+- The following functions that register a receiver of the workload flag and 
+  cancel the registration have been added so that the workload flag existed 
+  when the function is called is now not deleted:
+
+  - cellSpursSetWorkloadFlagReceiver2()
+  - cellSpursUnsetWorkloadFlagReceiver2()
+  - cellSpursModuleSetWorkloadFlagReceiver2()
+  - cellSpursModuleUnsetWorkloadFlagReceiver2()
+
+libsync2
+========
+
+New Features
+
+- The context storage area that is required to call the blocking function from 
+  the SPURS job queue job can be now deleted.
+
+  Please refer to the "Calling a Blocking Function on a SPURS Jobqueue Job"
+  section of the "libsync2 Overview" document.
+
+Specification Change
+
+- When the blocking function is called from the SPURS task, if the context 
+  storage area is not sufficient, an error is now returned.
+
+JDL (Job Definition Language) Tool 
+===================================
+
+New Features
+
+- A binary image in the jobbin2 format has been supported.
+
+- Generation of a job queue job has been supported.
+
+- Job generation by the SPU has been supported.
+
+- A method getResult() has been added to obtain the return value after a job 
+  is executed.
+
+- Visual Studio 2008 has been supported.
+
+- Pushing a job list has been supported.
+
+- JDL variable reference can be now specified as a right-hand value of the JDL 
+  variable assignment expression.
+
+- A feature has been added to stream out a file generated by the JDL to the 
+  standard output.
+
+- A mode for the buffer keyword size specification has been added so that the 
+  number of elements can be now specified.
+
+- A file output by the JDL and also editable by the user could not have the 
+  changes made to the JDL file reflected because such output file was unable 
+  to be generated even after JDL re-execution. This was to avoid loss of the 
+  changes made by a user edit.
+  However, from SDK 310 onwards, by setting 2 to the JDL variable genJobImpl, 
+  such output file can be re-generated even for a file editable by the user.
+  In this case, the changes made by the user is kept and only the parts 
+  automatically generated by the JDL will be updated.
+
+Specification Changes
+
+- The format of the error messages of JDL has been changed into a format 
+  parsable by Visual Studio.
+
+New Sample 
+
+- cell\samples\tutorial\FunctionOffloadToSpu
+
+  - create_job_by_spu
+    This sample shows how to create and push a job from the SPU.
+
+  - 6_fiber_iterator
+    This sample shows how to execute a fiber on the current PPU thread.
+
+  - 7_submit_job_from_spu
+    This sample shows how to push a 3D cloth simulation sub job from the main 
+    job.
+
+Sample Changes
+
+- cell\samples\sdk\jdl\06_advanced_buffers
+  It has been changed to show how to use the new feature to support JobList.
+  
+- cell\samples\tutorial\FunctionOffloadToSpu
+  Some Function Offload tutorial samples did not use the JDL for offloading.
+  However, since there is no advantage to use the samples anymore, the 
+  reference to the sample is no longer provided and changed as shown below:
+
+
+       [Before change]               [After change]
+  ------------------------------------------------------------------
+     3_offload_to_spu            -> Rewritten to use the JDL
+     4_gather_functions          -> Rewritten to use the JDL
+                                    (almost same as the old 5_offload_by_jdl)
+     5_offload_by_jdl            -> Deleted
+     6_async_offload_by_jdl      -> Changed to 5_async_offload
+     method_call_by_jdl          -> Changed to method_call 
+     offload_with_swcache_by_jdl -> Changed to offload_with_swcache
+     ppu_call_by_jdl             -> Changed to ppu_call
+     virtual_function_offload    -> Deleted
+     virtual_method_call_by_jdl  -> Changed to virtual_method_call 
+  ------------------------------------------------------------------
+
+----------------------------------------------------------------------
+Network
+----------------------------------------------------------------------
+
+libnet
+======
+
+New Features 
+
+- The following structure has been added to set and obtain the parameters of 
+  the network emulation: 
+
+    sys_net_test_param_t
+
+- The following functions have been added to set and obtain the parameters of 
+  the network emulation as an argument of the above structure.
+
+  - sys_net_set_netemu_test_param()
+    Set the parameters of the network emulation
+    Able to apply the network emulation even to the UDPP2P socket
+
+  - sys_net_get_netemu_test_param()
+    Obtain the network emulation parameter that is currently set
+
+- A socket option IP_TOS (Type of Service (TOS) field value) has been added to 
+  the following functions that set and obtain the socket option:
+
+    setsockopt()
+    getsockopt()
+
+librudp
+=======
+
+New Features
+
+- The following function has been added to abort cellRudpPollWait() that is 
+  blocking:
+
+    cellRudpPollCancel()
+
+  When the above function is called from another thread while waiting for an 
+  event by calling cellRudpPollWait(), the thread that is calling 
+  cellRudpPollWait() is immediately released from blocking state and 
+  cellRudpPollWait() returns CELL_RUDP_ERROR_CANCELLED.
+
+  This is useful when it is required to execute a processing other than the 
+  network event in the polling thread immediately.
+
+- A Keep-Alive feature that is supported by a general TCP has been added.
+
+  Accordingly, the following context options have been added to the function 
+  cellRudpSetOption() used to set the context option and cellRudpGetOption() 
+  used to obtain the current context option set:
+
+    CELL_RUDP_OPTION_KEEP_ALIVE_INTERVAL
+    Keep-Alive interval
+
+    CELL_RUDP_OPTION_KEEP_ALIVE_TIMEOUT
+    Keep-Alive timeout time
+
+  Note that when the NP Signaling utility is used as the basic layer, it is 
+  not required to use this feature because Keep-Alive is done in the UDPP2P 
+  layer.
+  
+  This feature may be useful when a user own NAT traversal feature 
+  (or a peer address exchange feature) is in use.
+
+
+----------------------------------------------------------------------
+PlayStation(R)Network (NP)
+----------------------------------------------------------------------
+
+NP Basic
+========
+
+New Feature
+
+- A feature has been added to GUIs provided by the system software to 
+  automatically proceed as though the user pressed the send button without 
+  editing. To use this feature, specify 
+  SCE_NP_BASIC_MESSAGE_FEATURES_ASSUME_SEND to the msgFeatures member of the 
+  SceNpBasicMessageDetails structure that is passed to 
+  sceNpBasicSendMessageGui() as an argument.
+
+  To the mainType member of the SceNpBasicMessageDetails structure, a value 
+  other than SCE_NP_BASIC_MESSAGE_MAIN_TYPE_URL_ATTACHMENT(message with 
+  URL attachment) should be specified.
+
+Sample Change(cell\samples\sdk\network\np\np_basic)
+
+- A send menu with the above SCE_NP_BASIC_MESSAGE_FEATURES_ASSUME_SEND 
+  specified has been added.
+
+NP Signaling
+============
+
+New Sample
+
+- cell\samples\sdk\network\np\np_signaling_rudp
+
+  These samples have been provided as a result of changes made to 
+  the PSP communication in cell\samples\sdk\network\np\np_signaling 
+  to use librudp.
+
+NP Lookup
+=========
+
+New Feature
+- SCE_NP_LANG_POLISH(Polish) has been added as a value settable to the members 
+  language1, language2 and language3 of the SceNpMyLanguages structure that 
+  consolidates "languages often used", which is set by the user and can be 
+  obtained by the following APIs:
+
+    sceNpLookupUserProfile()
+    sceNpLookupUserProfileAsync()
+    sceNpLookupUserProfileWithAvatarSize()
+    sceNpLookupUserProfileWithAvatarSizeAsync()
+
+  With game titles created using SDK310 or before, when "Polish" is set to 
+  "languages often used" on the PlayStation(R)Network server, it will be 
+  converted and passed as SCE_NP_LANG_ENGLISH.
+
+  Note that details on the above SCE_NP_LANG_POLISH is provided in the "NP 
+  Library Common API Reference" document.
+
+NP IN-GAME Commerce 2
+=====================
+
+New Features
+
+- The following functions have been added to perform promotion code 
+  input processing in-game:
+
+  - sceNpCommerce2DoProductCodeStartAsync()
+    Start promotion code input processing
+
+  - sceNpCommerce2DoProductCodeFinishAsync()
+    End promotion code input processing
+
+  Also, the following parameter structures have been added so that they can be 
+  specified to the "param" argument of the above function 
+  sceNpCommerce2DoProductCodeStartAsync():
+
+    SceNpCommerce2ProductCodeParam
+
+Sample Change(cell\samples\sdk\network\np\np_gui_commerce2)
+
+- The following menu that was added to the main screen in SDK300 (*1) 
+  has been removed and the following mode (*2) has been added instead:
+
+  (*1) Menu to execute store browsing in the promotion code input mode
+  (*2) In-game promotion code input mode
+
+NP DRM
+======
+
+Note
+
+  Although description on the content in the disc bound format 
+  (content with "DiscBind" set for the DRM type) has currently been included 
+  in "Game Disc Specifications" and "NPDRM Package Requirements", 
+  please note that we will officially announce the introduction period of 
+  this function later.
+
+  Please contact SCE for more details.
+
+
+Specification Changes
+
+- The format of NPDRM EDATA has been updated to version 3.
+  As a result, the read speed of uncompressed format has been improved than 
+  version 2.
+  
+  The NPDRM EDATA version 3 cannot be read from the system software(GUI) SDK300
+  or before.
+
+  By specifying the --format2 option or the --format1 option to the 
+  make_edata_npdrm command, it is possible to forcibly use the same format as 
+  the one used with SDK300 or before, however, it is recommended to use the 
+  format of version 3 unless otherwise required.
+
+  Note that the version of NPDRM EDATA can be checked by "file version" that is 
+  output when the -i (--info) option is specified.
+
+- A content information file in Polish has been contained. 
+
+NP Trophy
+=========
+
+New Feature
+
+- A feature has been added to post a trophy record to Facebook 
+  at the same time as when the trophy record is synchronized with 
+  the trophy server.
+
+  Due to this additional feature, the following menu has been added to the 
+  system software (GUI):
+
+  [PlayStation(R)Network] -> [Account Management] -> [Facebook] -> 
+  [Share Trophy Information]
+
+  When the Share Trophy Information setting is set to [On] through the above 
+  menu, the trophy record is posted to "Wall" of Facebook.
+
+  Note that the trophy system does not provide a trophy server for development 
+  purpose, thus a trophy record is never posted to Facebook in development 
+  environment.
+
+  Furthermore, you do not have to take any action for this Facebook posting 
+  since the trophy system automatically handles the processing.
+
+----------------------------------------------------------------------
+libhead_tracker
+----------------------------------------------------------------------
+
+New Features
+
+- A structure CellHeadTrackerAttribute that stores 
+  the initialization attributes of libhead_tracker has been added 
+  to the following members:
+  To these members, a flag to set threshold values, and 
+  maximum and minimum angle values for tracking head rotation angle 
+  can be set.
+
+  - setThreshOfHeadRoll
+  - maxOfHeadRoll
+  - minOfHeadRoll
+
+- The following function has been added to generate management data for image 
+  format conversion on the PPU:
+
+    cellHeadTrackerSetDataOfExecConvertImageRAW8ToYUV444()
+
+- The following function has been added to perform image format conversion 
+  (RAW8 -> YUV444) on the SPU:
+
+    cellHeadTrackerExecConvertImageRAW8ToYUV444()
+
+  Transfer the management data generated using the above function 
+  cellHeadTrackerSetDataOfExecConvertImageRAW8ToYUV444() to the SPU memory on 
+  the PPU using an appropriate method beforehand, and then specify the address 
+  to the argument "data".
+
+- A function cellHeadTrackerSetModeForMaskOfInputImage() has been added to set 
+  the mask processing method for input images.
+
+  Accordingly, the following values that can be specified to an argument "mode"
+  of the above function have been added:
+
+  - CELL_HEAD_TRACKER_MASK_OFF
+    Input images are not masked.
+
+  - CELL_HEAD_TRACKER_MASK_BY_BACKGROUND_IMAGE
+    Input images are masked by the existing background difference processing 
+    based on the background images registered in order to improve the tracking 
+    ability.
+
+  - CELL_HEAD_TRACKER_MASK_BY_DYNAMIC_BACKGROUND_IMAGE
+    Input images are masked by the background difference processing based on 
+    the background images auto-learned/generated internally in order to improve 
+    the tracking ability(default).
+
+- The following functions have been added to obtain and set the result of 
+  calibration(outline extraction parameter):
+
+  - cellHeadTrackerGetCalibrationParam()
+    Obtain the result of calibration(outline extraction parameter)
+
+  - cellHeadTrackerSetCalibrationParam()
+    Set the result of calibration(outline extraction parameter)
+
+  Tracking can be conducted without calibration by setting the outline 
+  extraction parameter obtained by cellHeadTrackerGetCalibrationParam() using 
+  cellHeadTrackerSetCalibrationParam().
+
+- The following functions have been added to obtain an intermediate image
+  (outline(edge) image and mask area image):
+
+  - cellHeadTrackerGetPtrOfEdgeImage()
+    Obtain an outline(edge) image generated based on the outline extraction 
+    parameter from the input images
+
+    The outline (edge) image obtained via the above function is masked by the 
+    background difference processing based on the background images.
+
+    When it is required to disable the mask processing, set 
+    CELL_HEAD_TRACKER_MASK_OFF to the argument mode of the above function 
+    cellHeadTrackerSetModeForMaskOfInputImage().
+
+  - cellHeadTrackerGetPtrOfMaskImage()
+    Obtain a mask area image generated by the background difference processing
+    based on the background images generated/registered within the library
+
+Specification Change
+
+- The number of IDs of DMA tags that each SPURS task uses and that is specified
+  to an argument of the following functions has been changed from 3 to 4:
+
+  - cellHeadTrackerInitConvertImageWithSetDMATag()
+    Initialize a SPURS task of the image conversion module
+
+  - cellHeadTrackerInitTrackingWithSetDMATag()
+    Initialize a SPURS task of the tracking module
+
+Sample Change(cell\samples\sdk\vision\head_tracker\head_tracker_camera)
+
+- The following processes have been added:
+
+  - Process to mask input images by the background difference processing 
+    based on the background images auto-learned/generated internally 
+    in order to improve the tracking ability(default).
+
+  - Process to start tracking without calibration using the following 
+    functions:
+
+    - cellHeadTrackerGetCalibrationParam()
+    - cellHeadTrackerSetCalibrationParam()
+
+- A camera input in the RAW8 VGA format has been supported.
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+
+New Features 
+
+- The number of attribute types that can be determined by the face attribute 
+  classification has been increased to the following 8 types: 
+
+    Smile
+    Degree of the right eye opened/closed 
+    Degree of the left eye opened/closed
+    Sex
+    Adult (child/adult)
+    Baby
+    Elder 
+    Glasses
+
+  Accordingly, the following functions and the macro constants have been added: 
+
+    [Functions]
+      cellFacePartsAttributeEx()
+      Detect the parts such as the eyes, the nose and the mouth and determine 
+      all attributes from the face area obtained by the face detection
+
+      cellFaceAttribExGetDictEa()
+      Obtain the dictionary data for all attribute classification
+
+      cellFaceUtilPartsAttribExParamInitialize()
+      Initialize the part detection and all attribute classification parameters
+
+    [Macro constants]
+      CELL_FACE_ATTRIB_ID_REYEOPEN
+      CELL_FACE_ATTRIB_ID_LEYEOPEN
+      CELL_FACE_ATTRIB_ID_GENDER
+      CELL_FACE_ATTRIB_ID_ADULT
+      CELL_FACE_ATTRIB_ID_BABY
+      CELL_FACE_ATTRIB_ID_ELDER
+      CELL_FACE_ATTRIB_ID_GLASS
+
+- A post processing (shape correction for detailed part detection) has been 
+  introduced to stabilize the detailed part detection. 
+  Accordingly, the following functions and the structure have been added:
+
+    [Functions]
+      cellFaceAllPartsShapeConstraint()
+      Perform shape correction for the detailed part detection
+
+      cellFaceAllPartsShapeGetDictEa()
+      Obtain the dictionary data for shape correction of the detailed part 
+      detection
+
+      cellFaceUtilAllPartsWithShapeConstraintParamInitialize()
+      Initialize the detailed part detection parameter with the shape 
+      correction attached
+
+      cellFaceUtilAllPartsShapeParamInitialize()
+      Initialize the shape correction parameter of the detailed part detection
+
+    [Structure]
+      CellFaceAllPartsShapeParam
+
+- Face recognition feature has been added to recognize an individual based on 
+  the similarity degree of a face feature value.
+  Accordingly, the following functions, structures, and macro constant have been
+  added: 
+
+    [Function]
+      cellFaceFeature()
+      Calculate the face feature value
+
+      cellFaceSimilarity()
+      Calculate the similarity degree of the face feature value
+
+      cellFaceSimilarityGetDictEa()
+      Obtain the dictionary for calculating the similarity degree of the face
+      feature value
+
+      cellFaceUtilFeatureParamInitialize()
+      Initialize the face feature value calculation parameter
+
+      cellFaceUtilSimilarityParamInitialize()
+      Initialize the similarity degree calculation parameter
+
+    [Structure]
+      CellFaceFeature
+      CellFaceFeatureParam
+      CellFaceSimilarityParam
+
+    [Macro constant]
+      CELL_FACE_FEATURE_SIZE
+
+- A customization feature of the DMA tag numbers that are used within the 
+  libface library has been added.
+  Accordingly, the following function and error code have been added:
+
+    [Function]
+      cellFaceSetDmaTag()
+      
+
+    [Error code]
+      CELL_FACE_ERROR_DMA_TAG
+
+Specification Changes
+
+- Because the number of attributes that can be classified by the face 
+  attribute classification has been increased to 8 types, the value of 
+  CELL_FACE_ATTRIB_NUM_MAX macro constant has been changed from 1 to 8. 
+
+- The member "uint8_t padding[8]" of the structure CellFacePosition has been 
+  changed to "float shift[2]". 
+  The "shift" array is used within the libface library. 
+
+- The structure CellFaceUtilReturnValue has been removed from the libface 
+  library API because it had no direct relationship with the libface library 
+  itself and also was positioned as equivalent of a sample code.
+
+  If the game application is using the CellFaceUtilReturnValue structure, the 
+  code of this structure part should be changed. Please refer to 
+  cell\samples\sdk\vision\face\sample_face_util and change the code of the game
+  application. 
+
+New Sample
+
+- cell\samples\sdk\vision\face\face_recognition_still
+  After face detection is conducted based on a still image (jpg/png), this 
+  sample performs the part detection, the detailed part detection and the 
+  attribute classification concurrently and further performs the face 
+  recognition. 
+
+Sample Changes (cell\samples\sdk\vision\face)
+
+- The following changes have been made in the sample_face_util (*1) sample:
+
+  - The CellSpursTaskset2 structure has been supported.
+    Also, changes have been made in all samples to accommodate this support.
+
+  - New SPU library functions 
+
+      cellFaceAllPartsShapeConstraint()
+      cellFacePartsAttributeEx()
+      cellFaceFeature()
+      cellFaceSimilarity()
+
+    The following functions and related lower level function set have been 
+    added as PPU sample wrapper functions with source code attached for 
+    executing the above new functions: 
+
+      sampleFaceUtilAllPartsShape()
+      sampleFaceUtilPartsAttribEx()
+      sampleFaceUtilFeature()
+      sampleFaceUtilSimilarity()
+
+  - Due to the removal of the structure CellFaceUtilReturnValue as described in
+    the above specification changes section, sample codes that use 
+    CellFaceUtilReturnValue have been changed.
+
+- The following changes have been made in the sample_face_draw (*2) sample:
+
+  - Changed to express the result of the face detection using a cube
+  - Changed to express the adjusted face area based on the part detection 
+    result using a cube
+  - Changes have been made in all samples to accommodate the above changes. 
+
+- The following changes have been made in the 
+  face_recognition_camera_multi_spu sample:
+  
+  - Supported the changes made in sample_face_util (*1) and sample_face_draw 
+    (*2) 
+  - Added an individual recognition feature and overwrote the code entirely 
+
+- The following changes have been made in the 
+  face_recognition_camera_local_search sample:
+  
+  - Supported the changes made in sample_face_util (*1) and sample_face_draw 
+    (*2) 
+  - Added an individual recognition feature and overwrote the code entirely
+  - As implementations of a part where the general search of the game detection
+    is executed in the background, 2 types of implementations have been 
+    prepared such as a PPU thread version that waits until the face detection 
+    ends within the PPU thread for general search, and a non-PPU version that 
+    polls the general search to end within the main loop without using the PPU 
+    thread.
+
+- The following changes have been made in the attribute_classify_camera sample:
+  
+  - Supported the changes made in sample_face_util (*1) and sample_face_draw 
+    (*2)
+  - Changed to perform shape correction of the detailed part detection 
+  - Changed to display the results of the face attribute classification based 
+    on the 8 types
+  - Changed to provide a camera gain adjustment ability of the PlayStation(R)Eye 
+- The following changes have been made in the attribute_classify_still sample:
+  
+  - Supported the changes made in sample_face_util (*1) and sample_face_draw 
+    (*2)
+  - Changed to display the results of the face attribute classification based 
+    on the 8 types
+
+- In the face_detection_still sample, the changes made in sample_face_util (*1)
+  and sample_face_draw (*2) have been supported.
+
+- The following changes have been made in the parts_detection_still samples:
+  
+  - Supported the changes made in sample_face_util (*1) and sample_face_draw 
+    (*2)
+  - Changed to perform shape correction of the detailed part detection 
+
+- In the sample_camera_util sample, it has been changed to provide a camera 
+  gain adjustment ability of the PlayStation(R)Eye.
+
+- The following changes have been made in the sample_misc_utils sample:
+
+  - Added the debug display for the individual recognition 
+  - Changed the operation procedure display for the camera input related sample
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+
+libkb
+=====
+
+New Features
+
+- A French keyboard (in the Belgium array) has been added:
+  ------------------------------------------------------
+  Display Language    | Macro
+  ------------------------------------------------------
+  French(Belgium)      | CELL_KB_MAPPING_BELGIAN_BELGIUM
+  ------------------------------------------------------
+
+- A Polish keyboard has been supported.
+  -----------------------------------------------------
+  Display Language   | Macro
+  -----------------------------------------------------
+  Polish              | CELL_KB_MAPPING_POLISH_POLAND
+  -----------------------------------------------------
+
+libkey2char
+===========
+
+New Features
+
+- The following keyboard types have been supported:
+
+  - French keyboard(Belgium)
+  - Polish keyboard
+
+- Normally, when cellKey2CharOpen() is called, the keyboard type is determined 
+  automatically within libkey2char, however, when multiple keyboards including 
+  a wireless keypad are being connected, the keyboard type may not be correctly
+  determined.
+  In order to avoid such problem, a cellKey2CharSetArrangement() 
+  function has been added to set an appropriate keyboard type.
+
+  To control multiple keyboards correctly, call cellKey2CharOpen(), and then 
+  set the keyboard type obtained by cellKbGetConfiguration() 
+  using cellKey2CharSetArrangement().
+
+  Please refer to the "libkb Reference" document for more details on 
+  cellKbGetConfiguration().
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+
+New Feature
+
+- A cellMicStartEx() function has been added to reduce the latency of a raw 
+  stream input from the USB microphone or the headset and then play audio.
+
+  By the configuration flag that is passed to the argument iFlags of 
+  cellMicStartEx(), this latency can be reduced to 1, 2 or 4msec (However, the 
+  actual latency may be reduced to only 2 times of the value set to the 
+  configuration flag depending on the thread timing.).
+
+  This latency reduction is not obvious on DSM streams due to internal DSP 
+  processing time.
+
+  ---------------------------------------------------------------------------
+  Flag set to cellMicStartEx()     Description
+  ---------------------------------------------------------------------------
+  CELL_MIC_STARTFLAG_LATENCY_1     Request a raw stream latency of 1 msec
+  CELL_MIC_STARTFLAG_LATENCY_2     Request a raw stream latency of 2 msec
+  CELL_MIC_STARTFLAG_LATENCY_4     Request a raw stream latency of 4 msec
+  ---------------------------------------------------------------------------
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+
+New Feature
+
+- A constant CELL_CAMERA_DEVICEID2 has been added to specify and obtain 
+  a device ID that contains a device release number.
+
+  By specifying the above constant to the second argument attrib of 
+  cellCameraGetAttribute(), the device release number of the EyeToy(TM) USB 
+  camera (for PlayStation(R)2) and the PlayStation(R)Eye can be obtained in 
+  addition to their vendor ID and promotion ID.
+
+- The following functions related to the Extension Unit, which are vendor 
+  unique features of the UVC camera, have been added:
+
+  - cellCameraPrepExtensionUnit()
+    Prepare the Extension Unit
+
+    Specify a vendor unique specifier defined by the target Extension Unit to
+    the second argument "guidExtensionCode".
+
+    The Extension Unit specifier is in the 16 bytes GUID type. However, it 
+    should be in the byte array when specifying it to the second argument 
+    guidExtensionCode (Pay attention to the order of each byte).
+
+  - cellCameraCtrlExtensionUnit()
+    Control the Extension Unit
+
+    Specify the size of a parameter to be passed to the device to the 4th 
+    argument wLength. The parameter size is limited up to 16 bytes.
+
+  - cellCameraGetExtensionUnit()
+    Obtain the current setting of the Extension Unit
+
+    The parameter size to be specified to the 3rd argument wLength is limited 
+    up to 16 bytes.
+
+  - cellCameraSetExtensionUnit()
+    Set the Extension Unit
+
+    The size of the parameter to be passed to the device and specified to the 
+    3rd argument wLength is limited up to 16 bytes.
+
+----------------------------------------------------------------------
+libl10n
+----------------------------------------------------------------------
+
+New Feature
+
+- The following definitions have been added as a data type that indicates 
+  the encoding method(L10nCode):
+
+  -----------------------------------------------------------------------------
+  Macro             : Description
+  -----------------------------------------------------------------------------
+  L10N_CODEPAGE_737 : Microsoft CodePage737 (OEM - Greek)
+  L10N_CODEPAGE_775 : Microsoft CodePage775 (OEM - Baltic)
+  L10N_CODEPAGE_852 : Microsoft CodePage852 (OEM - Latin 2)
+  L10N_CODEPAGE_855 : Microsoft CodePage855 (OEM - Cyrillic)
+  L10N_CODEPAGE_857 : Microsoft CodePage857 (OEM - Turkish)
+  L10N_CODEPAGE_858 : Microsoft CodePage858 (OEM - Multilingual Latin I + Euro)
+  L10N_CODEPAGE_860 : Microsoft CodePage860 (OEM - Portugese)
+  L10N_CODEPAGE_861 : Microsoft CodePage861 (OEM - Icelandic)
+  L10N_CODEPAGE_865 : Microsoft CodePage865 (OEM - Nordic)
+  L10N_CODEPAGE_869 : Microsoft CodePage869 (OEM - Greek 2)
+  L10N_CODEPAGE_1250: Microsoft CodePage1250 (ANSI - Central European)
+  L10N_CODEPAGE_1253: Microsoft CodePage1253 (ANSI - Greek)
+  L10N_CODEPAGE_1254: Microsoft CodePage1254 (ANSI - Turkish)
+  L10N_CODEPAGE_1257: Microsoft CodePage1257 (ANSI - Baltic)
+  -----------------------------------------------------------------------------
+
+Sample Changes(cell\samples\sdk\l10n)
+
+- Due to the extension of the data type that indicates the encoding method
+  (L10nCode), the code of this sample have been also changed to use L10nCode 
+  that has been newly added.
+
+- The extensions of the executable have been changed from "*.elf/*.self" to 
+  "*.ppu.elf/*.ppu.self". 
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+
+New Feature
+
+- The font set of the round typeface has been extended so that it can now 
+  handle the font set that supports the following languages of Eastern European 
+  countries:
+
+  - Polish
+  - Czech
+  - Slovakian
+  - Hungarian
+  - Slovenian
+  - Croatian
+  - Romanian
+  - Greek
+  - Turkish
+  - Estonian 
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+
+New Features
+
+- CELL_DBG_RSX_INTERRUPT_ERROR_STATUS_ID_MISC has been added 
+  as a value stored in a variable pointed via the argument "status" of
+  the function 
+  cellDbgRsxGetInterruptErrorStatus() that obtains the block interrupt
+  status to indicate in which block an error is occurring.
+
+  CELL_DBG_RSX_INTERRUPT_ERROR_STATUS_ID_MISC is returned 
+  when an error that is caused by the system software or the user occurs.
+ 
+  Accordingly, a function cellDbgRsxGetInterruptMiscErrorStatus() has been 
+  added to obtain the interrupt status that indicates other error causes, and 
+  the following values have been added as values stored in the variable 
+  pointed by the argument status of this function:
+
+  - CELL_DBG_RSX_INTERRUPT_MISC_ERROR_STATUS_ID_DUMP
+    Error caused by a call to cellGcmDumpGraphicsError()
+
+  - CELL_DBG_RSX_INTERRUPT_MISC_ERROR_STATUS_ID_SYSTEM_OVERLAY
+    Error occurs when the overwrite-rendering by the system software fails, and
+    equivalent to the Graphics error 3
+
+- The followings have been added as bundle states of 
+  cellDbgRsxGetGraphicsBundleState(). The bundle state indicates the graphic 
+  engine status set to each unit within the GRAPHICS block:
+
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_COLOR_MASK_MRT
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_DATA_ARRAY_FORMAT
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_DATA_ARRAY_OFFSET
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_A
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_B
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_C
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_COLOR_D
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTEXT_DMA_ZETA
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FRONT_FACE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CULL_FACE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CULL_FACE_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_LINE_WIDTH
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_LINE_SMOOTH_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_OFFSET_FILL_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_OFFSET_LINE_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLY_SMOOTH_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FRONT_POLYGON_MODE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_POLYGON_MODE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TWO_SIDE_LIGHT_EN
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CONTROL0
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_DEPTH_BOUNDS_TEST_ENABLE
+    CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FREQUENCY_DIVIDER_OPERATION
+
+Sample Changes(cell\samples\sdk\graphics\dbgrsx\dbgrsxutil)
+
+- The above new function, macros and bundle states have been supported.
+
+- A feature to display a related register and a description of each 
+  error has been added to readrsxcore.
+
+- readrsxcore has been updated so as to support the new core dump format.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+
+New Features
+
+- "#pragma regcount" has been added.
+
+  As a result, register count can be set using in-source pragmas, 
+  instead of command-line options.
+
+  The -regcount option specified on the command line overrides those 
+  specified by pragma.
+
+- The following 2 capture options have been added:
+
+    -capture-srcfilename
+    -capture-outfilename
+
+  These capture options can be used for capture with libcgc only.
+
+  These capture options allow users to insert a source file name 
+  or shader output file name.
+
+  Previously, capture from libcgc always stored source file as "src.cg" 
+  and shader output file as "ucode.(v|f)po" because it did not have 
+  naming information.
+
+- Added support for include handlers when using cgc capture.
+
+  Previously, need to use -capture-preprocess 
+  to capture data from include handlers.
+
+  The data that is returned from include handlers is 
+  now associated with the file name after #include.
+
+- The option -capture-brstrip has been added.
+
+  Using the -capture-brstrip option, the compiler stores additional data 
+  that is needed to differentiate shaders for "branch stripping" 
+  post processing of fragment shaders.
+
+  This behavior can also be enabled by setting the environment variable 
+  SCECGC_CAPTUREBRSTRIP.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+
+New Features
+
+<PPU Libraries>
+
+- A function cellGcmSetClipMinMax() has been added to set the clip range in the
+  Z coordinates of the RSX(TM) hardware screen coordinates system.
+  This function is used when only the clip range is needed to be changed after 
+  a view port is set by cellGcmSetViewport().
+
+- The following functions and structures have been added to obtain the 
+  information of the Tiled area that is set by cellGcmSetTileInfo(), and the 
+  information of ZcullRegion set by cellGcmBindZcull().
+
+    [Functions]
+      cellGcmGetTileInfo()
+      cellGcmGetZcullInfo()
+
+    [Structures]
+      CellGcmTileInfo
+      CellGcmZcullInfo
+
+- The following functions have been added to set the constant vertex attribute 
+  data that is passed to the vertex shader:
+
+    cellGcmSetVertexData3f()
+    cellGcmSetVertexData2f()
+    cellGcmSetVertexData1f()
+    cellGcmSetVertexData4s()
+    cellGcmSetVertexDataScaled4s()
+    cellGcmSetVertexData2s()
+    cellGcmSetVertexData4ub()
+
+- A function cellGcmSetWaitForIdle() that waits until the precedent
+  rendering processing ends has been added.
+
+- Information (position of the default command buffer or call back function) 
+  that is held within libgcm has been added. This information is output to the 
+  core file by the core dump.
+
+  For more details on the added information please refer to 
+  the "RSX(TM) Debug Data" and the "GCM Info Unit" sections of 
+  the "Core Dump Overview".
+
+- The following functions for PlayStation(R)3 GPAD have been added:
+
+  - cellGcmGpadGetStatus() 
+    Obtain the current status of PlayStation(R)3 GPAD
+
+  - cellGcmGpadNotifyCaptureSurface()
+    Register surface data that you want to video-capture into PlayStation(R)3 
+    GPAD
+
+- A function cellGcmMapLocalMemory() has been added to map the RSX(TM) local 
+  memory to the effective address space.
+
+- The following functions and structure have been added to obtain display 
+  output buffer information:
+
+    [Functions]
+      cellGcmGetDisplayInfo()
+      Obtain the display output buffer information
+
+      cellGcmGetCurrentDisplayBufferId()
+      Obtain a buffer ID of a display output buffer that is set by 
+      cellGcmSetDisplayBuffer() and is being output to the display 
+
+    [Structure]
+      CellGcmDisplayInfo
+
+- A cellGcmAlign() function has been added to align addresses, offsets and 
+  sizes.
+  This function returns a value that is aligned to multiples of the argument 
+  "alignment" based on the argument "value".
+
+  Accordingly, the following macros that are specifiable to the argument 
+  "alignment" have been added:
+
+    CELL_GCM_ZCULL_ALIGN_OFFSET
+    CELL_GCM_ZCULL_ALIGN_WIDTH
+    CELL_GCM_ZCULL_ALIGN_HEIGHT
+    CELL_GCM_ZCULL_ALIGN_CULLSTART
+    CELL_GCM_TILE_ALIGN_OFFSET
+    CELL_GCM_TILE_ALIGN_SIZE
+    CELL_GCM_TILE_LOCAL_ALIGN_HEIGHT
+    CELL_GCM_TILE_MAIN_ALIGN_HEIGHT
+    CELL_GCM_FRAGMENT_UCODE_LOCAL_ALIGN_OFFSET
+    CELL_GCM_FRAGMENT_UCODE_MAIN_ALIGN_OFFSET
+    CELL_GCM_SURFACE_LINEAR_ALIGN_OFFSET
+    CELL_GCM_SURFACE_SWIZZLE_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_SWIZZLE_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_CUBEMAP_ALIGN_OFFSET
+    CELL_GCM_TEXTURE_SWIZZLED_CUBEMAP_FACE_ALIGN_OFFSET
+
+<SPU Libraries>
+
+- A function cellGcmSpuAddressToOffset() has been added to convert a effective
+  address into an offset value.
+  This is one of SPU functions that convert an address for use with the SPU 
+  libraries. 
+
+- An SPU version of Cg function (cellGcmCgXXXXXX()) has been added.
+
+- A MeasureSize has been added as one of the control modes of 
+  the command buffer for the rendering command generation function.
+
+  The command generation function in the above mode returns a value resulted 
+  after the command size is added to the value of the argument "size".
+  By calling the command generation function in the above mode repeatedly, the 
+  memory size required for the buffer command can be directly obtained.
+
+- The following functions have been added to obtain parameters for DMA put/DMA 
+  get whose transfer size is 4 bytes:
+
+    cellGcmSpuGetDmaPutVecUint4Ls()
+    cellGcmSpuGetDmaGetVecUint4Ls()
+
+- The following functions have been added to obtain the effective address of 
+  the label, report data and notification data:
+
+    cellGcmSpuGetLabelAddress()
+    cellGcmSpuGetReportDataAddressLocation()
+    cellGcmSpuGetNotifyDataAddress()
+
+- The following functions have been optimized to the SPU:
+
+  - cellGcmSetWriteTextureLabel()
+    Set the label value update when the texture reference is completed
+
+  - cellGcmSetInvalidateVertexCache()
+    Invalidate both the pre-transform cache and post-transform cache of the 
+    vertex shader
+
+  - cellGcmSetVertexDataArray()
+    Set the vertex attribute to be passed to the vertex shader
+
+  - cellGcmSetDrawIndexArray()
+    Render a primitive that use an index
+
+Specification Change
+
+  When NULL is set to gCellGcmDebugCheckCallback that is a pointer to 
+  the debug callback function and the argument check is enabled, 
+  if an inappropriate parameter is found, an infinite loop occurred, 
+  however, an ASSERT now occurs instead.
+
+Sample Changes(cell\samples)
+
+- Unnecessary parameters have been deleted from the sdk\graphics\gcm\msaa\ds2x 
+  sample.
+
+- sdk\graphics\gcm sample has been changed to use the new function 
+  cellGcmAlign() and also a macro specified to its argument "alignment".
+
+- The common\gcmutil sample has been changed to use the following new 
+  functions:
+
+    cellGcmGetTileInfo()
+    cellGcmGetZcullInfo()
+
+----------------------------------------------------------------------
+Sound Related
+----------------------------------------------------------------------
+
+libaudio
+========
+
+New Features
+
+- A mechanism that issues a before-mix audio event has been added to 
+  the Audio Server.
+  Due to this addition, the following functions and a macro have been added:
+
+    [Functions]
+    cellAudioSetNotifyEventQueueEx()
+      Register a queue for obtaining the audio event
+
+    cellAudioRemoveNotifyEventQueueEx()
+      Delete a queue for obtaining the audio event
+
+    cellAudioSendAck()
+      Notify that the audio output data before-mix has been prepared
+
+    [Macro]
+    CELL_AUDIO_EVENTFLAG_BEFOREMIX
+      Flag that requests a notification of audio before-mix
+
+- A function cellAudioCreateNotifyEventQueueEx() has been added to generate an 
+  event queue for receiving a notification of an audio signal update.
+
+  What this function differs from cellAudioCreateNotifyEventQueue() is that it 
+  can select what kind of event queue should be generated via an argument 
+  iFlags. 
+
+  To generate an SPU event queue, specify the new macro 
+  CELL_AUDIO_CREATEEVENTFLAG_SPU to the argument iFlags.
+  To generate a PPU event queue, specify 0 to the argument iFlags.
+  In the later case, this function provides the same feature as 
+  cellAudioCreateNotifyEventQueue().
+
+New Sample
+
+- cell\samples\sdk\sound\audio\EventBased
+  This sample shows how to use the audio event in the PPU thread and the SPU 
+  thread.
+
+libmstream
+==========
+
+New Feature
+
+- Soft and hard knee compression options have been added to the compressor DSP 
+  effect and provided via the following members of the structure 
+  CellMSFXCompressorInfo:
+
+    float softKnee;
+    int flags;
+
+  To the member "softKnee", specify the range of the active knee in dB.
+  As a result, the soft knee shows gradual increase in the compression rate 
+  from the specified range. When the value specified to softKnee is 0.0f, it 
+  is deemed as the hard knee.
+ 
+  To the member "flags", set an OR of the following new macros:
+
+   - Macro for switching the detection mode
+       #define CELL_MSFX_COMPRESSOR_RMS_MODE               (0) 
+       #define CELL_MSFX_COMPRESSOR_PEAK_MODE              (1) 
+
+       Note that the peak mode is only supported in time domain compressors.
+
+   - Macro for switching the multi-channel calculation
+       #define CELL_MSFX_COMPRESSOR_CHAN_VOLUMES_AVERAGE   (0) 
+       #define CELL_MSFX_COMPRESSOR_CHAN_VOLUMES_MAX       (2) 
+
+----------------------------------------------------------------------
+codec
+----------------------------------------------------------------------
+
+libsail
+=======
+
+New Features
+
+- CELL_SAIL_START_FLAG_STICKY has been added as a flag specified to the member 
+  "flags" of the CellSailStartCommand structure.
+  This flag can be used for when it is not required to disable the start 
+  playback command even when a stream transition occurs.
+
+- It has been supported to play a movie that is created using MPEG-4 Advanced 
+  Coding Efficiency(M4HD) of the Recording utility or libsail_rec.
+
+- It has been supported to play a video of MPEG-4 AVC High Profile for when the
+  input stream is an MP4 file.
+
+----------------------------------------------------------------------
+Sample Program (cell\samples)
+----------------------------------------------------------------------
+
+New Samples
+
+- cell\samples\tutorial\performance_tips\Cell\advanced\motion_sample
+  This motion sample uses vectormath and the SPURS job queue.
+
+- cell\samples\tutorial\performance_tips\SpuMixUse
+  This sample executes a different type of processings such as the 
+  PlayStation(R)Edge geometry and the physics simulation efficiently by 
+  the SPU.
+
+----------------------------------------------------------------------
+

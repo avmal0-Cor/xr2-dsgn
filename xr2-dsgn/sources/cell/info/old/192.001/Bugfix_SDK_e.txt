@@ -1,0 +1,229 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 192.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 192.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 192.001
+======================================================================
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< AV Chat utility >
+- The following problem has been fixed.
+
+  - When the LAN cable is unplugged from PLAYSTATION(R)3 of a user 
+    who is the room owner just after the video chat or the voice chat 
+    of AV Chat utility is started, a hang-up may occur.
+
+- The sample program is now bootable even when the resolution is other 
+  than 480.
+
+- The sample program is now bootable even without signing in the NP.
+
+< Photo Utility >
+- The following bug has been fixed.
+
+  - When cellPhotoExportFinalize() is executed at the time of game 
+    termination callback, it ends in error and the resource is not 
+    collected.
+
+- The following bug has been fixed.
+
+  - When cellPhotoDecodeFinalize() is executed at the time of game 
+    termination callback, it ends in error and the resource is not 
+    collected.
+
+- The following bug has been fixed.
+
+  - When cellPhotoDecodeFromFile() is executed and other than square 
+    is set as a decode size, it may decode a larger size than specified.
+
+
+- The following problem has been fixed.
+
+  - The import feature of the photo utility may hung up if a photo file 
+    is selected in the "Photos" column while the rotating arrow icon is 
+    being displayed which remains until the thumbnail of the photo file 
+    is loaded. 
+
+<Music Utility>
+- The following bug has been fixed.
+
+  - When cellMusicExportFinalize() is executed at the time of game 
+    termination callback, it ends in error and the resource is not 
+    collected.
+
+<Video Utility>
+- The following bug has been fixed.
+
+  - When cellVideoExportFinalize() is executed at the time of game 
+    termination callback, it ends in error and the resource is not 
+    collected.
+
+< Save Data Utility >
+- The following problem has been fixed.
+
+  - When a save data utility is booted in a specific mode during 
+    the remote play and the following procedure is performed, 
+    the GUI screen will be left displayed and it will become inoperatable.
+
+    1) Select "No" in the Save/Load/Delete conformation dialogs
+    2) Select "No" in the Save/Load suspension confirmation dialogs
+    3) Delete a single piece of data
+
+    The applicable save data utility types are as shown below:
+    cellSaveDataListSave2()
+    cellSaveDataListLoad2()
+    cellSaveDataDelete2()
+    cellSaveDataListDelete()
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - Hang-up occurs when the LAN cable is unplugged while UDPP2P 
+    is in use.
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libdmux>
+- The following bug has been fixed.
+
+  - In a PAMF stream that meets a specific condition, a PTS is added to a 
+    wrong AU taht is the one before the correct AU. This problem effects 
+    the AV synchronization and may cause an audio-visual bug.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - cellFsRename() and cellFsUnlink() may stop when being executed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- In cellGcmCgSetInstructionSlot(), when the load lot number of the vertex
+  shader program is specified to 512 or more, it now returns 
+  CELL_GCM_ERROR_INVALID_VALUE.
+
+- The following bug has been fixed.
+
+  - In cellGcmSetVertexProgramLoadSlot(), the size of CELL_GCM_RESERVE() 
+    is 1 word larger.
+
+- The following bug has been fixed.
+
+  - In the RSX(TM) error dump, when the argument "type" of 
+    cellGcmSetVertexDataArrayFormat() is set to CELL_GCM_VERTEX_F, the 
+    error dump value of "size" was not correct.
+
+- The following bug has been fixed.
+
+  - In cellGcmSetVertexProgramParameterBlockPointer() and 
+    cellGcmSetVertexProgramConstantsPointer(), CELL_GCM_ASSERT() check was
+    not correct.
+
+- The following bug has been fixed.
+
+  - In the following functions, when the size of CELL_GCM_RESERVE() in 
+    Safe mode is not enough, the current pointer moves. This causes 
+    "pointer" to return a value not 16B aligned:
+    cellGcmSetInlineTransferAlignedPointer()
+    cellGcmSetVertexProgramConstantsAlignedPointer()
+    cellGcmSetVertexProgramParameterBlockAlignedPointer()
+    cellGcmSetDrawInlineArrayAlignedPointer()
+    cellGcmSetDrawInlineIndexArray32AlignedPointer()
+    cellGcmSetDrawInlineIndexArray16AlignedPointer()
+
+- In the sample navigator (samples/sdk/graphics/snavi), the following bugs
+  have been fixed:
+
+  - The screen resolution is not considered when rendering
+  - Cannot be built using gcm_cmddbg
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - An unexpected value may be found in the VMX register.
+
+
+
+
+----------------------------------------------------------------------
+NP Lookup utility
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - If a pointer to the SceNpAvatarImage structure is passed as 
+    the avatarImage parameter to sceNpLookupUserProfile()/
+    sceNpLookupUserProfileAsync(), the avatar image of the target 
+    user should be retrieved. However, if avatarImage is not NULL, 
+    an error code SCE_NP_COMMUNITY_ERROR_INVALID_TYPE (0x8002a1a8)
+    is returned.
+
+- The following bug has been fixed.
+
+  - When multiple asynchronous communication processings that have not 
+    obtain a result are destroyed using sceNpLookupDestroyTransactionCtx(),
+    the system process thread (SceNpLookupVsh) may crash in the 
+    succeeding communication processing.
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When multiple asynchronous communication processings that have not 
+    obtain a result are destroyed using sceNpScoreDestroyTransactionCtx(),
+    the system process thread (SceNpRankingVsh) may crash in the 
+    succeeding communication processing.
+
+- The following bug has been fixed.
+
+  - When the LAN cable is unplugged during the communication for score 
+    registration and inappropriate strings check, the system process thread 
+    (SceNpRankingVsh) may crash in sceNpScoreDestroyTransactionCtx().
+    Functions that case this problem are as shown below:
+    sceNpScoreRecordScore()
+    sceNpScoreRecordScoreAsync()
+    sceNpScoreRecordGameData()
+    sceNpScoreRecordGameDataAsync()
+    sceNpScoreCensorComment()
+    sceNpScoreCensorCommentAsync()
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- In the samples/sdk/control_console sample, $(CELL_SDK_WIN) was wrongly 
+  specified in the project file for ProDG for PLAYSTATION(R)3. This 
+  problem has been fixed so that it now specifies $(PS3_SDK_ROOT).
+
+- The following problem has been fixed.
+
+ - cellConsoleVariableRemove() would only work correctly if 
+   variables were removed in LIFO order.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When callback functions from the game application compete against 
+    each other, cellMSSystemGenerateCallbacks() crashes.
+
+- The following bug has been fixed.
+
+  - When the Multistream decodes a MP3 audio file whose absolute value 
+    of the waveform value is 1.0 or more, a clipping noise is played. 
+
+

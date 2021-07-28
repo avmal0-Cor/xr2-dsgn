@@ -1,0 +1,263 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 320.001
+                    Copyright(C) 2010 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+以下に開発ツール、および本パッケージに含まれるソフトウェアの商標
+およびライセンスについて、以下のように記述します。
+
+   1. 商標に関する注意書き
+   2. ゲームアプリケーションに組み込まれるソフトウェアのライセンスと
+      規定について
+   3. 開発ツールおよびPlayStation(R)3本体に搭載されるソフトウェアの
+      ライセンスについて
+
+   4. その他のソフトウェアのライセンスについて
+
+----------------------------------------------------------------------
+1.商標に関する注意書き
+----------------------------------------------------------------------
+"PlayStation"、"PLAYSTATION"、"PS3"、"RSX"、"PSP"、"SIXAXIS"および
+"Cell Broadband Engine"は、株式会社ソニー・コンピュータエンタテインメントの
+商標または登録商標です。
+"XMB"は、ソニー株式会社および株式会社ソニー・コンピュータエンタテインメント
+の商標です。
+
+"Memory Stick"および"ATRAC"は、ソニー株式会社の商標です。
+
+"Blu-ray Disc"は商標です。
+BluetoothワードマークとロゴはBluetooth SIG, Inc.の所有であり、株式会社
+ソニー・コンピュータエンタテインメントはライセンスに基づきこのマークを
+使用しています。
+
+"DTS" is a registered trademark of DTS, Inc.
+Sony Computer Entertainment Inc. is an authorized licensee of 
+the CompactFlash(R) registered trademark.
+
+"HDMI"は、HDMI Licensing LLCの商標または登録商標です。
+
+"EyeToy" is a trademark of Sony Computer Entertainment Europe in Japan 
+and covers the specification of goods for video game software. 
+
+"DivX(R) and associated logos are trademarks of DivX, Inc. 
+and are used under license."
+This attribution must be displayed where other legal attributions are
+displayed on the packaging and documentation of the Digital Content(s)
+or on Licensee's website and/or marketing materials.
+
+DivX(R)のライセンスにつきましては、弊社にご連絡ください。
+
+"PhyreEngine" is a trademark of Sony Computer Entertainment Europe.
+
+パッケージ内の本文中に記載されている会社名、製品名、サービス名は、
+一般に各社の商標または登録商標です。
+なお、パッケージ内の本文中に (R)、(TM)、(SM)マークは
+明記していない場合があります。
+
+----------------------------------------------------------------------
+2.ゲームアプリケーションに組み込まれるソフトウェアのライセンスについて
+----------------------------------------------------------------------
+以下のライブラリを使用する場合、ゲームアプリケーション側で
+以下の規定がありますのでご注意ください。
+
+PPU libmt19937.a
+================
+  libmt19937.aは、Mersenne Twisterを使用しています。
+  othersフォルダ内のmt19937.txtを参照してください。
+
+  また、PPU側 libmt19937.aをゲームアプリケーションで使用する場合、
+  以下の文章がゲームアプリケーションの「解説書」に記載されている
+  ことが必須です。
+  「本製品は、Mersenne Twisterが使用されています。
+    詳細については、http://www.scei.co.jp/ps3-license/index.htmlを
+    ご覧下さい。」
+
+libluautil.a及びliblua.a
+========================
+  以下のサンプルはlibluautil.a及びliblua.aはLua 5.1を
+  使用しています。
+
+    - cell\samples\tutorial\script\lua_sample
+    - cell\samples\sdk\spu_library\libspurs\advanced\lua_on_spu
+
+  othersフォルダ内のLua50.txtを参照してください。
+  ゲームアプリケーションで上記サンプルのlibluautil.a または
+  liblua.aを使用する場合、Lua50.txtの文章がゲームアプリケーションの
+ 「解説書」に記載されていることが必須です。
+
+----------------------------------------------------------------------
+3.開発ツールおよびPlayStation(R)3本体に搭載されるソフトウェアの
+  ライセンスについて
+----------------------------------------------------------------------
+以下のソフトウェアは、開発ツールおよびPlayStation(R)3本体に搭載されます。
+そのため、本体取扱説明書に記載、または、本体画面で表示しますので、
+本パッケージに含まれるライブラリから以下のソフトウェアを使用する限り、
+ゲームアプリケーション側で記載が必要ありません。
+
+AC3(Dolby Digital)
+  Manufactured under license from Dolby Laboratories.
+  "Dolby" is a trademark of Dolby Laboratories.
+
+AMG
+  (c) 2006 All Media Guide, LLC
+  Content and technology provided by All Media Guide (R).
+
+Anti-Grain Geometry
+  Anti-Grain Geometry - Version 2.0
+  Copyright (C) 2002-2004 Maxim Shemanarev (McSeem)
+  Permission to copy, use, modify, sell and distribute this software
+  is granted provided this copyright notice appears in all copies.
+  This software is provided "as is" without express or implied
+  warranty, and with no claim as to its suitability for any purpose.
+
+ATOK
+  「ATOK」は株式会社ジャストシステムの登録商標です。
+
+BCHS
+  Copyright (C)2004-2006 Cambridge Silicon Radio Ltd.
+
+BSD ライセンス
+  othersフォルダ内のBSD.txtを参照してください。
+
+CLAPACK
+  othersフォルダ内のCLAPACK.txtを参照してください。
+
+DXT
+  本機は S3 Graphics 社の S3TC テクスチャ圧縮技術を採用しています。
+
+eCOS
+  othersフォルダ内のeCOS.txtを参照してください。
+
+Expat
+  othersフォルダ内のExpat.txtを参照してください。
+
+FCollada SDK
+  othersフォルダ内のFColladaSDK.txtを参照してください。
+
+Flash
+  Contains Macromedia(R) Flash(R) Player technology 
+  by Adobe 
+  Copyright(c) 1995-2006 Adobe Systems Incorporated. 
+  All rights reserved.
+  Flash, Macromedia, and Macromedia Flash are either trademarks 
+  or registered trademarks of Adobe Systems Incorporated in the 
+  United States and/or other countries.
+
+Free BSD ライセンス
+  othersフォルダ内のFreeBSD.txtを参照してください。
+
+FreeType2
+  Portions of this software are copyright(C) 1996-2006 The FreeType 
+  Project (www.freetype.org). All rights reserved.
+
+getopt_long
+  othersフォルダ内のgetopt_long.txtを参照してください。
+
+GIF
+  Copyright (c) 1997 Eric S. Raymond
+
+JPEG
+  This software is based in part on the work of the Independent JPEG Group.
+
+MD4
+  RSA Data Security, Inc.のMD4 Message-Digest Algorithm
+  othersフォルダ内のMD4.txtを参照してください。
+
+MD5
+  RSA Data Security, Inc.のMD5 Message-Digest Algorithm
+  othersフォルダ内のMD5.txtを参照してください。
+
+MP3
+  MPEG Layer-3 audio coding technology and patents licensed from 
+  Fraunhofer IIS and Thomson. 
+
+  MP3オーディオコンテンツをディスク配布やネットワーク配信などを通じて 
+  エンドユーザへ配布する場合は弊社にご連絡ください。
+
+MPEG4 AVC
+  THIS PRODUCT IS LICENSED UNDER THE AVC PATENT PORTFOLIO LICENSE FOR 
+  THE PERSONAL AND NON-COMMERCIAL USE OF A CONSUMER TO (i) ENCODE VIDEO 
+  IN COMPLIANCE WITH THE AVC STANDARD ("AVC VIDEO") AND/OR (ii) DECODE 
+  AVC VIDEO THAT WAS ENCODED BY A CONSUMER ENGAGED IN A PERSONAL AND 
+  NON-COMMERCIAL ACTIVITY AND/OR WAS OBTAINED FROM A VIDEO PROVIDER 
+  LICENSED TO PROVIDE AVC VIDEO.  NO LICENSE IS GRANTED OR SHALL BE 
+  IMPLIED FOR ANY OTHER USE.  ADDITIONAL INFORMATION MAY BE OBTAINED 
+  FROM MPEG LA, L.L.C.  SEE HTTP://WWW.MPEGLA.COM 
+
+MPEG4 Visual
+  THIS PRODUCT IS LICENSED UNDER THE MPEG-4 VISUAL PATENT PORTFOLIO 
+  LICENSE FOR THE PERSONAL AND NON-COMMERCIAL USE OF A CONSUMER TO 
+  (i) ENCODING VIDEO IN COMPLIANCE WITH THE MPEG-4 VISUAL STANDARD 
+  ("MPEG-4 VIDEO") AND/OR (ii) DECODING MPEG-4 VIDEO THAT WAS ENCODED 
+  BY A CONSUMER ENGAGED IN A PERSONAL AND NON-COMMERCIAL ACTIVITY 
+  AND/OR WAS OBTAINED FROM A VIDEO PROVIDER LICENSED BY MPEG LA TO 
+  PROVIDE MPEG-4 VIDEO.  NO LICENSE IS GRANTED OR SHALL BE IMPLIED FOR
+  ANY OTHER USE.  ADDITIONAL INFORMATION INCLUDING THAT RELATING TO 
+  PROMOTIONAL, INTERNAL AND COMMERCIAL USES AND LICENSING MAY BE 
+  OBTAINED FROM MPEG LA, LLC.  SEE HTTP://WWW.MPEGLA.COM 
+
+NetBSD
+  通信機能にはNetBSD Foundation,Inc.およびその協力者によって
+  開発されたソフトウェアが使用されています。
+  othersフォルダ内のNetBSD.txtを参照してください。
+
+PCRE
+  othersフォルダ内のPCRE.txtを参照してください。
+
+PlayStation(R)Edge
+  以下のサンプルは、PlayStation(R)Edge 1.1.1のコードを使用しています。
+
+    - cell\samples\tutorial\performance_tips\SpuMixUse
+    - cell\samples\tutorial\performance_tips\Cell\advanced\motion_sample
+
+  ゲームアプリケーションにおけるPlayStation(R)Edge 1.1.1 の使用条件については、
+  othersフォルダ内のPlayStation_Edge_Terms_and_Conditions_*.txtを参照してください。
+
+SEE
+  othersフォルダ内のSEE.txtを参照してください。
+
+Squirrel
+  othersフォルダ内のSquirrel.txtを参照してください。
+
+SSL
+  本機は、RSA Security Inc.のRSA(R) BSAFE(TM)のソフトウェアを
+  搭載しています。
+  RSAはRSA Security Inc.の登録商標です。
+  BSAFEはRSA Security Inc.の米国およびその他の国における登録商標です。
+  RSA Security Inc. All rights reserved.
+
+
+TIFF
+  Copyright (c) 1988-1997 Sam Leffler
+  Copyright (c) 1991-1997 Silicon Graphics, Inc.
+
+Zi
+  eZiText(R) and Zi(R) are registered trademarks of Zi Corporation.
+
+和文欧文フォント
+  日本語フォントおよび欧文フォントの一部は、
+  株式会社フォントワークスジャパンの文字を使用しています。
+
+
+----------------------------------------------------------------------
+4.その他のソフトウェアのライセンスについて
+----------------------------------------------------------------------
+以下のライブラリを使用した場合、著作権、ライセンスの記述が必要ですが
+libPSGL(debug version)のみに含まれていますので、ゲームアプリケーション
+で使用するバージョン（opt/ultra-opt version)では記載が必要ありません。
+
+libPSGL(debug version)
+  http://sourceforge.net/project/showfiles.php?group_id=42360
+  から取得したAladdin EnterprisesのMD5 Message-Digest Algorithmを
+  使用しています。
+  othersフォルダ内のAladdin_Enterprises.txtを参照してください。
+
+FIOSライブラリ(libfios.a)ではzlib(version 1.2.3, July 18th, 2005)を使用して
+いますが特にライセンス等の記述を取り扱い説明書などに記載して頂く必要は
+ありません。
+
+ppu-lv2-prx-info.exeではzlib(version 1.2.3, July 18th, 2005)を
+使用していますが特にライセンス等の記述を取り扱い説明書などに記載して頂く必要は
+ありません。
+
+

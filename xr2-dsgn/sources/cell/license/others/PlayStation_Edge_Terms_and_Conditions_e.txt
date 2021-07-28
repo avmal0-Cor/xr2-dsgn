@@ -1,0 +1,64 @@
+PlayStation(R)Edge License
+
+ 1. The PlayStation(R)Edge software product, whether in source code or object code form (the "Software"), is provided strictly under the terms of the applicable Tools & Middleware License Agreement, Tools & Material Loan Agreement, Licensed Developer Agreement and/or Licensed Publisher Agreement (or equivalent agreement(s)) issued by SCEI or any of its affiliates, subject to the following additional terms.  If you or your organization has not signed the applicable agreement with SCEI or its affiliates, you may not use the Software.
+
+ 2. By installing the Software you agree to all of the terms set out below on behalf of your organization.
+
+ 3. The Software may be used and/or altered for the development of your tool and/or middleware products and/or game titles for any platform.
+
+ 4. The Software, or any altered versions, may be redistributed to any entity, subject to the following restrictions:
+
+ a. The origin of the Software shall not be misrepresented; you shall not claim that you wrote the original software.
+
+ b. If the Software, or any altered versions, is used in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+
+ c. Altered source versions shall be plainly marked as such, and shall not be misrepresented as being the original Software.
+
+ d. The Software, or any altered versions, may be redistributed to end users or retailers in binary form as part of a game title or other end-user product.
+
+ e. The Software, or any altered versions, may be redistributed to game developers and/or publishers in source and/or binary form only as part of a tool and/or middleware, provided that you shall cause such game developers and/or publishers to be subject to the restrictions set forth in this Clause 4.
+
+ f. The Software, or any altered versions, may be redistributed to any third parties in source and/or binary form only as part of a game title, provided that you shall have executed a non disclosure agreement with such third parties to maintain the confidentiality of the Software and shall cause such third parties to be subject to the restrictions set forth in this Clause 4.
+
+ g. These terms shall appear unaltered in any source distribution.
+
+ 5. Breach of any of the terms of Clause 4 above shall entitle SCEI or any of its affiliates to terminate all rights to use the Software immediately on notice.
+
+ 6. The license of the Software shall otherwise be subject to, and used in accordance with, the terms of the applicable Tools & Middleware License Agreement, Tools & Materials Loan Agreement, Licensed Development Agreement and/or Licensed Publisher Agreement (or equivalent agreement(s)) issued by SCEI or any of its affiliates.
+
+********************
+PlayStation(R)Edge Zlib Components
+PlayStation(R)Edge Zlib is derived from zlib version 1.2.3 (http://www.zlib.net/). Your use of the source code for this component is subject to the terms and conditions of PlayStation(R)Edge License as well as the following license.
+
+/* zlib.h -- interface of the 'zlib' general purpose compression library
+  version 1.2.3, July 18th, 2005
+
+  Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  Jean-loup Gailly jloup@gzip.org
+  Mark Adler madler@alumni.caltech.edu
+
+*/
+********************
+
+********************
+PlayStation(R)Edge LZO Components
+PlayStation(R)Edge LZO Components (http://www.oberhumer.com/products/lzo-professional/) are incorporated in the Software.
+Notwithstanding the terms of Clause 4.b above, when using PlayStation(R)Edge LZO Components in your application such as a middleware and a game title, you shall display the following credit: "Data compression by oberhumer.com" in your application's in-game ending credits section/file (where applicable) and your application's written documentations such as an instruction manual.
+********************

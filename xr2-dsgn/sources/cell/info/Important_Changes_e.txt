@@ -1,0 +1,284 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 320.001
+                    Copyright(C) 2010 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+Please see the New Features, changes and notes below that have been 
+added to the Reference Tool SDK package.
+
+----------------------------------------------------------------------
+New Library
+----------------------------------------------------------------------
+
+libgem
+======
+
+libgem is a library for operating a new PlayStation(R)3 Motion Controller 
+(tentative name).
+
+The main purpose of the libgem library is to aggregate all of the hardware 
+sensor readings into one coherent position and orientation.
+Raw sensor readings are also available for custom applications, 
+but are in general not recommended for use due to the complexity and nuances 
+in interpreting the data.
+
+Because libgem takes control of the PlayStation(R)Eye for tracking purposes, 
+it also provides methods for converting the camera image into one that can be 
+viewed or used by another image processing library (such as libface and 
+libhead_tracker).
+libgem provides a lighting estimate to better match graphical objects 
+with the video for augmented reality applications.
+
+In addition, libgem provides control over the device's RGB LED and 
+rumble motor, and it provides access to the button input data.
+
+For more details, please refer to the "libgem-Overview/Reference" documents.
+
+New Samples
+
+- cell\samples\sdk\gem\basic
+  This sample includes code that shows very basic gem tracking.
+  It does not include display to the screen, and includes 
+  minimal error checking.
+
+- cell\samples\sdk\gem\coresamples
+  This sample demonstrates a common main control loop for 
+  multiple controllers with proper error handling.
+
+- cell\samples\sdk\gem\paint
+  This sample is a 2D painting application that shows the use 
+  of the motion controller (tentative name).
+  This demo supports one player.
+
+- cell\samples\sdk\gem\puppet
+  This sample includes code that simulates simple 3D hands and arms 
+  in augmented and virtual reality display modes, with the trigger 
+  controlling unique actions. This sample supports 2 controllers.
+
+----------------------------------------------------------------------
+System Software (GUI)
+----------------------------------------------------------------------
+
+<System Software (GUI)>
+
+New Feature
+
+- The resolution for 3D video output has been supported.
+  In this release, the 3D rendering is supported by the following features:
+
+  Features that support the 3D rendering:
+  Features that the system displays such as the system software that is 
+  displayed when the PS button is pressed during gameplay(GUI), or 
+  notification or error messages displayed on the upper right on the screen
+
+  Features that do not support the 3D rendering:
+  System utilities that are explicitly called by game applications such 
+  as the save data
+
+  Note that the display may be corrupted in all GUIed system utilities when the
+  3D resolution is set.
+
+<Menu of the System Software (GUI)>
+
+New Feature
+
+- [Settings] -> [Debug Settings] -> [3D Video Output]   : [Automatic]/On
+
+  Do not use this menu item because it is only available 
+  on the development kit.
+
+Specification Change
+
+- The automatic setting feature now supports the resolution for the 3D video 
+  output by using Display Settings -> Video Output Settings. To output a 3D 
+  video, make sure to set the Display settings again.
+
+  Also, do not forget to select "HDMI" for the TV terminal and "Automatic" for 
+  the resolution from the Display settings.
+
+<Check menu in the Game column>
+
+Specification Change
+
+- The following specification changes have been made in the check that is 
+  available from the Check menu in the Game column:
+  - It is now allowed to mix a library for SDK320 and a library for SDK310.
+  - It now warns if the SDK version of the SPU is smaller than that of the PPU.
+
+----------------------------------------------------------------------
+libsysmodule
+----------------------------------------------------------------------
+
+Common
+======
+
+New Feature
+
+- An ID to load a module has been added.
+  -------------------------------------------------------------------
+  ID                                    Description
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_GEM                    libgem
+  -------------------------------------------------------------------
+
+----------------------------------------------------------------------
+System Utility (libsysutil)
+----------------------------------------------------------------------
+
+Video Configuration Utility
+===========================
+
+New Feature
+
+- A cellVideoOutGetScreenSize() function has been added to obtain 
+  the screen size of the video output destination.
+
+  The screen size can be obtained only when the 3D resolution can be output.
+
+  In addition, the screen size is set when a TV that supports 
+  automatic setting of the 3D video output is connected, and then 
+  the automatic setting of display is performed on the system software 
+  of SDK 3.20 or later.
+
+Specification Change
+
+- The following resolution constants for 3D output have been added to 
+  CellVideoOutResolutionId that indicates the rendering resolution:
+
+  ----------------------------------------------------------
+  Constant                                             Value
+  ----------------------------------------------------------
+  CELL_VIDEO_OUT_RESOLUTION_720_3D_FRAME_PACKING       0x81
+  CELL_VIDEO_OUT_RESOLUTION_1024x720_3D_FRAME_PACKING  0x88
+  CELL_VIDEO_OUT_RESOLUTION_960x720_3D_FRAME_PACKING   0x89
+  CELL_VIDEO_OUT_RESOLUTION_800x720_3D_FRAME_PACKING   0x8a
+  CELL_VIDEO_OUT_RESOLUTION_640x720_3D_FRAME_PACKING   0x8b
+  ----------------------------------------------------------
+
+  As a result, the above resolution constants for 3D output 
+  have been supported by the following APIs of the Video Settings utility:
+
+  - cellVideoOutGetState()
+    When a video is output with the 3D resolution, any one of the above 
+    constants is set to the resolutionId member of the displayMode member 
+    of the CellVideoOutState structure that indicates the video output status 
+    and the video output mode.
+
+  - cellVideoOutGetDeviceInfo()
+    When it is possible to output the 3D resolution, any one of the above 
+    constants is set to the availableModes[] member of the 
+    CellVideoOutDeviceInfo structure that holds the video output device 
+    information.
+
+  - cellVideoOutConfigure()
+    It is now possible to change the video output settings of the output 
+    destination that is set to the argument videoOut 
+    by specifying any one of the above constants to the resolutionId member 
+    of the CellVideoOutConfiguration structure that specifies the video output 
+    configuration.
+
+  - cellVideoOutGetResolution()
+    When any one of the above constants is set, it returns 
+    the width and height of the frame buffer for the 3D resolution.
+
+  - cellVideoOutGetResolutionAvailability()
+    This function determines whether it is possible to output 
+    the 3D resolution specified with one of the above constants or not.
+
+  - cellVideoOutGetConfiguration()
+    When outputting with the 3D resolution, any one of the above constants 
+    is specified in the resolutionId member of the CellVideoOutConfiguration 
+    structure.
+
+
+Monitor Settings Utility
+========================
+
+Specification Change
+
+- The following Monitor Types have been added to perform 3D video output 
+  when the resolution is set using setmonitor.self:
+
+  14:3D:720p/59.94hz, 1080p/59.94hz, 720p/59.94hz, 480p(16:9,4:3)/59.94hz
+  15:3D:720p/59.94hz, 1080p/59.94hz, 720p/59.94hz, 576p(16:9,4:3)/50hz
+
+- Connector Type (Color Space) "F:D-Sub" has been changed to "F:d-sub/vga".
+
+----------------------------------------------------------------------
+DECI3
+----------------------------------------------------------------------
+
+New Feature
+
+- When playing back controller operations using CTRLP of DECI3, 
+  the controller operations can now be played 
+  although the controller is not connected to the target.
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+
+libpad
+======
+
+New Features
+
+- A DJ deck type controller class type has been added 
+  to the uniquely-shaped peripheral class.
+
+   Class type               | Value
+  --------------------------+------
+   CELL_PAD_PCLASS_TYPE_DJ  | 0x03
+
+- The DJ deck type controller class has been supported 
+  by the following functions and structures that handle 
+  the uniquely-shaped peripheral class:
+
+  - Handle the profile of the DJ deck type controller
+    [Function]
+      cellPadPeriphGetInfo()
+    [Structure]
+      CellPadPeriphInfo
+
+  - Handle the button data of the DJ deck type controller
+    [Function]
+      cellPadPeriphGetData()
+    [Structure]
+      CellPadPeriphData
+
+----------------------------------------------------------------------
+Sample Program (cell\samples)
+----------------------------------------------------------------------
+
+New Samples
+
+<Motion Controller(tentative name) Playground Demo>
+
+- cell\samples\demo\gem\playground
+  A sample program demonstrating how to use the Motion Controller
+  (tentative name) system to play mini-games.
+
+  - A .pkg file is included for you to play demo immediately.
+  - It supports 3D stereo display.
+  - Released as an external package on the following location:
+    https://ps3.scedev.net/projects/ps3_sdk#p401
+    PlayStation(R)3 Extra SDK Samples
+
+<3D Stereo>
+
+- A basic sample
+
+  - cell\samples\tutorial\stereo3D\cube_3d
+    This sample demonstrates basic settings for 3D stereo output 
+    as well as how to create projection matrix for 3D stereo 
+    required for creating game applications that support 3D stereo output.
+
+- A sample demonstrating how to switch between SD/HD output and 
+  3D stereo output
+
+  - cell\samples\tutorial\stereo3D\switch_3d
+    This sample demonstrates how to switch the rendering output from 
+    SD/HD to 3D stereo, and vice versa.
+    This is a common process of every 3D stereo game.
+
+----------------------------------------------------------------------

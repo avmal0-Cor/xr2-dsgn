@@ -1,0 +1,396 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 200.002(based on GCC 4.1.1)
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 200.002
+- Bugs fixed in Release 200.002
+
+======================================================================
+New Additions and Changes in Release 200.002
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+<PPU>
+- A SN Systems linker has been newly added.
+  Linux version   : cell/host-linux/sn/bin/ps3ppuld
+  Windows version : cell\host-win32\sn\bin\ps3ppuld.exe
+
+  The SN Systems linker performs link processing faster than the 
+  existing GNU linker.
+
+  When performing link processing from ppu-lv2-gcc and ppu-lv2-g++, the
+  SN Systems linker is called by default.
+  To perform link processing using the GNU linker, specify the 
+  -mno-sn-ld option.
+
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+(B#36665)
+- A programmer push_macro/pop_macro has been newly added.
+  Please refer to the "Cell OS Lv-2 Toolchain User's Guide" for more 
+  details.
+
+(B#39973)
+- A compiler option -save-temps-o has been added.
+  Please refer to the "Cell OS Lv-2 Toolchain User's Guide" for more 
+  details.
+
+<SPU>
+(B#39945)
+- An option -mspurs-job-initialize for a SPURS job has been added.
+  Please refer to "Cell OS Lv-2 Toolchain User's Guide" and "libspurs 
+  Overview" for more details on how to use this option.
+
+(B#38864)
+- When the following program is compiled having the -Os option specified, 
+  slightly smaller but slower code than when the -O2 option is specified 
+  is now generated.
+
+  int f (int **pp)
+  {
+    int *p = *pp;
+    return p[3];
+  }
+
+<PPU>
+(B#36757)
+- An option -muse-save-restore-funcs has been newly added.
+  Note that this option is set to off by default.
+
+  When this option is specified at the compilation, the prolog and epilog 
+  processings of functions will be handled when the runtime routine is 
+  called.
+
+  Therefore, the code size can be reduced, however, how much the execution
+  speed is decelerated depends on the number of functions to be compiled
+  in  the program and the volume of the prolog and epilog processings common 
+  for each functions.
+
+  An object file taht is created with this option specified and an object 
+  file taht is compiled without this option can be linked togerher.
+
+(B#39026)
+- An option -mlocal-fixup has been added to output relocation information
+  to the PPU assembler.
+  Please refer to the "Cell OS Lv-2 Toolchain User's Guide" for more 
+  details.
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- "-remoteplay_option {m4v/avc}" has been added as an option that is 
+  used when loading a program from the debugger so that the data 
+  transfer method of a movie or a sound can be selected in the remote 
+  play mode.
+ 
+  When - m4v is specified, the MPEG-4 SP & ATRAC(TM) data transfer 
+  method is used in the remote play mode.
+
+  When - avc is specified, the MPEG-4 AVC & AAC data transfer method 
+  is used in the remote play mode.
+
+ When this option is not specified, M4V & ATRAC(TM) will be used by
+ default.
+ 
+======================================================================
+Bugfixes in Release 200.002
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+<PPU>
+(B#41287)
+- When a game application that is striped using ppu-lv2-strip is 
+  executed, an exception of the PPU thread (data storage exception) 
+  occurs. This problem has been fixed.
+  (This program existed only in 200beta.)
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+(B#2417)
+- The following bug has been fixed.
+  - In Windows environment, if the -frepo option is specified and 
+    a program such as the code of the example is compiled and linked, 
+    a linking error will occur. 
+
+    Example)
+      template<typename T>
+         T Max(T a, T b) 
+                { 
+                  return a > b ? a : b;
+                }
+
+      int main(){
+                  char cbuf;
+                  cbuf = Max('1', '2');
+                }
+
+(B#36171)
+- The following problem has been fixed:
+  - When a header that uses the STL is pre-compiled, and a program that 
+    uses the header is compiled, an internal compiler error occurs.
+
+(B#10976)
+- The following bug has been fixed.
+  - When a program, that uses the attribute __may_alias__ as an alias 
+    declaration of a structure, is compiled, an internal compiler error
+    will occur.
+
+
+    typedef struct
+    {
+        char a;
+        char b; 
+        char c;
+        char d;
+    } test;
+    typedef test __attribute__((__may_alias__)) test_a;
+
+(B#30948)
+- The following bug has been fixed:
+- The following bug has been fixed:
+  - When __attribute__ ((may_alias)) is specified an internal compiler 
+    error may occur.
+
+(B#32251)
+- Descriptions of the following options have been added to the objcopy
+  part of the binutils.info:
+  --set-section-align
+  --set-section-pad
+
+(B#36143)
+- When the programmer loop is specified as shown below, it does not work 
+  correctly although the number of loops is a multiple of 4. This problem 
+  has been fixed:
+  #pragma loop unroll 4 mult 4
+  for (int i = 0; i < n; i++) {
+    dst[i] = src[i];
+  }
+
+(B#39386)
+- A response file that contains a back slash(\) is not interpreted 
+  correctly on Windows. This problem has been fixed.
+
+(B#32305)
+- When the following program is compiled, an internal compiler error 
+  occurs. This problem has been fixed.
+  class Foo{
+  public:
+    int member_func(void){return 0; };
+  };
+  volatile int (Foo::*Member_function_pointer)(void)  = reinterpret_cast<volatile int (Foo::*)(void)>(&Foo::member_func);
+
+(B#33905)
+- The value of the data member TEST_CRC1.v is set to 0 in the following 
+  program. This problem has been fixed.
+  struct string_crc {
+    unsigned v;
+    static inline struct::string_crc from_u32(unsigned a);
+  };
+  inline struct::string_crc string_crc::from_u32(unsigned a) {
+    static struct::string_crc t = { a };
+    return t;
+  }
+  const static string_crc TEST_CRC = string_crc::from_u32( 0x12345678 );
+  extern "C" void abort (void);
+  int main() {
+    string_crc TEST_CRC1 = TEST_CRC;
+    if (! TEST_CRC1.v ) abort ();
+    return 0;
+  }
+
+(B#40038)
+- A linker provides a feature that consolidates the same codes and 
+  multiple read-only data. When compiled on Linux, this feature is not 
+  enabled. This problem has been fixed.
+
+(B#39517)
+- A casting into the signed char type is ignored in the following code. 
+  This problem has been fixed.
+  for (int j = 0; j < 0x110; j++)
+  {
+    signed char x = (signed char)j;
+    int y = (int)x;
+    printf("(int)(signed char)%x = %x\n", j, y);
+  }
+
+(B#38110)
+- When the following program is compiler, an internal compiler error 
+  occurs. This problem has been fixed.
+  unsigned long long x = 0;
+  
+  static inline void bar()
+  {
+    extern unsigned long long x;
+    x = 0;
+  }
+  
+  void foo()
+  {
+    bar();
+    extern unsigned long long x;
+    x = 1;
+  }
+
+(B#35546)
+- When the following program that contain a vector literal such as () is 
+  compiled with the -Wunused option, a warning message is displayed. This 
+  problem has been fixed.
+  vector unsigned char f() {
+    return (vector unsigned char)(0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8);
+  }
+
+(B#40824)
+- When a function is called, a code within the function may destroy a 
+  stack. This problem has been fixed.
+
+(B#41123)
+- When the following program is compiled, the first element of "a" is 
+  copied to all the elements before addition. This problem has been fixed.
+  Example)
+    __vector float
+    f(__vector float a, __vecreg float b)
+    {
+      return a + b;
+    }
+
+(B#41602)
+- When compiled using the Windows version ccache, the following error may 
+  occur. This problem has been fixed.
+
+  C:/usr/local/cell/host-win32/ppu/bin/ppu-lv2-gcc: Exec format error
+
+<SPU>
+(B#35113)
+- A code generated by the intrinsic function spu_extract is not optimized 
+  equally as the GCC4.0.2. This problem has been fixed.
+
+(B#37777)
+- When the spu_intrinsics.h header is pre-compiled and a program that uses
+  this header is compiled, an error is displayed in a part where the 
+  intrinsic function spu_add is used. This problem has been fixed.
+
+(B#37966)
+- When a SPURS job program written in C++ is built with the -mspurs-job option,
+  __bss_start is not 16 bytes aligned. This problem has been fixed.
+
+(B#39654)
+The following bug has been fixed:
+  - When the SPURS trace is in use, the behavior of the malloc, memalign
+    and new functions or the like, that is used to alocate memory 
+    dynamically, may be indeterminate.
+
+    Please refer to the technote 200709-02 for more details:
+    https://ps3.scedev.net/technotes/view/593
+
+<PPU>
+(B#37198)
+- The following bug has been fixed.
+  - When the game application program that uses the intrinsic function
+    vec_sel is compiled with -O1 or more, an internal compiler error may 
+    occur.
+
+(B#37017)
+- The following bug has been fixed.
+  - When the intrinsic function  __ldarx whitin ppu_intrinsics.h is used,
+    an internal compiler error occurs. 
+
+(B#38828)
+- A problem taht the -mwarn-lhs option does not work has been fixed.
+
+(B#38320)
+- The following warning message is displayed in ppu_intrinsics_gcc.h. This
+  problem has been fixed.
+  declaration of 'result' shadows a parameter
+
+(B#39527)
+- When the following program is compiled, an internal compiler error 
+  occurs. This problem has been fixed.
+  class Vector3 {};
+  struct F {
+     Vector3 vector128;
+  };
+  struct C
+  {
+    const F f() const;
+    int g() const;
+    F h() const;
+    int i( int, F* );
+  };
+  F C::h() const   {
+    F v= f();
+    ((C*)this)->i(1, &v);
+    return v;
+  }
+  int C::g() const  {
+   h();
+  }
+
+  Error displayed:
+  internal compiler error: in expand_expr_addr_expr_1, at expr.c:6613
+
+(B#39531)
+- The implementations of the intrinsic functions __dcbt and __dcbtst have
+  been improved. It now uses __builtin_prefetch.
+
+(B#37166)
+- When the following intrinsic functions are used, a warning message is 
+  displayed. This problem has been fixed.
+  __dcbf, __dcbz, __dcbst, __dcbt, __dcbtst, __icbi
+
+(B#40490)
+- When the -fno-exceptions option is specified, the -fno-rtti option is 
+  implicitely specified. This problem has been fixed.
+
+  Note that in the compiler specifications of Toolchain 180.002 or before,
+  the option to disable the exception handling(-fno-exceptions) and the 
+  option to disable the RTTI(-fno-rtti) cannnot be be specified 
+  individually. Both of them have to be specified together.
+  From Toolchain 190.002 onwards, these compiler otpion specifications 
+  have been changed as follows:
+
+    - When only -fno-exceptions is specified, an exception handling is 
+      disabled and the RTTI is enabled.
+    - When -fno-exceptions and -fno-rtti are specified, both the exeption 
+      handling and the RTTI are disabled.
+    - When neither of them is specified, both the exception processing and
+      the RTTI are enabled.
+
+  When linking a program, objects or libraries should have the same 
+  combination of these options. When objects and libraries that have 
+  different combinations are mixed, you cannot link a program or the 
+  program behaves incorrectly.
+
+(B#41289)
+- When a variable value of the environmental variable PATH is not 
+  specified correctly, the following error occurs when linling a PPU 
+  progra. This problem has been fixed.
+  (This problem only existed in 200beta)
+
+  -- Linux --
+  ppu-lv2-g++: error trying to exec 'ppu-lv2-prx-fixup':
+  execvp: No such file or directory
+
+  -- Windows --
+  ppu-lv2-g++.exe: _spawnvp: No such file or directory
+
+  Please refer to the "Reference Tool Software Setup Guide" for more 
+  details on how to se the enviromnental variable.
+
+(B#41435)
+- When the optimization option is specified, a code that cannot pass the 
+  first argument of a function correctly is generated. This problem has 
+  been fixed.
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+None

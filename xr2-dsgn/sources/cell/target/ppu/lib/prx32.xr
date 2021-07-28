@@ -1,0 +1,236 @@
+/* Script for ld -r: link without relocation */
+OUTPUT_FORMAT("elf64-powerpc-celloslv2", "elf64-powerpc-celloslv2",
+	      "elf64-powerpc-celloslv2")
+OUTPUT_ARCH(powerpc:common64)
+SEARCH_DIR("=/lib");
+ /* For some reason, the Solaris linker makes bad executables
+  if gld -r is used and the intermediate file has sections starting
+  at non-zero addresses.  Could be a Solaris ld bug, could be a GNU ld
+  bug.  But for now assigning the zero vmas works.  */
+SECTIONS
+{
+  /* Read-only sections, merged into text segment: */
+  .interp       0 : { *(.interp) }
+  .hash         0 : { *(.hash) }
+  .dynsym       0 : { *(.dynsym) }
+  .dynstr       0 : { *(.dynstr) }
+  .gnu.version  0 : { *(.gnu.version) }
+  .gnu.version_d 0: { *(.gnu.version_d) }
+  .gnu.version_r 0: { *(.gnu.version_r) }
+  .rel.init     0 : { *(.rel.init) }
+  .rela.init    0 : { *(.rela.init) }
+  .rel.text     0 : { *(.rel.text) }
+  .rel.text     0 : { *(.rel.text) }
+  .rela.text    0 : { *(.rela.text) }
+  .rel.fini     0 : { *(.rel.fini) }
+  .rela.fini    0 : { *(.rela.fini) }
+  .rel.rodata   0 : { *(.rel.rodata) }
+  .rela.rodata  0 : { *(.rela.rodata) }
+
+  .rel.sceStub.text 0 : { *(.rel.sceStub.text) *(SORT(.rel.sceStub.text.*)) }
+  .rel.lib.ent.top  0 : { *(.rel.lib.ent.top) }
+  .rel.lib.ent      0 : { *(.rel.lib.ent) }
+  .rel.lib.ent.btm  0 : { *(.rel.lib.ent.btm) }
+  .rel.lib.stub.top 0 : { *(.rel.lib.stub.top) }
+  .rel.lib.stub     0 : { *(.rel.lib.stub) }
+  .rel.lib.stub.btm 0 : { *(.rel.lib.stub.btm) }
+  .rel.rodata.sceModuleInfo 0 : { *(.rel.rodata.sceModuleInfo) }
+  .rel.rodata.sceResident   0 : { *(.rel.rodata.sceResident) }
+  .rel.rodata.sceVStub      0 : { *(.rel.rodata.sceVStub) 
+                                  *(SORT(.rel.rodata.sceVStub.*)) }
+  .rel.data     0 : { *(.rel.data) }
+  .rela.data    0 : { *(.rela.data) }
+  .rel.tdata	0 : { *(.rel.tdata) }
+  .rela.tdata	0 : { *(.rela.tdata) }
+  .rel.tbss	0 : { *(.rel.tbss) }
+  .rela.tbss	0 : { *(.rela.tbss) }
+  .rel.ctors    0 : { *(.rel.ctors) }
+  .rela.ctors   0 : { *(.rela.ctors) }
+  .rel.dtors    0 : { *(.rel.dtors) }
+  .rela.dtors   0 : { *(.rela.dtors) }
+  .rel.got      0 : { *(.rel.got) }
+  .rela.got     0 : { *(.rela.got) }
+  .rela.toc	0 : { *(.rela.toc) }
+  .rel.sdata    0 : { *(.rel.sdata) }
+  .rela.sdata   0 : { *(.rela.sdata) }
+  .rel.sbss     0 : { *(.rel.sbss) }
+  .rela.sbss    0 : { *(.rela.sbss) }
+  .rel.sdata2   0 : { *(.rel.sdata2) }
+  .rela.sdata2  0 : { *(.rela.sdata2) }
+  .rel.sbss2    0 : { *(.rel.sbss2) }
+  .rela.sbss2   0 : { *(.rela.sbss2) }
+  .rel.bss      0 : { *(.rel.bss) }
+  .rela.bss     0 : { *(.rela.bss) }
+  .rel.plt      0 : { *(.rel.plt) }
+  .rela.plt     0 : { *(.rela.plt) }
+  .rela.tocbss	0 : { *(.rela.tocbss) }
+  .init         0 :
+  {
+    KEEP (*(.init))
+  } =0x60000000
+  .text         0 :
+  {
+    *(.sfpr)
+    *(.text)
+    *(.stub)
+    KEEP (*(.text.*personality*))
+    *(.spu.elf)
+    /* .gnu.warning sections are handled specially by elf32.em.  */
+    *(.gnu.warning)
+    *(.glink)
+  } =0x60000000
+
+  .fini         0 :
+  {
+    KEEP (*(.fini))
+  } =0x60000000
+
+  .sceStub.text 0 : { *(.sceStub.text) *(SORT(.sceStub.text.*)) } =0x60000000
+
+  .rodata       0 : { *(.rodata) }
+  .PpuGUID      0 : { KEEP (*(.PpuGUID)) }
+  .rodata1      0 : { *(.rodata1) }
+  .spu_image    0 : { *(.spu_image .spu_image.*) }
+
+  .lib.ent.top          0 : { *(.lib.ent.top) } 
+  .lib.ent              0 : { *(.lib.ent) }
+  .lib.ent.btm          0 : { *(.lib.ent.btm) }
+
+  .lib.stub.top         0 : { *(.lib.stub.top) }
+  .lib.stub             0 : { *(.lib.stub) } 
+  .lib.stub.btm         0 : { *(.lib.stub.btm) }
+
+  .rodata.sceModuleInfo 0 : { *(.rodata.sceModuleInfo) }
+  .rodata.sceResident   0 : { *(.rodata.sceResident) }
+  .rodata.sceFNID       0 : { *(.rodata.sceFNID .rodata.sceFNID.*) }
+  .rodata.sceVNID       0 : { *(.rodata.sceVNID .rodata.sceVNID.*) }
+  .rodata.sceTNID       0 : { *(.rodata.sceTNID .rodata.sceTNID.*) }
+  .rodata.sceVStub      0 : { *(.rodata.sceVStub) *(SORT(.rodata.sceVStub.*)) }
+  .rodata.prxconfig     0 : { *(.rodata.prxconfig) }
+
+  .sdata2       0 : { *(.sdata2) }
+  .sbss2        0 : { *(.sbss2) }
+  .eh_frame_hdr : { *(.eh_frame_hdr) }
+  /* Adjust the address for the data segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
+  /* Ensure the __preinit_array_start label is properly aligned.  We
+     could instead move the label definition inside the section, but
+     the linker would then create the section even if it turns out to
+     be empty, which isn't pretty.  */
+  .preinit_array   0 : { *(.preinit_array) }
+  .init_array   0 : { *(.init_array) }
+  .fini_array   0 : { *(.fini_array) }
+  .data.sceFStub  : { *(.data.sceFStub) *(SORT(.data.sceFStub.*)) }
+  /* .data.sceFStub must before .data */
+  .data         0 :
+  {
+    *(.data)
+    KEEP (*(.gnu.linkonce.d.*personality*))
+  }
+  .data1        0 : { *(.data1) }
+  .tdata	0 : { *(.tdata) }
+  .rsx_image    0 : { *(.rsx_*) }
+  .tbss		0 : { *(.tbss) *(.tcommon) }
+  .eh_frame     0 : ONLY_IF_RO 
+  { 
+    KEEP (*crtbegin.o(.eh_frame))
+    KEEP (*(EXCLUDE_FILE (*crtend.o) .eh_frame))
+    KEEP (*(.eh_frame))
+  }
+  .gcc_except_table 0 : { *(.gcc_except_table) }
+  .toc1		0 : { *(.toc1) }
+  .opd		0 : { KEEP (*(.opd)) }
+
+  .dynamic      0 : { *(.dynamic) }
+  .ctors        0 :
+  {
+    PROVIDE(_begin_of_section_ctors = .);
+    PROVIDE (__CTOR_LIST__ = .); PROVIDE (___CTOR_LIST__ = .);
+    /* gcc uses crtbegin.o to find the start of
+       the constructors, so we make sure it is
+       first.  Because this is a wildcard, it
+       doesn't matter if the user does not
+       actually link against crtbegin.o; the
+       linker won't look for a file to match a
+       wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o
+       is in.  */
+    KEEP (*crtbegin*.o(.ctors))
+    /* We don't want to include the .ctor section from
+       from the crtend.o file until after the sorted ctors.
+       The .ctor section from the crtend file contains the
+       end of ctors marker and it must be last */
+    KEEP (*(EXCLUDE_FILE (*crtend*.o ) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+    PROVIDE(_end_of_section_ctors = .);
+    PROVIDE (__CTOR_END__ = .); PROVIDE (___CTOR_END__ = .);
+  }
+  .dtors        0 :
+  {
+    PROVIDE (__DTOR_LIST__ = .); PROVIDE (___DTOR_LIST__ = .);
+    KEEP (*crtbegin*.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend*.o ) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+    PROVIDE (__DTOR_END__ = .); PROVIDE (___DTOR_END__ = .);
+  }
+  .jcr          0 : { KEEP (*(.jcr)) }
+  .got		0 : { *(.got) }
+  .toc		0 : { *(.toc) }
+  .tocbss	0 : { *(.tocbss) }
+  /* We want the small data sections together, so single-instruction offsets
+     can access them all, and initialized data all before uninitialized, so
+     we can shorten the on-disk segment size.  */
+
+  .toc.sceStub	0 : { *(.toc.sceStub) }
+  .toc.sceStub	0 : { *(SORT(.toc.sceStub.*)) }
+  .toc.tls	0 : { *(.toc.tls) *(SORT(.toc.tls.*)) }
+
+  .sdata        0 : { *(.sdata) }
+  .dynsbss      0 : { *(.dynsbss) }
+  .sbss         0 : { *(.sbss) }
+  .scommon      0 : { *(.scommon) }
+
+  .plt          0 : { *(.plt) }
+  .dynbss       0 : { *(.dynbss) }
+  .bss          0 : { *(.bss) }
+  .common       0 : { *(COMMON) }
+
+   /* Align here to ensure that the .bss section occupies space up to
+      _end.  Align after .bss to ensure correct alignment even if the
+      .bss section disappears because there are no input sections.  */
+  /* Stabs debugging sections.  */
+  .stab          0 : { *(.stab) }
+  .stabstr       0 : { *(.stabstr) }
+  .stab.excl     0 : { *(.stab.excl) }
+  .stab.exclstr  0 : { *(.stab.exclstr) }
+  .stab.index    0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment       0 : { *(.comment) }
+  /* DWARF debug sections.
+     Symbols in the DWARF debugging sections are relative to the beginning
+     of the section so we begin them at 0.  */
+  /* DWARF 1 */
+  .debug          0 : { *(.debug) }
+  .line           0 : { *(.line) }
+  /* GNU DWARF 1 extensions */
+  .debug_srcinfo  0 : { *(.debug_srcinfo) }
+  .debug_sfnames  0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2 */
+  .debug_aranges  0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2 */
+  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev   0 : { *(.debug_abbrev) }
+  .debug_line     0 : { *(.debug_line) }
+  .debug_frame    0 : { *(.debug_frame) }
+  .debug_str      0 : { *(.debug_str) }
+  .debug_loc      0 : { *(.debug_loc) }
+  .debug_macinfo  0 : { *(.debug_macinfo) }
+  /* SGI/MIPS DWARF 2 extensions */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
+}

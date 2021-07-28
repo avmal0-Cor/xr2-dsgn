@@ -1,0 +1,23 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 250.005
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージに関する既知の不具合・制限事項・注意事項を
+記述します。
+
+新規に更新した箇所にリリースバージョンを追加しましたので参照してください。
+
+----------------------------------------------------------------------
+C/C++標準ライブラリ 
+----------------------------------------------------------------------
+(Release 250.005 追加)
+<PPU>
+- (B#63770)
+  libcs.a の以下の関数において、第3引数 n に 2GB (0x80000000) 以上の値
+  を指定した場合、正しく計算が行われません。
+   - memcmp
+   - strncasecmp
+   - strncmp
+   - strncat
+

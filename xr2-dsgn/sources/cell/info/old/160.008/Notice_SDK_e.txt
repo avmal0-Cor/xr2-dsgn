@@ -1,0 +1,327 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 160.008
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+  - FOOT SW
+
+  The wireless feature (Bluetooth(R)/Wireless LAN) can only be used 
+  on Reference Tools DEH-R1040 and later, which have the necessary 
+  authorization tools.
+  The antenna for the wireless feature is bundled with DEH-1040 and 
+  later Reference Tools. Do not attempt to connect DEH-R1030 and 
+  earlier Reference Tools.
+
+- For specifications regarding the Reference Tool, please refer to 
+  info/PS3-FAQ_*.pdf.
+
+- Currently, the status does not change even if the DRIVE SELECT 
+  switch of the front panel is pressed. 
+
+  However, by resetting (or rebooting) the Reference Tool after 
+  switching between "BD emulator (HDD)" and "BD drive" in 
+  "Blu-ray Disc access" of "Boot parameters" on the Administration 
+  Tool, it is possible to switch the LED to be illuminated on 
+  the front panel ("HDD drive LED" or "Blu-ray Disc drive LED"). 
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Software(GUI) 
+----------------------------------------------------------------------
+- Since a change has been made so that a process termination wait occurs 
+  when the power off processing is performed in the case of when booted 
+  from the debugger, with some of the samples that do not support 
+  the termination processing of game applications, a timeout occurs 
+  and the system is forcibly terminated with a warning sound when 
+  the power off processing is performed in the case of when booted from 
+  the debugger. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Web Browser Utility>
+- Files cannot be downloaded with the downloader. 
+
+- When an image is decoded using the heap area for contents close to 
+  the upper limit, it may hang up.
+
+- The handler onMouseOver/onMouseOut of JavaScript does not work 
+  properly. Use onFocus/onBlur instead.
+
+- The performance may be slow when using ClickableMap.
+
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported. 
+
+----------------------------------------------------------------------
+BD Emulator (HDD)
+----------------------------------------------------------------------
+(Updated Release 160.008)
+- When using the BD emulator on Windows, dtcfsutil.exe does not operate 
+  on the msys. Please use dtcfsutil.exe on the command prompt. 
+  There is no problem when using the BD emulator on Linux.
+  Also note that the above restriction is applied when formatting the 
+  HDD format for the BD emulator.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+<cellftp>
+- The -u option of the put command does not work correctly.
+
+- Although the option -u of the copy command or the copydir command 
+  is specified, it does not work correctly if the copy destination is HOSTFS.
+
+----------------------------------------------------------------------
+FTP Service
+----------------------------------------------------------------------
+(Added in Version 160.008)
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+(Added in Version 160.008)
+- Internet Explorer 6.0 is currently not supported as an ftp client. 
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with 
+  sys_memory_container_create(), an ID that is the same as that of 
+  the memory container that has already been allocated is returned 
+  for a new memory container. When this occurs, the older memory 
+  container may not be destroyed with sys_memory_container_destroy() 
+  and may not be retrieved by the system even at the time of game 
+  process termination. 
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created 
+  with a game process at the same time is less than 10. 
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libvdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input.
+  Therefore, if the monitor setting is not performed appropriately 
+  in advance with the setmonitor utility, the samples will display 
+  an warning message. 
+
+<libdmux>
+- When calling cellDmuxDisableEs(), please make sure that the video/audio 
+  decoder is not decoding the applicable ES (Elementary Stream) before 
+  calling. 
+  Specifically, it is recommended to call cellDmuxDisableEs() after 
+  CELL_VDEC_MSG_TYPE_AUDONE/CELL_ADEC_MSG_TYPE_AUDONE for the AU input 
+  to the video/audio decoder is received or after 
+  cellVdecClose()/cellAdecClose() is called. 
+
+<libvpost>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+<libjpgdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+<libpngdec>
+- It is assumed that the outputs of the samples are output to 
+  a PC monitor with a resolution of SXGA or more or to an HDMI monitor 
+  that supports 1280x720/60p input. Therefore, if the monitor setting 
+  is not performed appropriately in advance with the setmonitor utility, 
+  the samples will display an error message and will be aborted. 
+
+(Added in Version 160.008)
+- The following bug occurs when decoding a stream whose info->colorSpace value,
+  obtained by CellPngDecInfo *info argument of cellPngDecReadHeader(), is 
+  either CELL_PNGDEC_GRAYSCALE_ALPHA or CELL_PNGDEC_RGBA: 
+
+  When inParam->outputAlphaSelect is set to CELL_PNGDEC_FIX_ALPHA in the 
+  CellPngDecInParam *inParam argument of cellPngDecSetParameter(), the fixed 
+  alpha value set to inParam->outputColorAlpha is not output to the decode 
+  image, but the alpha value of the stream is output instead. 
+
+(Added in Version 160.008)
+- The following problem occurs when decoding a stream whose info->colorSpace 
+  value, obtained by CellPngDecInfo *info argument of cellPngDecReadHeader(), 
+  is CELL_PNGDEC_PALETTE, and whose bit, that indicates the existence of 
+  the tRNS chunk of info->chunkInformation, is set to 1:
+
+  When a value other than CELL_PNGDEC_PALETTE is set to 
+  inParam->outputColorSpace using CellPngDecInParam *inParam argument of 
+  cellPngDecSetParameter(), the values of trns->alphaForPaletteIndex and 
+  trns->alphaForPaletteIndexNumber, that are obtained by CellPngTRNS *trns 
+  argument of cellPngDecGettRNS(), are set to 0. 
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- In simple_player and psgl_player samples, the rendering process 
+  does not take the pixel aspect into account. 
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+(Added in Version 160.008)
+- When the glyph information generated by a glyph information 
+  acquisition function, and the size and the aspect ratio specified to 
+  the function that renders based on the glyph information differ 
+  significantly, the following problem may occur:
+
+  cellFontGlyphRenderImageVertical() function that renders vertically 
+  based on the glyph information cannot render in the correct positions.
+
+(Added in Version 160.008)
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical 
+  character codes when vertical character displacement is performed 
+  internally.
+  To avoid this problem, directly specify the vertical character codes 
+  or use the single-byte () and {}.
+
+(Added in Version 160.008)
+- When an external font is multi-opened using cellFontOpenFontFile() or 
+  cellFontOpenFontMemory(), or instance-opened using 
+  cellFontOpenFontInstance(), an actual close process is not performed 
+  by cellFontClose(), and the memory will not be released.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- If the following compile options are specified when compiling 
+  a program on the PPU side, many warnings may be output. 
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs 
+  if -fsingle-precision-constant is specified as the compile option. 
+
+- When including the system header, include it outside extern "C" or 
+  extern "C++". 
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C". 
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below: 
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+  * If atexit function is used in a C++ global constructor, the behavior 
+    is different from the C++ standard.  All the registered functions are 
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their 
+  instances in ELF, and pass the pointers to them to PRX.  If they are 
+  created in PRX, a DSI (data storage interrupt) may occur in function 
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be 
+  destroyed.  SPU ABI allows accessing memory at negative offsets from 
+  stack pointer up to -2000 as well as positive offsets, but using 
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf 
+  functions, etc.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs task>
+(Added in Version 160.008)
+- When cellSpursWaitSignal function is called from a task in which a 
+  context area is not set, an error code CELL_SPURS_TASK_ERROR_STAT 
+  should be returned as specified, however, when a signal exists in 
+  the task, CELL_OK is always returned incorrectly.
+
+<SPURS policy module>
+(Added in Version 160.008)
+- cellSpursModuleTrace() that is described in 
+  cell/target/spu/include/cell/spurs/policy_module.h is not supported 
+  at the moment. It will be deleted from the header file. 
+
+----------------------------------------------------------------------
+Vector Math
+----------------------------------------------------------------------
+(Added in Version 160.008)
+- A function of the Vector Math library, that calculates the square 
+  root or the inverse number of the square root, does not meet the 
+  operation accuracy of the IEEE float type standard.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- When other USB devices are attached/detached, a few video frames 
+  may be lost during the transition.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+(Added in Version 160.008)
+- The system echo-canceller does not support USB loudspeaker. 
+  Audio chat may suffer echo feedback or howling if chat outputs 
+  to USB loudspeaker.
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USB Driver>
+- When connecting or disconnecting a device to a USB port of the 
+  machine body, other USB devices already connected may be 
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB 
+  ports of the machine body.
+

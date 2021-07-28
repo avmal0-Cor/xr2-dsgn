@@ -1,0 +1,1059 @@
+#!/usr/bin/perl
+
+# SCE CONFIDENTIAL
+# PlayStation(R)3 Programmer Tool Runtime Library 310.001
+#
+#
+# Copyright (C) 2006 Sony Computer Entertainment Inc.
+# All Rights Reserved.
+#
+$continued_spu_thread_group_id = 0;
+
+use IO::Socket;
+
+$gdb = 'spu-lv2-gdb';
+$ppugdb = 'ppu-lv2-gdb';
+
+END
+{
+	if ($receiver_pid > 0) {
+		print "Terminating process <", $receiver_pid, ">\n" if ($verbose);
+		kill 1, $receiver_pid;
+	}
+}
+
+
+sub readln
+{
+	local $buf, $i, $ln, $c;
+	local $count;
+                                                            
+	$count = 4;
+	while (1) {
+		$i = index($lastbuf, "#");
+		if ($i >= 0) {
+			$ln = substr($lastbuf, 0, $i);
+			$c = substr($lastbuf, $i+1, 1);
+			while (($c eq "#") || ($c eq "\r")) {
+				$i++;
+				$c = substr($lastbuf, $i+1, 1);
+			}
+			$lastbuf = substr($lastbuf, $i+3);
+			$buf = getc S;
+			$buf = getc S;
+			chomp $ln;
+			return $ln;
+		}
+		$buf = getc S;
+		if (length($buf) > 0) {
+			$lastbuf .= $buf;
+			$count = 4;
+			#	print "new read: $buf\n";
+			#	print "total read: $lastbuf\n";
+		} else {
+			exit 1 if (--$count < 1);
+			print "Lost connection to $dcmanager ($count)...\n";
+			sleep 1;
+		}
+	}
+}
+
+
+sub write_gdbinit
+{
+	local ($id, $host, $port, $elfname) = @_;
+
+	open GDBINIT, ">$ENV{'HOME'}/.gdbinit.spu.$port.startup";
+	if ( -f "$ENV{'HOME'}/.gdbinit.spu" ) {
+		open(IN,"$ENV{'HOME'}/.gdbinit.spu");
+		while(<IN>){
+			$original_gdbinit .= $_;
+		}
+		close(IN);
+	}
+
+	$decimalport = hex($port);
+
+	print GDBINIT $original_gdbinit;
+
+	print GDBINIT "define info-all\n";
+	print GDBINIT "	monitor getinfo\n";
+	print GDBINIT "	shell cat info-all.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-ppu-thread\n";
+	print GDBINIT "	monitor getcurrentprocessinfo\n";
+	print GDBINIT "	shell cat ppulist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-process\n";
+	print GDBINIT "	monitor getinfo\n";
+	print GDBINIT "	shell cat proclist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-spu-thread\n";
+	print GDBINIT "	monitor getcurrentprocessinfo\n";
+	print GDBINIT "	shell cat spuglist.txt\n";
+	print GDBINIT "	shell cat spulist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+	
+	print GDBINIT "define info-spurs\n";
+	print GDBINIT " monitor spursinfo $id\n";
+	print GDBINIT " shell cat spursdat.txt\n";
+	print GDBINIT " shell rm spursdat.txt\n";
+	print GDBINIT " shell rm spurssym.ini\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define add-spurs-symbol\n";
+	print GDBINIT " monitor spursinfo $id\n";
+	print GDBINIT " shell cat spursdat.txt\n";
+	print GDBINIT "	source spurssym.ini\n";
+	print GDBINIT " shell rm spursdat.txt\n";
+	print GDBINIT " shell rm spurssym.ini\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-mutex\n";
+	print GDBINIT "	monitor info-mutex\n";
+	print GDBINIT "	shell cat mtexlist.txt\n";
+	print GDBINIT "	shell rm mtexlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-lwmutex\n";
+	print GDBINIT "	monitor info-lwmutex\n";
+	print GDBINIT "	shell cat lmtxlist.txt\n";
+	print GDBINIT "	shell rm lmtxlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-cond\n";
+	print GDBINIT "	monitor info-condvar\n";
+	print GDBINIT "	shell cat condlist.txt\n";
+	print GDBINIT "	shell rm condlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-eventqueue\n";
+	print GDBINIT "	monitor info-eventqueue\n";
+	print GDBINIT "	shell cat eventque.txt\n";
+	print GDBINIT "	shell rm eventque.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-rwlock\n";
+	print GDBINIT "	monitor info-rwlock\n";
+	print GDBINIT "	shell cat rwlklist.txt\n";
+	print GDBINIT "	shell rm rwlklist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-semaphore\n";
+	print GDBINIT "	monitor info-semaphore\n";
+	print GDBINIT "	shell cat semalist.txt\n";
+	print GDBINIT "	shell rm semalist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define targ\n";
+	print GDBINIT "  target remote $host:$decimalport\n";
+	print GDBINIT "end\n\n";
+	print GDBINIT "define at\n";
+	if ( -f $elfname ){
+		print GDBINIT "  file \$arg0\n";
+	}
+	print GDBINIT "  targ\n";
+	print GDBINIT "end\n\n";
+	print GDBINIT "set prompt (spu-gdb:$id) \n";
+	print GDBINIT "\n";
+	print GDBINIT "at $elfname\n\n";
+	close GDBINIT
+}
+
+sub write_ppugdbinit
+{
+	local ($id, $host, $port, $elfname) = @_;
+
+	open GDBINIT, ">$ENV{'HOME'}/.gdbinit.ppu.$port.startup";
+	if ( -f "$ENV{'HOME'}/.gdbinit.ppu" ) {
+		open(IN,"$ENV{'HOME'}/.gdbinit.ppu");
+		while(<IN>){
+			$original_gdbinit .= $_;
+		}
+		close(IN);
+	}
+
+	$decimalport = hex($port);
+
+	print GDBINIT $original_gdbinit;
+
+	print GDBINIT "define info-all\n";
+	print GDBINIT "	monitor getinfo\n";
+	print GDBINIT "	shell cat info-all.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-ppu-thread\n";
+	print GDBINIT "	monitor getcurrentprocessinfo\n";
+	print GDBINIT "	shell cat ppulist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-process\n";
+	print GDBINIT "	monitor getinfo\n";
+	print GDBINIT "	shell cat proclist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-spu-thread\n";
+	print GDBINIT "	monitor getcurrentprocessinfo\n";
+	print GDBINIT "	shell cat spuglist.txt\n";
+	print GDBINIT "	shell cat spulist.txt\n";
+	print GDBINIT "	shell rm info-all.txt\n";
+	print GDBINIT "	shell rm proclist.txt\n";
+	print GDBINIT "	shell rm ppulist.txt\n";
+	print GDBINIT "	shell rm spuglist.txt\n";
+	print GDBINIT "	shell rm spulist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define add-prxsymbol\n";
+	print GDBINIT "	monitor prxstatus\n";
+	print GDBINIT "	shell cat symload.txt\n";
+	print GDBINIT "	source symload.ini\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define prxstatus\n";
+	print GDBINIT "	monitor prxstatus\n";
+	print GDBINIT "	shell cat symload.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-prx\n";
+	print GDBINIT "	monitor prxstatus\n";
+	print GDBINIT "	shell cat symload.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define prxstatusfull\n";
+	print GDBINIT "	monitor prxstatusmiddle\n";
+	print GDBINIT "	shell cat symload.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-prx-full\n";
+	print GDBINIT "	monitor prxstatusmiddle\n";
+	print GDBINIT "	shell cat symload.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-spurs\n";
+	print GDBINIT " monitor spursinfo \$arg0\n";
+	print GDBINIT " shell cat spursdat.txt\n";
+	print GDBINIT " shell rm spursdat.txt\n";
+	print GDBINIT " shell rm spurssym.ini\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-mutex\n";
+	print GDBINIT "	monitor info-mutex\n";
+	print GDBINIT "	shell cat mtexlist.txt\n";
+	print GDBINIT "	shell rm mtexlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-lwmutex\n";
+	print GDBINIT "	monitor info-lwmutex\n";
+	print GDBINIT "	shell cat lmtxlist.txt\n";
+	print GDBINIT "	shell rm lmtxlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-cond\n";
+	print GDBINIT "	monitor info-condvar\n";
+	print GDBINIT "	shell cat condlist.txt\n";
+	print GDBINIT "	shell rm condlist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-eventqueue\n";
+	print GDBINIT "	monitor info-eventqueue\n";
+	print GDBINIT "	shell cat eventque.txt\n";
+	print GDBINIT "	shell rm eventque.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-rwlock\n";
+	print GDBINIT "	monitor info-rwlock\n";
+	print GDBINIT "	shell cat rwlklist.txt\n";
+	print GDBINIT "	shell rm rwlklist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define info-semaphore\n";
+	print GDBINIT "	monitor info-semaphore\n";
+	print GDBINIT "	shell cat semalist.txt\n";
+	print GDBINIT "	shell rm semalist.txt\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define get-dabr\n";
+	print GDBINIT " monitor get-dabr\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define clear-dabr\n";
+	print GDBINIT " monitor set-dabr 0,0\n";
+	print GDBINIT " get-dabr\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define set-dabr-r\n";
+	print GDBINIT " monitor set-dabr \$arg0,5\n";
+	print GDBINIT " get-dabr\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define set-dabr-w\n";
+	print GDBINIT " monitor set-dabr \$arg0,6\n";
+	print GDBINIT " get-dabr\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define set-dabr-rw\n";
+	print GDBINIT " monitor set-dabr \$arg0,7\n";
+	print GDBINIT " get-dabr\n";
+	print GDBINIT "end\n";
+
+	print GDBINIT "define targ\n";
+#	print GDBINIT "  set architecture powerpc:a35\n";
+   	print GDBINIT "  set remotetimeout 600\n";
+	print GDBINIT "  target remote $host:$decimalport\n";
+	print GDBINIT "end\n\n";
+
+	print GDBINIT "define at\n";
+	if ( -f $elfname ){
+		print GDBINIT "  file \$arg0\n";
+	}
+	print GDBINIT "  targ\n";
+	print GDBINIT "end\n\n";
+	print GDBINIT "set prompt (ppu-gdb:$id) \n";
+	print GDBINIT "\n";
+	print GDBINIT "at $elfname\n\n";
+	close GDBINIT
+}
+
+sub attach_gdb
+{
+	local ($id, $pid, $host, $port, $elfname, $tid) = @_;
+	local $cmd;
+	local $hexid;
+	local $mspath;
+	local $gdbinit = "";
+
+	$hexid = sprintf "0x%08x", $tid;
+
+	print "Attaching spu-lv2-gdb for SPU $hexid\n";
+	write_gdbinit($hexid, $host, $port, $elfname);
+	($mspath = $elfname) =~ s|/|\\|g;
+	if ( -f "$ENV{'HOME'}/.gdbinit.spu" ) {
+		$gdbinit = "-x $ENV{'HOME'}/.gdbinit.spu";
+	}
+#	$cmd = "xterm -title 'spu-lv2-gdb($id:$elfname)' -e $gdb -x $ENV{'HOME'}/.gdbinit.spu.$port.startup &";
+	$cmd = "cmd //c start '\"spu-lv2-gdb($hexid:$mspath)\"' $gdb $gdbinit -x $ENV{'HOME'}/.gdbinit.spu.$port.startup";
+	system($cmd);
+	sleep 3;
+	unlink "$ENV{'HOME'}/.gdbinit.spu.$port.startup"
+}
+
+sub attach_ppugdb
+{
+	local ($id, $pid, $host, $port, $elfname) = @_;
+	local $cmd;
+	local $hexid;
+	local $mspath;
+	local $gdbinit = "";
+
+	$hexid = sprintf "0x%s", $pid;
+
+	print "Attaching ppu-lv2-gdb for PPU $hexid\n";
+	write_ppugdbinit($hexid, $host, $port, $elfname);
+	($mspath = $elfname) =~ s|/|\\|g;
+	if ( -f "$ENV{'HOME'}/.gdbinit.ppu" ) {
+		$gdbinit = "-x $ENV{'HOME'}/.gdbinit.ppu";
+	}
+#	$cmd = "xterm -title 'ppu-lv2-gdb($hexid:$elfname)' -e $ppugdb -x $ENV{'HOME'}/.gdbinit.ppu.$port.startup &";
+	$cmd = "cmd //c start '\"ppu-lv2-gdb($hexid:$mspath)\"' $ppugdb $gdbinit -x $ENV{'HOME'}/.gdbinit.ppu.$port.startup";
+	system($cmd);
+	sleep 3;
+	unlink "$ENV{'HOME'}/.gdbinit.ppu.$port.startup"
+}
+
+sub send_continue_by_autocont
+{
+	local ($id, $pid, $tid) = @_;
+	local $buf;
+	local $hexid;
+
+	$hexid = sprintf "0x%08x", $id;
+	$hexid2 = sprintf "0x%08x", $tid;
+
+	if($continued_spu_thread_group_id ne $hexid){
+		print "Continue SPU thread Group($hexid)\n";
+    	$buf = sprintf "\$00000000eContinueSPUThreadGroup,%08x,%08x#00", $pid, $id;
+	    print S $buf;
+    	flush S;
+    
+		$continued_spu_thread_group_id=$hexid;
+	    sleep 2;
+	}
+}
+
+sub send_continue
+{
+	local ($id, $pid, $tid) = @_;
+	local $buf;
+	local $hexid, $hexid2;
+
+	$hexid = sprintf "0x%08x", $id;
+	$hexid2 = sprintf "0x%08x", $tid;
+
+	print "Continue SPU thread ($hexid2 : $hexid)\n";
+    $buf = sprintf "\$00000000eContinueSPUThreadGroup,%08x,%08x#00", $pid, $id;
+    print S $buf;
+    flush S;
+	sleep 2;
+}
+
+sub send_ppucontinue
+{
+	local ($id, $pid, $tid) = @_;
+	local $buf;
+	local $hexid;
+
+	$hexid = sprintf "0x%08lx", $pid;
+
+	print "Continue Process ($hexid)\n";
+	$buf = sprintf "\$00000000eContinuePPUThread,%08x,%016lx#00", $pid, $tid;
+	print S $buf;
+	flush S;
+	sleep 2;
+}
+
+sub get1c
+{
+	local $sel = getc;
+	local $c;
+
+	return $sel if ($sel eq "\r");
+	return $sel if ($sel eq "\n");
+
+	$c = getc;
+	while (($c ne "\r") && ($c ne "\n")) {
+		$c = getc;
+	}
+	return $sel;
+}
+
+
+sub select_action
+{
+	local ($id, $pid, $host, $port, $elfname, $tid) = @_;
+	local $hexid, $hexid2;
+
+	$hexid = sprintf "0x%08x", $id;
+	$hexid2 = sprintf "0x%08x", $tid;
+
+	print "\n\nSPU thread (ID=$hexid2, GID=$hexid, $elfname) is about to start.\n";
+	print "Attach spu-lv2-gdb to the thread? (Yes/No/Ignore) ";
+	while (1) {
+		$sel = uc(get1c);
+		if ($sel eq "Y") {
+			print "Yes\n";
+			attach_gdb($id, $pid, $host, $port, $elfname, $tid);
+			return;
+		}
+		if ($sel eq "N") {
+			print "No\n";
+			send_continue($id, $pid, $tid);
+			return;
+		}
+		if ($sel eq "I") {
+			print "Ignore\n";
+			return;
+		}
+	}
+}
+
+sub select_ppuaction
+{
+	local ($id, $pid, $host, $port, $elfname, $tid) = @_;
+	local $hexid;
+
+	$hexid = sprintf "0x%08x", $pid;
+	$pidstr = sprintf "%08x", $pid;
+
+    if($autocont){
+		send_ppucontinue($id, $pid, $tid);
+		return;
+    }
+
+	print "\n\nProcess (ID=$hexid, $elfname) is about to start.\n";
+	print "Attach ppu-lv2-gdb to the process? (Yes/No/Ignore) ";
+
+	while (1) {
+		$sel = uc(get1c);
+		if ($sel eq "Y") {
+			print "Yes\n";
+			attach_ppugdb($id, $pidstr, $host, $port, $elfname);
+			return;
+		}
+		if ($sel eq "N") {
+			print "No\n";
+			send_ppucontinue($id, $pid, $tid);
+			return;
+		}
+		if ($sel eq "I") {
+			print "Ignore\n";
+			return;
+		}
+	}
+}
+
+sub check_args
+{
+	local $i, $c, $p;
+
+	$start_index = 0;
+	$i = 0;
+	while ($i <= $#ARGV) {
+		if ($ARGV[$i] eq "-c") {
+			$autocont = 1;
+		} elsif ($ARGV[$i] eq "-attach") {
+			$i++;
+			$attachpid = $ARGV[$i];
+		} elsif ($ARGV[$i] eq "-a") {
+			$autoattach = 1;
+		} elsif ($ARGV[$i] eq "-v") {
+			$verbose = 1;
+		} elsif (substr($ARGV[$i], 0, 2) eq "-p") {
+			$port_specified = 1;
+			if ((length($ARGV[$i]) == 2) && ($i < $#ARGV)) {
+				$i++;
+				$p = $ARGV[$i];
+			} else {
+				$p = substr($ARGV[$i], 2);
+			}
+			$c = index($p, ":");
+			if ($c < 0) {
+				if ($p =~ /^[0-9]+$/) {
+					$port = $p;
+				} else {
+					$host = $p if (length($p) > 0);
+				}
+			} else {
+				$h = substr($p, 0, $c);
+				$p = substr($p, $c+1);
+				$port = $p if (length($p) > 0);
+				$host = $h if (length($h) > 0);
+			}
+		} elsif (substr($ARGV[$i], 0, 2) eq "-l") {
+			if ((length($ARGV[$i]) == 2) && ($i < $#ARGV)) {
+				$i++;
+				$p = $ARGV[$i];
+			} else {
+				$p = substr($ARGV[$i], 2);
+			}
+			($listen_port) = ($p =~ /^([0-9]+)$/);
+			die "Invalid listen port: '$p'  " if ($listen_port eq "");
+		} elsif (substr($ARGV[$i], 0, 2) eq "-r") {
+			if ((length($ARGV[$i]) == 2) && ($i < $#ARGV)) {
+				$i++;
+				$p = $ARGV[$i];
+			} else {
+				$p = substr($ARGV[$i], 2);
+			}
+			($result_listen_port) = ($p =~ /^([0-9]+)$/);
+			die "Invalid result listen port: '$p'  " if ($result_listen_port eq "");
+		} elsif ($ARGV[$i] eq "-start") {
+			$start_index = $i + 1;
+			last;
+		} else {
+			die "Unknown option : $ARGV[$i]";
+		}
+		$i++;
+	}
+}
+
+
+sub console_process
+{
+	local $c, $buf;
+
+	$buf = "";
+	while (1) {
+		$c = "";
+		#recv SCLI, $c, 1, MSG_DONTWAIT;
+		$c = getc SCLI;
+		if (length($c) > 0) {
+			if (($c eq "#") || ($c eq "\n")) {
+				$buf = $buf .$c. "00"; #getc SCLI . getc SCLI;
+				print $buf, "\n" if ($verbose);
+				print S $buf; flush S;
+				$buf = "";
+			} else {
+				$buf .= $c;
+			}
+		} elsif (eof(SCLI)) {
+			if (length($buf) > 0) {
+				print $buf, "\n" if ($verbose);
+				print S $buf; flush S;
+			}
+			print "Console session closed\n" if ($verbose);
+			close SCLI;
+			return;
+		} else {
+			sleep(2);
+		}
+	}
+}
+
+
+sub console_receiver
+{
+	socket(SL, PF_INET, SOCK_STREAM, 0) || die "Fail on creating listener socket";
+	setsockopt(SL, SOL_SOCKET, SO_REUSEADDR, 1);
+	bind (SL, pack_sockaddr_in($listen_port, INADDR_ANY)) || die "Fail on binding listener socket";
+
+	printf "Listening on %d...\n", $listen_port if ($verbose);
+	listen(SL, SOMAXCONN) || die "Fail on listening";
+	while (1) {
+		$client = accept(SCLI, SL) || die "Fail on accepting";
+		($cport, $cip) = unpack_sockaddr_in($client);
+
+		$cip_name = inet_ntoa($cip);
+
+		printf "Connected from %s (%d)\n", $cip_name, $cport if ($verbose);
+		console_process();
+	}
+}
+
+
+sub sendback_result
+{
+	local ($host, $port, $pid, $gdbport, $fname) = @_;
+	local $ip, $addr;
+
+	socket(RRS, PF_INET, SOCK_STREAM, 0) || die "Sendback: Fail on creating socket";
+	$ip = inet_aton($host) || die "Sendback: Server $host is unknown.";
+	$addr = sockaddr_in($port, $ip);
+
+	if(connect(RRS, $addr)) {
+		print RRS $pid, $gdbport, $fname;
+		flush RRS;
+		close RRS;
+		return 1;
+	}
+	return 0;
+}
+
+
+
+sub send_command_line
+{
+	local ($i, $port) = @_;
+	local $cmd, $debugflag, $priority, $args, $envs;
+
+	$load_file_name = $ARGV[$i++];
+	$priority = hex($ARGV[$i++]);
+	$debugflag = hex($ARGV[$i++]);
+	$args = $ARGV[$i++];
+	$envs = $ARGV[$i++];
+	$stacksize = $ARGV[$i++];;
+	$data0 = $ARGV[$i++];
+	$data1 = $ARGV[$i++];
+
+	if ($priority == 0) {
+		$priority = 0x3e9;
+		$debugflag |= 0x100;
+	}
+	if ($stacksize == 0) {
+		$stacksize = 64;
+		$debugflag |= 0x200;
+	}
+
+	$cmd = sprintf("\$00000002eLoadExt,%s,%08x,%08x,%s,%s,%08x,0,%08x,%08x", $load_file_name, $priority, $debugflag, $args, $envs, $stacksize,$data0,$data1);
+	$cmd .= "#00";
+
+	print "Executing: ", $cmd ,"\n" if ($verbose);
+
+	socket(S, PF_INET, SOCK_STREAM, 0) || die "Fail on creating socket";
+	$ip = inet_aton($host) || die "Server $host is unknown.";
+	$addr = sockaddr_in($port, $ip);
+
+	connect(S, $addr) || die "Cannot connect to host ($host:$port)";
+
+	print S $cmd;flush S;
+	close S;
+
+	print "done\n" if ($verbose);
+
+	exit(0) if (($debugflag & 0x1) == 0);
+}
+
+
+$autocont = 0;
+$autoattach = 0;
+$host = 'localhost';
+$port = 11001;
+$port_specified = 0;
+$listen_port = 11100;
+$result_listen_port = 11101;
+$default_proxy_port = $listen_port;
+$start_index = 0;
+$receiver_pid = 0;
+$verbose = 0;
+
+$dcmanager="DCM";
+
+check_args;
+
+
+if ($start_index > 0) {
+	$port = $default_proxy_port if (!$port_specified);
+	send_command_line($start_index, $port);
+
+	socket(RSL, PF_INET, SOCK_STREAM, 0) || die "Fail on creating listener socket";
+	setsockopt(RSL, SOL_SOCKET, SO_REUSEADDR, 1);
+	bind (RSL, pack_sockaddr_in($result_listen_port, INADDR_ANY)) || die "Fail on binding listener socket";
+	printf "Listening on %d...\n", $result_listen_port if ($verbose);
+	listen(RSL, SOMAXCONN) || die "Fail on listening";
+	$client = accept(RSCLI, RSL) || die "Fail on accepting";
+	($cport, $cip) = unpack_sockaddr_in($client);
+	$cip_name = inet_ntoa($cip);
+	printf "Connected from %s (%d)\n", $cip_name, $cport if ($verbose);
+
+	$parent_pid="";
+	for($ii=0;$ii<8;$ii++){
+		$c = getc RSCLI;
+		$parent_pid .= $c if (length($c) > 0);
+	}
+	$parent_port="";
+	for($ii=0;$ii<8;$ii++){
+		$c = getc RSCLI;
+		$parent_port .= $c if (length($c) > 0);
+	}
+
+	$parent_filename == "";
+	$c = getc RSCLI;
+	while(length($c) > 0) {
+		$parent_filename .= $c;
+		$c = getc RSCLI;
+        }
+	close RSL;
+	close RSCLI;
+	if ($parent_port eq "--------") {
+		print "Error on loading target program.  Error code=$parent_filename\n";
+		exit(1);
+	}
+	write_ppugdbinit($parent_pid, $host, $parent_port, $parent_filename);
+#	$cmd = "$ppugdb.exe -x $ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+
+	$hexid = sprintf "0x%s", $parent_pid;
+	($mspath = $parent_filename) =~ s|/|\\|g;
+	$cmd = "cmd //c start '\"ppu-lv2-gdb($hexid:$mspath)\"' $ppugdb -x $ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+	if (!fork()) {
+		sleep 5;
+		unlink "$ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+		exit(0);
+	}
+	system($cmd);
+	exit(0);
+}
+
+if (hex($attachpid) != 0) {
+	$port = $default_proxy_port if (!$port_specified);
+	
+	$cmd = sprintf("\$00000003eAttach,%08x", hex($attachpid));
+	$cmd .= "#00";
+
+	print "Executing: ", $host,$port,$cmd ,"\n" if ($verbose);
+
+	sleep 5;
+
+	socket(S2, PF_INET, SOCK_STREAM, 0) || die "Fail on creating socket";
+	$ip = inet_aton($host) || die "Server $host is unknown.";
+	$addr2 = sockaddr_in($port, $ip);
+	connect(S2, $addr2) || die "Cannot connect to host ($host:$port)";
+	print S2 $cmd;flush S2;
+	close S2;
+
+	print "done\n" if ($verbose);
+
+	socket(RSL, PF_INET, SOCK_STREAM, 0) || die "Fail on creating listener socket";
+	setsockopt(RSL, SOL_SOCKET, SO_REUSEADDR, 1);
+	bind (RSL, pack_sockaddr_in($result_listen_port, INADDR_ANY)) || die "Fail on binding listener socket";
+	printf "Listening on %d...\n", $result_listen_port if ($verbose);
+	listen(RSL, SOMAXCONN) || die "Fail on listening";
+	$client = accept(RSCLI, RSL) || die "Fail on accepting";
+	($cport, $cip) = unpack_sockaddr_in($client);
+	$cip_name = inet_ntoa($cip);
+	printf "Connected from %s (%d)\n", $cip_name, $cport if ($verbose);
+
+	$parent_pid="";
+	for($ii=0;$ii<8;$ii++){
+		$c = getc RSCLI;
+		$parent_pid .= $c if (length($c) > 0);
+	}
+	$parent_port="";
+	for($ii=0;$ii<8;$ii++){
+		$c = getc RSCLI;
+		$parent_port .= $c if (length($c) > 0);
+	}
+
+	$parent_filename == "";
+	$c = getc RSCLI;
+	while(length($c) > 0) {
+		$parent_filename .= $c;
+		$c = getc RSCLI;
+        }
+	close RSL;
+	close RSCLI;
+	if ($parent_port eq "--------") {
+		print "Error on attaching to the process.  Error code=$parent_filename\n";
+		exit(1);
+	}
+	write_ppugdbinit($parent_pid, $host, $parent_port, $parent_filename);
+#	$cmd = "$ppugdb.exe -x $ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+	($mspath = $parent_filename) =~ s|/|\\|g;
+	$hexid = sprintf "0x%s", $parent_pid;
+	$cmd = "cmd //c start '\"ppu-lv2-gdb($hexid:$mspath)\"' $ppugdb -x $ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+	if (!fork()) {
+		sleep 5;
+		unlink "$ENV{'HOME'}/.gdbinit.ppu.$parent_port.startup";
+		exit(0);
+	}
+	system($cmd);
+	exit(0);
+}
+
+print "*** SPU Attach ***\n";
+
+if ($autocont) { print "Invoked auto continue mode\n"; }
+elsif ($autoattach) { print "Invoked auto attach mode\n"; }
+
+
+socket(S, PF_INET, SOCK_STREAM, 0) || die "Fail on creating socket";
+$ip = inet_aton($host) || die "Server $host is unknown.";
+$addr = sockaddr_in($port, $ip);
+
+connect(S, $addr) || die "Cannot connect $dcmanager ($host:$port)";
+
+print "Connected to $dcmanager ($host:$port)\n\n";
+
+if (($receiver_pid = fork()) == 0) {
+	console_receiver();
+	exit(0);
+}
+
+$lastbuf = '';
+while (1) {
+	$ln = readln;
+	print ":::: $ln\n" if ($verbose);
+
+	@ppugdb = ($ln =~ /\$00000000oNewProcess,([0-9A-Fa-f]*),([0-9A-Fa-f]*),([0-9A-Fa-f]*),(.*)$/);
+	if (@ppugdb > 1) {
+		$gdbport = $ppugdb[2];
+		$pid = $ppugdb[0];
+		$ppid = $ppugdb[1];
+		$ppuelfname_hex = $ppugdb[3];
+
+		$ppuelfname = "";
+		for($ii = 0 ; $ii < length($ppuelfname_hex) ; $ii = $ii + 2){
+			$h = substr($ppuelfname_hex, $ii,2);
+			$c = chr(hex($h));
+			$ppuelfname .= $c if ($c ge " ");
+		}
+
+		if( -e $ppuelfname){
+			print "PPU SELF File($ppuelfname) is found\n" if ($verbose);
+			if(lc(substr($ppuelfname, -5, 5)) eq ".self"){
+				$ppuelfname = substr($ppuelfname, 0, length($ppuelfname) - 5) . ".elf";
+				if(-e $ppuelfname){
+					print "PPU ELF File($ppuelfname) is found.\n" if ($verbose);
+				}
+				else{
+					print "PPU ELF File($ppuelfname) is not found.\n" if ($verbose);
+				}
+			}
+		}
+		else {
+			print "PPU File($ppuelfname) isn't found, search file by adding extension.\n" if ($verbose);
+			if(lc(substr($ppuelfname, -4, 4)) eq ".elf"){
+				if(-e substr($ppuelfname, 0, length($ppuelfname) - 4) . ".self"){
+					$ppuelfname = substr($ppuelfname, 0, length($ppuelfname) - 4) . ".self";
+				}
+			}
+			elsif(-e $ppuelfname . ".elf"){
+				$ppuelfname.=".elf";
+			}
+			elsif(-e $ppuelfname . ".self"){
+				$ppuelfname.=".self";
+			}
+		}
+
+		if (($ppid eq "ffffffff") || $autoattach) {
+			if (!sendback_result($host, $result_listen_port, $pid, $gdbport, $ppuelfname)) {
+				attach_ppugdb($spuid, $pid, $gdbhost, $gdbport, $ppuelfname);
+			}
+		} else {
+			$ln = readln;
+			@ppugdb = ($ln =~ /\$00000000oNewPPUThread,([0-9A-Fa-f]*),([0-9A-Fa-f]*)$/);
+			$tid = hex($ppugdb[0]);
+			$poft = hex($ppugdb[1]);
+			print "Child process is created for parent $ppid\n" if ($verbose);
+			select_ppuaction($spuid, $poft, $gdbhost, $gdbport, $ppuelfname,$tid);
+		}
+	}
+	@result = ($ln =~ /\$00000002([0-9A-Fa-f]+),([0-9A-Fa-f]+)$/);
+	if (@result > 1) {
+		$pid = $result[0];
+		$code = $result[1];
+		if (hex($result[1]) == 0) {
+			print "Load succeeded : Process ID = 0x$pid\n";
+		}
+		else{			
+			print "Load failed    : Error code = 0x$code\n";
+			sendback_result($host, $result_listen_port, $pid, "--------", $code);
+		}
+	}
+	@result = ($ln =~ /\$00000003([0-9A-Fa-f]+)$/);
+	if (@result > 0) {
+		$code = $result[0];
+		if (hex($result[0]) == 0) {
+			print "Attaching succeeded.\n";
+		}
+		else{			
+			print "Attaching failed (Error code = 0x$code)\n";
+			sendback_result($host, $result_listen_port, "--------", "--------", $code);
+		}
+	}
+
+	@spugdb = ($ln =~ /\$00000000oNewSPUThread,([0-9A-Fa-f]*),([0-9A-Fa-f]*),([0-9A-Fa-f]*),(.*),([0-9A-Fa-f]*)$/);
+	if (@spugdb > 1) {
+		@thid = $spugdb[0];
+		$gdbport = $spugdb[4];
+		$pid = hex($spugdb[2]);
+		@progname = $spugdb[3];
+        $spuid = hex($spugdb[1]);
+		$sputid = hex($spugdb[0]);
+
+		if ( -e $spugdb[3] ) {
+			$spuelfname = $progname[0];
+		}
+		elsif (@progname > 0) {
+			$spuelfname = $progname[0];
+
+			$pathname = getPathName($spuelfname, ".");
+			if($pathname ne ""){
+				$spuelfname = substr $pathname,2;
+			}
+			elsif(lc(substr($spuelfname, -4, 4)) eq ".elf"){
+				$spuelfname = substr($spuelfname, 0, length($spuelfname) - 4) . ".self";
+				$pathname = getPathName($spuelfname, ".");
+				if($pathname ne ""){
+					$spuelfname = substr $pathname,2;
+				}
+				else{
+					$spuelfname = $progname[0];
+				}
+			}
+			else{
+				$pathname = getPathName($spuelfname . ".elf", ".");
+				if($pathname ne ""){
+					$spuelfname = substr $pathname,2;
+				}
+				else{
+					$pathname = getPathName($spuelfname . ".self", ".");
+					if($pathname ne ""){
+						$spuelfname = substr $pathname,2;
+					}
+				}
+			}
+		}			
+		
+		if ($autocont) {
+			send_continue_by_autocont($spuid, $pid, $sputid);
+		} elsif ($autoattach) {
+			attach_gdb($spuid, $pid, $gdbhost, $gdbport, $spuelfname, $sputid);
+		} else {
+			select_action($spuid, $pid, $gdbhost, $gdbport, $spuelfname, $sputid);
+		}
+	}
+}
+
+close S;
+
+print "done\n";
+
+sub getPathName {
+	my $searchFile = $_[0];
+	my $searchDir  = $_[1];
+	my @sortedFileNames;
+	my $sortedFileName;
+	my @fileNames;
+	my $fileName;
+	my $result;
+
+	opendir(DH, $searchDir) || die "Can't open directory ($searchDir)\n";
+	my @fileNames = readdir(DH);
+	close DH;
+
+	my $noFile = 0;
+	my $noDir  = 0;
+
+	foreach $fileName(@fileNames){
+		if(-f $searchDir."/".$fileName) {
+			$filelist[$noFile] = $fileName;
+			$noFile++;
+		}
+		if(-d $searchDir."/".$fileName) {
+            $dirlist[$noDir] = $fileName;
+			$noDir++;
+		}
+	}
+	my $total = 0;
+	for($i = 0 ; $i < $noFile ; $i++){
+		$sortedFileNames[$total] = $filelist[$i];
+		$total++;
+	}
+	for($i = 0 ; $i < $noDir ; $i++){
+		$sortedFileNames[$total] = $dirlist[$i];
+		$total++;
+	}
+
+	foreach $sortedFileName(@sortedFileNames){
+		if($sortedFileName =~ /^\./){
+			next;
+		}
+		if(-d $searchDir."/".$sortedFileName) {
+			$result = getPathName($searchFile, $searchDir."/".$sortedFileName);
+			if($result ne "") {
+				return $result;
+			}
+		}
+		elsif($sortedFileName eq $searchFile){
+			return $searchDir."/".$sortedFileName;
+		}
+	}
+	return "";
+}

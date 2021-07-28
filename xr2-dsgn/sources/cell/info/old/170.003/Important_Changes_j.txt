@@ -1,0 +1,68 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 170.003
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+リモートプレイユーティリティ
+============================
+<仕様変更>
+- リモートプレイ状態でゲームアプリケーションを起動した場合、システム
+  ユーティリティのコールバック関数にはCELL_SYSUTIL_DRAWING_BEGINを
+  返さない仕様にしました。
+
+- リモートプレイユーティリティでSPUを占有せずに使用後に開放するよう
+  変更しました。
+----------------------------------------------------------------------
+2 cgc
+----------------------------------------------------------------------
+<新規機能>
+- 以下のlinux版のlibcgbライブラリおよびヘッダファイルを追加しました。
+    cell/host-linux/Cg/include/cgb.h 
+    cell/host-linux/Cg/lib/libcgb.a
+
+----------------------------------------------------------------------
+3 サンプルプログラム
+----------------------------------------------------------------------
+<新規追加>
+- samples/camera/eyetoy2_raw_to_rgba
+  SPURSタスクを使用し、RAW8データをrgbaデータに変換する方法を示した
+  サンプル。PLAYSTATION(R)Eyeで動作します。
+
+- samples/camera/eyetoy2_raw_to_yuv
+  SPURSタスクを使用し、RAW8データをラスターデータ(Y、U、V)の3つの
+  バッファーに変換する方法を示したサンプル。PLAYSTATION(R)Eyeで動作します。
+
+- samples/camera/yuv422_to_rgba
+  SPURSタスクを使用し、YUV422データをrgbaデータに変換する方法を示した
+  サンプル。PLAYSTATION(R)EyeやUSB Video Class 1.1 に対応したカメラで
+  動作します。
+
+- samples/camera/yuv422_to_yuv
+  SPURSタスクを使用し、YUV422データをラスターデータ(Y、U、V)の3つの
+  バッファーに変換する方法を示したサンプル。PLAYSTATION(R)EyeやUSB Video
+  Class 1.1 に対応したカメラで動作します。
+
+- samples/tutorial/SpuGeometricProcessの変更
+  メインメモリのTiled領域上のサーフェスの属性にSPUによる被写体深度処理
+  (Depth of Field)を追加しました。
+
+<プロジェクトファイルの追加>
+  ProDG for PLAYSTATION(R)3用に以下のサンプルプログラムに対してプロジェクト
+  ファイルを追加しました。
+
+    - samples/tutorial/SpuGeometricProcess
+
+  未対応のサンプルプログラムについては準備が出来次第、追加を行っていく
+  予定です。
+
+<プロジェクトファイルの変更点>
+- cell/samples以下のVisualStudio.Net 2003用suoファイルを廃止し、プログラム
+  実行環境の情報をvcprojファイルで提供するようにしました。
+
+

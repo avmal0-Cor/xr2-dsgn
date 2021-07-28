@@ -1,0 +1,155 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 154.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 154.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 154.001
+======================================================================
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- In cellGcmInit(), it now initiates cellGcmSetTexture() and 
+  cellGcmSetVertexTexture() only once.
+
+- In cellGcmSetFragmentProgramParameter() and 
+  cellGcmSetFragmentProgramParameterPointer(), the bool-type parameter 
+  is now supported. 
+  (This change has been made in response to the technical information 
+   200701-12.)
+
+- In cellGcmSetVertexProgramParameter(), the sce-cgc's option 
+  "-fkeep-unused" is now supported. 
+
+- In cellGcmCgGetEmbeddedConstantCount() and 
+  cellGcmCgGetEmbeddedConstantOffset(), unassigned parameters are 
+  now supported.
+  Also note that cellGcmCgGetEmbeddedConstantOffset() now returns 0, and 
+  cellGcmCgGetEmbeddedConstantOffset() returns 0xffffffff.
+
+- In cellGcmSetFragmentProgramParameterPointer(), when there was 
+  an unassigned parameter in the array elements of srcOffset, 
+  parameter transfer was not performed correctly. 
+  This problem has been fixed. 
+  (This change has been made in response to the technical information 
+   200702-03.)
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The threshold setting that controls the Zcull memory update 
+  was not correct. This problem has been fixed. 
+
+- When an invalid value is passed to the argument cgType of 
+  cgCreateSamplerState(), the correct error value 
+  CG_INVALID_PARAMETER_TYPE_ERROR is now returned. 
+
+- When glBindAttribSetSCE() was executed, cgGLAttribElementFunc() 
+  did not operate correctly. This problem has been fixed.
+
+- In SDK 132, the size of the local memory (Bounce Buffer) that is used 
+  internally by PSGL as a temporal memory was reduced from 2MB to 1KB. 
+  This caused performance degradation depending on conditions. 
+  To resolve this problem, the Bounce Buffer size has been restored 
+  to the original size of 2MB. 
+
+- When the argument internalFormat of glBufferSurfaceSCE() was specified 
+  with GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, the surface was not created correctly.
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+libgcm/PSGL
+----------------------------------------------------------------------
+- The following restrictions has been removed from SDK096 or later 
+  onwards:
+
+  - Flip completion notice is returned before completion.
+    For details, see the Technical Note 200609-23.
+    https://ps3.scedev.net/technotes/view/320/
+
+----------------------------------------------------------------------
+Cgc
+----------------------------------------------------------------------
+- A warning message was incorrectly output when the following 
+  functions were used within a fragment shader. 
+  This problem has been fixed. 
+
+  float texDepth1D_precise( sampler1D s, float tc)
+  float texDepth1D_precise( sampler1D s, float2 tc )
+  float texDepth1Dlod_precise( sampler1D s, float4 tc )
+  float texDepth1Dproj_precise( sampler1D s, float2 tc )
+  float texDepth1Dproj_precise( sampler1D s, float3 tc )
+  float texDepth1Dbias_precise( sampler1D s, float tc, float bias )
+  float texDepth2D_precise( sampler2D s, float2 tc )
+  float texDepth2D_precise( sampler2D s, float3 tc )
+  float texDepth2Dlod_precise( sampler2D s, float4 tc )
+  float texDepth2Dproj_precise( sampler2D s, float3 tc )
+  float texDepth2Dproj_precise( sampler2D s, float4 tc )
+  float texDepth2Dbias_precise( sampler2D s, float2 tc, float bias )
+
+- The "-firstallocreg" option was not operating correctly. 
+  This problem has been fixed.
+
+- Some shaders were unable to build. This problem has been fixed.
+
+- A boolean type parameter was set to the resource type of CG_BOOL. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+System Utility
+----------------------------------------------------------------------
+<Message Dialog Utility>
+- When booting a game, a message dialog was not displayed and 
+  it hung up. This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- When registering the NP basic, 
+  SCE_NP_BASIC_EVENT_END_OF_INITIAL_PRESENCE was not notified 
+  to a user who has no friend. This problem has been fixed.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- The time domain delay DSP effect function sometimes returned 
+  CELL_MS_CALLBACK_FINISHSTREAM even when the Wet process was ongoing. 
+  This problem has been fixed to return CELL_MS_CALLBACK_FINISHEDDRY 
+  correctly. 
+
+- The impulse response reverb function sometimes returned 
+  CELL_MS_CALLBACK_FINISHSTREAM even when the Wet process was ongoing. 
+  This problem has been fixed to return CELL_MS_CALLBACK_FINISHEDDRY 
+  correctly.
+
+- The delay DSP effect function sometimes returned 
+  CELL_MS_CALLBACK_FINISHSTREAM even when the Wet process was ongoing. 
+  This problem has been fixed to return CELL_MS_CALLBACK_FINISHEDDRY 
+  correctly.
+
+- The pitch shift function sometimes returned 
+  CELL_MS_CALLBACK_FINISHEDDRY even when the Wet process was ongoing. 
+  This problem has been fixed to return CELL_MS_CALLBACK_FINISHSTREAM 
+  correctly. 
+
+- When the ATRAC stream entered into a loop, a noise was contained at 
+  the end of the first data block of decoded data. 
+  This problem has been fixed. 
+
+- The first 512 samples in a stream were muted. This problem has been fixed.
+
+- In cellMSFXAuxSendSetVolumes(), all the volumes for Send could not be set. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USB Driver>
+- In SDK150 or before, when a USB device that performs interrupt transfer 
+  or isochronous transfer was inserted/removed, the system could hang up 
+  regardless of the device type such as Low/Full/High Speed. 
+  This problem has been fixed.

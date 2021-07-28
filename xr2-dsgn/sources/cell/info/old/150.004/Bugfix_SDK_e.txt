@@ -1,0 +1,254 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 150.004
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 150.004 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 150.004
+======================================================================
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libjpgdec>
+- In samples/codec/jpg_dec/jdec_sputhread sample, the thread status 
+  was not initialized when cellJpgDecDecodeData() was executed and 
+  ended in error. This problem has been fixed by adding an 
+  initialization process.
+
+<libpngdec>
+- The following problem has been fixed.
+
+  - Even if the information of sCAL chunk exists in the stream, 
+    the bit supported by dataOutInfo->chunkInformation is not validated. 
+
+- In samples/codec/png_dec/pngdec_sputhread sample, the thread status 
+  was not initialized when cellPngDecDecodeData() was executed and 
+  ended in error. This problem has been fixed by adding an 
+  initialization process.
+
+<libdmux>
+- The following problem has been fixed.
+
+  - The message CELL_DMUX_MSG_TYPE_DEMUX_DONE may not be sent when 
+    demuxer is closed in the following sequence:
+    1. demuxer is running with the presence of valid ESs
+    2. Disable all the valid ES Handles by cellDmuxDisableEs()
+    3. Wait for CELL_DMUX_MSG_TYPE_DEMUX_DONE message(stop the 
+       self-running state)
+    4. Close demuxer by calling cellDmuxClose()
+    * Note that this problem also occurs in a sequence where 
+      cellDmuxResetStream() is called before and after step 2.
+
+<libadec>
+- The following restrictions has been removed from SDK110 onwards:
+
+  - SPURS stops with an exceptional event when usign ATRAC3plus decoder.
+
+    Details:
+    SPURS may stop with an exceptional event when ATRAC3plus decoder is in use.
+    This problem may occur when either one of the following conditions is met:
+
+    - libsail is used to play ATRAC3plus data that is created by Stream Composer.
+    - libadec is used to decode the same data as above directly.
+
+    Note that this problem does not occur when you use libatrac3plus to play 
+    data created by at3tool.
+
+    Workaround
+    Do not include ATRAC3plus data in PAMF file.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - In CellSailPlayerInitialize(), video is not started in the PAL 
+    output environment when CELL_SAIL_PLAYER_PRESET_AV_SYNC is set.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+<cellftp>
+- An empty directory specified by get/getlist/put/putdir/copydir commands 
+  was unable to be copied. This problem has been fixed. 
+
+- With Windows host, cd /host_root was unable to be executed. 
+  This problem has been fixed. 
+
+- When the compare command was executed for directories, 
+  it compared with the same file twice. This problem has been fixed.
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+<libpad>
+- The following problem has been fixed.
+
+  - cellPadLddRegisterController() that register a custom controller 
+    always returns CELL_PAD_ERROR_TOO_MANY_DEVICES incorrectly.
+    Although CELL_PAD_ERROR_TOO_MANY_DEVICES is returned, the custom 
+    controller is mistakenly registered with the system.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Save Data Utility>
+- sizeKB returned as a data status callback did not include sysSizeKB.
+  This problem has been fixed. 
+
+- In samples/sysutil/savedata sample, the aspect ratio of the screen 
+  was not correct. This problem has been fixed.
+
+< Message Dialog Utility  >
+- In samples/sysutil/msgdialog sample, the aspect ratio of the screen 
+  was not correct. This problem has been fixed.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- When a condition that uses up the kernel memory for the network was 
+  created repeatedly by calling socket() and socketclose(), it did not 
+  return from the calls. This problem has been fixed. 
+
+- In receive functions (recv()/recvfrom()/recvmsg()), when a negative 
+  value was specified as a receive data size, an exception error occurred 
+  in the kernel. This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- In cellGcmSetVertexProgramParameter(), when CG_FLOAT3x3 was specified, 
+  the same size of value as CG_FLOAT4x4 was transferred causing the 
+  constant register to get corrupted. This problem has been fixed.
+
+- In the following samples, the aspect ratio used within the sample was 
+  obtained in a wrong way. This problem has been fixed:
+  gcm/basic
+  gcm/convert_swizzle
+  gcm/depth_read
+  gcm/human
+  gcm/pm_zcull
+  gcm/user_clip
+  gcm/zcull
+  gcm/fw_cube
+  gcm/fw_mipmap
+  gcm/fw_render_to_texture
+  gcm/fw_stencil_reflect
+  gcm/fw_vertex_attribute
+  gcm/fw_vertex_texture
+
+  Note that fwgcm library was also fixed so that some samples using the 
+  library can avoid the problem. 
+
+- In the library for SPU, the following functions were not included. 
+  This problem has been fixed. 
+  cellGcmSetTransferData(),cellGcmSetTransferImage()
+
+- In fw_dice_spu sample, the semantics of the texture sampler 
+  was not correct. This problem has been fixed.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- When cgGetParameterValues() was executed, an assertion occurred.
+  This problem has been fixed. 
+
+- When cgGLSetMatrixParameterArraydc() and cgGLSetMatrixParameterArraydr() 
+  were executed an assertion occurred. 
+  This problem has been fixed.
+
+- When a default value was specified for a structure that was defined 
+  within a vertex shader, the vertex shader did not work correctly.
+  This problem has been fixed. Note that this problem does not occur 
+  with an array structure although it has the default value specified.
+
+----------------------------------------------------------------------
+sce-cgc
+----------------------------------------------------------------------
+- When the texture coordinate (TEXCOORDn) in a form of float2 was used 
+  in a fragment shader, the performance was degraded. 
+  This problem has been fixed. 
+
+- sce-cgc did not output a correct code. This problem has been fixed. 
+
+- When "-ifcvt none" option was specified, it did not output a correct 
+  code. This problem has been fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs>
+- The following problem has been fixed.
+
+  - QSortSubWithFetch() that is found in the following sample program 
+    may write into an area immediately after the data array to be sorted 
+    unexpectedly.
+    samples/spu_library/libspurs/advanced/task_sort
+
+<libdaisy>
+- samples/spu_library/libdaisy/spurs sample uses SNR, however, 
+  SNR was not initialized to OR mode. This problem has been fixed. 
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USB Driver>
+- The following problem has been fixed.
+
+  - When registration and deletion of an extended LDD are repeatedly 
+    performed, the probe function may not be called at the registration.
+  - When performing isochronous IN transfer with a Full-Speed device, 
+    data whose size per frame exceeds 512 bytes cannot be transferred 
+    correctly. 
+  - Multi isochronous transfer of a High-Speed device is not supported. 
+
+- The following problem has been fixed:
+
+  - From SDK090, the usbd/usbhphone sample is attached to LDD within 
+    the system. Therefore, it does not operate.
+
+  Note that Vendor/Product IDs within the sample code should be changed 
+  to your desired device's IDs(The default setting is audio-techica 
+  ATC-HA7USB.).
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- cellMSStreamPlay() was causing an SPU DMA crash. 
+  This problem has been fixed.
+
+- In cellMSDSPLoadFromXXX(), the DSP page number was not checked. 
+  This problem has been fixed.
+
+- The ATRAC sound output contained noises. This problem has been fixed. 
+
+- When streams were closed and initialized with the routing enabled, 
+  the streams froze at initialization. This problem has been fixed. 
+
+- When initialization of an ATRAC stream failed during a call to 
+  cellMSStreamSetInfo(), the internal global stream counts were 
+  wrongly set. This problem has been fixed.
+
+- The stream structure was causing incompatibility with the ATRAC codec. 
+  This problem has been fixed. 
+
+- cellMSFXAuxSendSetVolumes() did not function correctly. 
+  This problem has been fixed. 
+
+- cellMSStreamSetRouting() did not work correctly. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- When initializing Cube_withFont sample program and failed to create 
+  a renderer, unnecessary renderer discarding process was included.
+  This problem has been fixed. 
+
+- When Cube_withFont sample program failed to open a font, the font 
+  were left open. This problem has been fixed. 
+

@@ -1,0 +1,417 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 200.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+  - FOOT SW
+
+  The wireless feature (Bluetooth(R)/Wireless LAN) can only be used 
+  on Reference Tools DEH-R1040 and later, which have the necessary 
+  authorization tools.
+  The antenna for the wireless feature is bundled with DEH-1040 and 
+  later Reference Tools. Do not attempt to connect DEH-R1030 and 
+  earlier Reference Tools.
+
+- For specifications regarding the Reference Tool, please refer to 
+  info/Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< Game Update Utility >
+(Added in Release 200.002)
+-  When the Reference Tool is booted having "Debugger mode" specified to 
+   "Boot parameters" using the Administration Tool  or the like, 
+   the patch distribution feature of the Game Update utility cannot be 
+   utilized.
+
+< Content Search Utility >
+- When file paths to the still image and animation thumbnails of content 
+  are created using cellSearchPrepareFile() and the thumbnails are changed 
+  from the system software, the changes will not be reflected unless 
+  cellSearchPrepareFile() is executed again. 
+
+<Save Data Utility>
+- There is a restriction on the string that is displayed next to 
+  the thumbnail of the save data listed using cellSaveDataListDelete(). 
+
+  When a value is specified to dirNamePrefix as shown below, it should 
+  behave correctly, however, it is always displayed as "Title" in SDK 200: 
+
+     - When "*" is specified, "Title" is displayed. 
+     - When other than "*" is specified, "Subtitle" is displayed. 
+
+  This problem will be fixed in the future SDK. 
+
+(Added in Release 200.002)
+- The option that omits the confirmation dialog displayed at the start/end
+  of the cellSaveDataFixedDelete() processing does not work. This problem 
+  will be fixed in the feature SDK.
+
+(Added in Release 200.002)
+- Some restrictions have been placed on each API and parameter that are 
+  described in the utility header (sysutil_savedata.h). Please refer to 
+  the document (SaveData-Overview/SaveData-Reference) for more details.
+
+< Remote Play Utility >
+(Added in Release 200.002)
+- (B#39730)
+  The Reference Tool cannot recognize a disc after performing remote start.
+
+(Added in Release 200.002)
+- (B#41848)
+  To perform remote play with the PLAYSTATION(R)3 system software version 
+  2.00, PSP(TM) system software version 3.72 or later is required.
+
+< SubDisplay Utility>
+(Added in Release 200.002)
+- (B#41848)
+  To use the subdisplay utility, the PSP(TM) system software version 3.72
+  or later is required.
+
+< Access Point Utility >
+(Added in Release 200.002)
+- To check the connection with PSP(TM), a ps3scan utility that is to be 
+  released from PSP(TM) SDK is required.
+
+< User Infromation Utility >
+(Added in Release 200.002)
+- In the following APIs, the initial focus position cannot be specified.
+
+  cellUserInfoSelectUser_SetList()
+  cellUserInfoSelectUser_ListType()
+
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported. 
+
+< Audio Setting Utility >
+(Added in Release 200.002)
+- In the multi microphone mode, cellAudioInRegisterDevice() is executed with 
+  an audio input device type preferred by the application specified to the 
+  argument deviceType in order to resister the audio input device into 
+  the system.
+  When cellAudioInRegisterDevice() is called, the system software 
+  automatically assign a device number regardless of whether a matching audio 
+  input device is found or not. Whether the audio input device that has the 
+  device number is available or not can be checked through polling using 
+  cellMicIsAttached() of limbic or an event notification from libmic. 
+
+  Since a device number is automatically assigned as described above, 
+  when multiple USB devices(audio input device) of the type that the game 
+  application prefers are connected to PLAYSTATION(R)3, which device being 
+  connected to a USB port has which device number cannot be uniquely identified.
+  In such case, a user interface should be implemented to identify it such as 
+  by displaying an indicator (volume) or the like on the screen.
+  Note that a mechanism that can explicitly assign a device number to 
+  a specific device will be provided in the future release.
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace 
+  on the program that is linked with libperf.a of SDK170 or before, 
+  it does not work on the target system that is updated to SDK 180 and later.
+  (applicable to libperf/ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+----------------------------------------------------------------------
+BD Emulator (HDD)
+----------------------------------------------------------------------
+- When using the BD emulator on Windows, dtcfsutil.exe does not operate 
+  on the msys. Please use dtcfsutil.exe on the command prompt. 
+  There is no problem when using the BD emulator on Linux.
+  Also note that the above restriction is applied when formatting the 
+  HDD format for the BD emulator.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical 
+  character codes when vertical character displacement is performed 
+  internally.
+  To avoid this problem, directly specify the vertical character codes 
+  or use the single-byte () and {}.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- When connecting or disconnecting a device to a USB port of the 
+  machine body, other USB devices already connected may be 
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB 
+  ports of the machine body.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with 
+  sys_memory_container_create(), an ID that is the same as that of 
+  the memory container that has already been allocated is returned 
+  for a new memory container. When this occurs, the older memory 
+  container may not be destroyed with sys_memory_container_destroy() 
+  and may not be retrieved by the system even at the time of game 
+  process termination. 
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created 
+  with a game process at the same time is less than 10. 
+
+- The PPU program whose stack size is set to 4KB by 
+  SYS_PROCESS_PARAM can not be executed because a DSI occurs before
+  the main function is called. 
+
+  [Workaround]
+  Please set the stack size of a Primary PPU Thread to 8 KB or more.
+
+(Added in Release 200.002)
+- When a target address of a page fault notification is passed to the 
+  system call to which a process address should have been passed as an 
+  argument and a page fault occurs, the kernel may be corrupted if the 
+  process is ended without recovering the thread. 
+
+  [Workaround]
+  Map the target address page, recover the PPU thread using 
+  sys_ppu_thread_recover_page_fault(), and then end the process.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+(Added in Release 200.002)
+- When the SNC compiler is in use and gcm_implementaion_sub.h is 
+  included, a compiler error 1045-D occurs.
+  The compiler error can be avoided by applying either of the followings:
+
+  1. Add the compile option --diag_suppress=1045
+  2. Add the following to the beginning of gcm_implementaion_sub.h
+         #ifdef __SNC__
+           #pragma diag_suppress=1045
+         #endif
+
+(Added in Release 200.002)
+- When outputting a graphics error, an offset value of the tiled area on 
+  the main memory cannot be displayed correctly.
+
+(Added in Release 200.002)
+- When cellGcmMapMainMemory() returns CELL_GCM_ERROR_NO_IO_PAGE_TABLE, 
+  and if cellGcmSortRemapEaIoAddress() is called having the lightweight mutex 
+  unlocked, an error occurs due to the lightweight mutex lock. 
+  This bug will be fixed in SDK210.
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- The windows version of libgcm_tool is available only with VisualStudio2005. 
+  Also note that the sample project file is created using VisualStudio2005.
+  Both the library and the sample are not compliant with VisualStudio2003.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+(Added in Release 200.002)
+- (B#41083) PPU
+  From SDK200 onwards, although fflush(NULL) is successfully completed, 
+  0 is not returned.
+  To avoid this problem, specify each stream to the argument and call 
+  fflush.
+
+(Added in Release 200.002)
+- (B#42013) PPU
+  memcpy16() that has been added to SDK200 does not work correctly 
+  when the copy size is less than 128 bytes.
+
+- If the following compile options are specified when compiling 
+  a program on the PPU side, many warnings may be output. 
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs 
+  if -fsingle-precision-constant is specified as the compile option. 
+
+- When including the system header, include it outside extern "C" or 
+  extern "C++". 
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C". 
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below: 
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- When starting up a program in which <iostream> is included, the constructor 
+  of iostream will call the new operator. When you want to avoid calling 
+  "new" before executing the main function, do not use iostream.
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+  * If atexit function is used in a C++ global constructor, the behavior 
+    is different from the C++ standard.  All the registered functions are 
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their 
+  instances in ELF, and pass the pointers to them to PRX.  If they are 
+  created in PRX, a DSI (data storage interrupt) may occur in function 
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be 
+  destroyed.  SPU ABI allows accessing memory at negative offsets from 
+  stack pointer up to -2000 as well as positive offsets, but using 
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf 
+  functions, etc.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+(Added in Release 200.002)
+- When playing back a PAMF file, few frames(1 to 3 frames) at the end of 
+  a stream cannot be obtained.
+
+- Only the playback of a MP4 file that is created by the recording utility 
+  and is placed on the built-in HDD is guaranteed. Do not embed a source code 
+  that plays back other types of MP4 file in the application.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs task>
+- When the SPURS task calls the synchronization object and the following 
+  conditions are met, an undefined behavior may be observed:
+
+  - Conditions for entering into the WAIT state are met.
+  - The context storage space is set but the LS pattern is not included 
+    in the stack area.
+
+  When the above conditions are met, CELL_SPURS_TASK_ERROR_STAT is returned 
+  and the state of the synchronization object is corrupted. As a result, 
+  when this synchronization object is called afterwards the behavior 
+  will be undefined. 
+  Also, if the caller SPURS task calls an interface that enters into 
+  the WAIT state after receiving this error, the behavior will be undefined. 
+
+(Added in Release 200.002)
+- (B#42842)
+  When cellSpursEventFlagWait() is called from the PPU thread, an infinite 
+  loop may occur within the function.
+  This problem may occur when the following conditions are all met at the time 
+  of (3).
+
+  (1) CELL_SPURS_EVENT_FLAG_ANY2ANY is specified to the fourth argument 
+      "direction" of cellSpursEventFlagInitialize() and a SPURS event flag is 
+      initialized.
+
+  (2) cellSpursEventFlagWait() is called for the SPURS event flag described 
+      in (1) so the SPURS task is in a wait state.
+
+  (3) cellSpursEventFlagWait() is called for the SPURS event flag described 
+      in (1) from the PPU thread, but the release condition from the wait 
+      state is not met.
+
+<libspurs Core>
+(Added in Release 200.002)
+- (B#43285)
+  spu_printf_initialize(), a function newly added to SDK200, can not be used 
+  with SPURS because if spu_printf_attach_group() or spu_printf_attach_thread()
+  is executed for SPURS, the processing will fail. Please use spu_printf() in 
+  SPURS as before. 
+  This problem will be fixed in SDK 210. 
+
+----------------------------------------------------------------------
+dt Command
+----------------------------------------------------------------------
+(Added in Release 200.002)
+- When boot=dbg is set using a dtcparam that is provided in SDK192 or 
+  before and the boot parameter is displayed using the dtcparam command 
+  in SDK 200, boot=unknown is displayed. Reset boot=dbg using the 
+  dtcparam command in SDK 200.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- Restrictions on the USB Video Class (UVC) Camera
+  1. Does not support a UVC camera that is not compliant with the UVC 
+     even though it is USB 2.0 compliant. 
+  2. Does not support a camera that has no streaming function.
+  3. Does not support a camera that is connected via the USB 1.1 hub.
+  4. Does not support the mirror function. 
+  5. Support only a single camera.
+  6. EyeToy USB Camera(for PlayStation 2) is given a higher priority 
+     when it is connected. 
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+(Added in Release 200.002)
+- Multiple Bluetooth(R) microphones/headsets are not supported due to
+  Bluetooth(R) device registration limitation.   
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+- It may fail to make a connection with Internet Explorer 6.0.
+
+- Passive transfer mode (PASV) is currently not supported.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz) 
+  can cause noise.
+
+(Added in Release 200.002)
+- I3DL2 reverb DSP has a problem with the initalization of the I3DL2 reverb 
+  memory.
+  Please call memset with a value of 0 on the 16-byte aligned memory allocated 
+  before being passed to the cellMSFXI3DL2Init() function.
+

@@ -1,0 +1,1053 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 270.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの不具合修正を記述します。
+
+  - Release 270.001 の不具合修正
+
+======================================================================
+Release 270.001 の不具合修正
+======================================================================
+----------------------------------------------------------------------
+NP シグナリングユーティリティ
+----------------------------------------------------------------------
+- NAT Type 3 の同一ルータに複数台接続した端末間で同時にシグナリングの
+  アクティベーションを行った場合にコネクションの設立に失敗する問題を修正
+  しました。
+
+----------------------------------------------------------------------
+NPマッチング2ユーティリティ
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - sceNpMatching2SignalingGetPingInfo() は指定した
+    ルームID のルームオーナーに対する RTT を取得する関数
+    です。しかし、ルームオーナーが NATタイプ1、もしくは 
+    NATタイプ2 であっても、外部ネットワークから直接アクセス
+    可能な場合を除いて、ほとんどのケースで関数からタイム
+    アウトエラー(SCE_NP_SIGNALING_ERROR_TIMEOUT)が返る
+    不具合があります。
+   （技術情報ID:200810-16  https://ps3.scedev.net/technotes/view/820）
+
+  - ルームオーナーが他のルームメンバを対象にして 
+    sceNpMatching2SetRoomMemberDataInternal() を呼ぶと、
+    NP マッチング 2 ユーティリティ内部で、対象のルームメンバ
+    ではなく、ルームオーナーに設定が反映される不具合が
+    あります。
+   （技術情報ID:200810-19  https://ps3.scedev.net/technotes/view/823）
+
+  - 誰も参加していないロビーに 2人のユーザが同時に参加を試みると、
+    片方のユーザが無効なロビーに参加してしまう不具合があります。
+   （技術情報ID:200811-19  https://ps3.scedev.net/technotes/view/847）
+
+  - ゲームアプリケーションにて sceNpMatching2JoinRoom() が
+    実行されると、NP マッチング 2 ユーティリティは、ルームへの
+    参加処理の結果をリクエストコールバック関数に通知します。
+    ルームへの参加処理に成功した場合、NP マッチング 2 ユーティリティ
+    内部では、リクエストコールバック関数に処理の結果を通知した後、
+    NP マッチング 2 ユーティリティの更新情報をサーバーへ送信して
+    います。
+    通常更新情報の送信処理は速やかに完了しますが、送信する前に
+    サーバとの接続が途絶えた場合、sceNpMatching2ContextStop() を
+    呼び、NP マッチング 2のコンテキストを停止するとクラッシュします。
+    (技術情報ID:200901-05  https://ps3.scedev.net/technotes/view/863)
+
+  - PLAYSTATION(R)3（Reference Tool/Debugging Station 含む）の
+    起動時などネットワークに接続した際、システムが IPアドレスの
+    取得を行い、その後 STUN による NAT 情報の取得を行って
+    います。
+    STUN による NAT 情報取得に失敗した場合、以下の NP 
+    マッチング 2 ユーティリティを呼ぶと、リクエスト
+    コールバック関数に 0x800223d4 のエラーが通知されます。
+
+    - sceNpMatching2CreateJoinRoom()
+    - sceNpMatching2JoinRoom()
+    - sceNpMatching2SetRoomDataExternal()
+    - sceNpMatching2SearchRoom()
+     （SCE_NP_MATCHING2_SEARCH_ROOM_OPTION_NAT_TYPE_FILTER 利用時）
+
+    0x800223d4 のエラー通知を受けた場合、sceNpMatching2DestroyContext()
+    を呼んでもコンテキストは廃棄されず、sceNpMatching2Term2() 
+    を呼ぶとハングアップします。
+    (技術情報ID: 200901-07  https://ps3.scedev.net/technotes/view/865)
+
+  - 下記のNP関数はゲームアプリケーションに呼び出されてから終了するまでの
+    間、システムの終了処理を遅延させます。下記の関数が終了するまで、シス
+    テムは終了処理を完了させることができません。
+    - sceNpMatching2ContextStart()
+    (技術情報ID: 200901-08  https://ps3.scedev.net/technotes/view/866)
+
+  - samples\sdk\network\np\np_matching2\np_gui_matching2 
+    サンプル内に、ルームメンバ退室時にメモリリークが発生する
+    不具合が含まれています。
+   （技術情報ID:200902-05  https://ps3.scedev.net/technotes/view/871)
+
+  - ユーザがルームオーナーで、且つオーナー権限が移譲されない
+    状況にて、sceNpMatching2LeaveRoom() の関数を繰り返し
+    呼ぶと、システムがクラッシュ、ハングアップ、もしくは
+    NP マッチング 2 ユーティリティがエラーを返す可能性が
+    あります。
+   （技術情報ID:200902-09   https://ps3.scedev.net/technotes/view/875)
+
+  - sceNpMatching2AbortRequest() を呼び、関数から 0(正常終了)が
+    返る場合に、メモリリークが発生する問題があります。
+   （技術情報ID:200903-03  https://ps3.scedev.net/technotes/view/882）
+
+----------------------------------------------------------------------
+NPタイトルユーザストレージユーティリティ
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - TUS データを取得する以下の関数を初めて呼び出す際、引数 recvSize に
+    3 * 1024 Bytes を超える値を指定すると、TUS サーバにデータが設定
+    されていないと関数から通知される不具合があります。
+     sceNpTusGetData()
+     sceNpTusGetDataVUser()
+     sceNpTusGetDataAsync()
+     sceNpTusGetDataVUserAsync()
+   （技術情報ID:200902-13  https://ps3.scedev.net/technotes/view/879）
+
+- TUSの以下の関数のプロトタイプ宣言で、引数slotIdArrayにconst修飾子が
+  付いていない点を修正しました。
+
+  [cell\target\ppu\include\np\tustorage.h]
+  sceNpTusGetMultiSlotVariableAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusDeleteMultiSlotDataAsync()
+
+----------------------------------------------------------------------
+NP DRMユーティリティ
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - --no-entitlement オプションを用いて作成した「権利が
+    消失した NPDRM パッケージ」をシステムソフトウェアにて
+    インストールした後、システムソフトウェア、もしくは 
+    NP DRM ユーティリティから NPDRM ファイルにアクセス
+    すると、本来返るべきではない 
+    SCE_NP_DRM_ERROR_UNKNOWN_VERSION(0x8002951a) のエラーが
+    返る不具合があります。
+   （技術情報ID:200811-06  https://ps3.scedev.net/technotes/view/832）
+
+----------------------------------------------------------------------
+NPトロフィーユーティリティ
+----------------------------------------------------------------------
+- トロフィーアンロックの処理を優先度の高いスレッドで行っていましたため、
+  ゲームアプリケーションが使えるCPUタイムに影響がありました。
+  270から優先度の低いスレッドでトロフィーの処理を行うように変更しました。
+
+- 以下の不具合を修正しました。
+
+  - sceNpTrophyRegisterContext() の呼び出し時に行われるトロフィー
+    セットバージョンの判定処理に不具合があります。その為、
+    HDD にインストールされたトロフィー設定情報のトロフィーセット
+    バージョンとそれよりも前のバージョンのトロフィー設定情報を
+    比較すると、SCE_NP_TROPHY_ERROR_ILLEGAL_UPDATE(0x8002292A) の
+    エラーが返ることがあります。
+    (技術情報ID:200901-04  https://ps3.scedev.net/technotes/view/862)
+
+- (B#66828)
+  sceNpTrophyRegisterContext()などのトロフィーAPIを呼び出し中に
+  ゲームアプリケーション側のPPUスレッドの負荷が高いときにシステムが
+  クラッシュすることがある不具合を修正しました。
+  (技術情報ID: 200901-08  https://ps3.scedev.net/technotes/view/866)
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- (B#65736)
+  cellHttpRequestSetChunkedTransferStatus()において、POSTを
+  チャンクエンコーディング通信を使用して行なった際に
+  チャンクサイズが間違っている場合、POSTが成功しないという
+  不具合を修正しました。 
+
+----------------------------------------------------------------------
+システムソフトウェア
+----------------------------------------------------------------------
+<コアダンプ機能>
+- 以下の不具合を修正しました。
+
+  (B#62250)
+  - コアファイル内に記録されるSPUスレッドレジスタ情報のFPSCR
+    (Floating Point Status and Control Register)の値が16バイト中、
+    下位4バイトのみ記録される。
+
+----------------------------------------------------------------------
+システムユーティリティ
+----------------------------------------------------------------------
+<PLAYSTATION(R)Home連携ユーティリティ>
+- samples\sdk\sysutil\gameexec\graphics.c において、cellGcmSetViewport()に
+  渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<システムキャッシュユーティリティ>
+- samples\sdk\sysutil\syscache\main.c において、cellGcmSetViewport()に
+  渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<ディスク起動ゲームユーティリティ>
+- samples\sdk\sysutil\discgame\discchange\main.c
+  samples\sdk\sysutil\discgame\getbootdiscinfo\main.cにおいて、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<ゲームデータユーティリティ>
+- samples\sdk\sysutil\gamedata\main.c において、cellGcmSetViewport()に
+  渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<HDD起動ゲームユーティリティ>
+- samples\sdk\sysutil\hddgame\basic\main.c
+  samples\sdk\sysutil\hddgame\makedir\main.cにおいて、cellGcmSetViewport()に
+  渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<ゲームコンテンツユーティリティ>
+- samples\sdk\sysutil\gamecontent\graphics.c において、cellGcmSetViewport()に
+  渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- (B#67558)
+  ProDG Target Manager for PLAYSTATION(R)3 にて、「ターゲット」->
+  「実行ファイルのロードと実行」->「モジュールのロード」ウィンドウ内で
+  オプション「デバイスからロード」を選択して/app_home上の実行ファイルを
+  起動した場合の以下の不具合を修正しました。
+
+  条件：
+  - アクセス準備関数にcellGameBootCheck()を使用
+  - 設定列 -> Debug Settings -> GameContentUtil Boot Path (Debugger) メニュー
+    に「For Development」を指定
+  症状：
+  cellGameContentPermit()で得られる contentInfoPath、usrdirPathに正しい
+  パスが設定されない問題
+
+  この修正により、これまで同条件でusrdirPathに「/app_home」しか設定されなかった
+  部分が「/app_home/(windows上における起動バイナリのディレクトリパス)」
+  に修正されます。
+
+<ストレージデータユーティリティ>
+- (B#65125)
+  samples\sdk\sysutil\storagedata\main.c の784行目に関して、変数の初期化漏れを
+  修正しました
+  [SDK250まで]
+        unsigned int fsize;
+  [SDK270から]
+        unsigned int fsize = 0;
+
+<コンテンツ検索ユーティリティ>
+- (B#66540)
+  cellSearchFinalize()を呼ばずにゲームを終了した後、電源を切らずに
+  再度cellSearchInitialize()を呼んだ場合、
+  CELL_CONTENT_SEARCH_ERROR_ALREADY_INITIALIZEDのエラーが返るという
+  不具合を修正しました。
+
+<セーブデータユーティリティ>
+- 以下の不具合を修正しました。
+
+  - セーブデータに含まれる保護ありデータファイルの数に比例して
+     特定の処理に必要な時間が増加します。
+   （技術情報ID:200811-01  https://ps3.scedev.net/technotes/view/827)
+
+  - セーブデータユーティリティ利用時、特定の条件下においてセーブデータ内に
+    存在するファイルのリストアップが不十分となり、CellSaveDataStatGet構造体の
+    メンバ変数fileNum、sizeKBに誤った値が格納される不具合があります。
+   （技術情報ID:200903-05  https://ps3.scedev.net/technotes/view/884)
+
+<ゲームアップデートユーティリティ>
+- samples\sdk\sysutil\gameupdate\main_patch.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\sdk\sysutil\gameupdate\main.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\sdk\sysutil\gameupdate_system\main_patch.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\sdk\sysutil\gameupdate_system\main.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<フォトユーティリティ>
+- 以下の不具合を修正しました。
+
+  - cellPhotoDecodeInitialize() のデコード用メモリコンテナを指定する
+    引数 container2 に2MB以下のメモリコンテナを指定して関数を呼び出すと、
+    デコードに必要なメモリコンテナのサイズが2MB以下で十分な場合でも、
+    無条件に CELL_PHOTO_DECODE_ERROR_PARAM を返してデコード機能の初期化に
+    失敗する不具合があります。
+   （技術情報ID:200810-17  https://ps3.scedev.net/technotes/view/821）
+
+<システムBGM>
+- 以下の不具合を修正しました。
+
+  - システムBGMを再生し、
+    cellSysutilEnableBgmPlayback()とcellSysutilDisableBgmPlayback()を
+    短い間隔で繰り返し呼び出してシステムBGMを再開する場合、
+    以下の問題が起こります。
+    1. システムBGMが再開されません。
+    2. システムBGMの再開が曲の先頭から再生されます。
+
+<ミュージックデコードユーティリティ>
+- 以下の不具合を修正しました。
+
+    - デコード中に、CELL_MUSIC_DECODE_CMD_NEXT もしくは 
+      CELL_MUSIC_DECODE_CMD_PREV コマンドを発行すると、次 もしくは 
+      前の曲に正常に移行しないことがある。
+    - 特定の曲を使用した場合に、LPCMデータを取得できない。
+   （技術情報ID:200810-13  https://ps3.scedev.net/technotes/view/817）
+
+    - コンテンツデコード中にシャッフルまたはリピートモードを変更すると
+      再生が停止する。
+    - cellMusicDecodeRead() にて取得したLPCMの開始時間が正しくない。
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#66371)
+    システムソフトウェア 2.50 にて、カーネルワークエリア内に
+    蓄積された送受信のパケット総数が 180 程度に到達すると、
+    送信パケットが破棄される問題があります。
+   （技術情報ID:200902-04  https://ps3.scedev.net/technotes/view/870)
+
+- (B#66492)
+  SOCK_DGRAM_P2P で作成した socket に対して、bind() を呼び出し 
+  SYS_NET_EADDRINUSE が返ってきた後、引き続き sin_vport に違う値を
+  指定したなど正常に bind() 可能であっても SYS_NET_EINVAL が返ってくる
+  不具合を修正しました。
+
+----------------------------------------------------------------------
+libpamf
+----------------------------------------------------------------------
+- samples\sdk\codec\pamf_list
+  - (B#60447)
+    SN コンパイラでのコンパイル時に警告が表示されていた点を修正しました。
+
+----------------------------------------------------------------------
+libvdec
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - AVCデコーダにおいて、cellVdecStartSeqの発行直後にcellVdecDecodeAuを
+    連続して発行した場合に、CELL_VDEC_ERROR_BUSYが不正に返りうる問題が
+    ありました。
+
+    詳細：
+    具体的には、CellVdecAttrのcmdDepthで表されるcellVdecDecodeAuの
+    最大連続発行可能回数である4に満たない段階でCELL_VDEC_ERROR_BUSYが返る
+    という問題です。
+    ただし、この問題が発生しうる条件はcellVdecStartSeqの発行直後の1フレーム
+    程度の時間内にcellVdecDecodeAuを極めて短期間に連続発行した場合に
+    限られます。
+
+    回避策：
+    本件の問題は、エラーコードCELL_VDEC_ERROR_BUSYが返った場合に、
+    cellVdecDecodeAuを再度発行する仕組みを実装することで回避することが
+    出来ます。
+
+----------------------------------------------------------------------
+C/C++標準ライブラリ 
+----------------------------------------------------------------------
+- (B#49602) PPU
+  - 以下の不具合を修正しました。
+
+    SDK220から、math.hのSIMD数値演算関数である、cbrtf4とcbrtf4fastに
+    不具合があり、SDK210以前と同じ結果を返しません。
+
+    例:
+    vec_float4 vf = (vec_float4){1.73e-2f, 3.0f, 27.0f, FLT_MAX};
+    printf("%vf\n", cbrtf4(vf));
+
+    SDK210以前の結果: 0.258632  1.442249  3.000000  6981462523904.000409
+    SDK220以降の結果: 0.258681  1.372409 -5.020100  nan
+
+- (B#59235) PPU
+  以下のマクロが定数として定義されていなかった不具合を修正しました。
+    - HUGE_VAL
+    - HUGE_VALF
+    - HUGE_VALL
+    - INFINITY
+    - NAN
+
+- (B#63487) PPU
+  libcs.a の memcmp() において、比較したメモリ領域の値が異なっている
+  にもかかわらず、誤って 0 を返すことがあった不具合を修正しました。
+  詳細は、技術情報200811-04を参照してください。
+  https://ps3.scedev.net/technotes/view/830
+
+- (B#63772) PPU
+  libcs.a の以下の関数において、返り値の符号が反転してしまうことが
+  あった不具合を修正しました。
+    - strcmp()
+    - strncmp()
+    - strcasecmp()
+    - strncasecmp()
+
+- (B#61263) PPU
+  fwrite()とfflush()の後では、fread()が正しくデータを読めないという
+  不具合を修正しました。
+
+- (B#61757) SPU
+  C++でmath.hをincludeしたとき、abs()をstd::をつけずに使えないという
+  不具合を修正しました。
+
+- (B#61781) PPU
+  C++でmspace.hをincludeしたとき、mspace_reallocalign()をstd::をつけずに
+  使えないという不具合を修正しました。
+
+- (B#61785) PPU
+  C++でstdlib.hをincludeしたとき、構造体malloc_managed_sizeをstd::をつけずに
+  使えないという不具合を修正しました。
+
+- (B#62924) PPU/SPU
+  マクロLONG_MAXの値がlong型でないという不具合を修正しました。
+
+- (B#62925) PPU/SPU
+  C++でオーバーロードされた関数abs()とdiv()がstdlib.hで定義されていないという
+  不具合を修正しました。
+
+- (B#55766) PPU/SPU
+  atof(), strtod()関数で、例えば"1.625e300"を変換すると、
+  浮動小数点定数1.625e300と同じ値にならないという不具合を修正しました。
+  また、atoff(), strtof(), wcstod(), wcstof()関数の同様の不具合を修正しました。
+
+- (B#65502) PPU/SPU
+  STLコンテナが適切なアラインメントで確保されない不具合を修正しました。
+  この修正により、アラインメント版のoperator newが呼び出されるように
+  なったため、自前のoperator newを使用している場合には、注意が必要です。
+  詳細は、技術情報200903-11を参照してください。
+  https://ps3.scedev.net/technotes/view/890
+
+- (B#66582) PPU
+  main()からのreturn、またはexit()か_Exit()の呼び出しの後で、
+  全FILEストリームを閉じる間にゲームプロセスがクラッシュする場合が
+  あるという不具合を修正しました。
+
+- (B#66763) PPU/SPU
+  プログラムがassert.hを2回以上includeしているときに、GCCに-Wsystem-headersと
+  -Wredundant-declsを指定すると、冗長な宣言についての警告が表示されるという
+  不具合を修正しました。
+
+- (B#66537) PPU
+  memcpy()の第2引数 s2 として、4バイトアラインではない
+  RSX(R)ローカルメモリのアドレスを指定すると、memcpy()の内部で
+  アラインメント例外が発生することがあった不具合を修正しました。
+
+- (B#63312) PPU
+  -mprx-with-runtimeを指定した場合で、以下のマクロ定義が存在しない場合に、
+  PRXのスタートアップルーチンがクラッシュするという不具合を修正しました。
+  SYS_MODULE_START
+  SYS_MODULE_STOP
+  SYS_MODULE_EXIT
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#61755)
+  トリックプレイのモードを高速に切り替えた場合にまれに再生が停止する
+  問題を修正しました。
+
+- 以下の不具合を修正しました。
+
+  - (B#64881)
+    CellSailDescriptor破棄後に、libsailのスレッドがハングアップすることが
+    あります。
+   （技術情報ID:200812-02  https://ps3.scedev.net/technotes/view/850）
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+- cellFaceDetection() と cellFaceDetectionFrontal() において、
+  メインメモリ上の画像バッファ領域を最大2ライン分オーバーしてSPU側から
+  readアクセスする可能性があり、その領域がSPU側からのアクセス禁止領域
+  である場合に問題となるという不具合を修正しました。
+
+- cellFaceParts() と cellFacePartsAttribute() において、目・鼻・口の
+  検出位置精度が向上しました。
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#60514)
+    Disc Eject時の処理に時間がかかってしまうことがあります。
+   （技術情報ID:200812-01 https://ps3.scedev.net/technotes/view/849）
+
+  - (B#61990, B#61012)
+    CFS(SYS_DEV_HDD0)、DISCFS、HOSTFSにおいてcellFsGetDirectoryEntries()と
+    cellFsRead()/cellFsWrite()などの読み書きを同じマウントポイントに対して
+    同時に行なった場合に読み込み、書き込みデータが壊れる問題がありました。
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- (B#63883)
+  優先度継承が発生している時にプロセスを終了するとカーネル内で例外する不具合を
+  修正しました。
+
+- (B#58555)
+  プロセスの終了と割り込みスレッドからのオブジェクトを生成する何らかの
+  システムコールの呼び出しが重なった場合、そのシステムコールが EABORT を
+  返す不具合を修正しました。
+
+- (B#58898)
+  sys_vm_unmap() を同時に呼ぶとカーネルがパニックすることがある不具合を
+  修正しました。
+
+- (B#61135)
+  物理メモリが 256MB以上あるシステムで、sys_vm_memory_map() の物理メモリに
+  256MB より大きな値を渡すと、カーネルがパニックする不具合を修正しました。
+
+- (B#61318)
+  物理メモリの割り当てで 1MB 以下の端数のメモリが割り当てられないことがある
+  不具合を修正しました。
+
+- (B#61665)
+  仮想メモリの統計情報のページフォルトの回数について、
+  一つのページに対して同時に複数のスレッドがアクセスして、複数回のページフォルト
+  が起きた場合、複数回としてカウントされなければならないところを1回とカウントさ
+  れることがある不具合を修正しました。
+
+- (B#62660)
+  sys_vm_sync() が待ち続けることがある不具合を修正しました。
+ （技術情報ID:200810-20  https://ps3.scedev.net/technotes/view/824）
+
+- (B#65514)
+  PPUスレッドが仮想メモリ、ページフォルト通知の領域へアクセスしているときに 
+  exit() が起こった場合システムがデッドロックすることがある不具合を
+  修正しました。
+
+- (B#66033)
+  仮想メモリ領域へのアクセス中に sys_vm_unmap() を行うとカーネルがパニック
+  することがある不具合を修正しました。
+
+- samples\sdk\lv2\vm_and_webbrowser\vm_and_webbrowser.ppu.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- (B#60452)
+  samples\sdk\usbd\usbhphone
+  samples\sdk\usbd\usbmouse
+  サンプル終了時、shutdown sequence timed outが発生してしまう
+  不具合を修正しました。
+
+- 以下の関数において、Video Class(BaseClass=0Eh)のデバイスを拡張LDDとして
+  登録しても、probe()が呼び出されない不具合を修正しました。
+  - cellUsbdRegisterExtraLdd()
+  - cellUsbdRegisterExtraLdd2()
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- アクセスするファイル総数が極端に多い場合でも、パス名を保持するための
+  メモリ量が増えないように修正しました。fios_parameter の sharedPath 
+  に false を指定し、FIOSInit() により FIOS を初期化してください。
+ （技術情報ID:200811-02  https://ps3.scedev.net/technotes/view/828）
+
+- Blu-ray disc イジェクトの際、cell::fios::ps3media に対するコールバッ
+  ク関数が必要ないように、デフォルトの振る舞いを改善しました。コールバッ
+  ク関数がすでに実装されている場合でも、コードの修正は必要ありません。
+ （技術情報ID:200901-02  https://ps3.scedev.net/technotes/view/860）
+
+- サンプルプログラムにおいて、誤ってオペレーションを2回解放している点を
+  修正しました。
+ （技術情報ID:200811-05  https://ps3.scedev.net/technotes/view/831）
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#67152)
+  SPU側のcell::Fiber::Ppu::Util::Runtime::wakeup()メソッドが
+  呼び出された際に複数のワーカーPPUスレッドが待ち状態にいた場合、
+  1PPUスレッド以外は起こさず、他のワーカーPPUスレッドが
+  以後待ち状態になり続ける不具合を修正しました。
+
+- (B#63707)
+  samples\sdk\fiber\advanced\function_offload_tutorial\3_offload_to_spu
+  samples\sdk\fiber\advanced\function_offload_tutorial\4_gather_functions
+  タイミングによりハングアップする場合がある不具合を修正しました。
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libovis> 
+- (B#58056)
+  リンカスクリプトのフォーマットを最新のツールチェーン用に
+  更新しました。
+  これにより libovisと -mspurs-task リンカオプションの併用が
+  可能になりました。
+ （技術情報ID:200811-12  https://ps3.scedev.net/technotes/view/839）
+
+<libswcache>
+- (B#67087)
+  DefaultCacheのディレクトリ(16wayセットアソシアティブ)で同一のハッシュ値の
+  スロットが一杯になったときに、参照カウントがゼロのエントリを解放せず
+  再利用していない不具合を修正しました。
+
+- (B#65624)
+  cell::swcache::Variableテンプレートクラスのテンプレート引数に
+  const付きの型を指定するとコンパイルエラーになる不具合を修正しました。
+
+- (B#63694)
+  CELL_SWCACHE_PATCH_XXXマクロを使用した際にコンパイル後のコードサイズが
+  SDK240に比べて大きくなってしまう不具合を修正しました。
+
+- (B#67339)
+  PointerクラスやPatchObjectクラスでDefaultCacheを使用している場合に、
+  SPU上で一旦確保したキャッシュオブジェクトをアクセスせずに解放した場合に
+  タイミングによりデータ破壊を起こす場合がある不具合を修正しました。
+ （技術情報ID:200902-10  https://ps3.scedev.net/technotes/view/876）
+
+<libspudll>
+- (B#66282)
+  リンクタイプがR_SPU_NONEのリンクが出来ない不具合を修正しました。
+
+<libspurs ジョブ>
+- (B#63778)
+  ジョブストリーマでジョブのジョブディスクリプタに
+  CELL_SPURS_JOB_TYPE_MEMORY_CHECKを指定した場合にリードオンリーデータが
+  メインメモリからローカルストレージに転送されるとき指定したサイズより16
+  バイト大きな領域が転送される不具合を修正しました。
+
+- (B#66585)
+  ジョブディスクリプタのDMAリストサイズを0に指定し、入力バッファのサイズを
+  0以外を指定すると、ジョブ実行時に確保された入力バッファのアドレスの
+  下位4ビットにゴミが乗る場合がある不具合を修正しました。
+
+- (B#61734)
+  cellSpursCheckJob()を呼ぶ際、CELL_SPURS_JOB_TYPE_MEMORY_CHECK を
+  セットしたジョブディスクリプタを引数に指定すると、誤って
+  CELL_SPURS_JOB_ERROR_MEMORY_SIZEを返す場合がある不具合を修正しました。
+
+<libspurs ジョブキュー>
+- (B#63108)
+  ジョブキューでCELL_SPURS_JOBDESCRIPTOR_ERROR_CHECKマクロを
+  #defineするとコンパイルエラーになる不具合を修正しました。
+  また、CELL_SPURS_JOBQUEUE_ERROR_CHECKマクロを廃止しました。
+
+- (B#63693)
+  ジョブキューでジョブのジョブディスクリプタに
+  CELL_SPURS_JOB_TYPE_MEMORY_CHECKを指定したジョブが実行されたとき
+  cellSpursJobMain2,cellSpursJobQueueMainの引数で渡されるジョブディスク
+  リプタの入力・入出力バッファのサイズが指定したサイズより16バイト小さく
+  なる不具合を修正しました。
+
+- (B#62810)
+  SPUからcellSpursJobQueueSendSignal()を用いてジョブキュージョブに
+  シグナルを送った際、以下の条件の場合にシグナルを送られたジョブが
+  正しく実行されない不具合を修正しました。
+
+  条件：
+  ジョブキューがとまっていて、かつ、その後ジョブが投入されない場合
+
+- (B#62825)
+  SPU側のcellSpursJobQueueOpen()を複数のSPUから同時に呼び出すと
+  タイミングによっては不正なジョブキューハンドルが返される
+  不具合を修正しました。
+
+- (B#63382)
+  SPU側のcellSpursJobQueueClose()が正しくジョブキューハンドルを
+  開放していない不具合を修正しました。
+
+- (B#63259)
+  以下のジョブキューインタフェースにおいて引数のエラーチェックが
+  多数抜けている不具合を修正しました。
+
+  PPU側インタフェース:
+  JobQueue::create(), cellSpursCreateJobQueue()
+  - pJobQueue, pCommandList
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  cellSpursJobQueueSemaphoreInitialize()
+  - pSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - pJobQueue
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  cellSpursJobQueueSemaphoreAcquire()
+  - pSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - count
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  JobQueue::push(), cellSpursJobQueuePush()
+  - pJob
+    CELL_SPURS_JOB_ERROR_NULL_POINTER
+
+  JobQueue::pushFlush(), cellSpursJobQueuePushFlush()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueClose()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  JobQueue::join(), cellSpursJobQueueJoin()
+  - exitCode
+    CELL_SPURS_JOB_ERROR_NULL_POINTER
+
+  SPU側インタフェース:
+  cellSpursJobQueuePush()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueSemaphoreAcquire()
+  - eaSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - count
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueuePushFlush()
+  - eaJobQueue
+    CELL_SPURS_JOB_ERROR_ALIGN
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueClose()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortConainer::push(), cellSpursJobQueuePortPush()
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::sync(), cellSpursJobQueuePortSync()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  PortContainer::pushFlush(), cellSpursJobQueuePortPushFlush()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::copyPush(), cellSpursJobQueuePortCopyPush()
+    CELL_SPURS_JOB_ERROR_PERM(bufferなしのとき）
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::finalize(), cellSpursJobQueuePortFinalize()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  PortContainer::initializeWithDescriptorBuffer(), cellSpursJobQueuePortInitializeWithDescriptorBuffer()
+  - numEntries
+    CELL_SPURS_JOB_ERROR_INVAL
+
+----------------------------------------------------------------------
+DECI3 CTRLP
+----------------------------------------------------------------------
+- host-common\samples\ctrlp
+  Visual Studio 2008でビルドする際に表示される警告を取り除きました。
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- samples\sdk\mic\feedback\common.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\sdk\mic\multimics\common.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\sdk\mic\feedback_dbgoutput\common.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+- samples\sdk\voice\Common\common.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+tutorial サンプル
+----------------------------------------------------------------------
+- samples\tutorial\performance_tips\SpuPostProcess\MotionBlur\render\surfUtil.cpp において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- samples\tutorial\SpuGeometricProcess\lib\fwgcm_customized\FWGCMApplication.cpp
+  において、
+  cellGcmSetViewport()に渡すパラメータの計算式の間違いを修正しました。
+  (誤) offset[1] = h - y + scale[1];
+  (正) offset[1] = y + h * 0.5f;
+ （技術情報ID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#60414)
+    cellCameraRead()を呼び出し、カメラから画像データを読込む際、
+    カメラを抜き差しすると呼び出し元にすぐに戻らない遅延が発生します。
+    また、cellCameraStart() の呼び出し直後にcellCameraRead()を呼び出すと
+    同様の遅延が発生します。
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#66086)
+    システムソフトウェアのコントローラ自動電源オフ機能により、
+    cellPadLddRegisterController()を用いて登録した仮想コントローラが
+    システムから削除される。
+   （技術情報ID:200902-11 https://ps3.scedev.net/technotes/view/877）
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- バーテクスシェーダで、branch命令のアドレス表示が不正となることがある
+  不具合を修正しました。
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- fw_vertex_attribute サンプルにおいて、フラグメントシェーダーの
+  パラメータ取得に失敗する問題を修正しました。
+
+- fw_aniso_opt サンプルにおいて、cellGtfLoader.a に対する依存関係が
+  設定していないため、単独でビルドする際にエラーになる問題を修正しました。
+
+- (B#68063)
+  quad サンプルにおいて、フリップ毎にサーフェスクリアを行うよう修正しました。
+  またTileサイズの取得とSurfaceサイズの取得をハードウェア制限事項に沿うよう
+  修正しました。
+
+- 以下の不具合を修正しました。
+
+  - (B#62709)
+    特定の条件において libgcm のコールバック関数の呼び出し回数が不正となる
+    可能性があります。
+   （技術情報ID:200902-03 https://ps3.scedev.net/technotes/view/869）
+
+- (B#42962),(B#63876)
+  - RSX(R) エラー時のクラッシュダンプ表示がいくつか間違っていた不具合を
+    修正しました。
+  - VertexTextureControl0 の min,max の値が間違っていた不具合を修正しました。
+  - "graphics error 512"が発生した際に表示されるIOIFオフセット値が間違っていた
+    不具合を修正しました。
+
+- (B#58152)
+  SNC 250.3 以降のバージョンでは追加されたプリプロセス関数 __option() を
+  使用してコンパイラオプションに notocrestore=2 が指定されている場合は、
+  コールバックラッパー関数 cellGcmCallbackForSnc() を呼出すようマクロを
+  修正しました。
+  SNC 250.3 より以前のバージョンの場合は従来通り CELL_GCM_SNC_NOTOCRESTORE_2 
+  を宣言することで cellGcmCallbackForSnc() を呼出します。
+
+- (B#63605)
+  CELL_GCM_DEFAULT_FIFO_MODE_TRADITIONALモードの時に
+  cellGcmSetDefaultFifoSize()を呼出すとハングアップする不具合を修正しました。
+
+- (B#52722)
+  2D転送系コマンドでRSX(R)エラーが発生した際に3D描画系コマンドのエラーと
+  判断してしまい間違ったエラーメッセージを表示していた不具合を修正しました。
+  2D転送系のエラーメッセージを表示するよう修正しました。
+
+- 以下の不具合を修正しました。
+
+  - (B#65227)
+    cellGcmCgStripBranchesFromFragmentUCode()によってフラグメントプログラムの
+    マイクロコードから意図しないブランチブロックが除去される場合があります。
+   （技術情報ID:200812-05  https://ps3.scedev.net/technotes/view/853）
+
+- (B#65239)
+  SPU版cellGcmCgStripBranchesFromFragmentUCode()の最適化を行いました。
+
+---------------------------------------------------------------------- 
+vectormath
+---------------------------------------------------------------------- 
+- 以下の不具合を修正しました。 
+
+  - PPU 版 C/C++ 標準ライブラリの SIMD 数値演算関数 cbrtf4(vector float) に 
+    精度問題が見つかりました。 
+    Vectormath 関数 cbrtf(floatInVec) はこの関数を使用しているため、 
+    PPU 版で同様の精度問題があります。 
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- cellMSMP3GetFrameInfo() 実行時に構造体に返されるデータにおいて、
+  ヘッダー ID 変数が正しく設定されない不具合を修正しました。
+
+- cellMSSurroundSourceRollOff()実行時、ミューテックスが抜けているために、
+  期待しないマルチスレッド関連のエフェクトが発生する可能性があった
+  不具合を修正しました。
+
+- 初期化時に奇数のMP3ストリームとCELL_MS_DEBUG_FLAGを同時に使用すると、
+  DMA転送時にMultiStream SPUスレッドがエラーになる問題を修正しました。
+
+- simple_pitchshift サンプルにおいて、"SNC Release"ビルド時の出力ファイル
+  形式が間違って指定されていましたため、サンプルが正しくビルドできない
+  不具合がありました。
+  正しく *.self ファイルがビルドされるように修正しました。
+
+- simple_pitchshiftサンプルにおいて、コード内に pitchshift DSP を指定して
+  未割当のメモリ上で実行しようとしていた問題を修正しました（実際には3個の
+  ストリームチャンネルが使用可能なところを、8個使用する）。
+
+- simple_logging サンプルにおいて、ターゲットをシャットダウン時に
+  "Shutdown sequence timed out"というエラーが発生していた不具合を
+  修正しました。
+
+- 補助的に戻るDSPエフェクトのインスタンスにおいて、戻りアドレスに
+  NULLポインタを指定した場合、コード側もこのアドレスの使用を試み、
+  SPUクラッシュが発生する問題を修正しました。
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#56016)
+    -mcgb オプションを指定して cgb バイナリを生成する時にメモリリークが
+    発生してしまう不具合。
+
+  - (B#58429)
+    トークン連結演算子(##)を用いてマクロの引数に応じてマクロ中で
+    連結する際、以下のようなエラーメッセージが表示されてしまう不具合。
+     error C0129:invalid char 'D' in integer constant suffix
+
+  - (B#58665)
+    以下の条件に一致するとハードウェアバグを引き起こしてしまう不具合。
+     - マルチサンプリングとデプス値生成が有効
+     - r1.z または h3.zw が最後のパスで書き込まれる
+     - 最後のパスにテクスチャ命令がある
+
+    このバグを引き起こす条件が発生したら、fence と nop 命令を追加するという、
+    このバグのワークアラウンドを実装しました。
+
+  - (B#64371)
+    pow(f1,f2+1) を実行すると、f1=f2=0 の時に、0 ではなく NaN を生成して
+    しまう不具合。
+
+  - (B#65822)
+    不正にいくつかの texCoords2D フィールドビットをオフにしたフラグメント
+    シェーダをコンパイラが生成してしまう不具合。
+
+  - (B#66958)
+    シェーダがターゲットマシン上の libcgc でコンパイルされると、
+    h サフィックスを用いる浮動小数定数が0で埋められてしまう不具合。
+
+  - (B#41103)
+    未使用の CLPx 出力属性を持つバーテックスシェーダをコンパイルすると
+    cgc がクラッシュしてしまう不具合。
+
+  - (B#65738)
+    コンパイルキャプチャが時々Windows上のキャプチャパスを間違って記録する
+    不具合。
+    余計な上位ディレクトリ(../)が追加されてしまいます。
+
+  - (B#67841)
+    Cg コンパイラ 2.0 の perf サンプルスクリプトは、引用符で囲まれた
+    引数を用いたり、以下のいずれかの sce-cgc オプションを使用すると
+    シェーダコマンドライン入力の適切な構文解析に失敗してしまう不具合。
+    -po, -capture, -output
+
+  - (B#67833)
+    コンパイルキャプチャが、必ずしも指示されたスペックのハッシュを
+    計算していない不具合。
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#45883)
+    cell\samples\sdk\graphics\cgb\userclip_psgl サンプルをビルドする
+    際に警告が出力される不具合。
+
+  - (B#60474)
+    以下の Cgb サンプルにおいて、Visual Studio用プロジェクトファイル中に
+    ヘッダファイルへのリンクを含んでいるが、リンクが正しくない不具合。
+    - cell\samples\sdk\graphics\cgb\levelC\cgbLevelC
+    - cell\samples\sdk\graphics\cgb\levelC\cgnv2cgbLevelC
+
+  - (B#63777)
+    cgb フォーマットのヘッダファイルが、PPU用とSPU用の間で互換性が
+    ないという不具合。
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#60325)
+    フレームバッファオブジェクトにおいて、デプスバッファのオフセットが
+    正しく設定されていない不具合。
+
+  - (B#60326)
+    サイズを0にしてglBufferData()を呼び出すとPSGLがクラッシュして
+    しまう不具合。
+
+  - (B#63620)
+    以前削除されたマップされていたバッファと、同じサイズのバッファを
+    再割り当てする時にアサートを引き起こしてしまう不具合。
+
+  - (B#65807)
+    全ての GPUBezierTesselation 関連サンプルが、1080p と同様に
+    720 と 480 のシステム解像度をサポートしていないという問題。
+
+  - (B#65598)
+    glGetQueryObjectuivARB()の引数pnameにGL_QUERY_RESULT_AVAILABLE_ARBを
+    指定して呼び出したとき、ブロックしてしまう不具合。
+
+  - (B#66043)
+    Cg プログラムを削除するときにメモリリークが発生する不具合。
+
+  - (B#67677)
+    属性セット使用時にローカルメモリの確保と開放を大量に行うと、
+    頂点が不正になることがある。
+

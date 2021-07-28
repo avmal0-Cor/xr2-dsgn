@@ -1,0 +1,654 @@
+=====================================================================================
+SNC Migration Guide
+=====================================================================================
+
+This document describes some differences between the current GCC PPU toolchain and 
+the SNC PPU toolchain that may affect developers.  Some source code may need to be 
+changed although much effort has been put into ensuring that SNC remains as 
+compatible as possible with the GCC toolchain in order to make the process of 
+transition as smooth as possible.
+
+-------------------------------------------------------------------------------------
+0. Executive Summary
+-------------------------------------------------------------------------------------
+
+The SN Compiler (SNC) uses the industry standard Edison Design Group (EDG) C/C++ 
+front end.  This is a highly standards compliant front end.  We recommend that 
+non-conforming code is changed to conform to the C++ standard.  Additionally however, 
+SNC supports a number of GNU and Microsoft extensions in order to aid compatibility 
+where possible.
+
+SNC uses the same C++ ABI as GCC in order to provide full class layout and binary 
+link compatibility between code built by SNC and GCC.
+
+One major point of difference is the use of inline assembly.  SNC uses an intrinsics-
+based approach for low-level code so the compiler does not provide support for 
+GNU-style inline assembly.  Intrinsics have a higher level of integration with the 
+optimizer and should enable it to produce better code than is often the case with 
+mixed C/C++ and inline assembly.  In order to aid the process of transition from the
+use of inline assembly, a comprehensive set of corresponding intrinsics is provided.
+
+SNC includes a comprehensive optimizer that has been specifically designed for 
+PlayStation(R)3.  It is designed to be highly configurable to fit a range of specific
+circumstances.  For the best combination of speed and size use -O2 or -Os wherever 
+possible, however it is strongly recommended to experiment with inlining and 
+additional optimization controls in order to find the optimal settings at both 
+project level and also, in the case of critical functions, at function level 
+(with the use of control pragmas).
+
+For SNC toolchain support please contact your usual support representative.
+
+-------------------------------------------------------------------------------------
+1. Differences between SNC and GCC
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+1.1 Converting Inline Assembly into Intrinsics
+-------------------------------------------------------------------------------------
+
+SNC does not support GNU-style inline assembly.  'Raw' inline assembly is supported,
+where the contents of an asm block are passed directly to the assembler without
+any further intervention by the compiler.  We recommend avoiding the use of inline
+assembly wherever possible and instead using the comprehensive set of provided 
+intrinsics.  These provide far greater integration with the compiler's 
+optimizer than is possible with inline assembly.   The set of intrinsics provided 
+should allow a one-to-one correspondence with any current inline assembly 
+instructions used.
+
+A core set of intrinsics is built in to the compiler itself.  Others are provided
+in a number of header files.  For a list of the core intrinsics, please see
+host-win32\sn\help\intrinsics.htm.
+
+Intrinsics header files:
+
+1. host-win32\sn\ppu\include\ppu_intrinsics.h
+
+The file 'ppu_intrinsics.h' contains the definitions of any intrinsics not built in to 
+the SNC compiler and is in the default include path within the SDK.
+In versions up to and including release 250 'ppu_intrinsics.h' was a wrapper file in 
+target\ppu\include\ which included either 'ppu_intrinsics_snc.h'
+or 'ppu_intrinsics_gcc.h' depending on the compiler. The wrapper file is now removed and 
+these two files are now renamed to 'ppu_intrinsics.h'and moved to separate locations.
+
+It is recommended to always include the file 'ppu_intrinsics.h' in any file that makes 
+use of intrinsics in order to ensure compatibility between compilers.
+
+A problem may arise if a developer installs SNC 270 into a pre-270 SDK.
+The old wrapper file target\ppu\include\ppu_intrinsics.h will be found first which tries 
+to include the non-existant target\ppu\include\ppu_intrinsics_snc.h
+If this occurs, please copy the new SNC ppu_intrinsics.h into the old 
+target\ppu\include\ppu_intrinsics_snc.h to avoid the old file being picked up or not found.
+
+2. target\ppu\include\ppu_asm_intrinsics.h
+
+The file 'ppu_asm_intrinsics.h' provides an extended set of intrinsics to aid in the 
+porting of assembly language code to SNC and GCC.  This set of intrinsics provides an 
+implementation for both SNC and GCC of a subset of the PPU instruction set.
+
+These intrinsics are implemented as a combination of compiler builtins and inline 
+functions.
+
+3. target\ppu\include\ppu_altivec_internals.h
+
+SNC does not support all of the non-standard GCC specific builtins used by GCC 
+in its implementation of altivec.h.  However, a subset of these is provided to aid in 
+porting code from GCC.  
+
+Please be aware that these internal intrinsics are not officially supported by GCC and 
+may change or be removed from GCC in future.  
+
+These SNC emulations of the internal intrinsics are defined in 
+'ppu_altivec_internals.h'.
+
+Some common examples of conversions from inline assembly to intrinsics:
+
+a) Move From Time Base
+
+    Inline Assembly Version:
+    __asm__ volatile ("mftb %0" : "=r"(time));
+    
+    Intrinsic Version
+    time = __mftb();
+
+b)  Retrieve a value directly from a register
+
+    Inline Assembly Version:
+    __asm__ volatile ( "ori %0,13,0" : "=r"( value ) ); 
+    or
+    __asm__ volatile ( "mr %0, 13" : "=r"( value ) ); 
+    
+    Intrinsic Version:
+    value = __reg( 13 );
+
+c) Insert a TRAP instruction
+
+    Inline Assembly Version:
+    __asm__ volatile ( "tw 31,1,1" ) ;
+    
+    Intrinsic Version:
+    __builtin_snpause();
+
+
+A common use of inline assembly is to retrieve a full stack trace for debugging 
+purposes.  This can easily be achieved using the __builtin_frame_address() intrinsic:
+
+#pragma noinline
+int getStackTrace( void ** trace, int maxtrace )
+{
+	int numAddresses = 0;
+	void *frame = __builtin_frame_address();
+	trace[ numAddresses++ ] = __builtin_return_address();
+	frame = ((void**)frame)[ 1 ];
+
+	for( ; frame != 0 && numAddresses != maxtrace; frame = ((void**)frame)[ 1 ] )
+	{
+		trace[ numAddresses++ ] = ((void**)frame)[ 5 ];
+	}
+
+	return numAddresses;
+}
+
+-------------------------------------------------------------------------------------
+1.2 C and C++ Link Compatibility
+-------------------------------------------------------------------------------------
+
+SNC implements the same C++ ABI as GCC (based on the IA64 C++ ABI standard).
+SNC and GCC built code should be fully binary link compatible.
+
+-------------------------------------------------------------------------------------
+1.3 C++ Class Layout Compatibility
+-------------------------------------------------------------------------------------
+
+SNC implements the same C++ ABI as GCC (based on the IA64 C++ ABI standard).
+SNC and GCC built code should be fully class layout compatible.
+
+-------------------------------------------------------------------------------------
+1.4 __fastcall and Function Pointers
+-------------------------------------------------------------------------------------
+
+The standard PPU Application Binary Interface (ABI) used on the PS3 calls function 
+pointers via function descriptor data tables. This indirection imposes a large 
+overhead on function calls via pointers. SNC provides an alternative function call 
+convention that performs direct calls and eliminates this overhead. This calling 
+convention is specified by adding a __fastcall declaration modifier to functions and 
+pointers to functions.
+
+For example:
+
+typedef int ( __fastcall *OpFn )( int, int );
+
+int __fastcall OpAdd ( int a, int b ) { return ( a + b ); }
+int __fastcall OpSub ( int a, int b ) { return ( a - b ); }
+
+int PerformOp ( OpFn op, int a, int b ) { return( (op)( a, b ) ); }
+
+void Test (void)
+{
+    int sum = PerformOp( OpAdd, 1, 2 );
+    int dif = PerformOp( OpSub, 1, 2 );
+}
+
+When SNC makes direct calls via __fastcall function pointers it does not perform any 
+TOC fixups and invokes the function pointer directly rather than first dereferencing 
+the procedure descriptor. This is not an issue with SNC-built code as SNC does not 
+use TOCs, but may not work as expected when calling GCC built code.
+
+Since the libraries, the OS and other GCC built code assume the standard ABI, 
+__fastcall cannot be used when passing function pointers to the OS or GCC built 
+libraries. __fastcall should not be used for any of the following types of functions:
+
+    * Thread start functions
+    * qsort compare callbacks
+    * All other OS/SDK callbacks
+    * Any functions compiled with GCC
+
+
+-------------------------------------------------------------------------------------
+1.5 AltiVec
+-------------------------------------------------------------------------------------
+
+AltiVec support is enabled by default in SNC.  The GCC altivec.h header file supplied 
+in the SDK is not required for SNC.  A placeholder file
+host-win32/sn/ppu/include/altivec.h is included in its place so as to retain 
+compatibility with code that must include this for GCC.  
+
+SNC does not support all of the non-standard GCC specific builtins used by GCC 
+in its implementation of altivec.h.  However, a subset of these is provided to aid in 
+porting code from GCC.  
+
+Please be aware that these internal intrinsics are not officially supported by GCC and 
+may change or be removed from GCC in future.  
+
+To use the SNC emulations of these internal intrinsics, please include 
+'ppu_altivec_internals.h'.
+
+-------------------------------------------------------------------------------------
+1.6 Preprocessor
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+1.6.1 Predefined macros
+-------------------------------------------------------------------------------------
+
+SNC predefines the following macros to identify the compiler and the target 
+processor:
+
+    * __SNC__
+    * __PPU__
+    * __CELLOS_LV2__
+    * _ARCH_PPC64
+
+SNC also defines the following macros for GCC compatibility (SNC implements enough of 
+the GCC language extensions that it has been found to have been useful in porting 
+code originally created for GCC):
+
+    * __GNUC__
+
+To distinguish between SNC and GCC it is necessary to check for the __SNC__ 
+definition as well as or before checking for __GNUC__.
+
+
+-------------------------------------------------------------------------------------
+1.6.2
+-------------------------------------------------------------------------------------
+
+GCC accepts the following non-compliant use of the #error preprocessor directive which 
+is missing the required trailing quote.
+
+#if 0
+#error "This is an error!
+#endif
+
+SNC will report that the #endif is missing.
+
+-------------------------------------------------------------------------------------
+2. Command Line Options
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+2.1 Main Optimization Level (-O<n>)
+-------------------------------------------------------------------------------------
+
+From release 1.1.0.1, SNC's optimizer controls have been simplified and changed to be
+closer to those of GCC.
+
+The main optimizer in SNC is controlled by the command line switch -O<n> (where <n> 
+is from 0 to 3).
+
+At -O0 the optimizer is not run.  From -O1 to -O3, more and more optimizations are 
+gradually introduced with -O3 having almost all useful optimizations enabled.  Some 
+optimizations are disabled even at -O3 as they may only be appropriate in certain 
+circumstances.  These are described below.  -O2 can be considered as basic 
+conservative optimization. 
+
+-Os instructs the compiler to optimize for space, possibly at the expense of speed.
+
+-Od instructs the compiler to avoid optimizations, such as instruction scheduling, 
+that make code harder to debug.  This mode is designed to generate code with 
+reasonable runtime performance that is still highly debuggable.
+
+It is recommended to use -O3 wherever possible for optimal size and speed.
+
+-O0 (the default)       No optimization, no inlining (except forced inlining)
+-O1                     No optimization, inlining allowed
+-O2                     Full optimization
+-O3                     Full optimization plus more time consuming optimizations 
+                        (none in this release)
+
+-Od                     Debuggable optimized code (should be used with -g)
+-Os                     Optimized code avoiding optimizations that may increase code
+                        size (but please see notes below)
+
+The old -O4 and -O5 switches are now treated as -O3.
+
+Notes:
+
+The inlining settings are the single most significant factor influencing code size.  
+The optimal inlining settings are dependant on the language and style in which code is 
+written.  C and C++ programs may require different settings for optimal results.
+We strongly recommend that you experiment with the inlining controls to achieve the 
+optimal balance of size and performance for your application.
+
+-------------------------------------------------------------------------------------
+2.2 SSA 'Post' Optimizer Level (-Xpostopt=<n>)
+-------------------------------------------------------------------------------------
+
+The -Xpostopt=<n> switch (where <n> is from 0 to 6) controls the SSA post optimizer.  
+This is a new optimization phase designed and implemented specifically for the 
+PlayStation(R)3.  Much of the PPU specific optimization is performed within the post 
+optimizer, and it has been designed so that new optimizations can be quickly and 
+efficiently implemented as and when they are identified.  
+
+The default level for -Xpostopt at -O2 is 6 (the maximum).  If any problems are 
+encountered at -O2, it is advisable to first try the combination of -O2 -Xpostopt=0 
+and then gradually increase the Xpostopt value as much as possible.
+
+If you encounter problems with higher levels of optimization please let us know.
+
+-------------------------------------------------------------------------------------
+2.2.1 SSA 'Post' Optimizations that are not enabled by default (-Xfastmath)
+-------------------------------------------------------------------------------------
+
+The SSA optimizer provides a number of additional optimizations that are enabled by 
+the -Xfastmath switch.  
+
+These include:
+    * Conversion of if statements to 'fsel'
+    * Automatic use of VMX registers to avoid conversion between floating point,
+      integer and VMX registers.  This will reduce the number of Load Hit Store
+      penalties.
+    * Replacement of 'fdiv' with an approximate divide and refinement.
+
+This switch is not enabled by default because these optimizations may not work 
+correctly with code that relies on the edge behaviour of floating point values 
+such as 'denormal' numbers.  This should not affect the vast majority of 
+code, so we highly recommmend that -Xfastmath is enabled on optimized builds 
+wherever possible and that code relying on these edge conditions is modified to 
+work with it.
+
+-------------------------------------------------------------------------------------
+2.3 Relax Alias Level (-Xrelaxalias=<n>)
+-------------------------------------------------------------------------------------
+
+This switch controls the alias analysis rules.
+
+    * -Xrelaxalias=0 is equivalent to GCC's -fno-strict-aliasing
+    * -Xrelaxalias=2 is roughly equivalent to GCC's -fstrict-aliasing
+
+It is recommended that code be written or adapted to work with at least 
+-Xrelaxalias=2 (the C99 aliasing rules). The stricter aliasing rules enable the 
+compiler to generate much better code in some cases.
+
+Note that the __may_alias__ attribute may be used to mark deliberately aliasing 
+pointers even when using the stricter aliasing rules.
+
+-Xrelaxalias=<n> where n is:
+
+    * 0 Conservative alias analysis
+    * 1 Relax the alias analysis to assume that type instances do not overlap
+    * 2 Relax the alias analysis to assume the C99 aliasing rules (the default at O2)
+    * 3 Further relax the alias analysis to assume that const and non-const variables
+        do not alias
+
+
+-------------------------------------------------------------------------------------
+2.4 Inlining Controls
+-------------------------------------------------------------------------------------
+
+There are three main switches to control inlining in SNC.  Making adjustments to 
+these values can yield massive improvements to the size and execution speed of 
+compiled code.  Unfortunately it is not possible to have default values that are best 
+suited to all styles of code.  Therefore, it is highly recommended that users 
+experiment with these values to find the optimal ones for their code.
+
+The parameters to these controls express the maximum size of a function in terms of '
+instructions'. These are internal compiler instructions and are not necessarily the 
+same as individual processor instructions.
+
+-------------------------------------------------------------------------------------
+2.4.1    -Xautoinlinesize=<n>: controls automatic inlining.
+-------------------------------------------------------------------------------------
+
+This switch limits the maximum size of functions that will be automatically inlined 
+by the compiler without them having been marked as inline in the source code. This 
+does not apply to implicitly inline functions such as C++ methods defined inside 
+classes in header files (see -Xinlinesize).
+
+-Xautoinlinesize=<n> where n is:
+
+    * 0 No automatic inlining
+    * 64 (the default)
+    * <n> Allow automatic inlining of unmarked functions up to a maximum size of <n> 
+          instructions.
+
+
+-------------------------------------------------------------------------------------
+2.4.2    -Xinlinesize=<n>: controls inlining of implicitly inline functions.
+-------------------------------------------------------------------------------------
+
+This switch limits the maximum size of implicitly inline functions that will be 
+inlined by the compiler. Implicitly inline functions include C++ methods defined 
+inside classes in header files.
+
+-Xinlinesize=<n> where n is:
+
+    * 0 No implicit inlining
+    * 384 (the default)
+    * <n> Allow automatic inlining of implicitly inline functions up to a maximum 
+          size of <n> instructions.
+
+
+-------------------------------------------------------------------------------------
+2.4.3    -Xinlinemaxsize=<n>: controls the maximum amount of inlining into any one  
+                              function.
+-------------------------------------------------------------------------------------
+
+This switch controls the maximum amount of inlining into any one function. It is used 
+to prevent individual functions from becoming too large and slowing down other stages 
+in the optimizers. Increasing this from the default value may increase the amount of 
+inlining (and therefore possibly performance) at the expense of compilation speed.
+
+-Xinlinemaxsize=<n> where n is:
+
+    * 0 No inlining
+    * 5000 (the default)
+    * <n> Allow inlining into functions up to a maximum size of <n> instructions.
+
+-------------------------------------------------------------------------------------
+2.5 Use Conditional Moves to Eliminate Branches (-Xbranchless=<n>)
+-------------------------------------------------------------------------------------
+
+This optimization eliminates branches by converting code to use conditional moves.
+
+-Xbranchless=<n> where n is:
+
+    * 0 No optimization (the default)
+    * 1 Enable branch elimination on floating and ternary expressions only.
+	* 2 Enable branch elimination in all cases.
+
+Branches are very slow on deeply pipelined processors even when branch hinting works 
+correctly. When code is called infrequently the extra instructions generated may run 
+slower because of icache fill time, however, for floating point calculations this is 
+nearly always a win.
+
+For example:
+
+if( x > y ) x = y;
+
+is converted to use a select instruction for both integer and floating point 
+variables
+
+x = x > y ? x : y;
+
+Similar expressions are combined to produce more efficient code, even if the branch 
+cannot be eliminated.
+
+For example:
+
+if( x > y )
+{
+  return jim[ bert[ x ] ];
+}
+else
+{
+  return jim[ bert[ y ] ];
+}
+
+Can be converted to:
+
+return jim[ bert[ x > y ? x : y ] ];
+
+
+-------------------------------------------------------------------------------------
+2.6 Automatic Loop Unrolling (-Xunroll=<n>)
+-------------------------------------------------------------------------------------
+
+This optimization automatically unrolls loops in order to increase performance; 
+however it is disabled by default to reduce code size.  It may be useful on code 
+containing critical loops.
+
+-Xunroll=<n> where n is:
+
+    * 0 No optimization (the default)
+    * 1 Enable automatic loop unrolling
+
+
+-------------------------------------------------------------------------------------
+2.7 Control of language features (-Xc+=...)
+-------------------------------------------------------------------------------------
+
+The -Xc+= flag controls which language features are enabled (For example RTTI, 
+exceptions or c99 mode).
+
+RTTI is enabled by default in SNC in order to match the default behaviour of GCC.
+
+In order to disable it the following compiler switch must be added to the command
+line:
+
+-Xc-=rtti
+
+In order to explicitly enable RTTI the following would be used:
+
+-Xc+=rtti
+
+Exception Handling is disabled by default due to the potential overheads such as
+increased code size that it can cause.
+
+In order to enable this feature the following would be used:
+
+-Xc+=exceptions
+
+A full list of language features that can be controlled in this fashion can be found 
+in the main compiler documentation.
+
+
+-------------------------------------------------------------------------------------
+3.  Additional Information
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+3.1 Controlling Optimization with Pragmas
+-------------------------------------------------------------------------------------
+
+SNC supports the use of pragmas to give a higher degree of precision over the control 
+of optimization than can be achieved on a per-file basis.  The following example 
+shows how to apply automatic loop unrolling to a single function:
+
+#pragma control %push unroll=1
+
+void functionToBeUnrolled()
+{
+    //...
+}
+
+#pragma control %pop unroll
+
+In this case the function would be treated as if the file had been compiled with 
+-Xunroll=1.
+
+SNC also supports the C99 _Pragma operator.  This operator destringizes its string 
+literal argument, effectively allowing #pragma directives to be produced by macro 
+expansion.  This feature can be used to insert optimization control pragmas using 
+macros which can then be defined appropriately for debug versus release builds, 
+different optimization strategies or for compatibility with other compilers.
+
+In the example below, the OPTIMIZE_FOR_SPEED definition is used to control the 
+optimization for space versus speed when building with SNC. This facility makes it 
+possible to mark functions in your source code as space or time critical in a way 
+which can be changed between debug and release builds, and which can be hidden from 
+compilers that do not support the necessary pragmas.
+
+NOTE: This example illustrates the use of the _Pragma operator.  This combination
+of options may not necessarily provide the best performance for your application.
+
+#if defined(__SNC__) && defined(OPTIMIZE_FOR_SPEED)
+  // Use inlining and unrolling when optimizing for speed
+  #define FORCE_INLINE _Pragma("inline")
+  #define BEGIN_LOOP_UNROLLING _Pragma("control %push unroll") \
+                               _Pragma("control unroll=1")
+  #define END_LOOP_UNROLLING _Pragma("control %pop unroll")
+#else
+  // Don't inline or unroll loops when optimizing for space
+  // (also define optimization controls as no-ops for compilers other than SNC)
+  #define FORCE_INLINE
+  #define BEGIN_LOOP_UNROLLING
+  #define END_LOOP_UNROLLING
+#endif
+
+BEGIN_LOOP_UNROLLING
+FORCE_INLINE int InlineSum( int* pi, int count)
+{
+  int sum = 0;
+  for (int i = 0; i < count; ++i)
+  {
+    sum += pi[ i ];
+  }
+  return( sum );
+}
+END_LOOP_UNROLLING
+
+
+-------------------------------------------------------------------------------------
+3.2 Controlling Diagnostic Output (suppressing warnings)
+-------------------------------------------------------------------------------------
+
+SNC allows full control over the severity of diagnostic messages using either command 
+line switches or pragmas.
+
+The diagnostic pragma takes the form:
+
+#pragma diag_<category>=<idlist>
+
+Where <category> is the desired diagnostic category to set the diagnostic messages 
+to. It may be one of the following:
+
+    * suppress: do not issue diagnostic.
+    * remark: set diagnostic to issue a remark level message.
+    * warning: set diagnostic to issue a warning.
+    * error: set diagnostic to issue an error.
+    * default: set diagnostic to default category.
+
+<idlist> is a comma-separated list of either diagnostic numbers or diagnostic tag 
+names (see the error documentation file host-win32\sn\help\err_doc.htm for a list of 
+diagnostic tags and their numbers).
+
+For example:
+
+#pragma diag_suppress=implicit_return_from_non_void_function
+or
+#pragma diag_suppress=942
+
+would disable any diagnostic for missing returns from non-void functions.
+
+#pragma diag_error=942
+
+would cause an 'error' to be issued.
+
+#pragma diag_default=942
+would return the diagnostic level to 'warning' for missing returns from non-void 
+functions.
+
+From the command line, this would be achieved by adding switches in the form:
+--diag_suppress=942 to suppress the diagnostic.
+
+Be aware that leading zeroes should not be included in diagnostic numbers as this 
+will cause the compiler to interpret them as octal numbers.
+
+-------------------------------------------------------------------------------------
+4. Other tools
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+4.1 Adding SNC configurations to existing projects
+-------------------------------------------------------------------------------------
+
+The 1.7.9 release of SN's Visual Studio .NET Integration contains a tool, 
+AddSNCConfig_GUI.exe (and the command line version AddSNC.exe), to simplify the 
+conversion of existing GCC based projects to use SNC.  
+
+Please see the VSI release notes for more information. 
+
+-------------------------------------------------------------------------------------
+End
+-------------------------------------------------------------------------------------
+

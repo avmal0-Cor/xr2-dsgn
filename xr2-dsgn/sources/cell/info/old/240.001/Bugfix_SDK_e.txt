@@ -1,0 +1,706 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 240.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 240.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 240.001
+======================================================================
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#51796)
+    When an SPU thread group with its thread status set to NOT 
+    INITIALIZED exists in the game application when core dumping, the 
+    output processing of the core file will be interrupted.
+
+< Check menu in the Game column >
+- During the check performed from the Check menu in the Game column, a 
+  file that is non-map file is wrongly identified as a map file. This 
+  problem has been fixed.
+
+- When performing the check from the Check menu in the Game column, 
+  if the PARENTAL_LEVEL parameter is not contained in PARAM.SFO of 
+  the game data or the save data, it is treated as an error. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< SubDisplay Utility>
+- The following bug has been fixed.
+
+  - (B#49155) 
+    When cellSubDisplayInit() is called at the same time as the wired LAN is 
+    initialized(the interface is started), it may fail to call the function.
+
+< Video Upload Utility >
+- The following bug has been fixed.
+
+  - When uploading a file to YouTube, an error occurs when '&' is contained 
+    in the string that is pointed by any of the following members of 
+    the CellVideoUploadParam structure that is specified by the first argument 
+    of cellVideoUploadInitialize(), or in the title string that is input by 
+    a user when the utility is activated (0x8002d001).
+
+      u.youtube.pTitle_UTF8
+      u.youtube.pDescription_UTF8
+      u.youtube.pKeyword_1_UTF8
+      u.youtube.pKeyword_2_UTF8
+      u.youtube.pKeyword_3_UTF8
+
+    Also note that when '<' and '>' are contained in any of the strings, 
+    they are automatically deleted and if the string becomes empty as 
+    a result of the deletion, an error occurs at the time of the upload
+    (0x8002d001).
+
+< Audio Configuration Utility >
+- The time takes to perform the processing of 
+  cellAudioInGetAvailableDeviceInfo() has been improved.
+
+< Music Utility >
+- The following bug has been fixed.
+
+  - When the execution of cellMusicSetPlaybackCommand() terminates normally,
+    the callback function [specified in the fourth argument, func,
+    of cellMusicInitialize()] is not called as it should be.
+    This bug does not occur with cellMusicSetPlaybackCommand2().
+    (TechnoteID:200803-08  https://ps3.scedev.net/technotes/view/701)
+
+- The following bug has been fixed.
+
+  - With the playback feature that does not use the memory container, when
+    all songs are repeated and the shuffle is set to ON, the last song
+    cannot be skipped (Next) and fast-rewinding to the previous song is not
+    possible with the first song, and then it stops playing.
+
+- The following bug has been fixed.
+
+  - At the change of the songs, callback functions of
+    cellMusicSelectContents() / cellMusicSelectContents2() are not called.
+    The value to be returned by the playback function is
+    CELL_MUSIC_ERROR_BUSY / CELL_MUSIC2_ERROR_BUSY.
+
+- The following bug has been fixed.
+
+  - When cellMusicSetSelectionContext() or cellMusicSetSelectionContext2() is 
+    executed while playing back an audio file using the music utility, 
+    the callback function may not be executed.
+    (TechnoteID:200804-27 https://ps3.scedev.net/technotes/view/736)
+
+< Game Content Utility >
+- The bug in obtaining the current title information by the disc boot game 
+  has been fixed.
+
+  When the boot information obtain function cellGameBootCheck() is called 
+  by the disc boot game and cellGameGetParamString() to obtain the current 
+  title information, if the title name in the set language is not defined in 
+  PARAM.SFO, the title name cannot be  obtained.
+  This problem has been fixed to return the default title name when an attempt 
+  to obtain the current title name is made if the title name in the set 
+  language is not defined in PARAM.SFO. 
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#52487)
+  When a command that is created using cellGcmSetFlip() or 
+  cellGcmSetPrepareFlip() is executed and a buffer ID is not registered,
+  a memory corruption may occur. This problem has been fixed.
+  If the buffer ID registration is not performed, a message indicating 
+  "flip preparation error" will be displayed.
+
+- (B#50684),(B#52307)
+  In the debug version of cellGcmSetRenderEnable(), when a value 2048 
+  or larger is specified to the argument "index", an error occurs. This 
+  problem has been fixed.
+  A value up to 1M(1024*1024) can be specified to "index" now.
+
+- (B#51153)
+  In the following GCM Method Macros, an unnecessary semicolon was added 
+  at the end of each macros. This problem has been fixed.
+   CELL_GCM_METHOD_HEADER_DRAW_INDEX_ARRAY()
+   CELL_GCM_METHOD_HEADER_DRAW_INDEX_ARRAY_NI()
+   CELL_GCM_METHOD_HEADER_BEGIN_END()
+
+- The following bug has been fixed.
+
+  - (B#51888)
+    When game applications built with SDK 220 are run on the system software 
+    in SDK 220 and later, screen flips take longer to execute.
+    (TechnoteID:200804-22  https://ps3.scedev.net/technotes/view/731)
+
+- (B#49071)
+  The errors in the following items in the message that is displayed when 
+  RSX(R) ends with a hardware exception have been modified:
+   - "Size" item in the tile setting list
+   - IO offset of the corresponding error(in the case of the graphics 
+     error 256, 257 and 512)
+
+- (B#47893)
+  The error in the following item in the message that is displayed when 
+  RSX(R) ends with a hardware exception has been modified:
+  
+   - The value of MAX ANISO to set(in the case of the graphics error 
+     261 and 262)
+       "1" -> "CELL_GCM_TEXTURE_MAX_ANISO_1"
+
+----------------------------------------------------------------------
+libcgutil
+----------------------------------------------------------------------
+- (B#48992)
+  In the library file for Visual Studio libcgutil.lib, when a user 
+  application is built in a debug mode, a warning message indicating 
+  "The debug information cannot be found" is issued as "warning 
+  LNK4204". This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm_pm
+----------------------------------------------------------------------
+- (B#48404)
+  A measurement result that is obtained using the 
+  CELL_GCM_PM_SCLK_PREROP_VALID_PACKET event is not correct. This 
+  problem has been fixed.
+  (Technote ID:200805-02 https://ps3.scedev.net/technotes/view/738)
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- The /GL option of host-win32\lib\libgcm_tool.lib has been removed.
+  In the past release, because the /GL option of the Microsoft Visual 
+  Studio 2005 compiler was enabled, compilers of different versions 
+  could not be linked.
+  From this release onwards, a binary from which /GL option is removed 
+  will be released to resolve the compatibility problem between the 
+  different environments. Accordingly, the link speed will be improved.
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - dds2gtf cannot convert the following input formats correctly.
+    - G16R16, G16R16F
+    - G8R8_G8B8, R8G8_B8G8
+    - UYVY, YUY2
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- (B#50526)
+  It has been fixed so that socketclose() ends normally when the memory
+  is not sufficient.
+
+----------------------------------------------------------------------
+libaudio
+----------------------------------------------------------------------
+- The stability of the audio hardware control has been improved.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following bug has been fixed:
+
+ - (B#52615)
+   When cellFsSetIoBuffer() or cellFsSetIoBufferFromDefaultContainer() 
+   that were added to SDK 220 is used for a HOSTFS file, an incorrect 
+   data may be read.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#52610)
+    If a physical memory that is being mapped using 
+    sys_mmapper_map_memory() is freed using sys_mmapper_free_memory(),
+    a kernel panic may occur.
+
+- The following bug has been fixed.
+
+  - (B#47188)
+    When the game process is terminated without discarding the virtual
+    memory that is generated using sys_vm_memory_map(), the system may crash.
+
+- The following bug has been fixed.
+
+  - (B#47394)
+    When a memory straddling both a vertual memory area and an unmapped
+    area is passed to the system call, the kernel may get panicked.
+
+- The following bug has been fixed.
+
+  - (B#49152)
+    When sys_vm_get_statistics() is called to obtain statistics information 
+    for a virtual memory area that has been allocated with a 1MB page size, 
+    the amount of physical memory being used as represented by the pmem_used 
+    variable of the sys_vm_statistics_t structure is always 0.
+    (TechnoteID:200804-19 https://ps3.scedev.net/technotes/view/728)
+
+- The following bug has been fixed.
+
+  - (B#51397)
+    A kernel panic can occur for a virtual memory area if its physical 
+    memory allocation is still locked with sys_vm_lock() when unmapped.
+    (TechnoteID:200805-01 https://ps3.scedev.net/technotes/view/737)
+
+- The following bug has been fixed.
+
+  - (B#52227)
+    When an SPU thread that is accessing the virtual memory is switched, 
+    the SPU thread may no longer operate.
+    (TechnoteID:200806-07  https://ps3.scedev.net/technotes/view/750)
+
+- The following bug has been fixed.
+
+  - (B#49618)
+    Because there is no definition of NULL in spu_thread.h and 
+    spu_thread_group.h, they cannot be included separately.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<Common>
+- (B#48427)
+ - In the adhoc_job_submit utility that is provided within the 
+   samples\sdk\spu_library\libspurs\advacned\job_dynamic_job_submit 
+   sample, the following bug has been fixed:
+    - The command list of the SPURS job may leak.
+    (TechnoteID:200806-02 https://ps3.scedev.net/technotes/view/744)
+
+<libdaisy>
+- (B#52590)
+  When the header file of libdaisy is included in multiple sources, and 
+  an object that is compiled in segments is linked, an link error may 
+  occur due to a duplicated link. This problem has been fixed.
+
+<libsync>
+- The following bug has been fixed.
+
+  - (B#50813)
+    When a lock-free queue is initialized with CELL_SYNC_QUEUE_ANY2ANY
+    set to the argument "direction" of cellSyncLFQueueInitialize(),
+    a PPU thread calling one of the following functions on the
+    lock-free queue might not be blocked.
+
+    - cellSyncLFQueuePush()
+    - cellSyncLFQueuePop()
+    (TechnoteID:200804-14  https://ps3.scedev.net/technotes/view/723)
+
+<libspurs Task>
+- The following bug has been fixed.
+
+  - (B#50813)
+    When either of the functions listed below is executed on
+    a SPURS lock-free queue, which has been initialized by
+    cellSpursLFQueueInitialize() or cellSpursLFQueueInitializeIWL()
+    with CELL_SPURS_LFQUEUE_ANY2ANY set to the initializing functions'
+    direction argument, the PPU thread that called the function may be blocked.
+
+    - cellSpursLFQueueTryPush()
+    - cellSpursLFQueueTryPop()
+    (TechnoteID:200804-13 https://ps3.scedev.net/technotes/view/722)
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#47600)
+  When cellFiberPpuSendSignal() is called for a fiber that is blocked by 
+  calling cellFiberPpuJoin(), an assert may occur. This problem has been 
+  fixed.
+
+- (B#51360)
+  When it returns from the entry function of the PPU fiber context, the 
+  behavior becomes unstable. This problem has been fixed. An illegal 
+  instruction exception is always invoked now.
+
+- (B#51620)
+  When cellFiberPpuYield() or cellFiberPpuWaitFlag() is called under a 
+  condition that a signal is already received by the PPU fiber, the signal
+  may be lost. This problem has been fixed.
+
+- (B#53057)
+  - In the advaced\function_offload_tutorial sample, the following problem
+    has been fixed:
+    - Because the sample framework is used internally but the dependency 
+      of the builds is not set, building a sample does not invoke 
+      the build of the sample framework.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following bugs have been fixed:
+
+  (B#52659)
+  - When button data is notified to the system using 
+    cellPadLddDataInsert(), and the dialog of the system utility is 
+    opened, subsequent button data notifications will be also passed to 
+    the game application.
+
+  (B#31640)
+  - When the BD remote controller is returned from the waiting state, the 
+    button data that is operated first may not be obtained.
+
+  (B#49777)
+  - The system hangs up due to a failure in allocating resources when a 
+    controller is connected or similar.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+The following errors may occur instantaneously due to any cause 
+when either of the control, the bulk and the interrupt transfers is 
+performed:
+(Such transfer will fail due to the following errors.)
+
+- CRC error is returned from the device
+- PID error is returned from the device
+- Timeout occurs due to no response from the device
+
+Although the device condition returns to normal by itself even without 
+unplugging/plugging the device, and the data is transferred successfully, 
+a transfer error (EHCI_CC_XACT) is returned to "result" of the callback 
+of the following functions. This problem has been fixed.
+
+- cellUsbdBulkTransfer()
+- cellUsbdInterruptTransfer()
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- Multiple include files are not read correctly. This problem has been 
+  fixed.
+
+- A minor bug of D3D profile has been fixed.
+
+- The conditional executable code is not displayed correctly in the 
+  instruction display. This problem has been fixed.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- (B#47478) Bugfix PPU
+  When strftime() in time.h is used, conversion specifiers %g, %G and
+  %V could not get expected results in the last week of December, 2020.
+  This problem has now been fixed.
+
+- (B#47508) Bugfix PPU/SPU
+  When the following functions in math.h were used with arguments -0.0 
+  and +0.0, positive infinities, or negative infinities, expected results 
+  were not returned:
+  fdim
+  fdimf (was incorrect on PPU only)
+  fdiml
+  The problem has been fixed.
+
+- (B#2622) Bugfix PPU
+  When the following functions in wchar.h were used, conversion specifier %n 
+  could not be used:
+  fwprintf, swprintf, wprintf, vfwprintf, vswprintf, vwprintf
+  The problem has been fixed.
+
+- (B#52754) Bugfix PPU/SPU
+  If any of the following options was specified, macro M_PI was not defined 
+  even if math.h was included.
+  PPU: -O0 -D_NO_INLINE_DEFINITIONS -mno-altivec
+  SPU: -O0 -D_NO_INLINE_DEFINITIONS
+  The problem has been fixed.
+
+- (B#45340) Bugfix SPU
+  If a program including math.h was compiled with -fsingle-precision-constant 
+  option, a lot of error messages such as the following one were displayed:
+  error: parameter list does not match a valid signature for spu_mul()
+  The problem has been fixed.
+
+----------------------------------------------------------------------
+NP IN-GAME Commerce 2 Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In the checkout processing, the system returns an error without
+    prompting the user to enter a password even for an account which
+    requires password entry at purchasing.
+    Please invalidate the password entry at purchasing before using it.
+
+- The following bug has been fixed.
+
+  - If you register a credit card in the checkout processing,
+    the process may become unstable.
+    Please register it from the "Account Management" 
+    on the System Sotware beforehand.
+
+----------------------------------------------------------------------
+NP Clan Utility
+----------------------------------------------------------------------
+- It has been changed to check whether the clan names and the clan tags 
+  are in UTF-8.
+  Characters such as "<",">",""","'","&" are now available.
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - In the message editing dialog, which starts up when 
+    sceNpBasicSendMessageGui() is executed, a message may not be sent 
+    even when a user press the send button. 
+    This problem occurs when the followings are specified for the member 
+    of the first argument "msg" of sceNpBasicSendMessageGui().
+
+    - SCE_NP_BASIC_MESSAGE_MAIN_TYPE_INVITE is specified for the member 
+      "mainType". 
+    - An array of NP ID is specified for the member "npid". 
+    (TechnoteID:200806-03 https://ps3.scedev.net/technotes/view/745)
+
+----------------------------------------------------------------------
+Sample Program(cell\samples)
+----------------------------------------------------------------------
+- samples\sdk\sound\demo\slope
+  When a sample is built using the SNC compiler, a warning message
+  indicating "An unused variable exists." will be displayed. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - When creating a room or joining a room in one of the NP matching 2
+    utility samples below, the On-Screen keyboard will be displayed
+    for entering the room password. A hang-up will occur if you attempt
+    to sign-out from the PLAYSTATION(R)Network while this on-screen keyboard
+    is displayed.
+
+      np_matching2_allow_block_list
+      np_matching2_group_room
+      np_matching2_room_password
+      np_matching2_slot_reservation
+      np_matching2_team_id
+    (TechnoteID:200803-14   https://ps3.scedev.net/technotes/view/707)
+
+----------------------------------------------------------------------
+NP Game Purchase Utility
+----------------------------------------------------------------------
+- samples\sdk\network\np\game_purchase
+  When a package file that is generated using the 
+  samples\sdk\network\np\package sample is installed followed by the 
+  package file that is generated using the game_purchase sample, the 
+  package file installed first will be overwritten. This problem has 
+  been fixed.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+(B#52693)
+- When a cast is performed under the following condition, a compilation 
+  error may occur. This problem has been fixed.
+  - Implicit cast from a vector type to a matrix type
+  - Implicit cast from a matrix type to a vector type
+
+(B#26755)
+- When both semantics FOGC and FOGFRAC are used within the fragment shader
+  at the same time, the compilation processing may end in error. This 
+  problem has been fixed.
+
+(B#34964)
+(B#35761)
+- When a source code that contains an implicit cast is compiled, the 
+  following error may be output. This problem has been fixed.
+  (20) : fatal error C9999: Bad scope in ConvertLocalReferences()
+
+(B#35598)
+- When the ## operator is used, it does not return an error at the time 
+  of pre-processing. This problem has been fixed. (From SDK240 onwards, 
+  since the use of the ## operator is not allowed, an error is returned 
+  at the time of pre processing as expected.)
+
+(B#43966)
+- When multiple write masks are used, an invalid code may be output. 
+  This problem has been fixed.
+  
+  Example)
+  float4 temp;
+  temp.xy.x = ...;
+
+(B#46174)
+- When an invalid parameter is passed with the -profileopts option 
+  specified, a warning message is now displayed. (Such message was not 
+  output and the parameter was ignored before.)
+
+(B#46829)
+- When a source code, that uses the result obtained using floor() as an 
+  index of an array, is compiled, an invalid code is generated. This 
+  problem has been fixed.
+
+(B#47035)
+- When a source code that contains a conditional branching such as "if", 
+  "for" or "while" is built, the end flag of the program may not be set 
+  correctly. This problem has been fixed.
+
+(B#47547)
+- When dot() is called, a DP2 and a DP2A instructions are now output so 
+  as to improve the performance.
+
+(B#51295)
+- When a vertex shader that uses many registers is compiled, an invalid 
+  code is generated. This problem has been fixed.
+
+(B#54943)
+- sce-cgcstrip may end in error depending on the input binary.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- samples\sdk\camera\yuv422_to_yuv
+  Makefile has been modified because a warning message was displayed
+  when a cg file was loaded. 
+
+- samples\sdk\camera\frame_update
+  main.cpp has been modified because when a sample was compiled using 
+  the SNC compiler, a warning message was displayed.
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+(B#50071)
+- When cellCgbGetSize() is executed for a cgb file that has a block
+  (LevelA, B or C) of an odd number size, an incorrect file size is returned.
+  This problem has been fixed. 
+
+(B#52958)
+- The following samples unmaps the memory area of a fragment shader 
+  that is in use. This problem has been fixed so that it no longer unmaps:
+    samples\sdk\graphics\cgb\basic_psgl\main.cpp
+    samples\sdk\graphics\cgb\levelC\basic_levelC\main.cpp
+    samples\sdk\graphics\cgb\userclip_psgl\main.cpp
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+(B#24860)
+- When glTexSubImage2D() is executed for the PBO that is bound as 
+  GL_PIXEL_UNPACK_BUFFER_ARB, the performance degradation occurs. 
+  This problem has been fixed.
+
+(B#49630)
+- When the following sample is compiled using the SNC compiler, 
+  a warning message is output. This problem has been fixed:
+  samples\sdk\graphics\psgl\Advanced\StaticCommandBuffer_02
+
+  The output warning message is as shown below:
+  main.cpp(596,12): warning 552: variable "currentBufferPtr" was set 
+  but never used
+
+- When the circle button is pressed and the rendering mode is switched, 
+  the following sample hangs up. This problem has been fixed:
+  cell\samples\sdk\graphics\psgl\Advanced\StaticCommandBuffer_02
+
+(B#52013)
+- The value set by a processing equivalent to cellGcmSetZMinMaxControl() 
+  that is done within the PSGL is not correct.
+  The argument zclampEnable is now disabled so as to improve the performance.
+
+(B#52239)
+- A problem that the game application hangs up when psglExit() is executed 
+  before psglInit() has been fixed. 
+
+(B#52248)
+- A problem that the game application hangs up when psglFXInit() is called 
+  multiple times has been fixed. 
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- (B#52500)
+  When the stream playback is completed, cellMSStreamGetCurrentPlayPos() 
+  passes 0 to the argument currentOffset.
+  This problem has been fixed to pass a correct positional information 
+  of the stream. 
+
+- When a Multistream game application is built using the SNC compiler, 
+  *.self cannot be created and executed correctly.
+  This problem has been fixed. 
+
+- (B#50653)/(B#48593)
+  In the simple_reverb_td sample, because the variable ret, that is used 
+  in the function ModifyReverb, is not initialized, a warning message 
+  indicating "Implicit reference" is displayed.
+  This problem has been fixed to initialize the variable ret and 
+  the warning message is no longer displayed. 
+
+- In the simple_delay sample, because the variable fCutoff, that is used 
+  in the function ModifyDelay, is not initialized, a warning message 
+  indicating "Implicit reference" is displayed. 
+  This problem has been fixed to initialize the variable fCutoff and 
+  the warning message is no longer displayed. 
+
+- (B#42080)
+  When any multistream sample is built using the SNC compiler, a warning 
+  message indicating "Unrecognized option -fno-rtti ignored" is displayed.
+  This problem has been fixed by deleting the -fno-rtti option from 
+  the Makefile. 
+
+- (B#48521)
+  In the surround_sample sample, when building a Visual Studio project using 
+  the SNC compiler, it fails to link the Framework library and build 
+  the project.
+  To avoid this problem, the Visual Studio project file has been fixed to 
+  rebuild the Framework library using the SNC compiler before linking. 
+
+- (B#52936)
+  In libmsteam, 8 or more of libaudio block size cannot be used.
+  This problem has been fixed to refer to the libaudio block size at 
+  the initialization so that a correct block size is used.
+
+- (B#52939)
+  The value of a single DSP page size (CELL_MS_DSP_PAGESIZE : 16KB) 
+  that is defined in cell\target\ppu\include\cell\mstream.h is not correct.
+  This value has been corrected to 12 KB.
+
+- (B#52942)
+  The time domain only mode generates corrupted data when CELL_MS_TD_ONLY_128 
+  is specified to the MultiStream system configuration information.
+  This problem has been fixed.
+
+- (B#52944)
+  The time domain only mode cannot output an audio when the MultiStream 
+  ATRAC(TM) Thread libraries (libmstreamThreadAT3.a or libmstreamSPURSAT3.a) 
+  are used.
+  This problem has been fixed to output an audio by passing 
+  the CELL_MS_TD_ONLY_XXX flag at the initialization of the libraries.
+
+  Note that when the CELL_MS_TD_ONLY_XXX flag is set with the following 
+  functions, the MP3 library (libmstreamSPURSMP3.a) must be linked:
+  - cellMSSystemInitSPURS()
+  - cellMSSystemInitSPUThread()
+  - cellMSSystemGetNeededMemorySize()
+
+- (B#52479)
+  When using the function cellMSSystemPause() or OpenAL, the pitch value is 
+  altered to an unexpected value because the value is not correctly updated 
+  when calling cellMSSystemSignalSPU() or using cellMSSystemPause().
+  This problem has been fixed.
+
+- (B#52271)
+  In cellMSSystemInit(), when cellMSSurroundGetInfoSize() is executed before 
+  initialization, an invalid value is returned.
+  This problem has been fixed so that the execution of 
+  cellMSSurroundGetInfoSize() will fail when cellMSSurroundGetInfoSize() 
+  is called before cellMSSystemInit().
+
+- (B#47909)
+  When each sample was built using the SNC compiler on Visual Studio, 
+  a correct self file was not generated. 
+  This problem has been fixed. 
+
+- (B#50656, B#50728, B#48593)
+  When the simple_delay sample was built, the following warning message 
+  was output. This problem has been fixed. 
+  warning 178: variable "r2" was declared but never referenced

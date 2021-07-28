@@ -1,0 +1,35 @@
+/*
+ * SCE CONFIDENTIAL (Not for 3rd party release)
+ * Copyright (C) 2003 Sony Computer Entertainment America. All Rights Reserved 
+ *
+ * DESCRIPTION:	
+ * Cg Fragment Program - one texture
+ *
+ * AUTHORS: Antoine Labour
+ *
+ * DATE: 2004-Oct-19
+ */
+
+struct v2fConnector
+{
+    float3 projCoord : POSITION;
+    float4 color   : COLOR0;
+	float2 texture   : TEX0;
+};
+
+struct f2fConnector
+{
+    float4 COL : COLOR;
+};
+
+f2fConnector main
+(
+    v2fConnector v2f,
+	uniform texobj2D texture
+)
+{
+    f2fConnector f2f; 
+    f2f.COL = v2f.color*f4tex2D(texture,v2f.texture);
+    return f2f;
+}
+

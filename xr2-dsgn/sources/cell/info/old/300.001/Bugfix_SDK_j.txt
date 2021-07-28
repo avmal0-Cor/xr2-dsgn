@@ -1,0 +1,552 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 300.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの不具合修正を記述します。
+
+  - Release 300.001 の不具合修正
+
+======================================================================
+Release 300.001 の不具合修正
+======================================================================
+----------------------------------------------------------------------
+システムソフトウェア
+----------------------------------------------------------------------
+- (B#73247)
+  システムソフトウェア上におけるコンテンツディスクのビデオコンテンツの
+  タイトル表示部分で、オランダ語用タイトルとドイツ語用タイトルが入れ替
+  わって表示される問題を修正しました。
+
+- (B#76480)
+  [設定] -> [ネットワーク設定] -> [インターネット接続テスト]メニューにおいて、
+  インターネット接続テストの回線速度計測中にキャンセルするとハングアップ
+  することがある不具合を修正しました。
+
+<ゲーム列のCheckメニュー>
+- 以下の不具合を修正しました。
+
+  - パッケージからインストールされるコンテンツをシステムソフトウェアの
+    チェック機能を用いてチェックした際、そのコンテンツに圧縮されたSELFが
+    含まれていた場合、チェックしたコンテンツに問題がない時でも、エラーが
+    報告される不具合があります。 
+   （技術情報ID:200908-01  https://ps3.scedev.net/technotes/view/943）
+
+----------------------------------------------------------------------
+システムユーティリティ
+----------------------------------------------------------------------
+<ビデオアップロードユーティリティ>
+- 以下の技術情報の対処としまして、「ビデオアップロードユーティリティ 概要」
+  を修正しました。
+
+  - YouTubeに動画ファイルをアップロードする際に必要な
+    client_idとdeveloper_keyの取得方法が変更されました。
+    詳細は以下の技術情報をご参照下さい。
+   （技術情報ID:200906-06  https://ps3.scedev.net/technotes/view/923）
+
+<メッセージダイアログユーティリティ>
+- (B#71596)
+  cellMsgDialogClose() でメッセージダイアログを閉じている時に 
+  cellMsgDialogOpen2() を呼び出すと、メッセージダイアログが完全に
+  閉じ切っていないのに開いてしまう問題を修正しました。
+
+<録画ユーティリティ>
+- (B#73768)
+  サラウンドの音が録画されない不具合を修正しました。
+
+<ゲームコンテンツユーティリティ>
+- Target Managerにて「デバイスからロード」を選択して/app_home直下に置か
+  れた起動バイナリを起動した場合において、アクセス準備関数cellGameBootCheck()
+  実行時に cellGameContentPermit()を用いて取得するcontentInfoPathが、
+  0 length stringを返していたいた部分を usrdirPathと同様に/app_home
+  ディレクトリパスを返すように修正しました。
+
+<On-Screen Keyboard ユーティリティ>
+- (B#75349)
+  cellOskDialogAbort()を使用してオンスクリーンキーボードダイアログを
+  終了させたときの返り値が、
+  キャンセル(CELL_OSKDIALOG_INPUT_FIELD_RESULT_CANCELED)になっていたのを
+  アボート(CELL_OSKDIALOG_INPUT_FIELD_RESULT_ABORT)に修正しました。
+
+<ストレージデータユーティリティ>
+- (B#70874)
+  以下の関数において、コピー完了ダイアログの表示中にゲーム終了操作を
+  行われると、関数が CELL_STORAGEDATA_ERROR_FAILURE を返していた
+  不具合を修正しました。
+  SDK300より前のSDKで作られたタイトルに対しては、これまで通りの
+  挙動となります。
+  - cellStorageDataImport()
+  - cellStorageDataExport()
+  - cellStorageDataImportMove()
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- (B#72836)
+  送受信や多重 I/O 待ちしているソケットに対して、
+  別スレッドから socketclose() または shutdown() を呼び出したとき、
+  カーネルの internal error が発生することがある問題を修正しました。
+
+- WPA/WPA2 両方で接続可能な mixedモードに設定されたアクセスポイントに
+  接続すると、5 ～ 60 分程度で無線接続が切断されることがある
+  問題を修正しました。
+  無線接続が切断されると 8002AD23 のエラーが発生していました。
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#73020)
+  AVIファイルの再生時にcellSailPlayerFinalize()を呼ぶと
+  メモリアクセス違反が起こる不具合を修正しました。
+
+----------------------------------------------------------------------
+libsail_rec
+----------------------------------------------------------------------
+- (B#72493)
+  録画停止時に録画時間に依存してMP4ファイルが生成されない場合がある
+  不具合を修正しました。
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#67769)
+    cellSnd3VoiceKeyOnByTone()を呼び出すと、同一粒度内（cellSnd3Synthesis()や
+    cellSnd3SynthesisEx()で挟まれた区間）にある、他のAPI(cellSnd3***)が正しく
+    動作しない不具合が有ります。
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- (B#73283)
+  NCUのイベントがカウントできない問題を修正しました。
+
+- (B#73757)
+  spu_countサンプルプログラムで、変数の初期化が行われていない不具合
+  を修正しました。
+
+----------------------------------------------------------------------
+物理効果サンプル (cell\samples\tutorial\PhysicsEffects)
+----------------------------------------------------------------------
+- Maya エクスポータ使用時にジョイント可動範囲の表示が間違っていたため
+  修正しました。
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#73667)
+    ゲームタイトルから起動したオンスクリーンキーボードダイアログにおいて、
+    感圧対応のUSBコントローラでのL2/R2(入力文字切り替え)の操作が行えない
+    場合がある。
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#72170)
+    下記操作を速く繰り返すと、システムがハングアップする事があります。
+      1．HUBからデバイス切断
+      2．HUBを切断
+      3．HUBを接続
+      4．HUBにデバイス接続
+
+----------------------------------------------------------------------
+NP DRMユーティリティ
+----------------------------------------------------------------------
+- 以下の技術情報に関する不具合を修正しました。
+
+  - 圧縮されたNPDRM SELFのmake_package_npdrmによるパッケージが失敗する
+    可能性がある不具合
+    (技術情報ID:200907-02  https://ps3.scedev.net/technotes/view/928)
+
+----------------------------------------------------------------------
+NP ベーシックユーティリティ
+----------------------------------------------------------------------
+- フレンドのゲームステータスがフレンドによって設定される前に、
+  sceNpBasicGetFriendPresenceByIndex()等を用いて取得すると、
+  ゲームステータス(statusメンバ）に不正な値が設定される不具合を
+  修正しました。
+
+----------------------------------------------------------------------
+NPカスタムメニューユーティリティ
+----------------------------------------------------------------------
+- sceNpCustomMenuRegisterExceptionList()に23以上のエントリを渡すと、
+  必ず0x8002e005エラーとなる不具合を修正しました。
+
+----------------------------------------------------------------------
+NPクランユーティリティ
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - オンラインネームに <>&'" のいずれかの文字を含む
+    ユーザが PlayStation(R)Network にサインインした状態で、
+    以下の NP クランユーティリティの関数を呼ぶと、
+    SCE_NP_CLANS_SERVER_ERROR_BAD_REQUEST(0x80022801) の
+    エラーが返る問題があります。
+
+        sceNpClansPostAnnouncement()
+        sceNpClansPostChallenge()
+        sceNpClansSendMembershipRequest()
+        sceNpClansSendMembershipResponse()
+        sceNpClansKickMember()
+        sceNpClansSendInvitation()
+        sceNpClansSendInvitationResponse()
+   （技術情報ID:200907-08  https://ps3.scedev.net/technotes/view/935）
+
+----------------------------------------------------------------------
+NPマッチング2ユーティリティ
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - (B#76255)
+    ユーザは複数のルームに同時に参加することができますが、
+    参加するルームがそれぞれ異なるワールド上に存在する場合、
+    参加時に SCE_NP_MATCHING2_ERROR_ALREADY_JOINED(0x80022328) の
+    エラーが通知されることがあります。
+    (技術情報ID:200907-12 https://ps3.scedev.net/technotes/view/939)
+
+----------------------------------------------------------------------
+NPタイトルユーザストレージユーティリティ
+----------------------------------------------------------------------
+- 以下の関数において、対象のユーザ数が、SCE_NP_TUS_MAX_USER_NUM_PER_TRANS
+  を超えていた時に SCE_NP_CORE_ERROR_CONNECTION_TIMEOUT が返っていましたが、
+  SCE_NP_COMMUNITY_ERROR_TOO_MANY_NPID を返すように修正しました。
+
+  sceNpTusGetMultiUserVariable()
+  sceNpTusGetMultiUserVariableVUser()
+  sceNpTusGetMultiUserVariableAsync()
+  sceNpTusGetMultiUserVariableVUserAsync()
+  sceNpTusGetMultiUserDataStatus()
+  sceNpTusGetMultiUserDataStatusVUser()
+  sceNpTusGetMultiUserDataStatusAsync()
+  sceNpTusGetMultiUserDataStatusVUserAsync()
+
+- 以下の関数において、対象のスロット数が、SCE_NP_TUS_MAX_SLOT_NUM_PER_TRANS
+  を超えていた時に SCE_NP_CORE_ERROR_CONNECTION_TIMEOUT が返っていましたが、
+  SCE_NP_COMMUNITY_ERROR_TOO_MANY_SLOTID を返すように修正しました。
+
+  sceNpTusSetMultiSlotVariable()
+  sceNpTusSetMultiSlotVariableVUser()
+  sceNpTusSetMultiSlotVariableAsync()
+  sceNpTusSetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotVariable()
+  sceNpTusGetMultiSlotVariableVUser()
+  sceNpTusGetMultiSlotVariableAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotDataStatus()
+  sceNpTusGetMultiSlotDataStatusVUser()
+  sceNpTusGetMultiSlotDataStatusAsync()
+  sceNpTusGetMultiSlotDataStatusVUserAsync()
+  sceNpTusDeleteMultiSlotVariable()
+  sceNpTusDeleteMultiSlotVariableVUser()
+  sceNpTusDeleteMultiSlotVariableAsync()
+  sceNpTusDeleteMultiSlotVariableVUserAsync()
+
+----------------------------------------------------------------------
+NPマネージャユーティリティ
+----------------------------------------------------------------------
+- (B#74935)
+  Sub sigh-inのサインイン中にキャンセルするとサインイン中の画面で
+  進行不能になる不具合を修正しました。
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- (B#73357)
+  cellHttpTransactionAbortConnection()とcellHttpDestroyTransaction()を
+  同一のトランザクションに対して同時に呼ぶと、その後の
+  cellHttpTransactionAbortConnection()が内部でデッドロックすることが
+  ある不具合を修正しました。
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- 以下の不具合を修正しました。
+
+  - overlay を使ってリダイレクトしているディレクトリに対して
+    scheduler::readDirectory() を行うと、リダイレクトが反映されずに元の
+    ディレクトリのディレクトリエントリを読み込もうとします。
+
+  - (B#72502)
+    PSARC ツールを使って、PSARC-MSELF アーカイブの内容を表示すると、最後
+    のファイルのサイズが常に 0 となってしまいます。
+
+  - (B#72632)
+    スケジューラに、setPrefetchDelay() や setPrefetchThrottle() などによ
+    り、prefetchDelay や prefetchThrottle を指定すると、FIOS がクラッシュ
+    したりハングアップすることがあります。
+
+  - (B#73219)
+    data.psarc.sdat のような、署名・暗号化された PSARC アーカイブファイ
+    ルがキャッシュされると、以後、そのアーカイブファイルに対するオープン
+    は失敗します。
+
+  - (B#73578)
+    オーバーレイされた EDATA ファイルをオープンしようとすると、FIOS はエ
+    ラーを返します。
+
+  - (B#74241)
+    ゲームが独自にディスクイジェクトや再挿入を扱う場合、イジェクトされた
+    ディスクの再挿入時、FIOS はファイルをリオープンしようとして無限ルー
+    プしてしまいます。それ以外にも、ゲームによって、関連するファイルが再
+    度オープンされないと、FIOS の I/O 処理が失敗します。
+
+----------------------------------------------------------------------
+C/C++標準ライブラリ 
+----------------------------------------------------------------------
+<PPU>
+- (B#72389) 
+  C++のストリームを使用すると、メモリリークが発生することがあるという
+  不具合を修正しました。
+
+<PPU>
+- (B#69368) 
+  stdlib.hのassert()マクロに不具合があり、プロセス終了前にTTYに出力する
+  コールスタックの文字列中にヌル文字が含まれます。
+  そのため、例えば以下のツールを使用しているとコールスタックが正しく
+  表示されない場合があるという問題がありました。
+   ProDG Target Manager for PLAYSTATION(R)3
+   ProDG Debugger for PLAYSTATION(R)3
+   Tuner for PLAYSTATION(R)3
+
+  この問題は修正されました。
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+- (B#68682)
+  デバッグカーソルを表示したあと、cellDbgRsxDisableCursor()を呼ばずに
+  終了すると、カーソル表示が残ってしまう不具合を修正しました。
+
+----------------------------------------------------------------------
+カスタムテーマ
+----------------------------------------------------------------------
+- RAF(Rich Appearance Format)/PSJSに関して、以下の不具合を修正しました。
+ （技術情報ID:200907-03  https://ps3.scedev.net/technotes/view/929）
+
+  - PSJSスクリプトファイル内で、try内でreturnを行うと、メモリリークが
+    発生します。
+  - PSJSスクリプトファイル内で、オブジェクト間の循環参照を設定した場合、
+    スクリプト終了時にシステムがクラッシュします。
+  - PSJSスクリプトファイル内で、アクセス階層の深いオブジェクトを
+    生成した場合、そのオブジェクト破棄時にシステムがクラッシュします。
+  - スクリプト起動時にActorクラスのenableプロパティをfalseに設定した場合、
+    そのActorの描画に必要な初期化処理が行なわれません。
+  - RAFに使用されるPSJSスクリプトファイル内で、シーンファイルに
+    定義されていないidを使って、Actor、Camera、Lightクラスのインスタンスを
+    生成した場合、スクリプト終了時にシステムがクラッシュします。
+  - RAFファイルを背景に指定したカスタムテーマを適用した際、システムメニューの
+    フォントに影が付きません。
+  - RAFシーンファイルの<actor>要素のmaterial属性に対して、"basic_lighting"
+    または"basic_lighting_edge_lit"のeffect属性を持つ<material>要素を
+    指定した場合、specular成分及びedge_lit成分が正しく計算されません。
+  - RAFシーンファイルの<texture>要素のtype属性に対して、"normal_map"を
+    指定した場合、テクスチャ成分が正しく反映されません。
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#74464)
+  CellFiberPpuOnExitCallbackとデバッガ対応機能を併用したファイバーを
+  作成するとlibfiberの内部リソースがリークし、約8000回繰り返すと
+  cellFiberPpuCreateFiber()が失敗するようになる不具合を修正しました。
+
+- (B#73461)
+  cellFiberPpuFinalizeScheduler()がエラーを返す場合にデバッガがファイバー
+  スケジューラを認識しなくなる不具合を修正しました。
+
+- (B#59671)
+  cell::Fiber::Ppu::Util::Runtime::wakeup()がRuntimeインスタンスの
+  状態が動作中以外の状態で呼び出された場合、CELL_FIBER_ERROR_STATを
+  返す仕様であるが、CELL_OKが返る不具合を修正しました。
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libdma>
+- (B#73591)
+  cellDmaPutUint*()/cellDmaGetUint*() に型の違う引数を与えると
+  誤動作する不具合を修正しました。
+
+<libspurs タスク>
+- 以下の不具合を修正しました。
+
+  - (B#73941)
+    cellSpursJoinTask2()を複数のPPUスレッドから同時に実行すると、関数内部で
+    assertが発生することがあります。
+   （技術情報ID:200907-01  https://ps3.scedev.net/technotes/view/927）
+
+<libspurs ジョブ共通>
+- (B#71215)
+  cellSpursJobGetInputList()の引数sizeに16未満の値を指定した場合に、誤って
+  CELL_SPURS_JOB_ERROR_ALIGNを返してしまうことがある不具合を修正しました。
+
+<libspurs コア>
+- (B#73920)
+  cellSpursGetInfo()で取得できるdeadlineMeetCounterとdeadlineMissCounterが
+  正確になりました。
+  従来リリースまでと異なり、SPURSシステムサービスが全くSPUで実行されない状況
+  でもカウンターの値は更新されます。
+
+- (B#72835)
+  Tuner for PLAYSTATION(R)3から起動してもcellSpursTraceInitialize()がエラーを
+  返さない不具合を修正しました。
+
+<libspurs ジョブキュー>
+- 以下の不具合を修正しました。
+
+  - (B#73460)
+    ジョブキューでエラーコードがCELL_SPURS_JOB_ERROR_INVALID_BINARYのエ
+    ラーが発生した際、cell::Spurs::JobQueue::JobQueue::getError(),
+    cellSpursJobQueueGetError()を呼び出すと誤ってcauseに0が設定される
+    不具合がありました。
+    またこの不具合のため、以下の条件の場合にSPURSクラッシュダンプの'SPURS
+    JobQueue status'のcauseに誤って'0x0000000000000000'と表示されます。
+
+    ・cell::Spurs::JobQueue::JobQueue::create(), 
+      cellSpursJobQueueAttributeSetIsHaltOnError()のisHaltOnErrorにtrue を設定
+    ・エラーが発生時にSPUをhaltさせるよう設定してジョブキューを作成
+
+  - (B#73561,B#73527)
+    以下の関数を使用するとコンパイルエラーが発生する不具合がありました。
+     cell::SpursJobQueue::Port::getJobQueue()
+     cell::SpursJobQueue::PortContainer::getJobQueue()
+     cell::SpursJobQueue::JobQueue::getError()
+
+  - (B#73318,B#73319)
+    以下の関数にmaxGrabの値として不正な値0を指定して渡してもCELL_OKが返る。
+    cellSpursJobQueueAttributeSetMaxGrab()
+    cell::Spurs::JobQueue::JobQueue::create()
+
+  - (B#73467)
+    SPURSタスクより呼び出されたSPU用の以下のインタフェースが
+    待ち状態になる際に以下の不具合があります。
+
+    内部で呼び出したcellSpursWaitSignal()がエラーで返ってきた際に
+    CELL_SPURS_TASK_ERROR_FATALを返す仕様であるが、CELL_OKを返した後、
+    動作が不定となる
+    (blocking interfaceすべて: 以下のインタフェース)
+    cellSpursJobQueuePush(), cellSpursJobQueuePushJob()
+    cellSpursJobQueuePushFlush(), cellSpursJobQueuePushSync()
+    cellSpursJobQueuePushJobList(), cellSpursJobQueueSemaphoreAcquire(),
+    cellSpursJobQueuePortPush(), cellSpursJobQueuePortPushJob(),
+    cellSpursJobQueuePortPushFlush(), cellSpursJobQueuePortPushSync(),
+    cellSpursJobQueuePortPushJobList(), cellSpursJobQueuePortSync()
+
+    cell::Spurs::JobQueue::JobQueue::push(),
+    cell::Spurs::JobQueue::JobQueue::pushJob(),
+    cell::Spurs::JobQueue::JobQueue::pushFlush(),
+    cell::Spurs::JobQueue::JobQueue::pushSync(),
+    cell::Spurs::JobQueue::JobQueue::pushJobList(),
+    cell::Spurs::JobQueue::Port::push(),
+    cell::Spurs::JobQueue::Port::pushJob(),
+    cell::Spurs::JobQueue::Port::pushFlush(),
+    cell::Spurs::JobQueue::Port::pushSync(),
+    cell::Spurs::JobQueue::Port::pushJobList(),
+    cell::Spurs::JobQueue::Port::sync(),
+    cell::Spurs::JobQueue::PortContainer::push(),
+    cell::Spurs::JobQueue::PortContainer::pushJob(),
+    cell::Spurs::JobQueue::PortContainer::pushFlush(),
+    cell::Spurs::JobQueue::PortContainer::pushSync(),
+    cell::Spurs::JobQueue::PortContainer::pushJobList(),
+    cell::Spurs::JobQueue::PortContainer::sync()
+
+<FunctionOffloadチュートリアル(samples\tutorial\FunctionOffloadToSpu)>
+- (B#75711)
+  JDLの非同期インタフェース(xxxxx_async構造体)を使用して関数をオフロード実行
+  した際に、wait()メソッドでハングアップする不具合を修正しました。
+
+----------------------------------------------------------------------
+JDL-tool
+----------------------------------------------------------------------
+- (B#76576)
+  VTABLE patch機能の以下の制限事項を修正しました。
+  - オーバーロードされているメソッドがある場合コンパイルエラーが
+    発生する。
+  - ジョブ内部でしか使われない仮想関数に対してもimplementationの
+    定義が必要とされる。
+  - 仮想関数を呼び出すか、仮想クラスを引数にもつときのみVTABLEが
+    SPUに転送される。
+
+- (B#73790)
+  C++のstatic関数を持ったコードを生成することができない不具合を
+  修正しました。
+
+- (B#73792)
+  本来メソッド単位である名前空間がメソッドの外で定義されてしまう
+  不具合を修正しました。
+
+- (B#76511)
+  名前空間を使用しているクラスでVTABLE patch機能が使えない不具合を
+  修正しました。
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#72801)
+  コールバック関数を登録した場合、登録前に起きたコールバックイベントが
+  登録後に無関係なタイミングで上がってきてしまうことがある不具合を
+  修正しました。
+
+- 以下の不具合を修正しました。
+
+  - (B#73937)
+    PPU版cellGcmCgStripBranchesFromFragmentUCode()において、
+    入力バッファ（ucode）がスタック領域にあった場合エラーになる不具合。
+
+- 以下の不具合を修正しました。
+
+  - (B#75337)
+    libgcmのSPU版 cellGcmCgStripBranchesFromFragmentUCode() に、特定の条件で
+    誤ったブランチの判定処理を含むマイクロコードが生成されてしまう不具合があり
+    ます。
+   （技術情報ID:200907-09  https://ps3.scedev.net/technotes/view/936）
+
+- (B#73306)
+  MeasureSize, MeasureSizeInline モードの下記関数において、返すサイズが
+  間違っていた不具合を修正しました。
+   cellGcmSetTransferData()
+   cellGcmSetConvertSwizzleFormat()
+   cellGcmSetVertexProgram()
+   cellGcmSetFragmentProgramParameterPointer()
+   cellGcmResetDefaultCommandBuffer()
+   cellGcmFinish()
+
+- (B#75686)
+  以下の技術情報に関する不具合を修正しました。
+
+  - GCCの-mno-tocオプションを有効にしてビルドした場合、libgcmにおいて
+    不正な動作が発生する不具合
+    (技術情報ID:200907-13  https://ps3.scedev.net/technotes/view/940)
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- (B#73236)
+  以下のエラーの原因になっていた内部的な問題を修正しました。
+
+   error C1024: operands to "." must be scalar or vector
+
+- (B#73678)
+  libcgc で発生していた以下のメモリリークを修正しました。
+
+  - libcgc は、（libcgcをリンクした）アプリケーションが実行を終了するまで
+    開放されないメモリを割当てていました。
+    全ての cgc コンテキストが削除され、これ以上コンパイラを必要としな
+    い状況になっても、メモリは割当てられたままでした。
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- ファイル転送中にシャットダウンが発生した場合、FTPサーバが
+  ハングアップする問題を修正しました。
+
+- FTPコマンドに関するエラーチェックを改善しました。
+
+- 長いファイルパスが利用された場合クラッシュが発生した問題を
+  修正しました。
+

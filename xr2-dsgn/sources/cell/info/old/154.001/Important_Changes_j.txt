@@ -1,0 +1,201 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 154.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 システムソフトウェア(GUI)
+----------------------------------------------------------------------
+< 新規機能 >
+- システムソフトウェアに以下のメニューを追加しましたが、現在使用する
+  ことは出来ません。
+    - 設定 -> 本体設定 -> NP Title ID
+    - ネットワーク ->Title Store Preview
+
+----------------------------------------------------------------------
+2 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+AVチャットユーティリティ
+========================
+< 新規機能 >
+- ビデオチャットの対応機種として、USB Video Class 1.1に対応したカメラが
+  追加されました。なお、現時点で動作が確認されているUSB Video Class 1.1
+  のカメラの種類については、https://ps3.scedev.net/technotes の技術情報を
+  参照ください。
+
+システムキャッシュユーティリティ
+================================
+< サンプルの変更(samples/sysutil/syscache) >
+- cellSysCacheMount()がCELL_SYSCACHE_RET_OK_RELAYEDで返ってきた場合に
+  ファイルチェックを行うように変更しました。
+
+----------------------------------------------------------------------
+3 libcamera
+----------------------------------------------------------------------
+< 新規機能 >
+- USB Video Class 1.1 に対応したカメラをサポートしました。
+  フォーマット、解像度、フレームレートは以下になります。
+  また、現時点で動作が確認されているUSB Video Class 1.1のカメラの種類
+  については、https://ps3.scedev.net/technotesの技術情報を参照ください。
+    - フォーマット: JPG, YUV422
+    - 解像度: VGA, QVGA, WGA
+    - フレームレート: 25fps 以上 
+
+- USB Video Class 1.1 のカメラ用にフリッカー防止のための電源周波数の
+  設定機能を追加しました。
+
+- enum型CellCameraTypeの列挙子にUSB Video Class 1.1対応カメラのタイプ
+  CELL_CAMERA_USBVIDEOCLASSを追加しました。 
+
+- enum型CellCameraAttributeの列挙子として以下を追加しました。
+  詳細は、「libcamera リファレンス」を参照ください。
+    CELL_CAMERA_FORMATCAP
+    CELL_CAMERA_FORMATINDEX
+    CELL_CAMERA_NUMFRAME
+    CELL_CAMERA_FRAMEINDEX
+    CELL_CAMERA_FRAMESIZE
+    CELL_CAMERA_INTERVALTYPE
+    CELL_CAMERA_INTERVALINDEX
+    CELL_CAMERA_INTERVALVALUE
+    CELL_CAMERA_COLORMATCHING
+    CELL_CAMERA_PLFREQ
+    CELL_CAMERA_DEVICEID
+    CELL_CAMERA_DEVICECAP
+
+- PlayStation(R)2専用EyeToy(TM)USBカメラのカメラデバイスの属性を追加
+  しました。詳細は、「libcamera リファレンス」を参照ください。
+
+< 仕様変更 >
+- 以下の属性について、PlayStation(R)2専用EyeToy(TM)USBカメラが抜かれた
+  場合でも属性情報を保持するようしました。
+    CELL_CAMERA_LED
+    CELL_CAMERA_BACKLIGHTCOMP
+    CELL_CAMERA_MIRRORFLAG
+
+< サンプルの変更(samples/camera/simple) >
+- USB Video Class 1.1 対応カメラの初期化処理を追加しました。
+
+----------------------------------------------------------------------
+4 libgcm
+----------------------------------------------------------------------
+< 新規機能 >
+- cellGcmSetTransferReportData() を追加しました。
+
+- 構造体 CellGcmReportData を追加しました。
+
+----------------------------------------------------------------------
+5 libgcm_pm
+----------------------------------------------------------------------
+< 新規機能 >
+- 以下のイベントを追加しました。
+    CELL_GCM_PM_GCLK_IDX_FETCH_SYS
+    CELL_GCM_PM_ICLK_SYS_NORMAL_WRITE
+    CELL_GCM_PM_ICLK_SYS_NORMAL_READ
+
+----------------------------------------------------------------------
+6 PSGL
+----------------------------------------------------------------------
+< 新規機能 >
+- glEnable()の引数にGL_SKIP_FIRST_VSYNC_SCEを追加し、30fpsをサポート
+  しました。
+
+- glEnable()の引数にGL_SKIP_FIRST_VSYNC_SCEが指定可能になりました。
+  GL_SKIP_FIRST_VSYNC_SCEを指定する事によってフリップした次にくる
+  VBlankを１回分無視します。その為、30fpsでゲームアプリケーションを
+  動作させる事が可能になります。
+
+- PPUよりもRSX(R)がボトルネックになっている場合はpsglSwap()の内部で
+  描画の終了を待つ事がありますが、その際に要するPPUの負荷を改善しました。
+
+- 以下の関数にて引数にGL_TEXTURE_BORDER_COLORが指定可能になりました。
+    glTexParameterfv()
+    glTexParameteriv()
+
+- テクスチャタイプが正しく設定されていなかった時のエラーメッセージを
+  改善しました。
+  例）samplerCUBEに対して2Dテクスチャをバインドしていた場合
+      Error: Trying to bind texture object 1(GL_TEXTURE_2D) to target
+      GL_TEXTURE_CUBE_MAP
+
+- 以下の解像度をサポートしました。
+    CELL_VIDEO_OUT_RESOLUTION_1600x1080
+    CELL_VIDEO_OUT_RESOLUTION_1440x1080
+    CELL_VIDEO_OUT_RESOLUTION_1280x1080
+    CELL_VIDEO_OUT_RESOLUTION_960x1080
+
+- lowlevelの最適化を行う事により、パフォーマンスを改善しました。
+
+- PSGLdeviceParameters構造体に以下のメンバ変数を追加しました。
+    horizontalScale
+    verticalScale
+  rescの機能を使用する際は上記のメンバ変数の値を調整する事により
+  オーバースキャンレートの差異を調節する事が可能です。
+
+- デバイスのアスペクト比を取得するための関数を追加しました。
+    GLfloat psglGetDeviceAspectRatio(const PSGLdevice *device)
+
+- PSGLdeviceParameters構造体にメンバ変数rescInterlaceModeを追加しました。
+
+- 以下のマクロによってインターレース時のフィルタ設定が可能です。
+    RESC_INTERLACE_MODE_NORMAL_BILINEAR
+    --> インターレース時にフィルタを使用しない
+    RESC_INTERLACE_MODE_INTERLACE_FILTER
+    --> インターレース時にフィルタを使用する
+
+- PSGLが内部でテンポラリとして使用しているローカルメモリ(Bounce Buffer)
+  に関する関数を追加しました。
+    void psglSetBounceBufferSize( GLsizei size );
+    GLsizei psglGetBounceBufferSize(void);
+
+< 仕様変更 >
+- psglCreateDeviceExtended()の引数に指定するマクロを一部変更しました。
+    (旧) PSGL_DEVICE_PARAMETERS_RENDER_WIDTH_HEIGHT
+    (新) PSGL_DEVICE_PARAMETERS_RESC_RENDER_WIDTH_HEIGHT
+
+----------------------------------------------------------------------
+7 cgc
+----------------------------------------------------------------------
+< 新規機能 >
+- "-texformat"オプションを追加しました。
+
+< 仕様変更 >
+- ケースセンシティブに扱っていたCgFXの予約語を、大文字・小文字で区別を
+  しないようにしました。
+  なお、cgcのデフォルトのオプションが"-fx"となっていますので、今までに
+  作成したシェーダ内の変数・関数が、以下に示すCgFXの予約語とかち合う恐れ
+  があります。その場合は名称を変更するか、"-nofx"オプションを追加して
+  コンパイルして下さい。
+  また、"-e"オプションを用いてエントリを明示的に指定する場合にも、以下の
+  予約語と名称が、かち合う恐れがあります。その場合も名称を変更するか、
+  "-nofx"オプションを追加してコンパイルして下さい。
+
+    asm
+    decl
+    dword
+    float
+    matrix
+    pass
+    pixelfragment
+    pixelshader
+    string
+    technique
+    texture
+    vector
+    vertexfragment
+    vertexshader
+
+----------------------------------------------------------------------
+8 サンプルプログラム
+----------------------------------------------------------------------
+< 新規追加 >
+  samples/camera/test_driver :
+  PlayStation(R)2専用EyeToy(TM)USBカメラを使ったテストサンプル
+    libcameraでサポートされている、フォーマット、解像度、フレームレートを
+    使いPlayStation(R)2専用EyeToy(TM)USBカメラからの画像を表示します。
+    サンプルでは、PlayStation(R)2専用EyeToy(TM)USBカメラのアタッチ、
+    デタッチイベントのハンドリングやフォーマット、解像度、フレームレートの
+    動的変更方法も示しています。
+

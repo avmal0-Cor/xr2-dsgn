@@ -1,0 +1,376 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 200.002(based on GCC 4.1.1)
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+以下にPLAYSTATION(R)3 Reference Tool ツールチェーンパッケージの変更点と
+不具合修正を記述します。
+
+- Release 200.002 の変更点
+- Release 200.002 の不具合修正
+
+======================================================================
+Release 200.002 の変更点
+----------------------------------------------------------------------
+SN Systems社製リンカ
+----------------------------------------------------------------------
+<PPU側>
+(B#37796)
+- SN Systems社製のリンカを新規追加しました。
+  Linux版   : cell/host-linux/sn/bin/ps3ppuld
+  Windows版 : cell\host-win32\sn\bin\ps3ppuld.exe
+
+  SN Systems社製リンカは、既存のGNUリンカよりも高速にリンク処理を行います。
+  ppu-lv2-gccおよびppu-lv2-g++からリンク処理を行う場合は、デフォルトで
+  SN Systems社製リンカを呼び出します。
+  GNU製リンカを用いてリンク処理を行う場合は、-mno-sn-ldオプションを指定し
+  てください。
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+(B#36665)
+- プラグマ push_macro/pop_macro を新規追加しました。
+  使用方法は「Cell OS Lv-2 ツールチェーン ユーザガイド」を参照してください。
+
+(B#39973)
+- コンパイラオプション-save-temps-oを追加しました。
+  使用方法は「Cell OS Lv-2 ツールチェーン ユーザガイド」を参照してください。
+
+<SPU>
+(B#39945)
+- SPURSジョブ用のオプション-mspurs-job-initializeを追加しました。
+  使用方法は「Cell OS Lv-2 ツールチェーン ユーザガイド」及び「libspurs 概要」
+  を参照してください。
+
+(B#38864)
+- 例のようなプログラムを-Osオプションつきでコンパイルすると、-O2オプションの
+  場合と比べて小さいが少し遅いコードを生成するようになりました。
+
+  int f (int **pp)
+  {
+    int *p = *pp;
+    return p[3];
+  }
+
+<PPU側>
+(B#36757)
+- -muse-save-restore-funcsオプションを新規追加しました。
+  なお、このオプションはデフォルトでoffとなっています。
+
+  このオプションをコンパイル時に指定すると、関数のプロローグ/エピローグ
+  処理がランタイムルーチンの呼び出しで行われます。
+
+  これによりコードサイズを削減することができますが、コードの実行速度は
+  低下します。コードサイズ削減量ならびに実行速度低下量は、コンパイルする
+  プログラム中の関数の数、ならびにそれらの関数で共通するプロローグ/エピ
+  ローグ処理の量に依存します。
+
+  このオプションを指定して作成したオブジェクトファイルと、指定なしでコン
+  パイルしたオブジェクトファイルは、混在させてリンクすることができます。
+
+(B#39026)
+- PPUアセンブラに、リロケーション情報オプション-mlocal-fixupを追加しました。
+  使用方法は「Cell OS Lv-2 ツールチェーン ユーザガイド」を参照してください。
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- デバッガからプログラムをロードするオプションに、リモートプレイ機能利用時
+  の映像･音声のデータ伝送方式を選択できるオプション
+  "-remoteplay_option {m4v/avc}"を追加しました。
+ 
+  - m4vを指定した場合
+    MPEG-4 SP & ATRAC(TM)がリモートプレイのデータ伝送方式として使用されます。
+  - avcを指定した場合
+    MPEG-4 AVC & AACがリモートプレイのデータ伝送方式として使用されます。
+
+ 本オプションは省略可能であり、省略時はM4V & ATRAC(TM)がデフォルトで指定
+ された状態になります。
+
+======================================================================
+Release 200.002 の不具合修正
+----------------------------------------------------------------------
+SN Systems社製リンカ
+----------------------------------------------------------------------
+<PPU側>
+(B#41287)
+- ppu-lv2-stripを使用してストリップしたゲームアプリケーションを実行すると、
+  PPUスレッドの例外(Data Storage例外)が発生するという不具合を修正しました。
+  (この不具合は200betaのみに存在した不具合です)
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+(B#2417)
+- 以下の不具合を修正しました。
+  - Windows環境において、例のコードのようなプログラムを-frepoオプション指定
+    でコンパイルしリンクを行うと、リンクエラーが発生する不具合があります。
+
+    例) 
+      template<typename T>
+         T Max(T a, T b) 
+                { 
+                  return a > b ? a : b;
+                }
+
+      int main(){
+                  char cbuf;
+                  cbuf = Max('1', '2');
+                }
+
+(B#36171)
+- 以下の不具合を修正しました。
+  - STLを使用するヘッダをプリコンパイルし、それを使うプログラムをコンパイル
+    すると、internal compiler errorが発生します。
+
+(B#10976)
+- 以下の不具合を修正しました。
+  - 構造体の別名宣言に__may_alias__属性を利用するプログラムをコンパイル
+    するとinternal compiler errorが発生します。
+
+    typedef struct
+    {
+        char a;
+        char b; 
+        char c;
+        char d;
+    } test;
+    typedef test __attribute__((__may_alias__)) test_a;
+
+(B#30948)
+- 以下の不具合を修正しました。
+  - __attribute__ ((may_alias)) を指定すると、internal compiler errorが
+    発生することがあります。
+
+(B#32251)
+- binutils.info中のobjcopyの部分に以下のオプションの説明を追加しました。
+  --set-section-align
+  --set-section-pad
+
+(B#36143)
+- プラグマloopを以下のように指定した場合、ループ回数が4の倍数であるにも
+  かかわらず正しく動作しないことがあるという不具合を修正しました。
+  #pragma loop unroll 4 mult 4
+  for (int i = 0; i < n; i++) {
+    dst[i] = src[i];
+  }
+
+(B#39386)
+- Windows環境でバックスラッシュ(\)を含むレスポンスファイルが正しく解釈
+  されないという不具合を修正しました。
+
+(B#32305)
+- 以下のプログラムをコンパイルするとinternal compiler errorが発生する
+  という不具合を修正しました。
+  class Foo{
+  public:
+    int member_func(void){return 0; };
+  };
+  volatile int (Foo::*Member_function_pointer)(void)  = reinterpret_cast<volatile int (Foo::*)(void)>(&Foo::member_func);
+
+(B#33905)
+- 以下のプログラムでデータメンバTEST_CRC1.vの値が0になってしまうという
+  不具合を修正しました。
+  struct string_crc {
+    unsigned v;
+    static inline struct::string_crc from_u32(unsigned a);
+  };
+  inline struct::string_crc string_crc::from_u32(unsigned a) {
+    static struct::string_crc t = { a };
+    return t;
+  }
+  const static string_crc TEST_CRC = string_crc::from_u32( 0x12345678 );
+  extern "C" void abort (void);
+  int main() {
+    string_crc TEST_CRC1 = TEST_CRC;
+    if (! TEST_CRC1.v ) abort ();
+    return 0;
+  }
+
+(B#40038)
+- リンカには、同一のコードおよび読み取り専用データが複数ある場合に一つに
+  まとめる機能があります。Linux上でコンパイルすると、この機能が利用されな
+  いという不具合を修正しました。
+
+(B#39517)
+- 以下のようなコードでsigned char型へのキャストが無視されてしまうという
+  不具合を修正しました。
+  for (int j = 0; j < 0x110; j++)
+  {
+    signed char x = (signed char)j;
+    int y = (int)x;
+    printf("(int)(signed char)%x = %x\n", j, y);
+  }
+
+(B#38110)
+- 以下のプログラムをコンパイルするとinternal compiler errorが発生するとい
+  う不具合を修正しました。
+  unsigned long long x = 0;
+  
+  static inline void bar()
+  {
+    extern unsigned long long x;
+    x = 0;
+  }
+  
+  void foo()
+  {
+    bar();
+    extern unsigned long long x;
+    x = 1;
+  }
+
+(B#35546)
+- 以下のように()を使ったベクタリテラルを含むプログラムを、-Wunusedオプション
+  をつけてコンパイルすると、警告が表示されてしまうという不具合を修正しました。
+  vector unsigned char f() {
+    return (vector unsigned char)(0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8);
+  }
+
+(B#40824)
+- 関数を呼び出した際、呼び出された関数内のコードによってスタックを破壊して
+  しまうことがある、という不具合を修正しました。
+
+(B#41123)
+- 例のようなプログラムをコンパイルすると、加算の前に、aの最初の要素が全要素に
+  コピーされてしまうという不具合を修正しました。
+
+  例)
+    __vector float
+    f(__vector float a, __vecreg float b)
+    {
+      return a + b;
+    }
+
+(B#41602)
+- Windows版のccacheを使用してコンパイルを行うと、次のようなエラーが発生すること
+  がある、という不具合を修正しました。
+
+  C:/usr/local/cell/host-win32/ppu/bin/ppu-lv2-gcc: Exec format error
+
+<SPU側>
+(B#35113)
+- 組み込み関数spu_extractの生成するコードが、GCC4.0.2と比べて最適化されない
+  という不具合を修正しました。
+
+(B#37777)
+- spu_intrinsics.hをヘッダをプリコンパイルし、それを使うプログラムをコンパ
+  イルすると、組み込み関数spu_addの使用箇所でエラーが表示されるという不具合
+  を修正しました。
+
+(B#37966)
+- C++で書かれたSPURSジョブのプログラムを-mspurs-jobオプションを付けてビルド
+  すると__bss_startが16バイトアラインされない場合があるという不具合を修正し
+  ました。
+
+(B#39654)
+- 以下の不具合を修正しました。
+  - SPURSトレースを使用すると、SPURSタスクのプログラム内において
+    malloc、memalign、new等、動的なメモリ確保を行う関数の動作が不定に
+    なることがあります。
+
+    詳細は、技術情報200709-02を参照してください。
+    https://ps3.scedev.net/technotes/view/593
+
+<PPU側>
+(B#37198)
+- 以下の不具合を修正しました。
+  - vec_sel組み込み関数を使用しているゲームアプリケーションプログラムを
+    -O1以上でコンパイルすると、internal compiler errorが発生する場合がある、
+    という不具合があります。
+
+(B#37017)
+- 以下の不具合を修正しました。
+  - ppu_intrinsics.h内の組み込み関数__ldarxを使用するとinternal compiler
+    errorが発生するという不具合があります。
+
+(B#38828)
+- オプション-mwarn-lhsが機能しないという不具合を修正しました。
+
+(B#38320)
+- ppu_intrinsics_gcc.hで以下の警告が表示されることがあるという不具合を修正
+  しました。
+  declaration of 'result' shadows a parameter
+
+(B#39527)
+- 以下のプログラムをコンパイルするとinternal compiler errorが発生するという
+  不具合を修正しました。
+  class Vector3 {};
+  struct F {
+     Vector3 vector128;
+  };
+  struct C
+  {
+    const F f() const;
+    int g() const;
+    F h() const;
+    int i( int, F* );
+  };
+  F C::h() const   {
+    F v= f();
+    ((C*)this)->i(1, &v);
+    return v;
+  }
+  int C::g() const  {
+   h();
+  }
+
+  表示されるエラー:
+  internal compiler error: in expand_expr_addr_expr_1, at expr.c:6613
+
+(B#39531)
+- 組み込み関数__dcbtおよび__dcbtstの実装を改良し、__builtin_prefetchを
+  使うようにしました。
+
+(B#37166)
+- 以下の組み込み関数を使用すると警告が表示されるという不具合を修正しました。
+  __dcbf, __dcbz, __dcbst, __dcbt, __dcbtst, __icbi
+
+(B#40490)
+- -fno-exceptionsオプション指定時に、-fno-rttiオプションが暗黙に指定される
+  不具合を修正しました。
+
+  なお、Toolchain 180.002までのコンパイラオプション仕様では、例外処理を
+  無効にするオプション( -fno-exceptions )と、RTTIを無効にするオプション
+  ( -fno-rtti )を、個別に指定することはできず、両方同時に指定する必要が
+  ありました。
+  Toolchain 190.002より、これらのコンパイラオプションの仕様を以下のよう
+  に変更しました。
+
+    - -fno-exceptionsのみ指定した場合 :
+        例外処理は無効となり、RTTIは有効となる
+    - -fno-exceptionsと-fno-rttiを指定した場合 :
+        例外処理とRTTIの両方とも無効となる
+    - どちらも指定しない場合 :
+        例外処理とRTTIの両方が有効となる
+
+  プログラムのリンクを行う場合には、必ずこのオプションの組み合わせが同じ
+  オブジェクト、ライブラリ同士で行ってください。組み合わせが混在したリン
+  クを行った場合、リンクできないあるいはプログラムが不正な振舞をします。
+
+(B#41289)
+- 環境変数PATHの変数値が正しく設定されていない場合、PPUプログラムをリンク
+  する際に、次のエラーになるという不具合を修正しました。
+  (この不具合は200betaのみに存在した不具合です)
+
+  -- Linux --
+  ppu-lv2-g++: error trying to exec 'ppu-lv2-prx-fixup':
+  execvp: No such file or directory
+
+  -- Windows --
+  ppu-lv2-g++.exe: _spawnvp: No such file or directory
+
+  なお、環境変数の設定については、「Reference Tool ソフトウェアセット
+  アップガイド」のドキュメントを参照してください。
+
+(B#41435)
+- 最適化オプションを指定すると、関数の第一引数が正しく渡らないコードが生成
+  されることがある、という不具合を修正しました。
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+なし

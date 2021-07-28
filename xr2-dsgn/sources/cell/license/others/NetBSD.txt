@@ -1,0 +1,358 @@
+BSD License
+============
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+ 1. Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer. 
+ 2. Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution. 
+ 3. All advertising materials mentioning features or use of this software must 
+    display the following acknowledgement:
+    This product includes software developed by the NetBSD Foundation, Inc. 
+    and its contributors.  
+ 4. Neither the name of The NetBSD Foundation nor the names of its contributors 
+    may be used to endorse or promote products derived from this software without 
+    specific prior written permission.  
+
+THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS ``AS IS'' 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  
+IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Copyright (c) 1982-1995
+  The Regents of the University of California.  All rights reserved.
+
+Copyright (c) 1982, 1986, 1989, 1993
+  The Regents of the University of California.  All rights reserved.
+  This code is derived from software contributed to Berkeley by
+  Mike Karels at Berkeley Software Design, Inc.
+
+Copyright (c) 1991, 1993
+  The Regents of the University of California.  All rights reserved.
+  This code is derived from software contributed to Berkeley by
+  Berkeley Software Design, Inc.
+
+Copyright (c) 1982, 1986, 1989, 1990, 1991, 1993, 1994
+  The Regents of the University of California.  All rights reserved.
+  (c) UNIX System Laboratories, Inc.
+  All or some portions of this file are derived from material licensed
+  to the University of California by American Telephone and Telegraph
+  Co. or Unix System Laboratories, Inc. and are reproduced herein with
+  the permission of UNIX System Laboratories, Inc.
+
+Copyright (c) 1992
+  The Regents of the University of California. All rights reserved.
+  This software was developed by the Computer Systems Engineering group
+  at Lawrence Berkeley Laboratory under DARPA contract BG 91-66 and
+  contributed to Berkeley.
+
+Copyright (c) 1992, 1993
+  The Regents of the University of California.  All rights reserved.
+  This software was developed by the Computer Systems Engineering group
+  at Lawrence Berkeley Laboratory under DARPA contract BG 91-66 and
+  contributed to Berkeley.
+  All advertising materials mentioning features or use of this software
+  must display the following acknowledgement:
+  This product includes software developed by the University of
+  California, Lawrence Berkeley Laboratory.
+
+Copyright (c) 1990-1997
+  This code is derived from the Stanford/CMU enet packet filter,
+  (net/enet.c) distributed as part of 4.3BSD, and code contributed
+  to Berkeley by Steven McCanne and Van Jacobson both of Lawrence
+  Berkeley Laboratory.
+
+Copyright (c) 1992, 1993
+  The Regents of the University of California.  All rights reserved.
+  This code is derived from software contributed to Berkeley by
+  Stephen Deering of Stanford University.
+
+Copyright (c) 1996-2001, 2003
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe of the Numerical Aerospace Simulation Facility,
+  NASA Ames Research Center.
+
+Copyright (c) 1997
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by J.T. Conklin.
+
+Copyright (c) 1997-1999, 2002
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe of the Numerical Aerospace Simulation Facility,
+  NASA Ames Research Center, and by Luke Mewburn.
+
+Copyright (c) 1997-1999
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Luke Mewburn.
+
+Copyright (c) 1997-1999
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe of the Numerical Aerospace Simulation Facility,
+  NASA Ames Research Center, and by Luke Mewburn.
+
+Copyright (c) 1997, 1998, 2003
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by J.T. Conklin, by Nathan J. Williams, and by Jason R. Thorpe.
+
+Copyright (c) 1997, 1998, 2000, 2001
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe and Kevin M. Lahey of the Numerical Aerospace
+  Simulation Facility, NASA Ames Research Center.
+
+Copyright (c) 1997, 1998, 1999
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe and Kevin M. Lahey of the Numerical Aerospace Simulation
+  Facility, NASA Ames Research Center.
+
+Copyright (c) 1998
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Charles M. Hannum.
+
+Copyright (c) 1998
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Kevin M. Lahey of the Numerical Aerospace Simulation Facility,
+  NASA Ames Research Center.
+
+Copyright (c) 1998
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Public Access Networks Corporation ("Panix").  It was developed under
+  contract to Panix by Eric Haszlakiewicz and Thor Lancelot Simon.
+
+Copyright (c) 1999-2001
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by William Studnemund and Jason R. Thorpe.
+
+Copyright (c) 2000
+  The NetBSD Foundation, Inc. All rights reserved.
+
+Copyright (c) 2000
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jun-ichiro itojun Hagino.
+
+Copyright (c) 2001
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Klaus Klein.
+
+Copyright (c) 2001
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Matt Thomas <matt@3am-software.com>.
+
+Copyright (c) 2002
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Thor Lancelot Simon.
+
+Copyright (c) 2002
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe of Wasabi Systems, Inc.
+
+Copyright (c) 2002
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Martin Husemann <martin@NetBSD.org>.
+
+Copyright (c) 2002-2004
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Christos Zoulas.
+
+Copyright (c) 2003
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Jason R. Thorpe.
+
+Copyright (c) 2003
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by Matthias Scheler.
+
+Copyright (c) 2003
+  The NetBSD Foundation, Inc. All rights reserved.
+  This code is derived from software contributed to The NetBSD Foundation
+  by David Laight.
+
+Copyright (C) 1995-1999, 2003
+  WIDE Project. All rights reserved.
+
+Portions Copyright (c) 1993
+  by Digital Equipment Corporation.
+  Permission to use, copy, modify, and distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies, and that
+  the name of Digital Equipment Corporation not be used in advertising or
+  publicity pertaining to distribution of the document or software without
+  specific, written prior permission.
+  
+Portions Copyright (c) 1995
+  by International Business Machines, Inc.
+  International Business Machines, Inc. (hereinafter called IBM) grants
+  permission under its copyrights to use, copy, modify, and distribute this
+  Software with or without fee, provided that the above copyright notice and
+  all paragraphs of this notice appear in all copies, and that the name of IBM
+  not be used in connection with the marketing of any product incorporating
+  the Software or modifications thereof, without specific, written prior
+  permission.
+  
+  To the extent it has a right to do so, IBM grants an immunity from suit
+  under its patents, if any, for the use, sale or manufacture of products to
+  the extent that such products are used for performing Domain Name System
+  dynamic updates in TCP/IP networks by means of the Software.  No immunity is
+  granted for any product per se or for any other function of any product.
+  
+Copyright (c) 1995, 1996
+  Carnegie-Mellon University. All rights reserved.
+  Author: Chris G. Demetriou
+  
+  Permission to use, copy, modify and distribute this software and
+  its documentation is hereby granted, provided that both the copyright
+  notice and this permission notice appear in all copies of the
+  software, derivative works or modified versions, and any portions
+  thereof, and that both notices appear in supporting documentation.
+  
+  CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+  CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND 
+  FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+  
+  Carnegie Mellon requests users of this software to return to
+  
+  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+  School of Computer Science
+  Carnegie Mellon University
+  Pittsburgh PA 15213-3890
+  
+  any improvements or extensions that they make and grant Carnegie the
+  rights to redistribute these changes.
+  
+----------------------------------------------------------------------------
+ "THE BEER-WARE LICENSE" (Revision 42):
+ <phk@FreeBSD.ORG> wrote this file.  As long as you retain this notice you
+ can do whatever you want with this stuff. If we meet some day, and you think
+ this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
+----------------------------------------------------------------------------
+
+Copyright (c) 1996
+  Matt Thomas.  All rights reserved.
+
+Copyright (c) 1996
+  by Internet Software Consortium.
+  Permission to use, copy, modify, and distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+Copyright (c) 1997
+  Jonathan Stone and Jason R. Thorpe.  All rights reserved.
+  This software is derived from information provided by Matt Thomas.
+
+Copyright (c) 1989
+  Carnegie Mellon University. All rights reserved.
+  Redistribution and use in source and binary forms are permitted
+  provided that the above copyright notice and this paragraph are
+  duplicated in all such forms and that any documentation,
+  advertising materials, and other materials related to such
+  distribution and use acknowledge that the software was developed
+  by Carnegie Mellon University.  The name of the
+  University may not be used to endorse or promote products derived
+  from this software without specific prior written permission.
+  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+  WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  Drew D. Perkins
+  Carnegie Mellon University
+  4910 Forbes Ave.
+  Pittsburgh, PA 15213
+  (412) 268-8576
+   ddp@andrew.cmu.edu
+
+Copyright (c) 1994
+  The Australian National University. All rights reserved.
+  Permission to use, copy, modify, and distribute this software and its
+  documentation is hereby granted, provided that the above copyright
+  notice appears in all copies.  This software is provided without any
+  warranty, express or implied. The Australian National University
+  makes no representations about the suitability of this software for
+  any purpose.
+
+Copyright (c) 1997
+  Joerg Wunsch.
+  This software is distributed with NO WARRANTIES, not even the implied
+  warranties for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  
+  Authors grant any other persons or organizations permission to use
+  or modify this software as long as this message is kept with the software,
+  all derivative works or modified versions.
+  
+Copyright (c) 1994-1996
+  Cronyx Engineering Ltd.
+  Author: Serge Vakulenko, <vak@cronyx.ru>
+  Heavily revamped to conform to RFC 1661.
+
+Copyright (c) 2000
+  Jun-ichiro itojun Hagino <itojun@iijlab.net>.
+  This software is distributed with NO WARRANTIES, not even the implied
+  warranties for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  Authors grant any other persons or organisations permission to use
+  or modify this software as long as this message is kept with the software,
+  all derivative works or modified versions.
+
+Copyright (c) 1998
+  Niels Provos <provos@citi.umich.edu> All rights reserved.
+  Theo de Raadt <deraadt@openbsd.org> came up with the idea of using
+  such a mathematical system to generate more random (yet non-repeating)
+  ids to solve the resolver/named problem.  But Niels designed the
+  actual system based on the constraints.
+
+Copyright (c) 1997-2000
+  Sony Computer Science Laboratories Inc.  All rights reserved.
+
+Copyright (c) 1988
+  Stephen Deering.
+
+Copyright (c) 1989-2002
+  Paul Mackerras. All rights reserved.
+
+Copyright (c) 2000
+  Aaron D. Gifford. All rights reserved.
+
+Copyright (c) 2001
+  Thomas Nordin <nordin@openbsd.org>
+
+Copyright (c) 2000-2001
+  Artur Grabowski <art@openbsd.org> All rights reserved. 
+
+Copyright (c) 2003
+  Citrus Project, All rights reserved.
+
+portions-copyright-nrl-95
+  Portions of this software are Copyright 1995-1998 by Randall Atkinson,
+  Ronald Lee, Daniel McDonald, Bao Phan, and Chris Winters. All Rights
+  Reserved. All rights under this copyright have been assigned to the US
+  Naval Research Laboratory (NRL). The NRL Copyright Notice and License
+  Agreement Version 1.1 (January 17, 1995) applies to these portions of the
+  software.
+  You should have received a copy of the license with this software. If you
+  didn't get a copy, you may request one from <license@ipv6.nrl.navy.mil>.
+

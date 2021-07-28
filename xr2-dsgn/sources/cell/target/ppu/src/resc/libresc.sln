@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libresc", "src\libresc.vcproj", "{C2A26DEF-8034-4628-9C82-0374DF63EF9B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		PS3 Debug|Win32 = PS3 Debug|Win32
+		PS3 Release|Win32 = PS3 Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2A26DEF-8034-4628-9C82-0374DF63EF9B}.PS3 Debug|Win32.ActiveCfg = PS3 Debug|Win32
+		{C2A26DEF-8034-4628-9C82-0374DF63EF9B}.PS3 Debug|Win32.Build.0 = PS3 Debug|Win32
+		{C2A26DEF-8034-4628-9C82-0374DF63EF9B}.PS3 Release|Win32.ActiveCfg = PS3 Release|Win32
+		{C2A26DEF-8034-4628-9C82-0374DF63EF9B}.PS3 Release|Win32.Build.0 = PS3 Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

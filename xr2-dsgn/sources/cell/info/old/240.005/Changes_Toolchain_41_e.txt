@@ -1,0 +1,45 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 240.005
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Bugs fixed in Release 240.005
+
+======================================================================
+Bugfixes in Release 240.005
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+(B#55075)
+- When casting between two different pointers to structs, one with a
+  field of a vector type and one does not, can cause an internal
+  compiler error in expand_expr_real_1. This has been fixed.
+  "xxxx.cpp:(xx): internal compiler error: in expand_expr_real_1, at expr.c:7665"
+
+(B#56742)
+- With mutliple compiles running at the same time on the same machine
+  with PreCompiled Headers on, an internal error in MapViewOfFileEx
+  would happen. This has been fixed.
+  "internal error in mingw32_gt_pch_use_address,
+   at config/i386/host-mingw32.c(177): MapViewOfFileEx: Access is denied."
+
+(B#56742)
+- When compiling with PreCompiled Headers on, an internal error in
+  VirtualAlloc would happen. This has been fixed.
+  "internal error in mingw32_gt_pch_get_address,
+   at config/i386/host-mingw32.c(119): VirtualAlloc: Attempt to access invalid address."
+
+(B#57220)
+- When a type is defined(typedef) in a template, the debug
+  information was not generated correctly.
+  This problem has been fixed.
+
+(B#57679)
+- In some cases with a large number of variables whose address have
+  been taken and inlining, GCC would produce wrong code.
+  This problem has been fixed.
+

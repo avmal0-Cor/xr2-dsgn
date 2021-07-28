@@ -1,0 +1,457 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 180.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 180.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 180.002
+======================================================================
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libpngdec>
+- The following problem has been fixed.
+
+  - The following bug occurs when decoding a stream whose info->colorSpace 
+    value, obtained by CellPngDecInfo *info argument of cellPngDecReadHeader(),
+    is either CELL_PNGDEC_GRAYSCALE_ALPHA or CELL_PNGDEC_RGBA: 
+
+    When inParam->outputAlphaSelect is set to CELL_PNGDEC_FIX_ALPHA in the 
+    CellPngDecInParam *inParam argument of cellPngDecSetParameter(), the fixed 
+    alpha value set to inParam->outputColorAlpha is not output to the decode 
+    image, but the alpha value of the stream is output instead. 
+
+- The following problem has been fixed.
+
+  - The following problem occurs when decoding a stream whose info->colorSpace 
+    value, obtained by CellPngDecInfo *info argument of cellPngDecReadHeader(),
+    is CELL_PNGDEC_PALETTE, and whose bit, that indicates the existence of 
+    the tRNS chunk of info->chunkInformation, is set to 1:
+
+    When a value other than CELL_PNGDEC_PALETTE is set to 
+    inParam->outputColorSpace using CellPngDecInParam *inParam argument of 
+    cellPngDecSetParameter(), the values of trns->alphaForPaletteIndex and 
+    trns->alphaForPaletteIndexNumber, that are obtained by CellPngTRNS *trns 
+    argument of cellPngDecGettRNS(), are set to 0. 
+
+<libsail>
+- The following problem has been fixed.
+
+  - In libsail, the combination of the TV output frequency, frame rate
+    (flip frequency) and the "preset" argument of cellSailPlayerInitialize( ) 
+    may fail to perform AV synchronization correctly. 
+    This may cause failure of movie playback or interruption of sound. 
+
+- The following problem has been fixed.
+
+  - In streaming/simple_player sample, the tag array for AV synchronization 
+    is not managed correctly.
+
+    In simple_player.cpp file, the following process within 
+    SimplePlayer::onRender() is not correct:
+
+      1801st line:
+      maVideoTags[mFlipTagIndex] = info.tag
+
+    This should be corrected as follows:
+      maVideoTags[mRenderTagIndex] = info.tag
+
+- The following problem has been fixed.
+
+  - In the sample program (streaming/psgl_player), when the START button 
+    is pressed repeatedly, it reenters into the PSGL function.
+    As a consequences, it may hang up.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - Dolby Digital 5.1ch may not be enabled when setting the output of 
+    libaudio by cellMSSystemConfigureSysUtil() although Dolby Digital 5.1ch 
+    is enabled on both the system software and the game application. 
+
+- The following problem has been fixed.
+
+  - When the EQ processing is performed with the multi-channel DSP effect, 
+    the EQ function may not run correctly. Consequently, the game application 
+    may not produce an echo as intended or it may play a noise. 
+
+----------------------------------------------------------------------
+Hash Functions Library
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - The following functions always returns CELL_OK. 
+    cellMd5Digest()
+    cellSha1Digest()
+    cellSha224Digest() 
+    cellSha256Digest()
+    cellSha384Digest()
+    cellSha512Digest()
+
+- The following problem has been fixed.
+
+  - When the following functions are called after NULL is set as an argument 
+    that points to the SPURS work area pointer, DSI occurs. 
+    cellMd5SpuCheckStatus() 
+    cellMd5SpuCreateTask() 
+    cellMd5SpuEndTask() 
+    cellMd5SpuProcessData() 
+
+    cellSha1SpuCheckStatus() 
+    cellSha1SpuCreateTask() 
+    cellSha1SpuEndTask() 
+    cellSha1SpuProcessData() 
+
+    cellSha224SpuCheckStatus() 
+    cellSha224SpuCreateTask() 
+    cellSha224SpuEndTask() 
+    cellSha224SpuProcessData() 
+
+    cellSha256SpuCheckStatus() 
+    cellSha256SpuCreateTask() 
+    cellSha256SpuEndTask() 
+    cellSha256SpuProcessData() 
+
+    cellSha384SpuCheckStatus() 
+    cellSha384SpuCreateTask() 
+    cellSha384SpuEndTask() 
+    cellSha384SpuProcessData() 
+
+    cellSha512SpuCheckStatus() 
+    cellSha512SpuCreateTask() 
+    cellSha512SpuEndTask() 
+    cellSha512SpuProcessData()
+
+- A bug in the samples/hash/ppu/sum and samples/hash/ppu/sumSPURS 
+  samples have been fixed.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When the FTP service that is booted using libftp or ftpd.self is 
+    terminated using dtpoff, the following problems occur:
+
+    - A message "shutdown sequence timed out." will be output to tty after 
+      about 15 seconds.
+    - After the above message is displayed, a beep sound will be played 
+      3 times, then the Reference Tool will be terminated.
+
+- The following problem has been fixed.
+
+  - In ftpd.self, SYS_PROCESS_PARAM macro is not declared.
+
+- The following problem has been fixed.
+
+  - When the FTP service is activated from libftp or ftpd.self, and then 
+    the dir command is sent to the activated FTP service by the FTP client 
+    for a certain number of times, the FTP service  will output 
+    an error message '550 File system error' to the FTP client 
+    after a certain number of times and will not handle the dir command.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- When you create glyph information by specifying a large size 
+  (about 800 pixel height or more) and attempt to render italic 
+  characters using cellFontGlyphGetVerticalShift() and 
+  cellFontGlyphRenderImageVertical(), calculation within the function 
+  overflows and it returns an error code indicating that it cannot 
+  render them in a correct position. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When converting the cube map texture of the linear format into 
+    a gtf file using dds2gtf, each texture of Face was 128 byte aligned.
+
+    Unnecessary padding data is inserted between each face because 
+    it is not necessary to align the texture on the 128 byte boundary 
+    for the linear format.
+
+----------------------------------------------------------------------
+CXML
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When a CXML file is created based on a XML file that has no 
+    file type attribute, and Document::CreateFromBuffer() is executed 
+    using the resulting CXML file, RESULT_ERROR_CANT_SEEK will return. 
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<PPU/SPU>
+- The following problem has been fixed.
+
+  - When a value less than -35.0 is passed to the following functions of 
+    math.h as an argument, an incorrect value will be returned:
+    tgamma, tgammaf, tgammal
+
+<SPU>
+- The following problem has been fixed.
+
+  - When you use reallocalign function in C++ without specifying 
+    std namespace and describe reallocalign() as is, the following 
+    error occurs at compilation: 
+
+        error: 'reallocalign' was not declared in this scope
+
+<PPU/SPU>
+- The following problem has been fixed.
+
+  - In strtoull function of stdlib.h, when you convert 20 digits decimal 
+    numbers, although the value(string) specified as an argument is 
+    within the range of unsigned long long, ERANGE will be set to errno 
+    and an incorrect result will be returned. 
+
+<PPU/SPU>
+- The following problem has been fixed.
+
+  - When an error code that strerror() does not support is passed as 
+    an argument and then executed, a wrong string is returned.
+
+    It will be fixed in SDK 180 so that a string that is converted into 
+    the hexadecimal number based on the error code will be returned.
+
+<PPU/SPU>
+- The following problem has been fixed.
+
+  - A bug has been found in the following functions of libm.
+    The resulting value that is near to 0 may be truncated to 0.
+
+     PPU : sin, sinf, cos, cosf
+     SPU : sin, cos
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When cellUsbdRegisterLdd() is called in the detach function, 
+    the probe function may be called incorrectly for the devices 
+    that have been detached. 
+
+- The following problem has been fixed.
+
+  - The macro for the completion code of the host controller defined 
+    in usb.h has an incorrect value as shown below:
+
+    Wrong:
+     #define EHCI_CC_BABBLE  0x40
+     #define EHCI_CC_DATABUF 0x80
+     #define EHCI_CC_HALTED  0x100
+
+    Correct:
+     #define EHCI_CC_BABBLE  0x30
+     #define EHCI_CC_DATABUF 0x40
+     #define EHCI_CC_HALTED  0x50
+
+----------------------------------------------------------------------
+NP Score Ranking utility
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When data that is 220KB or more is registered using 
+    sceNpScoreRecordGameData(), an error code 
+    SCE_NP_COMMUNITY_ERROR_OUT_OF_MEMORY(0x8002A103) may be returned 
+    and fail to perform the registration. 
+
+- The following problem has been fixed.
+
+  - When you call sceNpScoreTerm() while making communications 
+    for the score transactions, then reinitialize the Score Ranking utility 
+    by calling sceNpScoreInit(), it may hang up.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- In the following samples, the memory area whose state initialization 
+  buffer is reserved by the constructor of FWCellGCMWindow class is 
+  now used:
+    fw_cube
+    fw_mipmap
+    fw_multi_texture
+    fw_stencil_reflect
+    fw_vertex_attribute
+    fw_vertex_texture
+    fw_video_texturing
+
+- The following problem has been fixed.
+
+  - When you use the libgcm debug version, it is required to declare 
+    the CELL_GCM_DEBUG macro, however, when building a game application 
+    described in C code, an "syntax error" occurs with some functions.
+
+    Those functions that causes the "syntax error" internally uses 
+    the CELL_GCM_ASSERT() macro in which descriptions were made based 
+    on the C++ specifications. 
+
+- In cellGcmSetFragmentProgramLoad(), if registerCount has a value less
+  than 2, it will be now changed to 2.
+
+- The value of CELL_GCM_VTXPRG_MAX_INST has been changed from 544 to 
+  512.
+
+- In cellGcmSetVertexProgramLoad() and cellGcmSetVertexProgram(), if 
+  instructionCount is bigger than 512, it now stops at while(1).
+
+----------------------------------------------------------------------
+libresc
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When calling cellRescAdjustAspectRatio(), it is described as 
+    "This function can be called at any time after cellRescInit()." 
+    in the document, however, it shoud be called before 
+    cellRescSetBufferAddress() otherwise the actual performance 
+    will not be taken place. 
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - Although access to a specific address from the PPU thread 
+    using sys_mmapper_change_address_access_right() is restricted, 
+    such access becomes available. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Storage Data Utility>
+- When the free space of the copy destination was less than the maximum 
+  size that was passed to the function (cellStorageDataImport/
+  cellStorageDataExport/cellStorageDataImportMove) as an argument, it 
+  failed to copy regardless of the file size that would be actually copied. 
+  This problem has been fixed. 
+
+<Save Data Utility>
+- The following problem has been fixed.
+
+  - When the save data is copied via an environment other than 
+    PLAYSTATION(R)3, it will be unable to obtain the number of 
+    files that compose the save data correctly.
+
+- The following problem has been fixed.
+
+  - When a specific operation is performed for an unprotected data file 
+    using the save data utility, CELL_SAVEDATA_ERROR_FAILURE is rarely 
+    returned and the operation fails. 
+
+    In such case, an error number 0x8002920D will be displayed on the screen.
+
+<Remote Play Utility>
+- The following problem has been fixed.
+
+  - When the TV monitor is connected via the HDMI, and the sample is booted 
+    with the "-remoteplay on"option from the debugger, cellVideoOutConfigure() 
+    returns CELL_VIDEO_OUT_ERROR_CONDITION_BUSY or it hangs up within 
+    the function if the resolution is either one of 1080p,1080i or 720p.
+
+< Web Browser Utility >
+- The following problem has been fixed.
+
+  - When a system utility with GUI such as a message dialog or a Web browser 
+    is booted after the Web browser is forcibly terminated using either 
+    cellWebBrowserDestroy() or cellWebBrowserDestroy2(), devices(controller, 
+    mouse, keyboard) on the system utility will not work correctly.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs core>
+- In the SPURS trace, the workload ID is now entered correctly.
+  The workload ID is returned to the "workload" of the structure header 
+  in the CellSpursTracePacket structure. 
+
+<libspurs task>
+- When the following functions were called from the SPURS task whose 
+  context was not specified, CELL_OK was returned instead of 
+  CELL_SPURS_TASK_ERROR_STAT. This problem has been fixed.
+  cellSpursWaitSignal(),cellSpursYield()
+
+<libspurs job>
+- "-fpic" has been added as a link option for when building a sample SPURS job.
+
+- In Job 2.0,when a job chain that was created with the autoReadyCount argument
+  of cellSpursJobChainAttributeInitialize() set to "true" was executed,
+  the second SPU and the later were not assigned to the job chain until 
+  the SPU that started the job chain completed the second job import. 
+  This problem has been fixed. 
+
+  When cellSpursJobGuardNotify() is executed for the job chain that is being 
+  terminated by the GURD command, it is also deemed as "executed".
+
+- In SDK160 and SDK170, when a job that uses the output buffer was executed, 
+  the stack pointer was set to 0. This problem has been fixed.
+  Also, when it was set to use the scratch buffer, the scratch buffer 
+  and the output buffer were assigned overlappingly. 
+  This problem has been fixed.  
+
+- In SDK160 and SDK170, when the execution of the job chain was terminated 
+  by the GUARD command, and the urgent command that was called via 
+  cellSpursAddUrgentCommand() or cellSpursAddUrgentCall() was executed, 
+  an exception occurred on the SPU. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- When the map entry was obtained only with the matrix name 
+  such as float3x3, i.e. without specifying the subscript, 
+  and passed the map entry to cellCgbMapGetFragmentUniformOffsets(),
+  a value was returned randomly to the "offset" argument. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+Cg Compiler
+----------------------------------------------------------------------
+- In the vertex shader, when the following conditions were all met, 
+  the result of the calculation was wrong. This problem has been fixed.
+   - Dynamic branching such as if()/for() is in use.
+   - The calculation result is directly assigned to the variable 
+     with the "output" attribute within the scope of the dynamic branching. 
+     (Example)out float4 pos : POSITION
+        for() {
+            ...
+            pos += value;
+            ...
+        }
+
+- When outputting the fragment shader with a matrix as cgb, the location offset
+  of the matrix was not stored correctly. This problem has been fixed. 
+
+- When compiling a fragment shader that has both the sampler2D and 
+  sampler type variables, sce-cgc could be aborted. This problem has been fixed.
+- When the dynamic branching such as if()/for() was used in the vertex shader, 
+  the calculation within the scope could not be performed correctly.
+  Specifically, when attempting to get a result of float calculation 
+  for xyz of float4 respectively, the results did not much between 
+  when they were obtained in the order of x,y,z and when they were obtained 
+  in the order of z, x, y. This problem has been fixed. 
+
+- When the -melf option was specified, a correct elf file was not output. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+PSGL Core
+----------------------------------------------------------------------
+- In cgnv2elf, a path name that exceeds 256 characters could not be 
+  converted correctly. 
+  This problem has been fixed.
+
+- In cgnv2elf, when an unused element existed in the structure to 
+  which the constant register (cN) was specified, it could not 
+  be converted correctly. This problem has been fixed. 
+

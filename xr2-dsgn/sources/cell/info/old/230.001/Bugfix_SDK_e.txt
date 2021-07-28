@@ -1,0 +1,85 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 230.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 230.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 230.001
+======================================================================
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- (B#48652)
+  The bug to cause the kernel panic has been fixed, that occurs when
+  sys_mmapper_unmap_memory() is called while any of the followings is
+  being executed:
+  sys_mutex_destroy(), sys_cond_destroy(), sys_event_queue_destroy(),
+  sys_rwlock_destroy(),sys_semaphore_destroy(), sys_lwmutex_destroy(),
+  sys_lwcond_destroy()
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< AV Chat 2 Utility >
+- The following bug has been fixed.
+
+  - When setting a value between 1 and 99 to the spu_load_average parameter,
+    which is the 3rd parameter of the CellSysutilAvc2InitParam structure
+    that is specified to the 5th argument of cellSysutilAvc2Load*(),
+    a hang-up occurs when cellSysutilAvc2Unload() is called. There is also
+    a problem where the termination event for the AV chat 2 utility
+    does not get notified when cellSysutilAvc2UnloadAsync() is called.
+    (Technical Notes ID:200804-12  https://ps3.scedev.net/technotes/view/721)
+
+----------------------------------------------------------------------
+libaudio
+----------------------------------------------------------------------
+- The bug, which sometimes hinders the obtainment of the time stamp
+  value by cellAudioGetPortTimestamp(), has been fixed.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- The bug, which sometimes hinders the obtainment of the time stamp
+  value by cellSurMixerGetTimestamp(), has been fixed.
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- When fpdiff handles ddx/ddy, it now uses a more robust logic with
+  higher precision that uses an input register value and a random number.
+
+- The automatic differencing routine of the shader program type for
+  cg_bin has been fixed so that it performs the automated differencing
+  processing more accurately.
+
+----------------------------------------------------------------------
+NP Signaling Utility
+----------------------------------------------------------------------
+- If you connected to the internet via multiple NAT rooters and
+  if UPnP was active, the establishment of connection failed.
+  This bug has been fixed.
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- In SDK 220, the filenames libpad_win.* were all changed to libpad.* 
+  but the module name referenced by libpad.lib was still libpad_win.dll.
+  For this reason, it was necessary to rename libpad.dll to libpad_win.dll
+  before using the library.
+
+  This problem has been fixed (the module name referenced by libpad.lib 
+  has been changed to libpad.dll).
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs Job>
+- (B#51543)
+  The bug in samples/sdk/spu_library/libspurs/advanced/
+  job_dynamic_job_submit/collision_effect that caused an assert in PSGL 
+  and stopped the sample from running has been fixed.

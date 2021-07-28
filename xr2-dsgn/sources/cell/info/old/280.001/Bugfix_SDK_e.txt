@@ -1,0 +1,647 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 280.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 280.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 280.001
+======================================================================
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- (B#70287)
+  On the system software that appears when the PS button is pressed 
+  during gameplay, the still image icon for Dutch was displayed as that 
+  of for German and vice versa with disc boot games. This problem has 
+  been fixed.
+
+- The following problem has been fixed:
+
+  (B#70422)
+  - When the Debugging Station or the Reference Tool DECR-1400 is 
+    quick-reset, the system may stop during shut down and the shut down 
+    processing may not progress. Note that this problem does not occur on 
+    the Reference Tool DECR-1000.
+    (TechnoteID:200904-09  https://ps3.scedev.net/technotes/view/899)
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<ImeJp Utility>
+- (B#71333)
+  When readings of an unconfirmed string was obtained, an incorrect 
+  string was inserted in the confirmed string. This problem has been 
+  fixed.
+
+- (B#71355)
+  It could fail to obtain readings of a confirmed string depending on the 
+  situation. This problem has been fixed.
+
+<Message Dialog Utility>
+- (B#67919)
+  When the PS button was pressed at the same time as the Message Dialog 
+  utility was called, it stopped to respond. This problem has been fixed. 
+
+<AV chat 2 Utility>
+- The following problem has been fixed:
+
+  - On the system software 2.70, when the AV chat 2 utility is in use, 
+    the following operations may cause the system to hand up.
+
+    (1) Sign in following sign out, then sign out again.
+    (2) Sign in following sign out, then perform a text chat operation.
+    (TechnoteID:200904-01   https://ps3.scedev.net/technotes/view/891)
+
+----------------------------------------------------------------------
+libdmux
+----------------------------------------------------------------------
+- (B#71201)
+  When either of asynchronous messages CELL_DMUX_MSG_TYPE_DEMUX_DONE or 
+  CELL_DMUX_MSG_TYPE_PROG_END_CODE was handled under a specific condition, 
+  the SPURS Task could rarely occupy the SPU for a long time. This problem 
+  has been fixed.
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+- In cellFaceParts() and cellFacePartsAttribute(), the precision of 
+  detection positions of the eyes, nose and mouse has been improved.
+  - As a result, the processing time and the binary code size of the 
+    following functions have slightly increased compared to SDK270:
+      cellFaceParts():
+        The processing time has increased about 20%.
+        The SPU binary code size has increased about 23KB.
+      cellFacePartsAttribute():
+        The processing time has increased about 20%.
+        The SPU binary code size has increased about 17KB.  
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#71541)
+  samples\sdk\sail\player\sync_control
+  It hung up when a forced termination processing was performed. This 
+  problem has been fixed.
+
+- (B#69710)
+  samples\sdk\sail\player\psgl_player
+  A PSGL error occurred when a termination processing was performed. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+- (B#71202)
+  A correct value can now be obtained for the following bundle states:
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BLEND_EQUATION
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BLEND_FUNC_SFACTOR
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BLEND_FUNC_DFACTOR
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_LOGIC_OP
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_STENCIL_FUNC
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_STENCIL_OP_FAIL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_STENCIL_OP_ZFAIL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_BACK_STENCIL_OP_ZPASS
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_SHADER_CONTROL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_SHADER_PROGRAM
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_CYLINDRICAL_WRAP1
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TEX_COORD_CONTROL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TRANSFORM_TIMEOUT
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TEXTURE_FORMAT
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_TEXTURE_ADDRESS
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_TEXTURE_FORMAT
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_VERTEX_TEXTURE_ADDRESS
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_ALPHA_FUNC
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_DEPTH_FUNC
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_STENCIL_FUNC
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_STENCIL_OP_FAIL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_STENCIL_OP_ZFAIL
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_STENCIL_OP_ZPASS
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_SHADE_MODE
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_FOG_MODE
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_SURFACE_FORMAT
+
+- (B#69190)
+  cellDbgRsxGetInterruptFifoErrorStatus() could not obtain 
+  CELL_DBG_RSX_INTERRUPT_FIFO_ERROR_STATUS_ID_CALL. This problem has 
+  been fixed.
+
+----------------------------------------------------------------------
+Custom Theme
+----------------------------------------------------------------------
+- For the following restriction in SDK270, the set brightness is now 
+  reflected correctly.
+
+  - When a background in the RAF format is applied and 
+    [Settings] column -> [Theme Settings] -> [Background] -> [Brightness] is 
+    set to a value other than "Normal", the background may be displayed with 
+    the standard brightness for a moment when terminating some applications 
+    such as the video.
+
+- When XML that refers to a specific JPEG file is passed as an input while 
+  performing a RAF compilation, it could hand up. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libsync2>
+- (B#72051) 
+  The following functions always returned an error when the program was 
+  run on the Debugging Station. This problem has been fixed.
+    cellSync2MutexEstimateBufferSize()
+    cellSync2MutexInitialize()
+    cellSync2CondEstimateBufferSize()
+    cellSync2CondInitialize()
+    cellSync2SemaphoreEstimateBufferSize()
+    cellSync2SemaphoreInitialize()
+    cellSync2QueueEstimateBufferSize()
+    cellSync2QueueInitialize()
+
+<libovis>
+- (B#70273)
+  The 76th argument of the overlaid function when libovis_trace.a was linked 
+  was corrupted. 
+  This problem has been fixed.
+
+- (B#70885,B#70892)
+  When libovis.a was linked with the pic code, it did not work correctly. 
+  This problem has been fixed. 
+
+<libspurs task>
+- The following problems have been fixed.
+
+  - (B#69612)
+    When a task that is created by calling cellSpursCreateTaskset2() is 
+    deleted using  cellSpursDestroyTaskset2(), an internal resource leak 
+    occurs.
+
+  - (B#68316)
+    cellSpursCreateTask(), cellSpursTaskAttributeInitialize(),
+    The buffer for the task context that is specified by 
+    cellSpursCreateTask2() has to be 128 byte aligned. However, the current 
+    implementation checks only for the 16 byte alignment. 
+
+<libspurs Job Queue>
+- (B#70531)
+  When multiple SPUs were executed in the SPURS job queue, the read only data 
+  could not be flushed although the FLUSH command was executed. This problem 
+  has been fixed.
+
+- (B#70531)
+  When a job was input repeatedly into the SPURS job queue for a short period
+  of time, the job queue module allocated to the SPU stopped grabbing the job. 
+  This problem has been fixed.
+
+- (B#71945)
+  cellSpursJobQueueSetWaitingMode() was not updated correctly and entered into 
+  the infinite loop. This problem has been fixed.
+
+- (B#72130)
+  In the SPURS job queue, while a job was running and when another job was 
+  input into the empty command queue, other available SPU was not allocated 
+  to execute the input job until the running job was completed. This problem 
+  has been fixed.
+
+- (B#72234)
+  In the SPURS job queue, when a value other than multiples of 16 was 
+  specified as a depth of the command queue, the behavior became indeterminate.   This problem has been fixed.
+
+- The following problem has been fixed:
+
+  (B#70879)
+  - In the SPURS job queue, when CELL_SPURS_JOB_TYPE_MEMORY_CHECK is specified 
+    to the job attribute,read-only data is fetched from a wrong address. 
+    (TechnoteID:200905-05  https://ps3.scedev.net/technotes/view/910)
+
+- The following problem has been fixed:
+
+  (B#71985)
+  - The SPURS jobqueue may hang up or the SPU may halt when a job is executed.
+    (TechnoteID:200905-07 https://ps3.scedev.net/technotes/view/912)
+
+- (B#68648)
+  In PS3PrintCellSpursJobQueueModule, the address of semaphore was not 
+  displayed correctly. This problem has been fixed.
+
+<libswcache>
+- (B#72281)
+  When libswcache was used by the SPU, data could corrupt. This problem has 
+  been fixed.
+  (Technote ID:200906-01  https://ps3.scedev.net/technotes/view/918)
+
+----------------------------------------------------------------------
+NP Title User Storage Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - When a function that obtains the TUS data is called, a buffer 
+    overflow may occur.
+   (Technote ID:200904-06 https://ps3.scedev.net/technotes/view/897)
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - Priority order of the room members in receiving automatic room 
+    ownership does not function.
+    (TechnoteID:200905-03  https://ps3.scedev.net/technotes/view/908)
+
+----------------------------------------------------------------------
+libssl
+----------------------------------------------------------------------
+- (B#69419)
+  A single lwmutex was not released by cellSslEnd(). This problem has
+  been fixed.
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  Game applications may hang up when cellHttpClientCloseAllConnections() 
+  is called.
+  (TechnoteID:200904-05  https://ps3.scedev.net/technotes/view/895)
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- When an external font in the PFR format(.pfr) was used, the function
+  that obtains a matrix or performs rendering did not work correctly.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  (B#70595)
+  - When a specific USB controller is connected, the system may hang.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  (B#70997, B#69458)
+  - When EDATA/SDATA is read using cellFsRead() under a specific condition, 
+    a dead lock occurs. 
+
+----------------------------------------------------------------------
+Core Dump Feature
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  (B#71128)
+  - System hangs up when restarting a game application boot after 
+    core dumped.
+    (TechnoteID:200904-10  https://ps3.scedev.net/technotes/view/900)
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- (B#69268)
+  Although sys_rwlock_trywlock was successful, sys_rwlock_wunlock that
+  follows failed with EPERM. This problem has been fixed.
+
+- The following problem has been fixed:
+
+  (B#69913)
+  - System crashes when an SPU thread group with no name set is captured 
+    by Tuner.
+    (TechnoteID:200903-09 https://ps3.scedev.net/technotes/view/888)
+
+- The following problem has been fixed:
+
+  (B#69774)
+  - When the SPU thread group with no context that is being stopped by 
+    the ProDG Debugger is restarted, if the decrementor of the SPU thread 
+    is in the normal mode, the decrementor does not restart correctly.
+    (TechnoteID:200903-08 https://ps3.scedev.net/technotes/view/887)
+
+----------------------------------------------------------------------
+C/C++ Standard Library
+----------------------------------------------------------------------
+<PPU>
+- (B#67212)
+  When libstdc++_libent.o was linked with the program that redefine 
+  operator new[], it was reported that operator new[] was multiply-defined. 
+  This problem has been fixed.
+
+<PPU>
+- (B#63770)
+  - The following bug has been fixed.
+
+    - When using libcs.a and specifying a value more than 2GB (0x80000000)
+      to the third argument "n" for the following functions, the calculation
+      is not made correctly.
+       - memcmp
+       - strncasecmp
+       - strncmp
+       - strncat
+
+<PPU>
+- (B#67636)
+  - When using libcs.a, strncasecmp() might not treat the third argument "n"
+    correctly as the number of elements to compare.
+    To be more precise, it was possible that a correct return value was not
+    returned because of the following defects:
+
+     When specifying a value less than 256 to "n":
+      - The function compares two strings upto the (n+1)th elements, or
+      - The function returns before the nth elements are not compared.
+
+     When specifying a value of 256 or more to "n":
+      - The function compares two strings over nth elements (At worst,
+        like strcasecmp(), the function compares two strings until it
+        finds elements that are not equal), or
+      - The function returns before the first n elements of the two
+        strings are compared, despite it does not find different
+        elements.
+
+    This problem has been fixed.
+
+<PPU>
+- (B#67741)
+  The size of some function symbol in libcs.a was not set.
+  This problem has been fixed.
+
+<PPU/SPU>
+- (B#67885)
+  When the conversion specifier %[ was used with the following functions, 
+  a wrong value may be returned. This problem has been fixed:
+  fscanf, scanf, sscanf, vfscanf, vscanf, vsscanf
+
+<PPU/SPU>
+- (B#67886)
+  The following functions could not perform a floating point 
+  conversion for a string such as " 1.24E " correctly. This problem has 
+  been fixed:
+  fscanf, scanf, sscanf, vfscanf, vscanf, vsscanf
+  fwscanf, wscanf, swscanf, vfwscanf, vwscanf, vswscanf
+
+<SPU>
+- (B#2759)
+  When SIZE_MAX was passed to the strncmp function as the number of elements,
+  it did not work correctly. This problem has been fixed.
+
+<PPU>
+- (B#68181)
+  malloc_usable_size() might return a value 4 bytes smaller than
+  the size allocated. This problem has been fixed.
+
+<PPU>
+- (B#71553)
+  On the formatted output like printf and so on, the print conversion
+  for denormalized numbers of the double precision type might not be done
+  correctly. This problem has been fixed.
+  To be more precise, this problem occurred when using conversion
+  specifiers %a, %A, %e, %E, %f, %F, %g and %G.
+
+<PPU>
+- (B#68670)
+  When a read from the SPU local storage was failed within the PPU 
+  program that handles the SPU spu_printf calls, the PPU entered 
+  into an infinite loop. This problem has been fixed.
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- The following bugs were fixed:
+
+  - Signed or encrypted files that are redirected by cell::fios::overlay 
+    fail to load.
+    (TechnoteID:200904-12 https://ps3.scedev.net/technotes/view/902)
+
+  - In SDK 270, the media call back for Blu-ray disc ejection was modified, but
+    the libfios Overview was not updated. As of SDK 270, a media callback is no
+    longer required to avoid retries after a Blu-ray disc is ejected. On
+    ejection of a disc, the default callback now cancels all outstanding IO to
+    the disc, and pending IO will no longer wait for reinsertion of the disc.
+
+  - scheduler::closeAllFiles() was added to SDK 270, but the libfios Reference
+    was not updated. This API can be used to close all open files, for example,
+    after a Blu-ray disc is ejected.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#72141)
+  In the basic and the flip_immediate samples, the following problem
+  has been fixed:
+  - The alignment of the color buffer and the depth buffer is not correct.
+
+- (B#69527)
+  In the common\gcmutil sample, the following problem has been fixed:
+  - When using cellGcmUtilCreateDepthTexture(), the Tile address of 
+    DepthBuffer is specified overlapping the tile area of the color.
+
+- (B#62676)
+  In the fw sample, the following problem has been fixed:
+  - When calling FWCellGCMWindow::destroy(), the object in use is deleted 
+    before the callback function is deleted.
+
+- The following problem has been fixed:
+
+  (B#72115)
+  - Bug in the SPU version of cellGcmCgStripBranchesFromFragmentUCode().
+    (TechnoteID:200905-06  https://ps3.scedev.net/technotes/view/911)
+
+- The following problem has been fixed:
+
+  (B#71275)
+  - When a game application calls cellGcmMapEaIoAddress() or 
+    cellGcmMapEaIoAddressWithFlags() to map the effective address space 
+    to the IO address space, if the last 1MB of the IO address space is 
+    included in the mapping target, the function call ends in error and 
+    CELL_GCM_ERROR_FAILURE is returned.
+    (TechnoteID:200904-14  https://ps3.scedev.net/technotes/view/904)
+
+- (B#45828)
+  Since cellGcmReserveMethodSize() is no use for an unsafe mode function,
+  cellGcmReserveMethodSizeUnsafe() and cellGcmReserveMethodSizeMeasure()
+  have been deleted from the library.
+
+- (B#36909)
+  When cellGcmResetDefaultCommandBuffer() is called, 
+  cellGcmSetDefaultFifoSize() is now automatically called to initialize the 
+  default command buffer context structure gCellGcmCurrentContext.
+
+- (B#70449,B#70446,B#70447,B#70448,B#70453)
+  Error determination has been added for when the debug version of gcm is 
+  in use.
+
+- (B#71547)
+  In libcgutil, when cellGcmCgSetInstructionSlot is 511 or more, it now 
+  returns CELL_GCM_ERROR_FAILURE.
+
+- (B#71700)
+  When it is Graphics Error 3, it now displays an appropriate error message.
+
+- The following problem has been fixed:
+
+  (B#65293)
+  - When cellGcmInitSystemMode() is called with 
+    CELL_GCM_SYSTEM_MODE_IOMAP_512MB specified to the argument "mode", 
+    the IO address space cannot be extended to 512MB.
+    (TechnoteID:200906-02  https://ps3.scedev.net/technotes/view/919)
+
+- (B#62122)
+  In cellGcmInitDefaultFifoMode(), when the default command buffer mode was
+  changed to either CELL_GCM_DEFAULT_FIFO_MODE_OPTIMIZE or 
+  CELL_GCM_DEFAULT_FIFO_MODE_CONDITIONAL and the number of segments of the 
+  command buffer was 2, it hung up. This problem has been fixed.
+  Also, when a value less than 2 segments is specified to the command buffer 
+  size by using cellGcmInit(), it now returns a CELL_GCM_ERROR_FAILURE error.
+
+----------------------------------------------------------------------
+libresc
+----------------------------------------------------------------------
+- In all libresc samples, the initialization procedure of libresc has 
+  been corrected.
+  It has been changed to set the CellRescDsts structure to all 
+  resolutions of CellRescInitConfig.supportModes that is set by using 
+  cellRescInit().
+  Due to this change, the color buffer size that is obtained by 
+  cellRescGetBufferSize() will be a correct value.
+
+- When CELL_RESC_CONSTANT_VRAM was running, the value that was returned 
+  to the third argument of 
+
+  cellRescGetBufferSize(int32_t* const colorBuffers, int32_t* const 
+  vertexArray,  int32_t* const fragmentShader);
+
+  depended on the video output resolution unexpectedly. This problem has 
+  been fixed.
+  From this version onward, a certain value (0x300) will be always returned.
+
+----------------------------------------------------------------------
+PLAYSTATION(R)3 Sample Browser 
+----------------------------------------------------------------------
+- (B#71790)
+  When a search by a function name was conducted, only up to 30 results 
+  were returned. This problem has been fixed.
+  From this version onward, all results will be displayed.
+
+- (B#71815)
+  When a search by a function name cellSpursJobChainAttributeInitialize
+  is conducted, no result was returned. This problem has been fixed.
+
+- (B#71805)
+  The start up time when the Sample Browser(PS3SampleBrowser.exe) is 
+  started up for the first time has been improved.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- (B#71206)
+  The Feedback Delay Network Reverb (Slot A) (mstream_fdn_reverb_slot_a.pic) 
+  has had its efficiency improved.
+
+- (B#67422)
+  The cellMSCoreSetDSP function didnt check for the CELL_MS_DSPALLSLOTS 
+  flag even though the documentation described it as supported. 
+  The documentation has been updated and the function now sets an error 
+  if this flag is specified.
+
+- (B#69384)
+  A rare race condition could occur that caused stream types to become 
+  confused. This problem has been fixed.
+
+- (B#70103)
+  When adding a named object by calling cellMSSulphaNameObject(), Sulpha 
+  always returned NOFREESTREAMS. This problem has been fixed.
+
+- (B#71200)
+  When passing NULL to cellMSSulphaAdd3dShape an exception occured. 
+  This problem has been fixed.
+
+- (B#71895)
+  The auxiliary send dsp effect (mstream_dsp_aux_send.pic / 
+  mstream_dsp_aux_send.ppu.o) contained debug printf's that would fill 
+  the TTY output when pausing the bus or stream it was attached to. 
+  This has now been resolved.
+
+----------------------------------------------------------------------
+libscream
+----------------------------------------------------------------------
+- (B#67952)
+  When building the scream_routing sample with a build configuration of 
+  SNC Debug or SNC Release, an .elf file was built but no .self was created. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+Toolchain / SPASM
+----------------------------------------------------------------------
+- (B#60823)
+  ".assignreg out" directive was not working as documented.
+  This bug has been fixed.
+
+- (B#62454)
+  The "--rept" and "--endrept" preprocessor directives did not work as defined 
+  in the user manual.
+  This bug has been fixed.
+
+- (B#62686)
+  Bad code alignment was sometimes generated at entry points; 
+  breaking SPU odd/even alignment.
+  This bug has been fixed.
+
+- (B#62552)
+  Line numbers in warning/error output messages were wrong.
+  This bug has been fixed.
+
+- (B#62433)
+  Statistics display was sometimes incorrect.
+  This bug has been fixed.
+
+- (B#62549)
+  The command line help displayed some internal options that were not usable 
+  in the release SPASM.
+  This bug has been fixed.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#56542)
+    Texcoord bindings for texcoord array that is indexed in a 
+    not unrolled loop had binding which was incorrectly marked as unused.
+
+  - (B#69339)
+    cgc crashed trying to initialize structures that have member functions.
+
+  - (B#31250)
+    Assignment of TEXUNIT4 was wrapping around to TEXUNIT0 without error
+    or warning.
+
+  - (B#42758)
+    Cg Compiler's internal register allocation was causing warnings 
+    like the following:
+
+      shader.cg(lineXXX) : warning C7050: "$tempYYYY" might be used 
+      before being initialized
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The following problem has been fixed:
+  PSGL now properly keeps memory allocations pinned 
+  when they are mapped using glMapBuffer.
+
+  - (B#70439)
+    Textures can be corrupted due to data being reallocated by the PSGL
+    memory manager. 
+
+- The following problem has been fixed:
+
+  - (B#70920)
+    psgl_shader_builder provided for generation of shaders.bin,
+    shader set used by PSGL fixed function shading pipeline, 
+    was not generating correct shaders for GL_FOG to properly clamp.
+

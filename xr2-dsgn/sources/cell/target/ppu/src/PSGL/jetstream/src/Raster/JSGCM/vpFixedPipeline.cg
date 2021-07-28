@@ -1,0 +1,314 @@
+/* SCE CONFIDENTIAL
+ * PlayStation(R)3 Programmer Tool Runtime Library 310.001
+ *                Copyright (C) 2009 Sony Computer Entertainment Inc.
+ *                                               All Rights Reserved.
+ */
+
+// transform
+uniform float4x4 viewXform;		// model to view matrix
+uniform float4x4 projXform;		// projection matrix
+uniform float3x3 normXform;		// normal matrix
+
+// misc
+uniform float4 flags;	// lighting, 2-sided lighting, color material, normalize
+uniform float4 useTexMatrix;
+uniform float normalScale;
+
+struct Material {
+	float4 Ka;
+	float4 Kd;
+	float4 Ks;
+	float4 Ke;
+	float shininess;
+};
+uniform Material material;
+
+uniform float nLights;
+struct Light {
+	float4 position;
+	float4 ambient;
+	float4 diffuse;
+	float4 specular;
+	float3 spotDirection;
+	float2 spotParams;	// cos(cutoff), exponent
+	float3 attenuation;	// constant, linear, quadratic
+};
+uniform Light light[8];
+
+uniform float4 globalAmbient;
+
+// texture coords
+struct TexUnit {
+	float4 genMode;
+	float4x4 genPlane;
+	float4x4 matrix;
+};
+uniform TexUnit texunit[4];
+
+uniform float clipPlaneActive;
+uniform float4 clipPlane[6];
+
+float4 processLight(
+	Light light,
+	float4 vertex,
+	float3 normal,
+	float4 Ka,
+	float4 Kd,
+	float4 Ks,
+	float shininess)
+{
+	// direction and distance to light
+	float3 toLight =
+		light.position.xyz*vertex.w -
+		vertex.xyz*light.position.w;
+	float directionFactor = rsqrt(dot(toLight,toLight));
+	toLight *= directionFactor;
+
+	// diffuse/specular weights
+	//  GL_LIGHT_MODEL_LOCAL_VIEWER is not supported in ES, which
+	//  means that the direction to the eyepoint (used to compute
+	//  the half vector) is always (0,0,1).
+	const float3 sum = toLight + float3(0,0,1);
+	float3 half = float3(0,0,0);
+	if (dot(sum,sum) > 0.0)
+		half = normalize(sum);
+	float4 lightWeights =
+		lit(
+			dot(normal,toLight),
+			dot(normal,half),
+			material.shininess);
+
+	// spot attenuation
+	float spotFactor = 1;
+	if (light.spotParams.x >= 0)
+	{
+		spotFactor = -dot(toLight,light.spotDirection);
+		if (spotFactor > light.spotParams.x)
+			spotFactor = pow(spotFactor,light.spotParams.y);
+		else
+			spotFactor = 0;
+	}
+
+	// polynomial attenuation
+	// TODO: Try conditionally executing this code.
+	float distance = 1.0/directionFactor;
+	float polyFactor = 1.0/
+		(light.attenuation.x +
+		(light.attenuation.y + light.attenuation.z*distance)*distance);
+
+	float4 color =
+		spotFactor*polyFactor*
+			(Ka*light.ambient +
+			 lightWeights.y*Kd*light.diffuse +
+			 lightWeights.z*Ks*light.specular);
+
+	return color;
+}
+
+float4 processTexCoord(
+	TexUnit texunit,
+	float4 vertexObj,
+	float4 vertexEye,
+	float3 normalEye,
+	float4 tc)
+{
+	// initialize output tex coord with input tex coord
+	//  The input must be used for any ungenerated coordinates.
+	float4 otc = tc;
+
+	// XXX Putting the texgen computation inside a conditional may speed
+	// execution, though the assembly needs to be inspected to make sure
+	// that actually happens (and isn't just masked at the end of the
+	// computation).
+	
+	if (any(texunit.genMode))
+	{
+		// object linear
+/*        if (any(texunit.genMode == float4(1,1,1,1)))*/
+		{
+			otc = texunit.genMode == float4(1,1,1,1) ?
+				mul(vertexObj, texunit.genPlane) :
+				otc;
+		}
+
+		// eye linear
+/*        if (any(texunit.genMode == float4(2,2,2,2)))*/
+		{
+			otc = texunit.genMode == float4(2,2,2,2) ?
+				mul(vertexEye,texunit.genPlane) :
+				otc;
+		}
+
+		// sphere map
+/*        if (any(texunit.genMode == float4(3,3,3,3)))*/
+		{
+			float3 f = reflect(normalize(vertexEye.xyz),normalEye);
+			float minv = 0.5/length(f + float3(0,0,1));
+			float2 st = f.xy*minv + float2(0.5,0.5);
+			otc = texunit.genMode == float4(3,3,3,3) ?
+				float4(st,0,1) :
+				otc;
+		}
+
+		// reflection map
+/*        if (any(texunit.genMode == float4(4,4,4,4)))*/
+		{
+			float3 r = reflect(vertexEye.xyz,normalEye);
+			otc = texunit.genMode == float4(4,4,4,4) ?
+				float4(normalize(r),1) :
+				otc;
+		}
+
+		// normal map
+/*        if (any(texunit.genMode == float4(5,5,5,5)))*/
+		{
+			otc = texunit.genMode == float4(5,5,5,5) ?
+				float4(normalEye,1) :
+				otc;
+		}
+	}
+
+	return otc;
+}
+	
+struct Output {
+	float4 position	: HPOS;
+	float4 col0	: COL0;
+	float4 bcol0: BCOL0;
+	float4 tc0	: TEX0;
+	float4 tc1	: TEX1;
+	float4 tc2	: TEX2;
+	float4 tc3	: TEX3;
+	float clp0	: CLP0;
+	float clp1	: CLP1;
+	float clp2	: CLP2;
+	float clp3	: CLP3;
+	float clp4	: CLP4;
+	float clp5	: CLP5;
+	float  fog	: FOGC;
+};
+
+// fixed function T&L emulation
+Output main(
+	float4 vertex	: POSITION,
+	float4 color	: COLOR,
+	float3 normal	: NORMAL,
+	float4 tc0		: TEXCOORD0,
+	float4 tc1		: TEXCOORD1,
+	float4 tc2		: TEXCOORD2,
+	float4 tc3		: TEXCOORD3)
+{
+	Output OUT;
+	OUT.position = mul(projXform,vertex);
+	OUT.col0  = saturate(color);
+	OUT.bcol0 = saturate(color);
+
+	// transform vertex and normal to eye space
+	//  Transformed vertices and normals are needed whenever lighting and at
+	//  least one light are enabled.  One or the other may also be needed
+	//  for texture coordinate generation or clip planes.  For simplicity,
+	//  we always transform both.
+	float4 vertexEye = mul(viewXform,vertex);
+	float3 normalEye = mul(normXform,normal)*normalScale;
+
+	OUT.fog = abs(vertexEye.z);
+
+	// normalize normal
+	if (flags.w != 0.0)
+		normalEye = normalize(normalEye);
+	
+	// test whether lighting is enabled
+	if (flags.x != 0.0)
+	{
+		// color material
+		float4 Ka = material.Ka;
+		float4 Kd = material.Kd;
+
+		if (flags.z != 0.0)
+		{
+			Ka = color;
+			Kd = color;
+		}
+
+		// loop over all lights
+		float4 ocolor = float4(0,0,0,0);
+		for (int i = 0; i < nLights; ++i)
+		{
+			ocolor += processLight(
+				light[i],
+				vertexEye,
+				normalEye,
+				Ka,
+				Kd,
+				material.Ks,
+				material.shininess);
+		}
+
+		// add emission and global ambient
+		ocolor += material.Ke + globalAmbient*Ka;
+
+		// set alpha
+		ocolor.a = Kd.a;
+
+		OUT.col0  = saturate(ocolor);
+		OUT.bcol0 = saturate(ocolor);
+
+		// backside lighting
+		if (flags.y)
+		{
+			// loop over all lights
+			float4 ocolor = float4(0,0,0,0);
+			for (int i = 0; i < nLights; ++i)
+			{
+				ocolor += processLight(
+					light[i],
+					vertexEye,
+					-normalEye,
+					Ka,
+					Kd,
+					material.Ks,
+					material.shininess);
+			}
+
+			// add emission and global ambient
+			ocolor += material.Ke + globalAmbient*Ka;
+
+			// set alpha
+			ocolor.a = Kd.a;
+
+			OUT.bcol0 = saturate(ocolor);
+		}
+	}
+
+	// tex gen
+	float4 otc0,otc1,otc2,otc3;
+	otc0 = processTexCoord(texunit[0],vertex,vertexEye,normalEye,tc0);
+	otc1 = processTexCoord(texunit[1],vertex,vertexEye,normalEye,tc1);
+	otc2 = processTexCoord(texunit[2],vertex,vertexEye,normalEye,tc2);
+	otc3 = processTexCoord(texunit[3],vertex,vertexEye,normalEye,tc3);
+
+	// multiply by texture matrix
+	if (useTexMatrix.x)
+	{
+		otc0 = mul(texunit[0].matrix,otc0);
+		otc1 = mul(texunit[1].matrix,otc1);
+		otc2 = mul(texunit[2].matrix,otc2);
+		otc3 = mul(texunit[3].matrix,otc3);
+	}
+
+	// apply user clip planes
+	OUT.clp0 = dot(vertexEye,clipPlane[0]);
+	OUT.clp1 = dot(vertexEye,clipPlane[1]);
+	OUT.clp2 = dot(vertexEye,clipPlane[2]);
+	OUT.clp3 = dot(vertexEye,clipPlane[3]);
+	OUT.clp4 = dot(vertexEye,clipPlane[4]);
+	OUT.clp5 = dot(vertexEye,clipPlane[5]);
+
+	OUT.tc0 = otc0;
+	OUT.tc1 = otc1;
+	OUT.tc2 = otc2;
+	OUT.tc3 = otc3;
+
+	return OUT;
+}
+

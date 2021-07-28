@@ -1,0 +1,27 @@
+#   SCE CONFIDENTIAL
+#   PlayStation(R)3 Programmer Tool Runtime Library 310.001
+#   Copyright (C) 2006 Sony Computer Entertainment Inc.
+#   All Rights Reserved.
+
+PPU_DBG_FLAGS =
+PPU_OPTIMIZE_LV = -O2
+CELL_SDK ?= ../../../../sdk
+CELL_MK_DIR ?= $(CELL_SDK)/samples/mk
+include $(CELL_MK_DIR)/sdk.makedef.mk
+
+PPU_LIB_TARGET	= lib/ppu/libcgb.a
+
+PPU_SRCS	= cgb.cpp
+
+CGB_INCDIR	= \
+	../../../../sdk/target/ppu/include \
+	../../../../target/ppu/include \
+	include \
+	$(SN_PS3_PATH)/ppu/include/sn \
+	$(CELL_SDK)/target/ppu/include \
+	$(CELL_SDK)/target/common/include \
+	$(CELL_SDK)/target/ppu
+
+PPU_INCDIRS	= $(addprefix -I,$(CGB_INCDIR))
+
+include $(CELL_MK_DIR)/sdk.target.mk

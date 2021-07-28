@@ -1,0 +1,173 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 180.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 180.002
+- Bugs fixed in Release 180.002
+
+======================================================================
+New Additions and Changes in Release 180.002
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- UTF-8 encoding source file with BOM (Byte Order Mark) at the beginning 
+  has become available. 
+
+- With the macro definition of the assembler, it has become possible to 
+  use a period as a part of an argument name. 
+  Therefore, when there is a period after a macro argument is used, 
+  please note that the operation differs from the pervious release. 
+
+  For example, when there is a period after a macro argument is used, 
+  as follows: 
+
+        .macro test name
+        .section \name.z
+        .endm
+
+        test x
+
+  With the conventional specifications, "test x" used to be expanded to 
+  ".section x.z". However, from ToolChain180, it will be expanded to 
+  ".section \name.z". 
+  In order to resolve this incompatibility, please avoid it by using, 
+  for example, the preprocessor macro. 
+
+    #define test(name) .section name##.z
+        test(x)
+
+<SPU>
+- The following compiler options have been added: 
+  -mspurs-task  : Create the executable file of SPURS task model.
+  -mspurs-job   : Create the executable file of SPURS job model 
+                  (memory fixed). 
+  -mspurs-job -fpic  : Create the executable file of SPURS job model 
+                       (conventional). 
+  For details, please refer to "SPURS Tutorial". 
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- It has become possible to specify whether the GCM debugging feature is 
+  valid or invalid at the time of loading a program from the debugger. 
+  According to this, "-gcmdebug" option has been added to the monitor 
+  load command of ppu-lv2-gdb and the commands of bedbg. 
+  For the details of the GCM debugging feature, please refer to 
+  "libgcm Overview". For the details of the "-gcmdebug" option, 
+  please refer to "Debug Overview". 
+
+======================================================================
+Bugs Fixed in Release 180.002
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- When a path name that includes blank characters was described in 
+  the response file and the response file was specified without using 
+  quotation marks, the file could not be correctly referred to. 
+  This problem has been fixed. 
+
+- The following bug has been fixed: 
+  - When the alignment is specified by __attribute__ (( aligned (N) )) 
+    for the vector type variable, it will not be aligned as specified.
+
+    Accordingly, the vector type variable will be 16 byte aligned which is
+    same as the default setting although the alignment is specified.
+
+    You can get the maximum DMA transfer speed when the buffer is 128 byte
+    aligned, however, this bug may cause the performance to degrade.
+
+    To avoid the problem, define a structure or a union type that has the
+    vector type variable as its member, then specify the alignment to that
+    structure or that union type. 
+
+    Example) 
+     - Description affected by this problem:
+          vec_uchar16 v[2] __attribute__ ((aligned (128) ));
+
+     - Description that can avoid this problem:
+          // Define a structure to align the vector type variable
+          struct wrap_v_t {
+              vec_uchar16 v[2];
+          }  wrap_v __attribute__ ((aligned (128) ));
+
+          // Access via a pointer
+          vec_uchar16 *v = wrap_v.v;
+
+          // Or Access via a macro
+          #define v (wrap_v.v)
+
+- When a C++ program that uses namespace was compiled by specifying 
+  the option -g -feliminate-dwarf2-dups, an internal compiler error 
+  occurred. This problem has been fixed. 
+
+- In Windows environment, if there was "/" at the end of the directory 
+  name specified with the option -I, that specification was ignored. 
+  This problem has been fixed. 
+
+<PPU>
+- The following bug has been fixed: 
+  - A warning message "defined in discarded section" was output when
+    being linked.
+
+  - The following messages were output when being linked, and the link
+    failed.
+
+    c:\usr\local\cell\host-win32\ppu\bin\..\lib\gcc\ppu-lv2\4.0.2\..\..\..\..\ppu-lv2\bin\ld.exe:
+    linkage table error against `000a99db.._ZNSs5_TidyEbj+0'
+    c:\usr\local\cell\host-win32\ppu\bin\..\lib\gcc\ppu-lv2\4.0.2\..\..\..\..\ppu-lv2\bin\ld.exe:
+    stubs don't match calculated size
+    c:\usr\local\cell\host-win32\ppu\bin\..\lib\gcc\ppu-lv2\4.0.2\..\..\..\..\ppu-lv2\bin\ld.exe:
+    can not build stubs: Bad value
+
+  - When __attribute__((vecreturn)) is used as follows, there is a problem 
+    that the derived class VectorTest is not returned in a register.
+
+    class Vector4Test
+    {
+        vector float data;
+    } __attribute__ ((vecreturn));
+
+    class VectorTest : public Vector4Test 
+    {
+    } __attribute__ ((vecreturn)); 
+
+- With memmove() which is built in the compiler, the number of bytes 
+  that are copied was incorrect in some cases. This problem has been 
+  fixed. 
+
+- When the program that used __attribute__((vecreturn)) for the type 
+  that was declared with typedef was compiled with the option -g, 
+  an internal compiler error occurred. This problem has been fixed. 
+
+<SPU>
+- When a function with a big code was compiled, the following warning 
+  was output in some cases. This problem has been fixed. 
+    Warning: lqd/stqd offset value is not multiple of 16
+
+- When __builtin_expect was used, an internal compiler error occurred 
+  in some cases. This problem has been fixed. 
+
+- In line 63 of cell/target/spu/include/spu_internals.h, a warning was 
+  displayed in some cases. This problem has been fixed. 
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+<Common between Windows and Linux>
+- The following problems have been fixed: 
+  - Within the format specification character string of the command printf 
+    of GDB (PPU/SPU), the type conversion specifier 'p' could not be used 
+    and the following error message was output: 
+      "internal error in printf_command"
+
+  - With GDB (PPU/SPU), no matter how many times nexti/stepi was executed 
+    on the instruction that branches to the currently stopped location 
+    (the address at which the program counter is pointing) itself, 
+    the program counter did not proceed and could not get out of that 
+    instruction. 

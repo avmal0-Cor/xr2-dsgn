@@ -1,0 +1,587 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 150.004
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 新規ライブラリ及び新規ツール
+----------------------------------------------------------------------
+レジストリ・データベース ユーティリティ
+=======================================
+- システムの内部データに関連する不具合調査をおこなうユーティリティとして
+  以下を追加しました。
+  - システムの内部データであるレジストリをファイルとして取り出すユーティリティ 
+    cell/target/images/registry_backup.self
+  - システムの内部データであるデータベースのデータをファイルとして取り出す
+    ユーティリティ 
+    cell/target/images/db_backup.self
+
+libprof
+=======
+- Performance Analyzer Toolsパッケージで提供していたlibprof関連の
+  ライブラリをSDKのパッケージに含めて提供することになりました。 
+  これに伴い、libprof.sprxのファイルパスを変更しましたのでご注意ください。 
+
+  SDKパッケージでのパス:
+    cell/target/ppu/lib/libprof_stub.a 
+    cell/target/tool/ppu/prx/libprof.sprx
+
+ストレージデータユーティリティ
+==============================
+- ストレージデータユーティリティは、Memory Stick(TM)などの記録メディアと
+  内蔵ハードディスクドライブ間でのファイルのやり取りを支援するシステム
+  ユーティリティです。
+
+----------------------------------------------------------------------
+2 libsysmodule
+----------------------------------------------------------------------
+<新規機能>
+- AVチャットユーティリティ拡張モジュールをロードするID、
+  (CELL_SYSMODULE_SYSUTIL_AVCHAT)を追加しました。
+
+----------------------------------------------------------------------
+3 システムソフトウェア(GUI)
+----------------------------------------------------------------------
+<新規機能>
+- 以下の文字コードがシステムソフトウェアで表示できるようになりました。
+  - 数学記号  U+2206,U+2219,U+2248,U+2264,U+2265
+  - ハングル互換字母  U+3131 ~ U+318E
+  - ハングル括弧囲み文字  U+3200 ~ U+321C
+
+- システムソフトウェアに以下のメニューを追加しました。
+  - 設定 -> 本体設定 -> NP Debug   : Off/On 
+   「NP Debug」を「On」に設定すると、ゲームアプリケーションで指定する 
+    NP コミュニケーション ID のノティフィケーション表示し、NPスコア
+    ランキングの通信トランザクション後2秒間強制的に遅延を発生させる
+    モードとなります。
+  - 設定 ->本体設定-> Exception Handler   : Off/On 
+    「Exception Handler」を「On」に設定すると、Reference Toolまたは
+    Debugging Stationでliblv2dbg（例外ハンドリングスレッド）機能が
+    有効になります。
+
+<仕様変更>
+- 以下の方法で時計合わせを行う際にHTTP Proxy 設定がされていた場合、
+  この設定を使用するように変更しました。 
+    設定 -> 日付と時刻設定 -> 日付と時刻 ->インターネット経由で設定する 
+
+----------------------------------------------------------------------
+4 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+オンスクリーンキーボードダイアログユーティリティ
+================================================
+<新規機能>
+- 韓国語入力の機能を追加しました。CellOskDialogParam構造体の
+  メンバallowOskPanelFlgで指定する入力パネルに、韓国語パネル
+  （CELL_OSKDIALOG_PANELMODE_KOREAN）を加えました。
+
+- オンスクリーンキーボードダイアログのサポートするパネル（言語）を
+  追加する関数cellOskDialogAddSupportLanguage()を追加しました。
+  韓国語入力をサポートする場合には、この関数を用いて指定を行う必要が
+  あります。
+
+- オンスクリーンキーボードダイアログの大きさを取得する関数
+  cellOskDialogGetSize()を追加しました。
+
+<サンプルの変更>(samples/sysutil/osk_dialog)
+- 韓国語入力のサポートやcellOskDialogAddSupportLanguage()、
+  cellOskDialogGetSize()を使用したサンプルに変更しました。
+
+メッセージダイアログユーティリティ
+==================================
+<新規機能> 
+- 従来の関数に機能追加を行った以下の関数を追加しました。 
+    cellMsgDialogOpen2() 
+  基本的な使用方法は従来の関数と同じですが、ダイアログの以下の機能を
+  追加した関数となります。 
+  なお、従来の関数は互換性のために残しますが、ゲームアプリケーションでは
+  上記関数をご使用ください。
+    - ダイアログ起動時の効果音
+    - ボタンの種別
+    - 戻るボタンの無効化
+
+<サンプルの変更>(samples/sysutil/msgdialog)
+- cellMsgDialogOpen2()使用するように変更しました。
+
+セーブデータユーティリティ
+==========================
+<新規機能>
+- 従来の関数に機能追加を行った以下の関数を追加しました。 
+    cellSaveDataListSave2() 
+    cellSaveDataListLoad2() 
+    cellSaveDataFixedSave2() 
+    cellSaveDataFixedLoad2() 
+    cellSaveDataAutoSave2() 
+    cellSaveDataAutoLoad2() 
+    cellSaveDataDelete2() 
+  基本的な使用方法は従来の関数と同じですが、以下の機能を追加した関数と
+  なります。 
+  なお、従来の関数は互換性のために残しますが、ゲームアプリケーションでは
+  上記関数をご使用ください。
+    - 電源断時でも処理が最後まで行われる
+    - 各種コールバックに渡すユーザ指定データ（void *userdata) の指定可能 
+      ただし、cellSaveDataDelete2()はコールバックがない為、userdataも
+      ありません。
+    - 別スレッドから同時に呼び出した場合、後から呼ばれた関数は
+      CELL_SAVEDATA_ERROR_BUSY を返して終了する 
+
+- オートセーブ／ロードを固定セーブ／ロードと同様の手順で行う関数を
+  追加しました。 
+  詳細は、「セーブデータユーティリティリファレンス」を参照ください。 
+    cellSaveDataListAutoSave() 
+    cellSaveDataListAutoLoad()
+
+<仕様変更>
+- CellSaveDataCBResult構造体のメンバ名を変更しました。 
+    変更前：CellSaveDataCBResult::reserved 
+    変更後：CellSaveDataCBResult::userdata 
+  CellSaveDataCBResult構造体のサイズは変わらないため、バイナリ互換は
+  保たれますが、従来のセーブデータユーティリティを用いたゲームアプリ
+  ケーションをSDK150の環境でコンパイルするにはコードを修正する必要が
+  ありますのでご注意ください。
+
+ゲームデータユーティリティ
+==========================
+<新規機能>
+- 直前に確認/作成したゲームデータのサイズを取得する関数、
+  cellGameDataGetSizeKB()を追加しました。
+  詳細は「ゲームデータユーティリティリファレンス」を参照ください。
+
+<サンプルの変更>(samples/sysutil/gamedata)
+- cellGameDataGetSizeKB()を使用するように変更しました。
+
+AVチャットユーティリティ
+========================
+<新規機能>
+- AVチャットユーティリティの拡張機能をPRX形式のモジュール
+  (libsysutil_avc_ext_stub.a)で提供します。ゲームアプリケーションでは、
+  libsysutil_avc_ext_stub.aを静的にリンクしてご使用ください。 
+    target/ppu/lib/libsysutil_avc_ext_stub.a 
+    target/ppu/include/sysutil/sysutil_avc_ext.h
+
+- ビデオチャットの参加者画面の表示位置やサイズなどをゲーム
+  アプリケーション側から制御できる機能を追加しました。 
+    cellSysutilAvcExtSetWindowPosition() 
+    cellSysutilAvcExtGetWindowPosition() 
+    cellSysutilAvcExtSetWindowRotation() 
+    cellSysutilAvcExtGetWindowRotation() 
+    cellSysutilAvcExtSetWindowRotation() 
+    cellSysutilAvcExtGetWindowSize() 
+    cellSysutilAvcExtShowWindow() 
+    cellSysutilAvcExtHideWindow() 
+    cellSysutilAvcExtGetWindowShowStatus() 
+    cellSysutilAvcSetWindowZorder() 
+  ゲームアプリケーションで上記関数を使用する場合はAVチャットユーティリティ
+  拡張モジュールをロードする必要があります。
+
+- ビデオチャットで流れている映像データをゲームアプリケーション側から
+  取得する機能としてcellSysutilAvcExtGetSurfacePointer()追加しました。
+  これによりゲームアプリケーション側で映像を加工し自由に表示することが
+  できます。なお、ゲームアプリケーションで使用する場合はAVチャット
+  ユーティリティ拡張モジュールをロードする必要があります。
+
+<サンプルの変更>(samples/sysutil/avc)
+- サンプルプログラムをビデオチャットの参加者画面の表示位置やサイズなどを
+  ゲームアプリケーション側から制御できる機能とビデオチャットで流れている
+  映像データをゲームアプリケーション側から取得する機能を使用するように
+  変更しました。
+
+システムキャッシュユーティリティ
+================================
+<新規機能>
+- 直前にマウントしたシステムキャッシュ領域の初期化を行う
+  cellSysCacheClear()を追加しました。ゲームアプリケーションがシステム
+  キャッシュを使用中に既存ファイルにエラーを発見してシステムキャッシュ
+  全体を破棄したい場合、キャッシュIDを変更せずにキャッシュパーティション
+  の内容をクリアすることが出来ます。 
+  詳細は、「システムキャッシュユーティリティリファレンス」及び
+  「システムキャッシュユーティリティ 概要」を参照ください。
+
+- システムキャッシュ領域のマウント時に、システムキャッシュ領域の破損判定を
+  行う機能に対応しました。詳細は、「システムキャッシュユーティリティ 概要」
+  を参照ください。
+
+<サンプルの変更>(samples/sysutil/syscache)
+- cellSysCacheClear()を使用するように変更しました。
+
+ビデオ設定ユーティリティ
+========================
+<新規機能>
+- 以下の比較的小さい表示バッファサイズからも伸張出力することにより1080i 
+  および 1080p 出力が可能になりました。伸張する時のフィルタはバイリニア
+  相当を使用します。 
+  この機能によりゲームアプリケーションは従来よりも少ないメモリ、描画コスト
+  で 1080p/1080iの出力が出来るようになりました。 
+    1600x1080 
+    1440x1080 
+    1280x1080 
+    960x1080
+
+- ビデオ出力ポートを表す定数に
+  Networkデバイス(PSP(R) (PlayStation(R)Portable))への出力を示すマクロ定数
+  CELL_VIDEO_OUT_PORT_NETWORKを追加しました。 
+  CELL_VIDEO_OUT_PORT_NETWORKの機能は現在のSDKではサポートしておりません。
+  今後のバージョンアップにて正式にサポートする予定です。
+
+<仕様変更>
+- 1080p/1080iの出力に関する機能の追加に伴い、仕様を変更しました。
+  cellVideoOutGetDeviceInfo()でビデオ出力デバイスの情報取得した場合、
+  CellVideoOutDeviceInfo構造体での解像度は、1280x720から 1920x1080 へ
+  ハードウェアスケーラー変換した値をとりましたが、この変換を行わないように
+  しました。
+
+<サンプルの変更>(samples/sysutil/video/resolution)
+-  1600x1080, 1440x1080, 1280x1080, 960x1080 および 720x576の解像度を
+   使用するように変更しました。
+
+オーディオ設定ユーティリティ
+============================
+<新規機能>
+- オーディオ出力ポートを表す定数に
+  Networkデバイス(PSP(R) (PlayStation(R)Portable))への出力を示すマクロ定数
+  CELL_AUDIO_OUT_PORT_NETWORKを追加しました。
+  CELL_AUDIO_OUT_PORT_NETWORKの機能は現在のSDKではサポートしておりません。
+  今後のバージョンアップにて正式にサポートする予定です。
+
+- 以下の関数において引数audioOutでCELL_AUDIO_OUT_SECONDARY を指定した
+  場合の情報取得が出来るようになりました。 
+    cellAudioOutGetNumberOfDevice() 
+    cellAudioOutGetDeviceInfo() 
+    cellAudioOutGetState() 
+    cellAudioOutGetSoundAvailability()
+
+<仕様変更>
+- 解像度を変更した場合にオーディオの設定がリセットされてしまいましたが、
+  解像度を変更した場合でもオーディオの設定が保持されるように変更しました。
+
+----------------------------------------------------------------------
+5 Network Platform
+----------------------------------------------------------------------
+全般
+====
+<新規機能>
+- UPnP 機能を持つ同一 NAT ルータに複数台の PLAYSTATION(R)3 を接続した
+  場合でも、最大 16 台の PLAYSTATION(R)3 が同時に UPnP 機能を利用することが
+  できるようになりました。
+
+NPベーシックユーティリティ
+==========================
+<新規機能>
+- 相手がオフラインか、同じNPコミュニケーションIDに参加していないだけなのかを
+  区別してNPコミュニケーションIDとハンドラを登録する関数、
+  sceNpBasicRegisterContextSensitiveHandler()を追加しました。 
+  これに伴い、相手がNPネットワークに接続しているが同じNPコミュニケーション
+  IDに参加していない場合のイベントとして、SCE_NP_BASIC_EVENT_OUT_OF_CONTEXT
+  を追加しました。
+
+- データ添付メッセージの情報を取得する以下の関数を追加しました。 
+    sceNpBasicGetMessageAttachmentEntryCount() 
+    sceNpBasicGetMessageAttachmentEntry()
+
+- フレンドがリストから削除された場合のイベント、
+   SCE_NP_BASIC_EVENT_FRIEND_REMOVEDを追加しました。
+
+NPスコアランキングユーティリティ
+================================
+<新規機能>
+- ランキングの通信処理のタイムアウト時間を設定する関数、
+  sceNpScoreSetTimeout()を追加しました。
+
+NPシグナリングユーティリティ
+============================
+<新規機能>
+- コネクションを完全に切断する関数として
+  sceNpSignalingTerminateConnection()を追加しました。
+
+NPマッチングユーティリティ
+==========================
+<新規機能>
+- ルームリストを取得する関数sceNpMatchingGetRoomListLimitGUI()とルームに
+  参加する関数sceNpMatchingJoinRoomGUI()を追加しました。 
+  これに伴い、以下の構造体、GUIイベントを追加しました。 
+
+    GUIイベント 
+      SCE_NP_MATCHING_GUI_EVENT_JOIN_ROOM 
+      SCE_NP_MATCHING_GUI_EVENT_GET_ROOM_LIST_LIMIT 
+
+    構造体 
+      SceNpMatchingReqRange 
+      SceNpMatchingRange 
+      SceNpMatchingRoomList
+
+----------------------------------------------------------------------
+6 Cell OS Lv-2
+----------------------------------------------------------------------
+<新規機能>
+- SPUが命令フェッチに失敗してハングしている状態を検出し、復帰させる処理を
+  追加しました。検出した場合、TTYに以下のようなメッセージが出力されます。 
+
+    SPE hang is detected: GUID afd2584f80e90b3b, NPC 00000980 
+
+  検出は別パッケージで提供しているPA Suiteのパフォーマンスモニタの機能を
+  利用しています。そのため、パフォーマンスモニタを利用している間は検出
+  できませんのでご注意ください。
+
+----------------------------------------------------------------------
+7 ファイルシステム
+----------------------------------------------------------------------
+<新規機能>
+cell/target/images/cellftp.self
+===============================
+- ls コマンドにサブディレクトリを再帰的に表示するオプション -R を追加
+  しました。 
+    例)  COMMAND> ls -R
+
+----------------------------------------------------------------------
+8 SPU Runtime 
+----------------------------------------------------------------------
+libspurs
+========
+<新規機能>
+- SPURS GDBスクリプトのcell_spurs_print_tasksetコマンドにおいて、タスク
+  セット内のタスク一覧が表示されるようになりました。
+
+- SPURS GDBスクリプトのcell_spurs_print_taskコマンドにおいて、タスクの
+  バックトレースが表示されるようになりました。
+
+<仕様変更>
+- CellSpursJobHeader構造体の予約領域の値が0以外である場合、エラーコード
+  CELL_SPURS_JOB_ERROR_JOB_DESCRIPTORを返すようにしました。
+
+libdaisy
+========
+<仕様変更>
+- cell::Daisy::Buffer::Localテンプレートクラスで16KBを超えるサイズの型を
+  tTypeテンプレート引数に指定出来るようにしました。
+
+----------------------------------------------------------------------
+9 libusbd
+----------------------------------------------------------------------
+<新規機能>
+- USB High-Speed デバイスの高バンド幅アイソクロナス転送（マイクロフレーム
+  当たり 3 トランザクション、最大ペイロード 1024 バイト）を行う
+  cellUsbdHSIsochronousTransfer()を追加しました。 
+  これ伴い、構造体 cellUsbdIsochHSRequest, CellUsbdIsochHSPswLen 
+  も追加しました。
+
+----------------------------------------------------------------------
+10 HID
+----------------------------------------------------------------------
+libkb
+=====
+<新規機能>
+- 韓国語のキー配列、CELL_KB_MAPPING_KOREAN_KOREAを追加しました。
+  システムソフトウェアの表示言語設定が韓国語の場合、CellKbConfig構造体の
+  arrangeメンバには、CELL_KB_MAPPING_KOREAN_KOREAが入ります。
+
+----------------------------------------------------------------------
+11 Network
+----------------------------------------------------------------------
+libnet
+======
+<仕様変更>
+- TCPにおいて、ソケット送受信バッファサイズの default値を160KB から
+  65535Byteに変更しました。
+
+----------------------------------------------------------------------
+12 libgcm
+----------------------------------------------------------------------
+<新規機能>
+- 以下の関数を追加しました。 
+    cellGcmGetCurrentField() 
+    cellGcmCgGetEmbeddedConstantOffset() 
+    cellGcmCgGetEmbeddedConstantCount() 
+    cellGcmSetDepthFormat() 
+    cellGcmSetBlendOptimization()
+
+- 以下の関数においてCgプログラムのパラメータタイプCG_FLOAT3x4及び
+  CG_FLOAT4x3をサポートしました。 
+    cellGcmSetVertexProgramParameter() 
+    cellGcmSetFragmentProgramParameter() 
+    cellGcmSetFragmentProgramParameterPointer()
+
+- cellGcmSetDepthFormat()のformatで設定する定数CELL_GCM_DEPTH_FORMAT_FIXED
+  及びCELL_GCM_DEPTH_FORMAT_FLOATを追加しました。
+
+<仕様変更>
+- cellGcmSetFragmentProgramParameterPointer()の未使用な引数 const float *value
+  を削除しました。
+
+- cellGcmSetDrawArrays()のコマンド生成を見直し、必要なバッファサイズを約半分に
+  削減しました。
+
+- 以下の関数において、それぞれの引数indexの値が4以上であった場合にアサート
+  するようlibgcm_cmddbg.aを変更しました。 
+    cellGcmSetVertexTexture() 
+    cellGcmSetVertexTextureAddress() 
+    cellGcmSetVertexTextureControl() 
+    cellGcmSetVertexTextureBorderColor()
+- cellGcmSetTextureOptimization()の未使用な引数 reserved0、reserved1の名前を
+  それぞれiso, anisoに変更し、以下の設定を行うようしました。 
+    iso:  等方性フィルタLOD計算最適化フラグ 
+    aniso:  異方性フィルタLOD計算最適化フラグ 
+  また、これらの引数で使用する定数を追加しました。 
+    CELL_GCM_TEXTURE_ISO_LOW 
+    CELL_GCM_TEXTURE_ISO_HIGH 
+    CELL_GCM_TEXTURE_ANISO_LOW 
+    CELL_GCM_TEXTURE_ANISO_HIGH
+
+- グラフィックスエラー出力メッセージの見直しおよび情報追加を行いました。
+
+<サンプルの変更>(samples/gcm/)
+- サンプル名前の変更を行いました。
+    ---------------------------------------------
+    変更前         ------> 変更後
+    ---------------------------------------------
+    ConvertSwizzle ------> convert_swizzle
+    Cube           ------> fw_cube
+    DepthRead      ------> depth_read
+    Dice           ------> fw_dice
+    flipImmediate  ------> flip_immediate
+    Fog            ------> fw_fog
+    gcmVtxAttr     ------> fw_vertex_attribute
+    Human          ------> human
+    MipMap         ------> fw_mipmap
+    MSAA           ------> msaa
+    MultiTexture   ------> fw_multi_texture
+    pmZcull        ------> pm_zcull
+    RenderToTexture------> fw_render_to_texture
+    StencilReflect ------> fw_stencil_reflect
+    UserClip       ------> user_clip
+    VertexTexture  ------> fw_vertex_texture
+    VideoTexturing ------> fw_video_texturing
+    Dice-spu       ------> fw_dice_spu
+    ---------------------------------------------
+
+- fw_video_texturingサンプルで表示するテクスチャを変更いたしました。
+
+----------------------------------------------------------------------
+13 GTF
+----------------------------------------------------------------------
+<仕様変更>
+- dds2gtf.exeの出力を全てstdoutへ出力するように変更しました。
+
+- samples/gtf/dds2gtf以下にdds2gtfのLinux版とWindows版のソースコードを
+  追加しました。
+
+----------------------------------------------------------------------
+14 PSGL
+----------------------------------------------------------------------
+<新規機能>
+- PSGLデバイスを作成する際にトリプルバッファの指定が可能になりました。
+  psglCreateDeviceExtended()を呼ぶ際にPSGLdeviceParameters構造体の
+  メンバ変数bufferingModeへPSGL_BUFFERING_MODE_TRIPLEを指定して下さい。
+
+----------------------------------------------------------------------
+15 sce-cgc
+----------------------------------------------------------------------
+<新規機能>
+- コード生成をコントロールする為のオプションを追加しました。
+    -fuse-ge-plane  : clip planeとの比較関数に"Greater Than"を用いるオプション
+    -fuse-lt-plane  : clip planeとの比較関数に"Less Than"を用いるオプション
+    -fenable-bx2    : TEX命令に対するbx2 suffixを有効にするオプション
+    -fkeep-unused   : Vertex programの中に未使用のパラメータがあった場合
+                      でもパラメータを削除しないようにするオプション
+
+- DPH命令を使った最適化を行うようにしました。
+
+----------------------------------------------------------------------
+16 codec
+----------------------------------------------------------------------
+libdmux
+=======
+<サンプルの変更>(samples/codec/pamf_dmux)
+- Audioデコーダから出力されたPCMデータのサイズが0である場合、そのPCM
+  データを出力せずに破棄する処理を追加しました。
+
+libjpgdec
+=========
+<サンプルの変更>
+- samples/codec/jpg_dec以下のサンプルにおいて、以下の処理を追加しました。
+  - プライマリPPU スレッドの優先度とスタックサイズの設定を行う
+    SYS_PROCESS_PARAMマクロの設定
+  - システムユーティリティ関連のイベントをチェックする処理
+
+- samples/codec/jpg_dec/jdec_ppu_callbackサンプルのストリームの分割
+  入力処理のjpgDecCbCtrlStrm()において、ストリームのサイズが0となった場合、
+  exit()処理を行わないように変更しました。
+
+libpngdec
+=========
+<サンプルの変更>
+- samples/codec/png_dec以下のサンプルにおいて、以下の処理を追加しました。
+  - プライマリPPU スレッドの優先度とスタックサイズの設定を行う
+    SYS_PROCESS_PARAMマクロの設定
+  - システムユーティリティ関連のイベントをチェックする処理
+
+- samples/codec/png_dec/pngdec_ppu_callbackサンプルのストリームの分割
+  入力処理のpngDecCbCtrlStrm()において、ストリームのサイズが0となった場合、
+  exit()処理を行わないように変更しました。
+
+----------------------------------------------------------------------
+17 サウンド関連
+----------------------------------------------------------------------
+MultiStream
+===========
+<新規機能>
+- 以下の関数を追加しました。 
+    cellMSStreamGetRoutingWetDry() 
+    cellMSStreamSetRoutingDry() 
+    cellMSStreamSetRoutingWet() 
+    cellMSSystemConfigureSysUtil()
+
+- ディストーションDSPエフェクト、Soft Clipping Distortion DSP Effectを
+  追加しました。
+
+- バス間のより複雑なルーティングを可能にしたDSPエフェクトを追加しました。 
+    Auxiliary Return DSP Effect 
+    Auxiliary Send DSP Effect
+
+<サンプルの変更>(samples/sound/multistream)
+- eq_sample、rain_sample、surround_sampleを除くサンプルでシステム
+  コールバック関数を使ったサンプルの終了処理を行うようにしました。
+
+- サンプルsimple_XXXXで共通使用するファイルを追加しました。
+    samples/sound/multistream/common/mscommon.cpp
+    samples/sound/multistream/common/mscommon.h
+
+----------------------------------------------------------------------
+18 その他
+----------------------------------------------------------------------
+<仕様変更>(cell/host-linux/bin, cell/host-win32/bin)
+- SPU ELF変換スクリプト(replace_hbr.pl)を削除しました。
+
+----------------------------------------------------------------------
+19 サンプルプログラム
+----------------------------------------------------------------------
+<新規追加>
+samples/sysutil/storagedata
+- ストレージデータユーティリティを使用して、ストレージメディアとHDD間の
+  データの書き出し、取り込みを行うサンプル
+
+samples/gcm/duck
+- sce-cgcdisasm で出力したヘッダを使ってシェーダ変数の設定を行うサンプル
+
+<samples/mkの変更点>
+- SPU_REPLACE_HBR_ENABLEオプションを削除しました。
+
+<プロジェクトファイルの追加>
+ProDG for PLAYSTATION(R)3用に以下のサンプルプログラムの一部に対して
+プロジェクトファイルを追加しました。
+未対応のサンプルプログラムについては準備が出来次第、追加を行っていく
+予定です。
+    samepls/lv2/contig_mem_map
+    samepls/lv2/contig_mem_map_and_container
+    samples/gcm/pmZcull
+    samples/gcm/Human
+    samples/gcm/Fog
+    samples/gcm/Dice-spu
+
+<プロジェクトファイルの変更>
+以下のプロジェクトファイルにおいてSNC Toolchainに対応しました。
+    samples/lv2
+    samples /gcm
+    samples /gtf
+

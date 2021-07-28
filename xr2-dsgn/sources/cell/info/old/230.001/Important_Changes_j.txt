@@ -1,0 +1,311 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 230.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+新規ライブラリ及び新規ツール
+----------------------------------------------------------------------
+NP IN-GAME コマース2 ユーティリティ
+==================================
+PLAYSTATION(R)Store (タイトルストア) にて販売されている商品をブラウズし
+購入するための機能を提供するシステムユーティリティ
+
+NP IN-GAMEコマース2 ユーティリティはベータ版として提供いたします。
+その為、マスター提出するゲームアプリケーションには使用できません。
+ご利用の際は予め、ご注意ください。
+
+NP IN-GAMEコマース ユーティリティとの違いや、機能の詳細については
+「 NP IN-GAMEコマース2 概要」及び「NP IN-GAMEコマース2 リファレンス」を
+御参照ください。
+
+
+----------------------------------------------------------------------
+システムソフトウェア(GUI)
+----------------------------------------------------------------------
+新規機能
+
+- システムソフトウェアに以下のメニューを追加しました。 
+  詳細については、「システムソフトウェア概要」ドキュメントを御参照ください。
+
+  - 設定 -> ★ Debug Settings -> PLAYSTATION(R)Store Ad Clock
+
+    - 「ネットワーク」列の「Title Store Preview(Store)」における
+      広告表示時に参照する時間を変更できます。
+      現状では、この値は変更しないでください。
+
+  - PLAYSTATION(R) Network -> ★ Title Store Preview (inGame)
+
+    - タイトルストアのプレビュー機能を提供します。
+      タイトルストア用のIn Gameカタログが表示されます。
+
+  - PLAYSTATION(R) Network -> ★ Title Store Preview (Store)
+
+    - タイトルストアのプレビュー機能を提供します。
+      リージョナルストア用のGlobalカタログが表示されます。
+
+----------------------------------------------------------------------
+libsysmodule
+----------------------------------------------------------------------
+全般
+====
+新規機能
+
+- モジュールをロードする ID を追加しました。
+  -------------------------------------------------------------------
+  ID                                  説明
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_SYSUTIL_GAME_EXEC    PLAYSTATION(R)Home 連携ユーティリティ
+  CELL_SYSMODULE_SYSUTIL_NP_COMMERCE2 NP IN-GAMEコマース2ユーティリティ
+  -------------------------------------------------------------------
+
+----------------------------------------------------------------------
+システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+オンスクリーンキーボードダイアログユーティリティ
+================================================
+仕様変更
+
+- SDK220(システムソフトウェア version 2.20)よりオンスクリーンキーボード
+  ユーティリティへメモリコンテナを渡す必要がなくなりましたが、日本語入力を
+  行う場合に若干、操作のレスポンスが低下するといった症状が発生していました。
+
+  この対策として、cellOskDialogLoadAsync()の第1引数containerに
+  メモリコンテナIDを渡した場合はメモリコンテナを使用するように変更しました。
+  （SDK220ではメモリコンテナＩＤを渡しても使用していませんでした）
+  日本語入力の操作レスポンスを重視する場合は、cellOskDialogLoadAsync()の
+  第1引数containerにメモリコンテナIDを渡してご利用ください。
+
+  この仕様変更は、ご使用しているシステムソフトウェアのバージョンに依存します。
+  各バージョンの対応表を以下に示します。
+  --------------------------------------------------------------------------
+  システムソフトウェア | オンスクリーンキーボード
+  のバージョン         | ダイアログユーティリティの仕様
+  --------------------------------------------------------------------------
+  version 2.10以前      | メモリコンテナを使用する(メモリコンテナIDの設定が必要)
+  version 2.20          | メモリコンテナを使用しない
+  version 2.30以降      | メモリコンテナを使用する場合と使用しない場合の両方に対応
+  --------------------------------------------------------------------------
+
+  上記のとおり、システムソフトウェア version 2.20の環境では、
+  cellOskDialogLoadAsync()の第1引数containerにメモリコンテナIDを渡しても
+  メモリコンテナIDを無視し、メモリコンテナを使用しません。
+  その為、操作レスポンスの低下は必ず発生します。
+
+  メモリコンテナを使用する場合の必要サイズは以下となります。
+  次回のリリースにおいて、「オンスクリーンキーボードダイアログユーティリティ
+   リファレンス」に追加する予定です。
+
+  ■5MB
+    デフォルト構成、または日本語、ひらがな、カタカナ、全角アルファベット、
+    全角数字パネルのいずれかを含む
+
+  ■3MB
+    デフォルト構成(日本語禁止)、またはドイツ語、英語、スペイン語、フランス語、
+    イタリア語、オランダ、ポルトガル語、ロシア語、デンマーク語、スウェーデン語、
+    ノルウェー語、フィンランド語、中国語(繁体字、簡体字)、URLパネルのいずれかを含む
+
+  ■2MB
+    上記に該当しない
+
+  使用パネルフラグからメモリコンテナの最低必要サイズを取得する処理の例を
+  以下に示します。
+
+  (例)
+  int GetContainerSize( unsigned int allowOskPanelFlg ){
+    if(
+      (allowOskPanelFlg == CELL_OSKDIALOG_PANELMODE_DEFAULT)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE_HIRAGANA)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_JAPANESE_KATAKANA)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ALPHABET_FULL_WIDTH)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_NUMERAL_FULL_WIDTH)	)
+    {
+      return (5 * 1024 * 1024);
+    }
+    else if(
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DEFAULT_NO_JAPANESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_GERMAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ENGLISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SPANISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_FRENCH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_ITALIAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DUTCH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_PORTUGUESE)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_RUSSIAN)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_DANISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SWEDISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_NORWEGIAN)		||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_FINNISH)			||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_CHINA_TRADITIONAL)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_TRADITIONAL_CHINESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_SIMPLIFIED_CHINESE)	||
+      (allowOskPanelFlg & CELL_OSKDIALOG_PANELMODE_URL)			)
+    {
+      return (3 * 1024 * 1024);
+    }
+    else
+    {
+      return (2 * 1024 * 1024);
+    }
+  }
+
+PLAYSTATION(R)Home 連携ユーティリティ
+=====================================
+
+サンプルの変更(cell/samples/sdk/sysutil/gameexec)
+
+- cell/target/ppu/include/cell/sysmodule.hにて、PLAYSTATION(R)Home 連携
+  ユーティリティのモジュールロード ID が追加されたため、サンプルにおける
+  以下の記述を削除しました。
+
+  #define CELL_SYSMODULE_SYSUTIL_GAME_EXEC 0x0037
+
+----------------------------------------------------------------------
+PLAYSTATION(R)Network (NP)
+----------------------------------------------------------------------
+NP コマース ユーティリティ
+==========================
+新規機能
+
+- 「ゲーム購入」機能を追加しました。
+  これは、PLAYSTATION(R)Networkのコマースサービスにおいて以下の
+  ビジネスモデルを支援する機能です。
+
+  - 体験版を無料配布し、必要に応じてライセンスキーを有料で販売する
+
+  これに伴い、以下の関数を追加しました。
+
+  - sceNpDrmVerifyUpgradeLicense()
+  - sceNpDrmVerifyUpgradeLicense2()
+  - sceNpDrmExecuteGamePurchase()
+
+  詳細については、「NP DRM 概要」及び「NP DRM リファレンス」を参照ください。
+
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+libpad for Windows
+==================
+
+新規機能
+
+- SDK220のlibpadにて行いました以下の新規機能をlibpad for Windowsにも
+  追加しました。
+
+  - 一括してコントローラ情報を取得できる関数cellPadGetInfo2()と
+    構造体CellPadGetInfo2を追加しました。
+    この関数は従来のcellPadGetInfo()および構造体CellPadInfoを見直して、
+    より容易にコントローラの接続情報を取得できるようにした関数です。 
+    cellPadGetInfo2()の仕様と従来の仕様との違いを以下に示します。
+
+      1. cellPadGetInfo2()を用いることによってコントローラポートNo.の
+         変更通知を取得することが可能になりました。
+    
+        (従来の仕様) 
+        システムダイアログなどでコントローラのポートNo.が変更されても、
+        それを知る手段がありませんでした。
+
+        (SDK220以降の仕様) 
+        システムダイアログなどでコントローラのポートNo.が変更された後に
+        cellPadGetInfo2()を呼び出すと引数に指定した構造体CellPadInfo2の
+        メンバport_status[i]に結果が取得されます。
+        ポートNo.の変更についてはport_status[i]に対する
+        CELL_PAD_STATUS_ASSIGN_CHANGESフィールドの値を確認していただければ
+        判別が可能です。
+
+      2. 感圧モードおよび6軸センサーモードの設定状態の情報が取得可能になりました。
+
+         (従来の仕様) 
+         cellPadSetPressMode()およびcellPadSetSensorMode()で設定した
+         コントローラのポートの設定情報を取得する手段がありませんでした。
+
+         (SDK220以降の仕様) 
+         cellPadSetPressMode()およびcellPadSetSensorMode()で設定した
+         コントローラのポートの設定情報をcellPadGetInfo2()によって取得可能に
+         なりました。引数として設定する構造体CellPadInfo2のメンバport_settingに
+         コントローラのポートの設定情報が格納されます。
+  
+      3. 接続されたコントローラの性能情報を取得できるようになりました。
+
+         (従来の仕様) 
+         コントローラの性能情報（感圧機能ありや、6軸センサー機能ありなどの情報）
+         を取得するためには、別途cellPadGetCapabilityInfo()を呼び出して取得する
+         必要がありました。
+
+         (SDK220以降の仕様) 
+         cellPadGetInfo2()を呼ぶことにより引数として設定した構造体CellPadInfo2の
+         メンバdevice_capabilityにコントローラの性能情報が取得されます。
+
+      4. ベンダーIDおよびプロダクトIDの廃止。
+
+         (従来の仕様) 
+         cellPadGetInfo()の引数として指定する構造体CellPadInfoの情報には
+         ベンダーID/プロダクトIDが含まれていましたが、これらのIDからコントローラを
+         識別することは禁止されていました。
+
+         (SDK220以降の仕様) 
+         cellPadGetInfo2()の引数として指定する構造体CellPadInfo2には
+         ベンダーID/プロダクトIDは含まれておりません。代わりに構造体CellPadInfo2の
+         メンバdevice_capabilityを使用することによってコントローラの識別を行うことが
+         出来ます。
+
+    なお、今まで使用されていた以下の関数および構造体は今後、廃止する予定です。
+    ゲームアプリケーションにおいてはcellPadGetInfo2()および構造体CellPadInfo2を
+    使用するように移行してください。
+
+    関数 
+    - cellPadGetInfo()
+    - cellPadInfoPressMode()
+    - cellPadInfoSensorMode()
+    - cellPadGetCapabilityInfo()
+
+    構造体 
+    - CellPadInfo
+
+- SDK220のlibpadにて行いました以下の新規機能をlibpad for Windowsにも
+  追加しました。
+
+  - ポートのモードを設定する関数cellPadSetPortSetting()を追加しました。 
+    この関数は今までcellPadSetPressMode()およびcellPadSetSensorMode()を用いて
+   行っていた感圧機能やセンサーモードの設定を一括して行うことが出来ます。 
+
+    なお、cellPadSetPressMode()およびcellPadSetSensorMode()は今後、廃止する
+    予定です。
+    ゲームアプリケーションにおいてはcellPadSetPortSetting()を使用するように
+    移行してください。
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+新規機能
+
+- HLSL コンパイラに対し任意のオプション文字列を渡すオプション -hlslopt
+  と -dhlslopt を追加しました。
+
+- HLSL 計測時に、d3dx dll のバージョンを指定するためのオプション -d3dx 
+  を追加しました。このオプションは最新のFX Composer 2で使用しています。
+
+仕様変更
+
+- フラグメントプログラム計測のinstruction表示のPC 表記を10進数にし、
+  スケジューリング表示のPC表記と表現方法を揃えるように変更しました。
+
+----------------------------------------------------------------------
+サンプルプログラム
+----------------------------------------------------------------------
+新規サンプル
+============
+
+- samples/sdk/network/np/np_gui_commerce2
+  PLAYSTATION(R)Network のライブラリを利用して、商品カタログの
+  ブラウズと購入処理を行うサンプル
+
+- samples/sdk/network/np/game_purchase
+  メッセージダイアログユーティリティのサンプルを基に「ゲーム購入」機能の
+  処理を取り入れたサンプル
+
+----------------------------------------------------------------------

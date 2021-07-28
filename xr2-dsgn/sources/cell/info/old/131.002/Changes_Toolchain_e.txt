@@ -1,0 +1,62 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 131.002
+- Bugs fixed in Release 131.002
+
+======================================================================
+New Additions and Changes in Release 131.002
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+- To support the SN Systems compiler, the header file configuration of 
+  the intrinsics to be installed under cell/ of the SDK package has 
+  been changed. 
+  This configuration ensures the source compatibility with the GCC 
+  compiler, therefore, no action is required by the application 
+  program side. Changed items are as shown below:
+
+  - The following intrinsics header files for GCC have been changed 
+    to *_gcc.h:
+    <PPU>
+    target/ppu/include/ppu_intrinsics.h
+      -> target/ppu/include/ppu_intrinsics_gcc.h
+    target/ppu/include/spu2vmx.h
+      -> target/ppu/include/spu2vmx_gcc.h
+    target/ppu/include/si2vmx.h
+      -> target/ppu/include/si2vmx_gcc.h
+    <SPU>
+    target/spu/include/spu_intrinsics.h
+      -> target/spu/include/spu_intrinsics_gcc.h
+    target/spu/include/spu_mfcio.h
+      -> target/spu/include/spu_mfcio_gcc.h
+    target/spu/include/vmx2spu.h
+      -> target/spu/include/vmx2spu_gcc.h
+
+  - In order to remove the differences between the GCC and the SN 
+    Systems compilers, the following wrapper header files have been 
+    added in the SDK package.:
+    <PPU>
+    target/ppu/include/ppu_intrinsics.h
+    target/ppu/include/spu2vmx.h
+    target/ppu/include/si2vmx.h
+    <SPU>
+    target/spu/include/spu_intrinsics.h
+    target/spu/include/spu_mfcio.h
+    target/spu/include/vmx2spu.h
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+none
+======================================================================
+Bugs Fixed in Release 131.002
+----------------------------------------------------------------------
+GCC/GDB
+----------------------------------------------------------------------
+none

@@ -1,0 +1,77 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 170.003
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 170.003 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 170.003
+======================================================================
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Save Data Utility>
+- With the file operation callback of the save data utility, there was 
+  a leak in CELL_SAVEDATA_FILEOP_DELETE, and if it was repeated for about 
+  350 times, it failed in opening an arbitrary file in some cases. 
+  This problem has been fixed. 
+
+<Message Dialog Utility>
+- With the termination confirmation dialog screen that is shown when 
+  the PS button is pressed, in some cases, it became inoperative if 
+  "Quit Game" was selected and it ended abnormally when 
+  "Turn Off the System" was selected. This problem has been fixed. 
+
+<AV Chat Utility>
+- When cellSysutilAvcUnloadAsync() was called, DSI occurred in some cases. 
+  This problem has been fixed. 
+
+- If cellSysutilAvcHidePanel() or cellSysutilAvcExtHidePanelEx() is called 
+  before calling cellSysutilAvcJoinRequest(), DSI occurred. This problem 
+  has been fixed. 
+
+<On-Screen Keyboard Utility>
+- With the full-width alphanumeric character panel of the full keyboard, 
+  the positions of the keys "M" and "N" were switched. This problem 
+  has been fixed. 
+
+- With the key top display of the full keyboard Russian panel, 
+  U+0041F was U+0041B, and U+043F was U+0043B. This problem has been 
+  fixed. 
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When an external font is multi-opened using cellFontOpenFontFile() or 
+    cellFontOpenFontMemory(), or instance-opened using 
+    cellFontOpenFontInstance(), an actual close process is not performed 
+    by cellFontClose(), and the memory will not be released.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Compatibility issues with some FTP Clients, including Internet Explorer
+  and FileZilla, have been fixed.
+
+---------------------------------------------------------------------
+Cg Compiler
+---------------------------------------------------------------------
+- When outputting cgb with libcgc.a, the value of the floating point 
+  that was used within the vertex program was not correctly output 
+  in some cases. This problem has been fixed. 
+
+- When outputting cgb with sce-cgc, the -ao option could not be used. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- Even when RESC_INTERLACE_MODE_FILTER was specified for the member 
+  rescInterlaceMode of the structure PSGLdeviceParameters, it did not 
+  operate correctly. This problem has been fixed. 
+

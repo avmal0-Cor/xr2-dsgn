@@ -1,0 +1,564 @@
+#!/usr/bin/perl
+
+# SCE CONFIDENTIAL
+# PlayStation(R)3 Programmer Tool Runtime Library 310.001
+# Copyright (C) 2007 Sony Computer Entertainment Inc.
+# All Rights Reserved.
+#
+
+
+# package decl
+use Getopt::Long;
+use integer
+
+# constant definition
+$command_name = "check_mself";
+$command_version = "3.1.0";
+$mself_header_size = 64;
+$mself_header_reserve_size = 40;
+$mself_entry_size = 64;
+$mself_entry_name_size = 32;
+$mself_entry_reserve_size = 16;
+$mself_magic = 0x4D534600;
+$mself_version = 1;
+$mself_suffix = ".mself";
+$mself_inhibit_prefix = "SYS";
+
+############################################################################
+
+# function definition
+
+sub read_mself_header ($)
+{
+	my $h = $_[0];
+	my $value_size;
+	my $header_value;
+	my $magic;
+	my $format_version;
+	my $file_size_hi;
+	my $file_size_low;
+	my $entry_num;
+	my $entry_size;
+	my $header_reserve;
+
+	# get header value
+	$value_size = $mself_header_size - $mself_header_reserve_size;
+	read ($h, $header_value, $value_size) || die "read: ".$!;
+	($magic,
+	$format_version,
+	$file_size_hi,
+	$file_size_low,
+	$entry_num,
+	$entry_size,
+	) = unpack ("N6", $header_value);
+
+	# get reserve member
+	read ($h, $value_size, $mself_header_reserve_size) || die "read: ".$!;
+	(@header_reserve) = unpack ("C$mself_header_reserve_size", $value_size);
+
+	$header = {
+		magic => $magic,
+		format_version => $format_version,
+		file_size_hi => $file_size_hi,
+		file_size_low => $file_size_low,
+		entry_num => $entry_num,
+		entry_size => $entry_size,
+		reserve => \@header_reserve,
+	};
+
+	return $header;
+}
+
+sub check_mself_header ($)
+{
+	my $h = $_[0];
+	my @st;
+	my $i;
+
+	if ($h -> {magic} != $mself_magic) {
+		die "ERROR: illegal magic in mself_header\n";
+	}
+	if ($h -> {format_version} != $mself_version) {
+		die "ERROR: illegal format version in mself_header\n";
+	}
+	if ($h -> {entry_size} != $mself_entry_size) {
+		die "ERROR: illegal entry size in mself_header\n";
+	}
+	if ($h -> {entry_num} < 1) {
+		die "ERROR: illegal entry num in mself_header\n";
+	}
+
+	# file size
+#	@st = stat $in_file;
+#
+#	if ($h -> {file_size} != $st[7]) {
+#		die "ERROR: illegal file size in mself_header\n";
+#	}
+
+	# reserve
+	for ($i = 0; $i < $mself_header_reserve_size; $i++) {
+		if (${$h -> {reserve}}[$i] != 0) {
+			die "ERROR: illegal reserve value in mself_header\n";
+		}
+	}
+
+	return 0;
+}
+
+sub show_mself_header ($)
+{
+	my $h = $_[0];
+
+	printf STDOUT "[mself_header]\n";
+	printf STDOUT "magic: 0x%x\n", $h -> {magic};
+	printf STDOUT "format_version: %d\n", $h -> {format_version};
+	printf STDOUT "file_size_hi: 0x%08x\n", $h -> {file_size_hi};
+	printf STDOUT "file_size_low: 0x%08x\n", $h -> {file_size_low};
+	printf STDOUT "entry_num: %d\n", $h -> {entry_num};
+	printf STDOUT "entry_size: 0x%x\n", $h -> {entry_size};
+	printf STDOUT "reserve: ";
+	print STDOUT @{$h -> {reserve}};
+	printf STDOUT "\n";
+	printf STDOUT "\n";
+}
+
+sub read_mself_entry ($)
+{
+	my $h = $_[0];
+
+	# get entry name as 32byte value
+	read ($h, $entry_name, $mself_entry_name_size) || die "read: ".$!;
+	(@name) = unpack ("C32", $entry_name);
+
+	# get offset and size value
+	$value_size = $mself_entry_size - $mself_entry_name_size
+		- $mself_entry_reserve_size;
+	read ($h, $entry_value, $value_size) || die "read: ".$!;
+	($offset_hi,
+	$offset_low,
+	$size_hi,
+	$size_low,
+	) = unpack ("N4", $entry_value);
+
+	# get reserve member
+	read ($h, $entry_resv, $mself_entry_reserve_size) || die "read: ".$!;
+	(@reserve) = unpack ("C$mself_entry_reserve_size", $entry_resv);
+
+	# retrun as struct
+	$entry = {
+		name => \@name,
+		offset_hi => $offset_hi,
+		offset_low => $offset_low,
+		size_hi => $size_hi,
+		size_low => $size_low,
+		reserve => \@reserve,
+	};
+
+	return $entry;
+}
+
+sub is_ascii ($)
+{
+	my $c = $_[0];
+
+	if ($c <= 0x7F) {
+		return 1;
+	}
+	return 0;
+}
+
+sub is_control_char ($)
+{
+	my $c = $_[0];
+
+	if ((0x00 < $c) && ($c <= 0x1F)) {
+		return 1;
+	} elsif ($c == 0x7F) {
+		return 1;
+	}
+	return 0;
+}
+
+sub is_inhibit_char ($)
+{
+	my $c = $_[0];
+	my @inhibit_char = ('*', ':', ';', '?', '"', '<', '>', '|');
+	my $i;
+
+	for ($i = 0; $i < $#inhibit_char + 1; $i++) {
+		if ($c == ord $inhibit_char [$i]) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+sub strlen (@)
+{
+	my $c;
+	my $i;
+
+	for ($i = 0; $i < $mself_entry_name_size; $i++) {
+		$c = $_[$i];
+		if ($c == 0x00) {
+			last;
+		}
+	}
+
+	return $i;
+}
+
+sub check_entry_name ($@)
+{
+	my ($index, @name) = @_;
+	my $c;
+	my $i;
+	my $len;
+
+	if ($mself_entry_name_size <= strlen (@name)) {
+		$len = $mself_entry_name_size - 1;
+	} else {
+		$len = strlen (@name);
+	}
+
+	for ($i = 0; $i < $len; $i++) {
+		$c = $name[$i];
+		if (!is_ascii ($c) || is_control_char ($c)
+				   || is_inhibit_char ($c)) {
+			die "ERROR: illegal name in ${index}th mself_entry\n";
+		}
+	}
+
+	for ($i = $len; $i < $mself_entry_name_size; $i++) {
+		$c = $name[$i];
+		if ($c != 0x00) {
+			die "ERROR: illegal name in ${index}th mself_entry\n";
+		}
+	}
+
+	return 0;
+}
+
+sub is_lower_or_equal64 ($$$$)
+{
+	my $left_hi = $_[0];
+	my $left_low = $_[1];
+	my $right_hi = $_[2];
+	my $right_low = $_[3];
+
+	if ($left_hi > $right_hi) {
+		return 1;
+	}
+	if ($left_hi == $right_hi) {
+		if ($left_low >= $right_low) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+sub is_greater_or_equal64 ($$$$)
+{
+	my $left_hi = $_[0];
+	my $left_low = $_[1];
+	my $right_hi = $_[2];
+	my $right_low = $_[3];
+
+	if ($left_hi < $right_hi) {
+		return 1;
+	}
+	if ($left_hi == $right_hi) {
+		if ($left_low <= $right_low) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+sub is_greater64 ($$$$)
+{
+	my $left_hi = $_[0];
+	my $left_low = $_[1];
+	my $right_hi = $_[2];
+	my $right_low = $_[3];
+
+	if ($left_hi < $right_hi) {
+		return 1;
+	}
+	if ($left_hi == $right_hi) {
+		if ($left_low < $right_low) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+sub add64 ($$$$)
+{
+	my $left_hi = $_[0];
+	my $left_low = $_[1];
+	my $right_hi = $_[2];
+	my $right_low = $_[3];
+	my $carry = 0;
+
+	if (($left_low >> 31) && ($right_low >> 31)) {
+		$carry = 1;
+	}
+
+	$ret = {
+		value_hi => $left_hi + $right_hi + $carry,
+		value_low => $left_low + $right_low,
+	};
+
+	return $ret;
+}
+
+sub check_mself_entry ($$$)
+{
+	my $e = $_[0];
+	my $h = $_[1];
+	my $index = $_[2];
+	my $i;
+	my $r;
+
+	# offset and size
+	if (is_lower_or_equal64 ($e -> {offset_hi}, $e -> {offset_low},
+		$h -> {file_size_hi}, $h -> {file_size_low})) {
+		die "ERROR: illegal offset in ${index}th mself_entry\n";
+	}
+	if (is_lower_or_equal64 ($e -> {size_hi}, $e -> {size_low},
+		$h -> {file_size_hi}, $h -> {file_size_low})) {
+		die "ERROR: illegal size in ${index}th mself_entry\n";
+	}
+
+	# name
+	$r = check_entry_name ($index, @{$e -> {name}});
+
+	# reserve
+	for ($i = 0; $i < $mself_entry_reserve_size; $i++) {
+		if (${$e -> {reserve}}[$i] != 0) {
+			die "ERROR: illegal reserve value in ${index}th mself_entry\n";
+		}
+	}
+
+	return 0;
+
+}
+
+sub check_overlap ($$$)
+{
+	my $e = $_[0];
+	my $prev = $_[1];
+	my $index = $_[2];
+
+	# check if the offsets are sorted
+	if (is_greater_or_equal64 ($e -> {offset_hi}, $e -> {offset_low},
+		$prev -> {offset_hi}, $prev -> {offset_low})) {
+		die "ERROR: ${index}th mself_entry is not ascending order\n";
+	}
+
+	$r = add64 ($prev -> {offset_hi}, $prev -> {offset_low},
+			$prev -> {size_hi}, $prev -> {size_low});
+	if (is_greater64 ($e -> {offset_hi}, $e -> {offset_low},
+		$r -> {value_hi}, $r -> {value_low})) {
+		die "ERROR: ${index}th mself_entry overlapped\n";
+	}
+
+	return 0;
+}
+
+sub array_to_str (@)
+{
+	my $name;
+	my $len;
+	my $i;
+
+	$len = strlen (@_);
+	for ($i = 0; $i < $len; $i++) {
+		$name = $name . chr ($_[$i]);
+	}
+
+	return $name;
+}
+
+sub show_csv_mself_entry ($$)
+{
+	my $e = $_[0];
+	my $i = $_[1];
+
+	printf STDOUT "%d,", $i;
+	printf STDOUT "%s,", array_to_str (@{$e -> {name}});
+	printf STDOUT "0x%08x", $e -> {offset_hi};
+	printf STDOUT "%08x,", $e -> {offset_low};
+	printf STDOUT "0x%08x", $e -> {size_hi};
+	printf STDOUT "%08x\n", $e -> {size_low};
+}
+
+sub translate_name_to_cname ($)
+{
+	my $cname = $_[0];
+
+	$cname =~ tr/!#\$%&'\(\)\+,-\.=@\[\]\^`\{\}~\/\\/_/;
+	return $cname;
+}
+
+sub show_c_style_mself_entry ($$$)
+{
+	my $e = $_[0];
+	my $i = $_[1];
+	my $p = $_[2];
+	my $cname;
+
+	$cname = translate_name_to_cname (array_to_str (@{$e -> {name}}));
+
+	printf STDOUT "#define %s_%s_ID\t%d\n",
+		$p, $cname, $i;
+	printf STDOUT "#define %s_%s_NAME\t\"%s\"\n",
+		$p, $cname, array_to_str (@{$e -> {name}});
+	printf STDOUT "#define %s_%s_OFFSET\t0x%08x",
+		$p, $cname, $e -> {offset_hi};
+	printf STDOUT "%08xULL\n", $e -> {offset_low};
+	printf STDOUT "#define %s_%s_SIZE\t0x%08x",
+		$p, $cname, $e -> {size_hi};
+	printf STDOUT "%08xULL\n", $e -> {size_low};
+	printf STDOUT "\n";
+}
+
+sub show_c_style_mself_last ($$)
+{
+	my $n = $_[0];
+	my $p = $_[1];
+
+	printf STDOUT "#define %s_N_FILES\t%d\n", $p, $n;
+}
+
+sub check_file_name ($)
+{
+	my $file = $_[0];
+	my $offset;
+
+	$offset = rindex ($file, ".");
+	if ($offset < 0) {
+		die "ERROR: illegal suffix in $file\n";
+	}
+	if (substr ($file, $offset) ne $mself_suffix) {
+		die "ERROR: illegal suffix in $file\n";
+	}
+
+	return 0;
+}
+
+sub check_c_prefix ($)
+{
+	my $prefix = $_[0];
+
+	if ($prefix eq $mself_inhibit_prefix) {
+		die "ERROR: illegal define prefix $prefix\n";
+	}
+
+	return 0;
+}
+
+sub print_usage ()
+{
+	printf STDOUT "Usage: $command_name [options] file_name\n";
+	printf STDOUT "Options are:\n";
+	printf STDOUT "  -c --csv\t\tDisplay TOC information as CSV format\n";
+	printf STDOUT "  -d --define prefix\tDisplay TOC information as C format\n";
+	printf STDOUT "  -h --help\t\tDisplay this information\n";
+	printf STDOUT "  -v --version\t\tDisplay the version number of %s\n",
+		$command_name;
+	return 0;
+}
+
+sub print_version ()
+{
+	printf STDOUT "$command_name Version $command_version\n";
+	return 0;
+}
+
+############################################################################
+
+# main
+
+# 1. parse option
+$Getopt::Long::ignorecase=undef;
+if (!GetOptions ("v|version", "c|csv", "h|help", "d|define:s")) {
+	print_usage ();
+	exit (1);
+}
+
+if ($opt_v == 1) {
+	print_version ();
+	exit (0);
+}
+
+if ($opt_h == 1) {
+	print_usage ();
+	exit (0);
+}
+
+if (@ARGV != 1) {
+	printf STDOUT "ERROR: must specify file name\n";
+	print_usage ();
+	exit (1);
+}
+$in_file = $ARGV [0];
+
+if ($opt_c == 1) {
+	$show_csv = 1;
+}
+
+if ($opt_d) {
+	$show_c_style = 1;
+	$c_prefix = $opt_d;
+}
+
+if ($show_csv && $show_c_style) {
+	printf STDOUT "ERROR: must specify one of the -csv or -define option\n";
+	print_usage ();
+	exit (1);
+}
+
+# 2. check suffix
+check_file_name ($in_file);
+check_c_prefix ($c_prefix);
+
+open (IN, $in_file) || die "open $in_file: " .$!;
+binmode IN;
+
+# 3. check mself_header
+$h = read_mself_header (IN);
+if ($debug == 1) {
+	show_mself_header ($h);
+}
+check_mself_header ($h);
+
+$prev -> {offset_hi} = 0;
+$prev -> {offset_low} = 0;
+$prev -> {size_hi} = 0;
+$prev -> {size_low} = 0;
+# 4. check mself_entry
+for ($i = 0; $i < $h -> {entry_num}; $i++) {
+	$e = read_mself_entry (IN);
+	check_mself_entry ($e, $h, $i);
+	check_overlap ($e, $prev, $i);
+	if ($show_csv) {
+		show_csv_mself_entry ($e, $i);
+	} elsif ($show_c_style) {
+		show_c_style_mself_entry ($e, $i, $c_prefix);
+	}
+	$prev -> {offset_hi} = $e -> {offset_hi};
+	$prev -> {offset_low} = $e -> {offset_low};
+	$prev -> {size_hi} = $e -> {size_hi};
+	$prev -> {size_low} = $e -> {size_low};
+}
+if ($show_c_style) {
+	show_c_style_mself_last ($h -> {entry_num}, $c_prefix);
+}
+
+exit (0);

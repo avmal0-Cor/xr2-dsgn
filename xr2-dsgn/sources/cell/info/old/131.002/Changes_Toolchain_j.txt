@@ -1,0 +1,59 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Release 131.002 の変更点
+- Release 131.002 の不具合修正
+
+======================================================================
+Release 131.002 の変更点
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+- SN Systems製コンパイラ対応のため、SDKパッケージのcell/以下に
+  インストールされる組み込み関数のヘッダファイルの構成を変更しました。
+  この構成変更は、GCCのソースレベルで互換性を保って変更しておりますので、
+  アプリケーションプログラム側での対応する必要はありません。
+  具体的な変更内容を以下に示します。
+
+  - 以下のGCC専用の組込み関数ヘッダファイルを*_gcc.hに変更
+    <PPU側>
+    target/ppu/include/ppu_intrinsics.h
+      -> target/ppu/include/ppu_intrinsics_gcc.h
+    target/ppu/include/spu2vmx.h
+      -> target/ppu/include/spu2vmx_gcc.h
+    target/ppu/include/si2vmx.h
+      -> target/ppu/include/si2vmx_gcc.h
+    <SPU側>
+    target/spu/include/spu_intrinsics.h
+      -> target/spu/include/spu_intrinsics_gcc.h
+    target/spu/include/spu_mfcio.h
+      -> target/spu/include/spu_mfcio_gcc.h
+    target/spu/include/vmx2spu.h
+      -> target/spu/include/vmx2spu_gcc.h
+
+  - GCCとSN Systems製コンパイラの差分を吸収するための以下のラッパー
+    ヘッダファイルをSDKパッケージに追加
+    <PPU側>
+    target/ppu/include/ppu_intrinsics.h
+    target/ppu/include/spu2vmx.h
+    target/ppu/include/si2vmx.h
+    <SPU側>
+    target/spu/include/spu_intrinsics.h
+    target/spu/include/spu_mfcio.h
+    target/spu/include/vmx2spu.h
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+なし
+======================================================================
+Release 131.002 の不具合修正
+----------------------------------------------------------------------
+GCC/GDB
+----------------------------------------------------------------------
+なし

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+%(IF_NOT_EXIST:VSI_VERSION_NUMBER)\
+%( DEFINE:VSI_VERSION_NUMBER)8.00%(END)\
+%(END)\
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="$(VSI_VERSION_NUMBER)"
+	Name="$(class)_prx"
+	ProjectGUID="{%(GUIDHASH)$(class)_prx%(END)}"%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)
+	TargetFrameworkVersion="196613"%(END)>
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:7.10)\
+	<ToolFiles>
+	</ToolFiles>
+%(END)\
+	<Configurations>
+		<Configuration
+			Name="PS3 Debug|Win32"
+			OutputDirectory="PS3_PPU_Debug"
+			IntermediateDirectory="PS3_PPU_Debug"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);$($)(TargetDir)$($)(TargetName).sprx">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-g -Wall -fno-exceptions -fno-rtti"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__CELL_ASSERT__;__GCC__"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-fno-exceptions -fno-rtti -mprx -zgenprx"
+				AdditionalDependencies="&quot;$($)(SN_PS3_PATH)\ppu\lib\sn\libsn.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libm.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\liblv2_stub.a&quot;"
+				OutputFile="$($)(OutDir)/$(class).prx"
+				AdditionalLibraryDirectories=""
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Fake Signing PRX &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"
+				CommandLine="$($)(SCE_PS3_ROOT)\host-win32\bin\make_fself &quot;$($)(TargetPath)&quot; &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+		<Configuration
+			Name="PS3 Release|Win32"
+			OutputDirectory="PS3_PPU_Release"
+			IntermediateDirectory="PS3_PPU_Release"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);$($)(TargetDir)$($)(TargetName).sprx">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Wall -fno-exceptions -fno-rtti -O2"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__GCC__"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-fno-exceptions -fno-rtti -mprx -zgenprx"
+				AdditionalDependencies="&quot;$($)(SN_PS3_PATH)\ppu\lib\sn\libsn.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libm.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\liblv2_stub.a&quot;"
+				OutputFile="$($)(OutDir)/$(class).prx"
+				AdditionalLibraryDirectories=""
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Stripping and Fake Signing PRX &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"
+				CommandLine="$($)(SCE_PS3_ROOT)\host-win32\bin\ppu-lv2-prx-strip &quot;$($)(TargetPath)&quot; -o &quot;$($)(TargetDir)$($)(TargetName).prx&quot;&#x0D;&#x0A;$($)(SCE_PS3_ROOT)\host-win32\bin\make_fself &quot;$($)(TargetDir)$($)(TargetName).prx&quot; &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+		<Configuration
+			Name="PS3 SNC Debug|Win32"
+			OutputDirectory="PS3_PPU_Debug_SNC"
+			IntermediateDirectory="PS3_PPU_Debug_SNC"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);$($)(TargetDir)$($)(TargetName).sprx">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-g -Xc-=exceptions -Xc-=rtti"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__CELL_ASSERT__;__SNC__;_VSI_ALTCONF_=&quot;PS3 Debug|Win32&quot;"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-no-exceptions -oformat=prx"
+				AdditionalDependencies="&quot;$($)(SN_PS3_PATH)\ppu\lib\sn\libsn.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libm.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\liblv2_stub.a&quot;"
+				OutputFile="$($)(OutDir)/$(class).prx"
+				AdditionalLibraryDirectories=""
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Fake Signing PRX &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"
+				CommandLine="$($)(SCE_PS3_ROOT)\host-win32\bin\make_fself &quot;$($)(TargetPath)&quot; &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+		<Configuration
+			Name="PS3 SNC Release|Win32"
+			OutputDirectory="PS3_PPU_Release_SNC"
+			IntermediateDirectory="PS3_PPU_Release_SNC"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$($)(TargetPath);$($)(TargetDir)$($)(TargetName).sprx">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Xc-=exceptions -Xc-=rtti -O2"
+				AdditionalIncludeDirectories="&quot;$($)(SN_PS3_PATH)\ppu\include\sn&quot;;&quot;$($)(SCE_PS3_ROOT)\target\ppu\include&quot;;&quot;$($)(SCE_PS3_ROOT)\target\common\include&quot;;&quot;$(build2JdlPath)$(jdl2HeaderPath)&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__SNC__;_VSI_ALTCONF_=&quot;PS3 Release|Win32&quot;"
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+				ProgramDataBaseFileName=""
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				ProgramDataBaseFileName="$($)(IntDir)\"
+				DebugInformationFormat="0"
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)\
+				ProgramDataBaseFileName=""
+%(END)\
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-no-exceptions -oformat=prx"
+				AdditionalDependencies="&quot;$($)(SN_PS3_PATH)\ppu\lib\sn\libsn.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libm.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\libio_stub.a&quot; &quot;$($)(SCE_PS3_ROOT)\target\ppu\lib\liblv2_stub.a&quot;"
+				OutputFile="$($)(OutDir)/$(class).prx"
+				AdditionalLibraryDirectories=""
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+				LinkIncremental="0"
+				GenerateManifest="false"
+%(END)\
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Stripping and Fake Signing PRX &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"
+				CommandLine="$($)(SCE_PS3_ROOT)\host-win32\bin\ppu-lv2-prx-strip &quot;$($)(TargetPath)&quot; -o &quot;$($)(TargetDir)$($)(TargetName).prx&quot;&#x0D;&#x0A;$($)(SCE_PS3_ROOT)\host-win32\bin\make_fself &quot;$($)(TargetDir)$($)(TargetName).prx&quot; &quot;$($)(TargetDir)$($)(TargetName).sprx&quot;"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:9.00)\
+			<Tool
+				Name="VCWebDeploymentTool"/>
+%(END)\
+%(IF_EQUAL:VSI_VERSION_NUMBER:7.10)\
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+%(ELSE)\
+			<Tool
+				Name="VCManagedResourceCompilerTool"/>
+			<Tool
+				Name="VCALinkTool"/>
+			<Tool
+				Name="VCManifestTool"/>
+			<Tool
+				Name="VCXDCMakeTool"/>
+			<Tool
+				Name="VCBscMakeTool"/>
+			<Tool
+				Name="VCFxCopTool"/>
+			<Tool
+				Name="VCAppVerifierTool"/>
+%(END)\
+		</Configuration>
+	</Configurations>
+	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{%(GUIDHASH)$(class)_jobs%(END)}"
+			RelativePathToProject=".\$(class)_jobs.vcproj"
+		/>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;cc;s;asm">
+			<File
+				%(WINDOWS_PATH)RelativePath="$(build2JdlPath)$(jdl2PpuCppPath)$(managedFilePrefix)$(class)_prx.cpp"%(END)>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp">
+		</Filter>
+%(IF_EQUAL:VSI_VERSION_NUMBER:8.00)\
+		<File
+			RelativePath=".\vsi.nul"
+			>
+			<FileConfiguration
+				Name="PS3 Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description=""
+					CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					Outputs="$($)(IntDir)\vsi.out"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="PS3 Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description=""
+					CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					Outputs="$($)(IntDir)\vsi.out"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				 Name="PS3 SNC Debug|Win32">
+				<Tool
+					 Name="VCCustomBuildTool"
+					 Description=""
+					 CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					 Outputs="$($)(IntDir)\vsi.out" />
+			</FileConfiguration>
+			<FileConfiguration
+				 Name="PS3 SNC Release|Win32">
+				<Tool
+					 Name="VCCustomBuildTool"
+					 Description=""
+					 CommandLine="echo &gt;nul&#x0D;&#x0A;"
+					 Outputs="$($)(IntDir)\vsi.out" />
+			</FileConfiguration>
+		</File>
+%(END)\
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

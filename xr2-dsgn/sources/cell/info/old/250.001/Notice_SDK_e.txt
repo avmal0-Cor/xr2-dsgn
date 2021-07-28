@@ -1,0 +1,573 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 250.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- For specifications regarding the Reference Tool, please refer to 
+  SDK_doc\jp(en)\pdf\development_basic\Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+<Check menu in the Game column>
+- Validation of a media or the file system itself cannot be performed 
+  from the Check menu in the Game column.
+
+  When submitting a master disc, make sure to verify the disc that no error
+  is present using the Disc Image Generator for PLAYSTATION(R)3 or
+  the Disc Image Checker for PLAYSTATION(R)3.
+
+- When performing the check from the Check menu in the Game column, 
+  if the number of result files exceeds approximately 80 to 100 depending 
+  on each check item, the file entries of the root directory in the USB 
+  mass storage run out and the subsequent check result files may no 
+  longer be stored.
+  In such case, move the check result files to another directory.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported.
+
+(Added to Release 250.001)
+- A game application may freeze when a word is forcibly entered or cancelled 
+  from the game application using cellOskDialogExtSendFinishMessage(), 
+  immediately after a function, registered with 
+  cellOskDialogExtRegisterKeyboardEventHookCallback(), is called. 
+
+(Added to Release 250.001)
+- On Japanese input, if a word is divided up into multiple clauses during 
+  conversion, and the user starts to input the next word, only the first 
+  clause of the first word gets entered (the other clauses disappear).
+
+<Remote Play Utility>
+- PSP(TM) system software version 3.72 or later is required.
+
+<Game Update Utility>
+-  When the Reference Tool is booted having "Debugger mode" specified to
+   "Boot parameters" using the Administration Tool or the like,
+   the patch distribution feature of the Game Update utility cannot be
+   utilized.
+
+<Audio Configuration Utility>
+- In the multi microphone mode, cellAudioInRegisterDevice() is executed with
+  an audio input device type preferred by the application specified to the
+  argument deviceType in order to resister the audio input device into
+  the system.
+  When cellAudioInRegisterDevice() is called, the system software
+  automatically assign a device number regardless of whether a matching audio
+  input device is found or not. Whether the audio input device that has the
+  device number is available or not can be checked through polling using
+  cellMicIsAttached() of libmic or an event notification from libmic.
+
+  Since a device number is automatically assigned as described above,
+  when multiple USB devices(audio input device) of the type that the game
+  application prefers are connected to PLAYSTATION(R)3, which device being
+  connected to a USB port has which device number cannot be uniquely
+  identified.
+  In such case, a user interface should be implemented to identify it such
+  as by displaying an indicator (volume) or the like on the screen.
+  Note that a mechanism that can explicitly assign a device number to
+  a specific device will be provided in the future release.
+
+<Content Search Utility>
+- When file paths to the still image and animation thumbnails of content
+  are created using cellSearchPrepareFile() and the thumbnails are changed
+  from the system software, the changes will not be reflected unless
+  cellSearchPrepareFile() is executed again.
+
+<Background Download utility>
+- The following is a notice regarding the behavior of background downloads
+  when they are performed while a game application is running.
+
+  Although a background download will usually continue while a game
+  application is running, it will be stopped by any one of the following
+  conditions.
+
+    - The game application has created more than one socket
+    - There is more than one connection that uses the NP signaling utility
+    - The AV chat utility or the AV chat 2 utility is being used
+
+  The background download will resume once the condition that stopped it
+  no longer applies. 
+  Please do not create a game application that is dependent on the progress of
+  background downloads.
+
+  If new conditions are added to the above list of conditions that stop
+  background downloads given the addition of a new utility, or if there are
+  any changes regarding this issue, it will be announced in this technote.
+  (TechnoteID:200803-15  https://ps3.scedev.net/technotes/view/708)
+
+<Screenshot Utility>
+(Added to Release 250.001)
+- The value set to the PNG chunk is stored when it is copied from the 
+  system software to an external media (Memory Stick(TM) or such), 
+  however, when the stored data is imported into the system software, the 
+  value is not reflected to the information screen of the system software.
+  This is a current limitation but to be supported in the future system 
+  software.
+
+<Music Decode Utility>
+(Added to Release 250.001)
+- The following bugs have been found in the Music Decode utility:
+  - When either of the commands CELL_MUSIC_DECODE_CMD_NEXT or 
+    CELL_MUSIC_DECODE_CMD_PREV is issued during decode processing, 
+    it may not move  to the next or the previous music correctly. 
+
+  - When a specific music is used, the LPCM data cannot be obtained.
+  (TechnoteID:200810-13  https://ps3.scedev.net/technotes/view/817)
+
+<Photo Utility>
+(Added to Release 250.001)
+- When a 2MB or smaller memory container is specified to the argument 
+  container2 of cellPhotoDecodeInitialize() for decoding and the function 
+  is called, although the specified memory container size is sufficient 
+  for decoding, it unconditionally returns CELL_PHOTO_DECODE_ERROR_PARAM 
+  and fails to initialize the decode feature.
+  (TechnoteID:200810-17  https://ps3.scedev.net/technotes/view/821)
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- To use dds2gtf, the following restriction should be noted:
+  - The UYVY and the YUY2 types are converted into the R8B8_R8G8 and the 
+    B8R8_G8R8 types respectively, because no format that supports the GTF 
+    is provided.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- The sample value to be specified for the argument "samples" of
+  cellSurMixerSurBusAddData() must be multiples of 4.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- When playing back a PAMF file, few frames(1 to 3 frames) at the end of
+  a stream cannot be obtained.
+
+- Only the playback of a MP4 file that is placed on the built-in HDD is 
+  guaranteed. Do not embed a source code that plays back other types of 
+  MP4 file in the application.
+
+(Added to Release 250.001)
+- When playing back a movie using libsail, if a trick play is performed, 
+  it does not work correctly.
+  (TechnoteID:200810-02  https://ps3.scedev.net/technotes/view/806)
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace
+  on the program that is linked with libperf.a of SDK170 or before,
+  it does not work on the target system that is updated to SDK 180 and
+  later.
+  (applicable to libperf\ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+- (B#43808)
+  The Tuner for PLAYSTATION(R)3 cannot be used to measure the performance
+  of the sample program of libperf because the measurement module on
+  the target is utilized.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+(Updated in Release 250.001)
+- As a part of the reduction in the memory usage of the system software
+  in SDK220, the amount of memory that is used by the file system by
+  default has been reduced.
+  Due to this change, the performance may be degraded slightly as
+  compared to SDK21x when data is written and read in finer units (16KB
+  or less). Also, when multiple file accesses are made from multiple
+  threads at the same time, the request processing time may slightly
+  increase.
+  Adding memory from the application using cellFsSetIoBuffer() or other 
+  APIs that are newly added could improve but also degrade the performance.
+  Be sure to check the performance before you introduce the method.
+
+- When the number of files to open at the same
+  time in the CFS(SYS_DEV_HDD0) exceeds the upper limit, an error is
+  returned from SDK220 onwards.
+  Please be noted that when you update SDK21x to SDK220, an error that
+  was not returned previously may be observed.
+
+- (B#47766)
+  A bug has been found that blocks the file operation permanently
+  after you specify 0 for the file size at calling cellFsTruncate()
+  or cellFsFtruncate() for the /dev_hdd0.
+  (TechnoteID:200804-07 https://ps3.scedev.net/technotes/view/716)
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The PPU program whose stack size is set to 4KB by
+  SYS_PROCESS_PARAM can not be executed because a DSI occurs before
+  the main function is called.
+
+  [Workaround]
+  Please set the stack size of a Primary PPU Thread to 8 KB or more.
+
+(Added to Release 250.001)
+- (B#58555)
+  When the process termination and a system call that generates an object 
+  from an interruption thread are called at the same time, the system 
+  call returns EABORT.
+
+  [Workaround]
+  None
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- Restrictions on the USB Video Class (UVC) Camera
+  1. Does not support a UVC camera that is not compliant with the UVC
+     even though it is USB 2.0 compliant.
+  2. Does not support a camera that has no streaming function.
+  3. Does not support a camera that is connected via the USB 1.1 hub.
+  4. Does not support the mirror function.
+  5. Support only a single camera.
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- Only Windows XP is supported.
+  Windows Vista will be supported in the future.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- When the rendering function is called from multiple threads at the 
+  same time, the behavior may become undefined.
+  To call the rendering function from multiple threads at the same time, 
+  implement an exclusive operation such as the synchronization primitive 
+  call of Cell OS Lv-2 to avoid the problem.
+
+(Added to Release 250.001)
+- When multiple external fonts are read repeatedly involving open/close 
+  processings by calling cellFontOpenFontFile(), a memory leak occurs within 
+  the library which may cause the library to hang up. 
+  This problem will be fixed in the future release.
+
+  To read the external fonts repeatedly, please apply either of 
+  the following procedures until the bug is fixed.
+
+  - Perform the open processing again including the termination/initialization 
+    processings of the library.
+  - Use cellFontOpenFontMemory().
+
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical
+  character codes when vertical character displacement is performed
+  internally.
+  To avoid this problem, directly specify the vertical character codes
+  or use the single-byte () and {}.
+
+- The function for vertical writing does not support the proportional
+  vertical writing layout.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+- It may fail to make a connection with Internet Explorer 6.0.
+
+- Passive transfer mode (PASV) is currently not supported.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- (B#52202)
+  With sce-cgc 1.6, when attempting to decide how many temporary register
+  is required, and if it exceeds the limit, it may fail to compile a 
+  specific vertex shader.
+  Typical error message:
+  (0) : error C6001: Temporary register limit of 32 exceeded; 34 
+  registers needed to compile program
+
+  If this error occurs at your end, please consider migrating to sce-cgc 
+  2.0 because there is no plan to fix the problem.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- cellGcmSetZcull() cannot set the unbind feature for the Zcull area.
+  To set the unbind feature for the Zcull area, use cellGcmUnbindZcull().
+
+- When the tile setting is made for the overlapping areas in RSX(TM) using
+  cellGcmSetTile(), the address conversion feature of RSX(TM) will not work
+  correctly.
+
+  Accordingly, new functions cellGcmSetTileInfo() and cellGcmBindTile()
+  have been added to check whether the tile areas are overlapping.
+
+  Please use cellGcmSetTileInfo(), cellGcmBindTile() and cellGcmUnbindTile()
+  instead of cellGcmSetTile() and cellGcmSetInvalidateTile() for future
+  development.
+  cellGcmSetTile() and cellGcmSetInvalidateTile() will be removed in the
+  future release.
+
+(Added to Release 250.001)
+- When debug versions of cellGcmSetSurface() and cellGcmSetSurfaceWindow() 
+  are used, assertion may be incorrectly raised inside each function. 
+  (TechnoteID:200807-25  https://ps3.scedev.net/technotes/view/777)
+
+(Added to Release 250.001)
+- In gcm samples, we have found an error setting of cellGcmSetViewport().
+  However, this does not affect the behavior of the samples.
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<SPU>
+- (B#20077) 
+  When the new_handler is not set in the C++ library, and failed to allocate
+  memory using "new", it enters into the infinite loop.
+
+- If the following compile options are specified when compiling
+  a program on the PPU side, many warnings may be output.
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When including the system header, include it outside extern "C" or
+  extern "C++".
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C".
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below:
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- When starting up a program in which <iostream> is included, the constructor
+  of iostream will call the new operator. When you want to avoid calling
+  "new" before executing the main function, do not use iostream.
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If atexit function is used in a C++ global constructor, the behavior
+    is different from the C++ standard.  All the registered functions are
+    invoked prior to all the global destructors.
+    The invokation order can partially be changed.  See "Toolchain User's 
+    Guide for Cell OS Lv-2" for details.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their
+  instances in ELF, and pass the pointers to them to PRX.  If they are
+  created in PRX, a DSI (data storage interrupt) may occur in function
+  _Fac_tidy() at the termination of the PPU program.
+
+(Added to Release 250.001)
+<PPU>
+- (B#49602)
+  Since SDK220, SIMD math functions cbrtf4 and cbrtf4fast in math.h 
+  have a bug and do not return results same as those of SDK210 or before.
+
+  Example:
+  vec_float4 vf = (vec_float4){1.73e-2f, 3.0f, 27.0f, FLT_MAX};
+  printf("%vf\n", cbrtf4(vf));
+
+ Result of SDK210 or before: 0.258632  1.442249  3.000000  6981462523904.000409
+ Result of SDK220 or later:  0.258681  1.372409 -5.020100  nan
+
+  The bug will be fixed in the future SDK.
+
+----------------------------------------------------------------------
+Custome Theme
+----------------------------------------------------------------------
+- When the effect sound data is too long, the sound may be interrupted 
+  at a specific stage. Please refer to the "Custom Theme Specifications" 
+  document for more details.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- CELLMIC_DEVATTR_LED controls LED light only when 
+  EyeToy USB Camera(for PlayStation 2) and PLAYSTATION(R)Eye are 
+  in camera mode also.  
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- To use Edge Zlib or Edge LZMA, download and install PLAYSTATION(R)Edge 
+  0.4.2.
+
+(Added to Release 250.001)
+- When creating an archive file, if the archive target file and the 
+  output file have the same name and either the -y option or the 
+  --overwrite option is specified, the archive target file will be 
+  overwritten and unrestorable.
+
+(Added to Release 250.001)
+- When scheduler::readDirectory() is executed for a directory which is 
+  overlayed and thus set as a redirect directory, the redirect setting is 
+  not reflected and the directry entry of the original directory is read.
+
+----------------------------------------------------------------------
+dt Command
+----------------------------------------------------------------------
+- When boot=dbg is set using a dtcparam that is provided in SDK192 or
+  before and the boot parameter is displayed using the dtcparam command
+  in SDK200 or later, boot=unknown is displayed. Reset boot=dbg using the
+  dtcparam command in SDK200 or later.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs Job>
+(Added to Release 250.001)
+- (B#61734)
+  The following is restricted with cellSpursCheckJob():
+  - The job descriptor, in which CELL_SPURS_JOB_TYPE_MEMORY_CHECK 
+    is set to jobType of the job descripter header, may possibly 
+    return CELL_SPURS_JOB_ERROR_MEMORY_SIZE when the size of either 
+    input buffer or output buffer is 0. In this case, CELL_OK should be 
+    rather returned.
+    With cellSpursJobQueueCheckJob(), in addition to the restriction above, 
+    this bug also occurs when the size of the scratch buffer is set to 0.
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- When 2 users attempt to enter into a lobby where no one is present, 
+  a problem occurs that the users get entered into separate lobbies 
+  respectively. Note that the same Server ID, World ID, Lobby ID and 
+  Lobby Member ID are notified to both users when they successfully join
+  the lobbies.
+
+(Added to Release 250.001)
+- sceNpMatching2SignalingGetPingInfo() is a function that 
+  obtains the RTT for a room owner of specified room ID. 
+  However, although the NAT type of the room owner is 
+  NAT type 1 or NAT type 2, the function returns the time 
+  out error (SCE_NP_SIGNALING_ERROR_TIMEOUT) in most 
+  cases except when the room owner is accessible directly 
+  from the external network.
+  (TechnoteID:200810-16  https://ps3.scedev.net/technotes/view/820)
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- The Control Console Client library is available only with
+  the Visual Studio 2005.
+
+----------------------------------------------------------------------
+libad
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- (B#60616)
+  A race condition in the async library can cause sceAdAsyncSpaceOpen()
+  and sceAdAsyncSpaceClose() to be unstable. All titles must avoid
+  calling either of these function, as there is a potential for the
+  title to crash. Instead, call sceAdGetSpaceInfo() or
+  sceAdGetAssetInfo(). The title can choose to manage its own timers and
+  perform ad rotation manually. However, the library provided
+  mechanism for ad rotation must not be used.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- The "SNC Release" build configuration for the simple_createdsp_td and 
+  dsp_sample samples contain a wrong output filename causing the built 
+  executables to fail. 
+  The samples can be executed by changing the executable names to output 
+  from ".self" to ".elf" through the project property.
+
+- The maximum size of a single DSP page will be limited to 12 KB.
+  When using the DSP function, the length of the file size that is 
+  specified to filesize must not exceed 12KB.
+  Note that the maximum size of a single DSP page is defined by 
+  CELL_MS_DSP_PAGESIZE in mstream.h. 
+
+- cellMSSystemConfigureSysUtil() is to be deleted in the future.
+  Please migrate to cellMSSystemConfigureSysUtilEx(), that has been added
+  to SDK200.002, in the game application.
+
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz)
+  can cause noise.
+
+- When each sample is compiled using the SNC compiler, the sample data may not
+  be loaded correctly because the environment variable CELL_SDK is used in
+  the sample data path.
+
+  When the CELL_SDK is defined with a path other than "\usr\local\cell\",
+  it is required to alter the SAMPLE_CELL_SDK path in the sample source
+  according to the environment.
+
+  This problem does not occur when the GCC compiler is used.
+
+----------------------------------------------------------------------
+vectormath
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- A precision problem has been found in the SIMD value operation function 
+  "cbrtf4(vector float)" of the C/C++ standard library of the PPU version. 
+  Because the Vectormath function "cbrtf(floatInVec)" uses this function, 
+  the same precision problem occurs with the PPU version of the Vectormath.
+
+----------------------------------------------------------------------
+DECI3 CTRLP
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- Because the ProDG Target Manager for PLAYSTATION(R)3 of v250.1 or 
+  later uses CTRLP to establish a connection, when the ProDG 
+  Target Manager for PLAYSTATION(R)3 is connected with a target, 
+  the cell\host-common\samples\ctrlp sample program does not work. 
+  When the sample program is started up, it shows "dt_register error" 
+  and is terminated. 
+
+  To run the ctrlp sample, disconnect the ProDG Target Manager 
+  for PLAYSTATION(R)3.
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+(Added to Release 250.001)
+- CellVoiceStart() and CellVoiceStartEx() don't return
+  CELL_VOICE_ERROR_SERVICE_ATTACHED and
+  CELL_VOICE_ERROR_SERVICE_DETACHED error code. 
+  The reference document has these two return values listed for these 
+  two APIs. The description of the libvoice memory configuration in 
+  the overview doesn't reflect the above change either.
+

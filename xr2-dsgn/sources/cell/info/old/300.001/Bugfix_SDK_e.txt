@@ -1,0 +1,573 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 300.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 300.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 300.001
+======================================================================
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- (B#73247)
+  On the system software, the title display part in a video content on 
+  the content disc displayed the tiles for Dutch and German the other 
+  way around. This problem has been fixed.
+
+- (B#76480)
+  When the line speed measurement of the Internet connection test was 
+  being performed, if it was cancelled from the [Settings] -> 
+  [Network Settings] -> [Internet Connection Test] menu, it hung up. 
+  This problem has been fixed.
+
+<Check menu in the Game column>
+- The following bug has been fixed:
+
+  - When checking a content to be installed from a package using the check 
+    feature of the system software, if a compressed SELF is contained in the 
+    content, an error is reported even tough there is no problem in the 
+    checked content.
+    (TechnoteID:200908-01  https://ps3.scedev.net/technotes/view/943)
+
+----------------------------------------------------------------------
+System Utility
+----------------------------------------------------------------------
+<Video Upload Utility>
+- As a response to the following technote, the "Video Upload Utility 
+  Overview" document has been modified:
+
+  - The method to acquire client_id and developer_key that are required 
+    to upload a movie file to YouTube has been changed. 
+    Please refer to the following technote for more information:
+    (Technote ID:200906-06  https://ps3.scedev.net/technotes/view/923)
+
+<Message Dialog Utility>
+- (B#71596)
+  When cellMsgDialogOpen2() is called while a message dialogue is being 
+  closed by a call to cellMsgDialogClose(), although the message dialogue 
+  is not completely closed, it is opened again. This problem has been fixed.
+
+<Recording Utility>
+- (B#73768)
+  The surround sounds were not recorded. This problem has been fixed.
+
+<Game Content Utility>
+- When "Load from device" was selected and the boot binary that is 
+  placed immediately under /app_home was booted on the Target manager, 
+  contentInfoPath, that is obtained using cellGameContentPermit() while the 
+  access preparation function cellGameBootCheck() is being executed, returned 
+  0 length string. This part has been modified so that it returns the /app_home
+  directory path like usrdirPath does.  
+
+<On-Screen Keyboard Utility>
+- (B#75349)
+  When the on-screen keyboard was aborted using 
+  cellOskDialogAbort(), CELL_OSKDIALOG_INPUT_FIELD_RESULT_CANCELED was returned. 
+  This problem has been fixed so that it now returns 
+  CELL_OSKDIALOG_INPUT_FIELD_RESULT_ABORT.
+
+<Storage Data Utility>
+- (B#70874)
+  When an attempt to terminate a game application was made while the copy 
+  completion dialogue was being displayed, the following functions returned 
+  CELL_STORAGEDATA_ERROR_FAILURE. This problem has been fixed.
+  With titles that is created using an SDK version earlier than SDK300, it 
+  behaves as before.
+
+  - cellStorageDataImport()
+  - cellStorageDataExport()
+  - cellStorageDataImportMove()
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- (B#72836)
+  When socketclose() or shutdown() was called for a socket, which is 
+  waiting for a send/receive or a multi I/O processings, from another 
+  thread, an internal error could occur in the kernel. This problem has 
+  been fixed.
+
+- When accessing an access point that was accessible throuhg both WPA/WPA2 
+  and was set in the mixed mode, the wireless connection could be disconnected 
+  afrer 5 to 60 minutes and an error 8002AD23 occured. This problem has
+  been fixed.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#73020)
+  When cellSailPlayerFinalize() was called while playing back an AVI file, 
+  a memory access fault occurred. This problem has been fixed.
+
+----------------------------------------------------------------------
+libsail_rec
+----------------------------------------------------------------------
+- (B#72493)
+  When a video recording was stopped, an MP4 file as much as the time 
+  recorded could not be generated. This problem has been fixed.
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - (B#67769)
+    When cellSnd3VoiceKeyOnByTone() is called, other APIs (cellSnd3***)
+    that are located in the same granularity (the part enclosed with 
+    cellSnd3Synthesis() or cellSnd3SynthesisEx()) do not work correctly.
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- (B#73283)
+  An NCU event was not counted. This problem has been fixed.
+
+- (B#73757)
+  Variables were not initialized in the spu_count sample program. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+Physical Effect Sample(cell\samples\tutorial\PhysicsEffects)
+----------------------------------------------------------------------
+- When using the Maya exporter, the joint movable scope was displayed 
+  incorrectly. This problem has been fixed.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#73667)
+    On the on-screen keyboard dialogue activated from the game title, it 
+    may be impossible to use the L2/R2 buttons(to switch input characters)
+    of a USB controller that is pressure sensitive.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#72170)
+    When the following procedure is repeated, the system may hang up:
+      1. Disconnect a device from a HUB
+      2. Disconnect the HUB
+      3. Connect the HUB
+      4. Connect the device to the HUB
+
+----------------------------------------------------------------------
+NP DRM Utility
+----------------------------------------------------------------------
+- The bug described in the following technote has been fixed:
+
+  - Packaging of a compressed NPDRM SELF by the make_package_npdrm 
+    command may fail.
+    (Technote ID:200907-02  https://ps3.scedev.net/technotes/view/928)
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- When a game status of a friend was obtained using 
+  sceNpBasicGetFriendPresenceByIndex() or such before it was set by the 
+  friend, an invalid value was set in the game status("status" member).
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Custom Menu Utility
+----------------------------------------------------------------------
+- When 23 or more entries were passed to sceNpCustomMenuRegisterExceptionList(),  it always ended in the 0x8002e005 error. This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Clan Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - When a user with an Online Name that includes any of 
+    the following letters:
+    < > & ' "
+    is signed into the PlayStation(R)Network, and one of the 
+    NP clan utility functions below is called, the 
+    SCE_NP_CLANS_SERVER_ERROR_BAD_REQUEST(0x80022801) 
+    error is returned.
+
+        sceNpClansPostAnnouncement()
+        sceNpClansPostChallenge()
+        sceNpClansSendMembershipRequest()
+        sceNpClansSendMembershipResponse()
+        sceNpClansKickMember()
+        sceNpClansSendInvitation()
+        sceNpClansSendInvitationResponse()
+    (Technote ID:200907-08  https://ps3.scedev.net/technotes/view/935)
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#76255)
+    Although a user can join multiple rooms at one time, when 
+    the rooms to join are each in a different world, the 
+    SCE_NP_MATCHING2_ERROR_ALREADY_JOINED(0x80022328)
+    error may be notified upon attempting to join the rooms.
+    (Technote ID:200907-12 https://ps3.scedev.net/technotes/view/939)
+
+----------------------------------------------------------------------
+NP Title User Storage Utility
+----------------------------------------------------------------------
+- With the following functions, when the number of target users exceeded 
+  SCE_NP_TUS_MAX_USER_NUM_PER_TRANS, SCE_NP_CORE_ERROR_CONNECTION_TIMEOUT  
+  was returned. This problem has been fixed so that it now returns 
+  SCE_NP_COMMUNITY_ERROR_TOO_MANY_NPID correctly:
+
+  sceNpTusGetMultiUserVariable()
+  sceNpTusGetMultiUserVariableVUser()
+  sceNpTusGetMultiUserVariableAsync()
+  sceNpTusGetMultiUserVariableVUserAsync()
+  sceNpTusGetMultiUserDataStatus()
+  sceNpTusGetMultiUserDataStatusVUser()
+  sceNpTusGetMultiUserDataStatusAsync()
+  sceNpTusGetMultiUserDataStatusVUserAsync()
+
+- With the following functions, when the number of target slots exceeded 
+  SCE_NP_TUS_MAX_SLOT_NUM_PER_TRANS, SCE_NP_CORE_ERROR_CONNECTION_TIMEOUT
+  was returned. This problem has been fixed so that it now returns 
+  SCE_NP_COMMUNITY_ERROR_TOO_MANY_SLOTID correctly:
+
+  sceNpTusSetMultiSlotVariable()
+  sceNpTusSetMultiSlotVariableVUser()
+  sceNpTusSetMultiSlotVariableAsync()
+  sceNpTusSetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotVariable()
+  sceNpTusGetMultiSlotVariableVUser()
+  sceNpTusGetMultiSlotVariableAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotDataStatus()
+  sceNpTusGetMultiSlotDataStatusVUser()
+  sceNpTusGetMultiSlotDataStatusAsync()
+  sceNpTusGetMultiSlotDataStatusVUserAsync()
+  sceNpTusDeleteMultiSlotVariable()
+  sceNpTusDeleteMultiSlotVariableVUser()
+  sceNpTusDeleteMultiSlotVariableAsync()
+  sceNpTusDeleteMultiSlotVariableVUserAsync()
+
+----------------------------------------------------------------------
+NP Manager Utility
+----------------------------------------------------------------------
+- (B#74935)
+  When the sub sign-in was being performed, if it was canceled, the 
+  sign-in screen could not proceed any more. This problem has been fixed.
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- (B#73357)
+  When cellHttpTransactionAbortConnection() and cellHttpDestroyTransaction()
+  were called for the same transaction at the same time, 
+  cellHttpTransactionAbortConnection() that was called afterward could 
+  deadlock internally. This problem has been fixed.
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - When scheduler::readDirectory() is called for the directory that is
+    being redirected through an overlay, the redirection is not
+    reflected and FIOS attempts to read the directory entry in the
+    original directory.
+
+  - (B#72502)
+    If the contents of PSARC-MSELF are listed by PSARC tool, the size
+    of the last file is always 0.
+
+  - (B#72632)
+    Setting the prefetch delay or throttle can crash or hang FIOS.
+
+  - (B#73219)
+    If encrypted PSARC files (such as data.psarc.sdat) are cached, they
+    can cause later opens of the archive to fail.
+
+  - (B#73578)
+    FIOS returns an error when it opens EDATA files overlaid.
+
+  - (B#74241)
+    If a game handles disc ejects and inserts, on insertion of the
+    ejected disc, FIOS can loop forever while trying to re-open files.
+    In other cases, FIOS I/O will fail unless the affected files are
+    manually re-opened by the game.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<PPU>
+- (B#72389) 
+  If C++ stream was used, a memory leak could occur.  
+  The problem has been fixed.
+
+<PPU>
+- (B#69368) 
+  The assert() macro in stdlib.h had a problem, which included a null 
+  character in the string of the call stack information printed to 
+  the TTY before the process termination.
+  If, for example, one of the following tools was used, the call stack 
+  information might not be printed correctly.
+   ProDG Target Manager for PLAYSTATION(R)3
+   ProDG Debugger for PLAYSTATION(R)3
+   Tuner for PLAYSTATION(R)3
+
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+- (B#68682)
+  When the debug cursor is displayed and ended without calling 
+  cellDbgRsxDisableCursor(), the cursor remains displayed.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+Custom Theme
+----------------------------------------------------------------------
+- The following problems relating to RAF(Rich Appearance Format)/PSJS 
+  have been fixed:
+  (TechnoteID:200907-03  https://ps3.scedev.net/technotes/view/929)
+
+  - In the PSJS script file, when "return" is used within "try", a memory 
+    leak occurs.
+  - In the PSJS script file, when the circular reference is set between 
+    objects, the system crashes when the script ends.
+  - In the PSJS script file, when an object with deep access layer is 
+    generated, the system will crash when the object is deleted.
+  - When the "enable" property of the Actor class is set to "false" at the 
+    time of script execution, the necessary initialization processing for 
+    rendering the Actor will not be performed. 
+  - In the PSJS script file that is used for RAF, when any instance with 
+    the Actor, the Camera or the Light classes is generated using an id 
+    that is not defined in the scene file, the system crashes when the script 
+    ends.
+  - When a custom theme with the RAF file specified as a background is 
+    applied, the font of the system menu will have no shadow.
+  - When the <material> element, which has the "effect" attribute of 
+    "basic_lighting" or "basic_lighting_edge_lit", is specified to the 
+    "material" attribute of the <actor> element of the RAF scene file, the 
+    specular and the edge_lit components are not calculated correctly.
+  - When "normal_map" is specified to the "type" attribute of the <texture> 
+    element of the RAF scene file, the texture component will not be reflected 
+    correctly. 
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#74464)
+  When a fiber that uses both CellFiberPpuOnExitCallback and the debugger 
+  support feature was created, the internal resource of libfiber leaked and 
+  if it was repeated about 8000 times, cellFiberPpuCreateFiber() started 
+  to fail. This problem has been fixed.
+
+- (B#73461)
+  When cellFiberPpuFinalizeScheduler() returned an error, the debugger was 
+  unable to recognize the fiber scheduler. This problem has been fixed.
+
+- (B#59671)
+  When cell::Fiber::Ppu::Util::Runtime::wakeup() was called when the Runtime 
+  instance was not running, it returned CELL_OK instead of 
+  CELL_FIBER_ERROR_STAT. This problem has been fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libdma>
+- (B#73591)
+  When an argument that has a different type was passed to cellDmaPutUint*()
+  or cellDmaGetUint*(), it behaved incorrectly. This problem has been fixed.
+
+<libspurs Task>
+- The following problem has been fixed:
+
+  - (B#73941)
+    When cellSpursJoinTask2() is called from multiple PPU threads concurrently,
+    an assert may occur within the function. 
+    (Technote ID:200907-01  https://ps3.scedev.net/technotes/view/927)
+
+<Common for libspurs Jobs>
+- (B#71215)
+  When a value less than 16 was specified to the argument "size" of 
+  cellSpursJobGetInputList(), CELL_SPURS_JOB_ERROR_ALIGN was incorrectly 
+  returned. This problem has been fixed.
+
+<libspurs Core>
+- (B#73920)
+  deadlineMeetCounter and deadlineMissCounter that can be obtained using 
+  cellSpursGetInfo() have become precise. 
+  Contrary to the past releases, the counter value is updated even when the 
+  SPURS system service is not executed on the SPU at all.
+
+- (B#72835)
+  When it was booted from the Tuner for PLAYSTATION(R)3, 
+  cellSpursTraceInitialize() did not return an error. This problem has been 
+  fixed.
+
+<libspurs Job Queue>
+- The following problems have been fixed:
+
+  - (B#73460)
+    When an error CELL_SPURS_JOB_ERROR_INVALID_BINARY occurs in the job queue, 
+    and cell::Spurs::JobQueue::JobQueue::getError() or 
+    cellSpursJobQueueGetError() is called, 0 is wrongly set to "cause". Also, 
+    '0x0000000000000000' is wrongly displayed in "cause" of 'SPURSJobQueue 
+    status' of the SPURS crash dump under the following conditions due to this 
+    bug:
+
+    - "true" is set to isHaltOnError of 
+      cell::Spurs::JobQueue::JobQueue::create() or 
+      cellSpursJobQueueAttributeSetIsHaltOnError().
+    - A job queue is created by setting the SPU to halt in the case of an 
+      error.
+
+  - (B#73561,B#73527)
+    When either of the following functions is used, an compilation error 
+    occurs.
+     cell::SpursJobQueue::Port::getJobQueue()
+     cell::SpursJobQueue::PortContainer::getJobQueue()
+     cell::SpursJobQueue::JobQueue::getError()
+
+  - (B#73318,B#73319)
+    Although an invalid value 0 is specified to maxGrab of the following 
+    functions, CELL_OK is returned:
+    cellSpursJobQueueAttributeSetMaxGrab()
+    cell::Spurs::JobQueue::JobQueue::create()
+
+  - (B#73467)
+    When any one of the following interfaces for SPUs is called from the SPURS 
+    task and is put into the WAIT state, the following problem occurs:
+
+    When cellSpursWaitSignal() that was called internally returns an error, 
+    this library returns CELL_OK instead of CELL_SPURS_TASK_ERROR_FATAL and 
+    behaves unpredictably:
+
+    (All blocking interfaces: The following interfaces)
+    cellSpursJobQueuePush(), cellSpursJobQueuePushJob()
+    cellSpursJobQueuePushFlush(), cellSpursJobQueuePushSync()
+    cellSpursJobQueuePushJobList(), cellSpursJobQueueSemaphoreAcquire(),
+    cellSpursJobQueuePortPush(), cellSpursJobQueuePortPushJob(),
+    cellSpursJobQueuePortPushFlush(), cellSpursJobQueuePortPushSync(),
+    cellSpursJobQueuePortPushJobList(), cellSpursJobQueuePortSync()
+
+    cell::Spurs::JobQueue::JobQueue::push(),
+    cell::Spurs::JobQueue::JobQueue::pushJob(),
+    cell::Spurs::JobQueue::JobQueue::pushFlush(),
+    cell::Spurs::JobQueue::JobQueue::pushSync(),
+    cell::Spurs::JobQueue::JobQueue::pushJobList(),
+    cell::Spurs::JobQueue::Port::push(),
+    cell::Spurs::JobQueue::Port::pushJob(),
+    cell::Spurs::JobQueue::Port::pushFlush(),
+    cell::Spurs::JobQueue::Port::pushSync(),
+    cell::Spurs::JobQueue::Port::pushJobList(),
+    cell::Spurs::JobQueue::Port::sync(),
+    cell::Spurs::JobQueue::PortContainer::push(),
+    cell::Spurs::JobQueue::PortContainer::pushJob(),
+    cell::Spurs::JobQueue::PortContainer::pushFlush(),
+    cell::Spurs::JobQueue::PortContainer::pushSync(),
+    cell::Spurs::JobQueue::PortContainer::pushJobList(),
+    cell::Spurs::JobQueue::PortContainer::sync()
+
+<FunctionOffload Tutorial (samples\tutorial\FunctionOffloadToSpu)>
+- (B#75711)
+  When a function was offloaded using an asynchronous interface
+  (xxxxx_async structure) of JDL, it hung up in the wait() method. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+JDL-tool
+----------------------------------------------------------------------
+- (B#76576)
+  The following restrictions on the VTABLE patch feature have been fixed:
+  - A compilation error occurs when an overloaded method exists.
+  - "implementation" has to be defined even for the virtual function that 
+    is used only within a job.
+  - VTABLE is transferred to the SPU only when the virtual function is called 
+    or when the virtual class is held as an argument.
+
+- (B#73790)
+  A code that has the C++ static function could not be generated.
+  This problem has been fixed.
+
+- (B#73792)
+  A name space should be in units of methods but was defined outside the 
+  method. This problem has been fixed.
+
+- (B#76511)
+  A class that uses the name space could not use the VTABLE patch feature.
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#72801)
+  When registering a callback function, a callback event that was 
+  notified for a previous registration was notified at an unexpected 
+  timing after the current registration was completed. This problem 
+  has been fixed.
+
+- The following problem has been fixed:
+
+  - (B#73937)
+    In the PPU version of cellGcmCgStripBranchesFromFragmentUCode(),
+    if the input buffer (ucode) exists in the stack area, an error occurs.
+
+- The following problem has been fixed:
+
+  - (B#75337)
+    A microcode containing the wrong branch evaluation processing is generated 
+    under a certain condition upon using the SPU version of libgcm's 
+    cellGcmCgStripBranchesFromFragmentUCode() .
+    (Technote ID:200907-09  https://ps3.scedev.net/technotes/view/936)
+
+- (B#73306)
+  The following functions returned a wrong size when in the MeasureSize or the 
+  MeasureSizeInline modes. This problem has been fixed:
+   cellGcmSetTransferData()
+   cellGcmSetConvertSwizzleFormat()
+   cellGcmSetVertexProgram()
+   cellGcmSetFragmentProgramParameterPointer()
+   cellGcmResetDefaultCommandBuffer()
+   cellGcmFinish()
+
+- (B#75686)
+  The bug that is described in the following technote has been fixed.
+
+  - Problem with libgcm Caused by Enabling -mno-toc (GCC Option) for 
+    Application Build
+    (Technical Notes ID:200907-13  https://ps3.scedev.net/technotes/view/940)
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- (B#73236)
+  Fixed an internal issue which was causeing the following error:
+
+   error C1024: operands to "." must be scalar or vector
+
+- (B#73678)
+  The following memory leak in libcgc has been fixed.
+
+  - libcgc allocates memory which is not released until
+    the application (that links with libcgc) finishes execution.
+    Memory remains allocated even if all cgc contexts
+    are deleted and compiler is no longer needed.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- When a shutdown occurred while transferring a file, the FTP server 
+  hung up.
+  This problem has been fixed.
+
+- The error check for the FTP command has been improved.
+
+- When a long file path was used, a crash occurred. 
+  This problem has been fixed.
+

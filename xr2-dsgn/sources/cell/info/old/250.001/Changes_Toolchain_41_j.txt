@@ -1,0 +1,341 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 250.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+以下にPLAYSTATION(R)3 Reference Tool ツールチェーンパッケージの変更点と
+不具合修正を記述します。
+
+- Release 250.001 の変更点
+- Release 250.001 の不具合修正
+
+======================================================================
+Release 250.001 の変更点
+----------------------------------------------------------------------
+SN Systems社製リンカ
+----------------------------------------------------------------------
+[新規追加]
+(B#55926)
+- dead stripingによるセクションの削除を抑制する--dont-strip-section
+  オプションを追加しました。
+
+(B#57388)
+- -mbase-tocオプション使用時にlong long型のような64bitのグローバル変数
+  を正しく配置出来るようになりました。
+
+(B#55782)
+- リンカへ入力するオブジェクトにEF_PPC64_REL24フラグが設定されていた場合
+  は出力ファイルにも反映するようにしました。
+
+(B#60945)
+- --no-toc-restoreスイッチを実装しました。
+  このスイッチを使うと、ブランチの後続のnopは不要となり、PRXのスタブから
+  戻る前に呼び出し側のTOCポインタを復元するように、スタブを書き換えます。
+
+[仕様変更]
+(B#55965)
+- 出力するELFファイルに対して多くのセクションを生成する場合のパフォーマンス
+  を改善しました。
+
+(B#60940)
+- 不要情報の削除のレポート中の"Objects that are referenced from ..."
+  という部分の有用性を高めました。
+  オブジェクトの場所と、リストに現れた理由についての、より多くの情報を
+  表示します。
+  さらに、コールグラフに存在するオブジェクトは表示されません。
+  つまり、この部分とコールグラフの要約の両方への重複表示をやめるように
+  しました。
+  (コードが重複している場合には、オブジェクトは重複して表示されることに
+  注意してください。)
+
+[不具合修正]
+(B#57097)
+- --strip-duplicatesオプションを有効にした際に .debug_line セクションの
+  処理中に internal error を起こしてリンクに失敗する不具合を修正しました。
+
+(B#53862/B#53883)
+- リロケータブルモジュールの出力が正しく行われない事があった不具合を修正
+  しました。
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+[新規追加]
+<PPU/SPU共通>
+(B#54951)
+- if-else文に対する空文をチェックする -Wempty-bodyオプションを追加しました。
+  今まではif-elseの空文に対しては -Wextra オプションを用いて警告を出してい
+  ました。しかし、このオプションを用いる事によって -Wextra が出力する他の
+  警告とは独立してチェックを行う事が出来ます。
+
+(B#27216)
+- ppu-lv2-gcov/spu-lv2-gcov に新しいオプション -s と --source-directory を
+  追加しました。２つのオプションは同一であり、ソースファイルを検索するディレ
+  クトリを指定します。
+
+(B#53810)
+- UTF-16 の文字コードのソースファイルをサポートしました。
+
+(B#54637)
+- __PS3_GCC_REVISION__ マクロを追加しました。
+  このマクロはツールチェーンのリビジョン番号を定義します。
+
+(B#55780)
+- "cannot pass objects of non-POD type xxx through '...'"という警告を
+  エラーに変更できるオプションを追加しました。警告を有効にする
+  オプションは -WnonPOD-varargs（デフォルト）、エラーを有効にする
+  オプションは -Werror=-WnonPOD-varargs です。
+
+<PPU>
+(B#57363)
+- libc.aの一部の関数を高速化した新しいライブラリである libcs.a をリンクする為に
+  -mfast-libc オプションを追加しました。
+  詳しくは「Cell OS Lv-2 ツールチェーン ユーザガイド」を参照してください。
+
+(B#3424)
+- __vecreg キーワードの効果を得ることができる新しいオプション、
+  -ftree-promote-vector を追加しました。
+  現在は定数との比較のみが対象となります。
+
+<SPU>
+(B#55128)
+- 実行時に再配置を行うコードを追加する、-mfixupsオプションを追加しました。
+  このオプションは、位置独立コード(PIC)での仮想関数およびグローバルコンス
+  トラクタの使用を可能にします。
+
+(B#55128)
+- 動的にロードできるモジュールを生成するために、-shared オプションを SPU
+  ツールチェーンに追加しました。-shared オプションを指定した場合、
+  libstdc++.a と libsupc++.a と libgcc.a がデフォルトではリンクされないこと
+  に注意してください。libsputhread.a のみがリンクされます。
+  もし libc.a 等を使用したい場合、コマンドラインにこれらのライブラリを指定
+  してください。
+  動的ロードモジュールシステムについては、SPURSドキュメントを参照してください。
+
+(B#58292)
+- -rdynamic オプションをサポートしました。
+
+[仕様変更]
+<PPU/SPU共通>
+(B#48532)
+- C では返り値の型に余計な const があると以下のような警告が出力されて
+  いましたが C++ では出力されていませんでした。
+  その為、C++でも警告が出力されるように修正しました。
+  warning: type qualifiers ignored on function return type
+  詳細は、技術情報200809-04を参照してください。
+  https://ps3.scedev.net/technotes/view/796
+
+(B#57238)
+- 名前空間内の static 関数のデバッグ情報が出力されない不具合を修正しました。
+
+(B#57142)
+- static宣言されたinline関数の中にstatic変数が存在していた場合は
+  関数がinline展開されているにも関わらず、呼び出し先の関数が生成
+  されていました。
+  呼び出し先の関数は不要である為、生成しないように修正しました。
+
+(B#56189)
+- gcc.info の以下のオプションとパラメータの記述を訂正しました。
+  -finline-functions-called-once
+  -finline-limit
+  max-inline-recursive-depth
+  max-inline-recursive-depth-auto
+
+<PPU>
+(B#54931)
+- const のポインタや参照の場合に、GCC がロード命令を生成する方法が、最適な
+  アドレッシングモードを使用しないことがありました。これを変更し、より優れ
+  ている、ベース+インデックスアドレッシングモードを使用するようにしました。
+
+(B#52093)
+- ppu-lv2-objcopyによってSPU ELFから変換したPPUのオブジェクトファイル
+  について、SNリンカに実装されている不要コード削除最適化の対象になるよ
+  うに変更しました。
+
+(B#31337)
+- -mwarn-microcode を指定した際に以下の命令の生成において、マイクロコードである
+  といった警告が出力されていた不具合を修正しました。
+    CR記録付き加算(add./addic.)
+    CR記録付き減算(subfc./subf.)
+    2の累乗によるCR記録付き除算(srawi+addze.)
+
+(B#31337)
+- マイクロコード命令を生成しない場合に(-mgen-microcodeを指定していない場合に)
+  マイクロコードである nor. 命令を生成しないように修正しました。
+
+(B#56292)
+- vec_splats()を実行する際に引数の値のメモリからの読み込みが必要な状況では
+  次の一連の命令の代わりに lvlxを使用するようにしました。
+  vewx, lvsl, vperm
+
+(B#56401)
+- 定数が単純な即値ベクタ展開に置き換えられない場合は定数を vec_splats()
+  へ渡す際に TOC から読み込み、スタックを経由して処理していました。
+  しかしながら、スタックへの保存と再度の読み出し(lvewx命令等)が LHS の
+  原因となっていた為、スタックへの保存を行わずに直接、TOCから読み出して
+  処理を行なうようにしました（-mall-base-toc を使用した場合、定数を
+  rodata.cst? セクションに配置します）。
+
+(B#31497)
+- スタック上に初期値付きの多次元配列を宣言したソースコードをコンパイル
+  した際に不要なストア命令が生成されていた不具合を修正しました。
+
+(B#52448)
+- vec_cmpeq() に vec_all_eq() が続いた時に２つの vcmpeqfp命令が生成
+  されていたため、１つのみを生成するように修正しました。
+
+(B#56791)
+- -ffast-math を指定して vector float で a*b を行ったとき、加算部に
+  負の0ではなく正の0のオペランドを持つ vmaddfp 命令を生成するように
+  しました。
+
+(B#56832)
+- 浮動小数点型の変数に -0.0 を加えるようなコードを記述した場合でも最適化に
+  よって加算が削除されないことがあった点を修正しました。
+
+(B#52563)
+- C99 数学関数である isunordered, isequal, isgreaterequal,
+  islessequal, isgreater, isless, isordered and islessgreater
+  において、結果の代入に mfcr 命令が出力されていましたが、条件分岐を
+  使用するように変更しました。
+  mfcr命令を使用せずに比較命令と条件分岐によって結果を返した方が
+  パフォーマンス的に有利だった為、今回の変更を行いました。
+
+(B#56358)
+- -Os -mstring を指定すると GCC がより多くのLoad/Store String instructionを
+  生成するようになります。
+  この事によりコードサイズが減少します。
+  Load/Store String instructions : lswi, lswx, stswi, stswx
+
+(B#57445)
+- bdnz/dbz 命令を使用して行われるループに対する予測ビットが出力されていません
+  でした。
+  分岐ヒストリテーブル(BHT)を更新するハードウェアの動的分岐予測よりも良い結果が
+  得られそうな場合はコンパイラが静的に分岐予測を行ったコードを生成するように
+  しました。
+
+(B#56884)
+- 同じアドレスに対する複数の vec_lvewx() は最適化によって２つ目以降を
+  除去し、１度処理した vec_lvewx() の結果を使いまわすように修正しました。
+
+(B#57919)
+- 以下のように vec_splat() に続いて要素の抽出がある場合は vspltw 等を
+  削除し、値の展開位置に基づいて抽出するようにしました。
+
+  vector float b = vec_splat (a, 0);
+  return b[0];
+
+(B#58037)
+- vec_extract() を実行する際に一度、値をスタックに保存してから、再度、値を
+  読み出す事がありました。
+  vec_extract() のためにスタックから値を読み出す際に LHS が発生していた為、
+  スタックには保存せずに直接読み出すように修正しました。
+
+<SPU>
+(B#43297)
+- spu_madd()の第三引数が０の場合は積和演算のうちの加算処理が不要になる為、
+  spu_madd()からspu_mul()に置き換えて処理するように変更しました。
+
+[不具合修正]
+<PPU/SPU共通>
+(B#3445)
+- テンプレート引数の値に依存する複合リテラルを使ったベクタ初期化子を使用すると
+  次の internal compiler error が発生する不具合を修正しました。
+  "xxxx.cpp:xx: internal compiler error: Segmentation fault"
+
+(B#54924)
+- 異なる型によってアクセスされる帰納変数を使用すると次の internal compiler error
+  が発生する不具合を修正しました。
+  "xxxx.cpp(xx): internal compiler error: in expand_expr_addr_expr_1, at expr.c:6644"
+
+(B#55046)
+- float から int へビット変換したものを short に切り捨てると、次の
+  internal compiler error が発生する不具合を修正しました。
+  "xxxx.cpp(xx): internal compiler error: in gen_lowpart_general, at rtlhooks.c:59"
+
+(B#26399)
+- クラス中で使用する命令文に対するデバッグ情報が正しくない不具合を修正しました。
+(B#56302)
+- -ftree-vectorize を指定した場合、次の internal compiler error が起こることが
+  ある不具合を修正しました。
+  "xxxx.cpp:xx: internal compiler error: in vectorizable_type_promotion, at tree-vect-transform.c:3687
+
+(B#51364)
+- volatile をキャストで外したときのエラーメッセージが volatile について言及
+  していないという不具合がありました。これを修正するため、エラーメッセージを
+  "casts away constness" から "casts away qualifiers"へ変更しました。
+
+(B#55066)
+- printf() で %v を使用すると誤った warning が出力される不具合を修正しました。
+
+(B#41025)
+- PPUとSPUの両方において、組み込み関数の引数として使用されたときに __vecreg 型
+  をベクタ型に格上げするようにしました。
+
+(B#57136)
+- -ffast-math オプションを有効にしてベクタ型の除算を行うと、次の
+  internal compiler error が発生する不具合を修正しました。
+  "xxxx.cpp:xx: internal compiler error: Segmentation fault"
+
+(B#58205)
+- -fprofile-generate/-fprofile-use がソースへの絶対パスを指定して使用されたとき、
+  Windows上で動作しない不具合を修正しました。
+
+(B#57243)
+- - C++のクラスにおいて、あるメンバ関数の引数が関数ポインタとなっていて、
+  デフォルト引数としてキャストした関数のアドレスを指定した場合、その
+  メンバ関数の呼び出し元で、次のような internal compiler error が発生
+  することがあった不具合を修正しました。
+  "xxxx.cpp: xx: internal compiler error: in make_decl_rtl, at varasm.c:1092"
+
+(B#57002)
+- -fpropagate-restrict が、一部の C++ コードで次のような internal compiler error
+  を発生させていた不具合を修正しました。
+  "xxxx.xxx:xx: internal compiler error: in gimplify_expr, at gimplify.c:4400"
+
+<PPU>
+(B#55876)
+- 関数のスタックサイズが 32k に近いと、次の internal compiler error が発生する
+  不具合を修正しました。
+  "xxxx.cpp(xx): internal compiler error: in change_address_1, at emit-rtl.c:1833"
+
+(B#55584)
+- -mstrings または -Os を指定すると、メモリアドレスとして使用しているレジスタと
+  重複するデスティネーションを伴う不正な文字列命令を GCC が出力する不具合を修正
+  しました。
+
+(B#55130/Bug55647)
+- 定数アドレスを次のいずれかと共に用いると、下記のエラーメッセージを出力していた
+  不具合を修正しました。
+    - vec_lvlx
+    - インラインアセンブラの"Z"制約
+    - __lwarx または __stwcx 組み込み関数
+  "xxxx.x:xx: error: cannot reload integer constant operand in 'asm'"
+
+(B#56361)
+- 多くのレジスタを必要とするような場合に、GCC が次のような internal compiler error
+  を出力していた不具合を修正しました。
+  "xxxx.cpp:xx: error: unrecognizable insn:"
+  "xxxx.cpp:xx: internal compiler error: in extract_insn, at recog.c:2087"
+
+(B#58260)
+- collect2 によって表示されるエラーメッセージ中のリンカの名前が間違っていた
+  不具合を修正しました。
+
+(B#57053)
+- 不正な形式の lwzu 命令が生成される不具合を修正しました。
+
+<SPU>
+
+(B#55641) 
+- 整数除算のために生成される命令が時々不完全にスケジュールされる
+  不具合を修正しました。
+
+(B#55791)
+- 大きなオフセットを持つアドレスを計算したときに、オブジェクトが non-PICである、
+  とリンカが不正に警告する不具合を修正しました。
+
+(B#58327)
+- __asm__ 文で明示的に $79 レジスタを宣言したときに、GCC が不正にそれを使用して
+  いた不具合を修正しました。
+

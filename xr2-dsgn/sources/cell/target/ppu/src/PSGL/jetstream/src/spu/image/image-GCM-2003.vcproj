@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="libSpuImage"
+	ProjectGUID="{0B531EE6-22CE-42B0-95C0-03C30B71C802}"
+	RootNamespace="image">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="PS3 Debug|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\..\jsbuild\debug"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-g -std=gnu9x -mraw"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\include&quot;;&quot;$(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;_DEBUG;__GCC__;SPU;JS_REPORT"
+				ProgramDataBaseFileName=""
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-mraw"
+				AdditionalDependencies=""
+				OutputFile="$(OutDir)/obj/$(ProjectName)/spuImage.o"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="cd &quot;$(OutDir)\obj\$(ProjectName)&quot;
+del &quot;image.elf&quot;
+ren &quot;$(TargetFileName)&quot; image.elf
+&quot;$(SCE_PS3_ROOT)/host-win32/spu/bin/spu-lv2-strip&quot; &quot;image.elf&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot; -I binary -O elf64-powerpc-celloslv2 -Bpowerpc --set-section-align .data=7 --set-section-pad .data=128 --rename-section .data=.spu_image.image.elf &quot;image.elf&quot; &quot;$(TargetFileName)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 Opt|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\..\jsbuild\opt"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-O3 -std=gnu9x -mraw"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\include&quot;;&quot;$(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;NDEBUG;__GCC__;SPU"
+				ProgramDataBaseFileName=""
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-mraw"
+				AdditionalDependencies=""
+				OutputFile="$(OutDir)/obj/$(ProjectName)/spuImage.o"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="cd &quot;$(OutDir)\obj\$(ProjectName)&quot;
+del &quot;image.elf&quot;
+ren &quot;$(TargetFileName)&quot; image.elf
+&quot;$(SCE_PS3_ROOT)/host-win32/spu/bin/spu-lv2-strip&quot; &quot;image.elf&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot; -I binary -O elf64-powerpc-celloslv2 -Bpowerpc --set-section-align .data=7 --set-section-pad .data=128 --rename-section .data=.spu_image.image.elf &quot;image.elf&quot; &quot;$(TargetFileName)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 GcmHud|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\..\jsbuild\gcmhud"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-O3 -std=gnu9x -mraw"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\include&quot;;&quot;$(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;_DEBUG;__GCC__;SPU;JS_REPORT;GCM_HUD"
+				ProgramDataBaseFileName=""
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-mraw"
+				AdditionalDependencies=""
+				OutputFile="$(OutDir)/obj/$(ProjectName)/spuImage.o"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="cd &quot;$(OutDir)\obj\$(ProjectName)&quot;
+del &quot;image.elf&quot;
+ren &quot;$(TargetFileName)&quot; image.elf
+&quot;$(SCE_PS3_ROOT)/host-win32/spu/bin/spu-lv2-strip&quot; &quot;image.elf&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot; -I binary -O elf64-powerpc-celloslv2 -Bpowerpc --set-section-align .data=7 --set-section-pad .data=128 --rename-section .data=.spu_image.image.elf &quot;image.elf&quot; &quot;$(TargetFileName)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 Ultra Opt|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\..\jsbuild\ultra-opt"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="1"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-O3 -std=gnu9x -mraw"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\include&quot;;&quot;$(SN_PS3_PATH)\spu\include\sn&quot;;&quot;$(SCE_PS3_ROOT)\target\spu\include&quot;;&quot;$(SCE_PS3_ROOT)\target\common\include&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3_SPU;NDEBUG;__GCC__;SPU"
+				ProgramDataBaseFileName=""
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="-mraw"
+				AdditionalDependencies=""
+				OutputFile="$(OutDir)/obj/$(ProjectName)/spuImage.o"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile=""/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="cd &quot;$(OutDir)\obj\$(ProjectName)&quot;
+del &quot;image.elf&quot;
+ren &quot;$(TargetFileName)&quot; image.elf
+&quot;$(SCE_PS3_ROOT)/host-win32/spu/bin/spu-lv2-strip&quot; &quot;image.elf&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot; -I binary -O elf64-powerpc-celloslv2 -Bpowerpc --set-section-align .data=7 --set-section-pad .data=128 --rename-section .data=.spu_image.image.elf &quot;image.elf&quot; &quot;$(TargetFileName)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath=".\image.c">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

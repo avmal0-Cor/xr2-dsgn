@@ -1,0 +1,82 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 192.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 Control Console
+----------------------------------------------------------------------
+<Specification Changes>
+- In the Variable Tracking processing, cellConsoleVariableRemoveGroup()
+  function has been added to delete a variable group when a function is
+  called. This function is responsible only for deleting a single, 
+  empty group. 
+  To delete all variables from the deletion target group, call 
+  CellConsoleVariableRemove() first. 
+  Note that a default group # 0 cannot be deleted.
+
+- In variable_tracker.h, typedef of the C language bool type was used.
+  Because "bool" is a reserved word for C++, the typedef description of
+  the C language bool type could confuse when a source analysis tool
+  such as SWIG was used.  
+  This problem has been fixed by adding a new type CellConsoleBoolean.
+  The CellConsoleBoolean type is defined as "unsigned char" for C language
+  and "bool" for C++. 
+  Also, CellConsoleBoolean type is now used in the following union type
+  and the functions:
+    <Union>
+    - CellConsoleVariableValueUnion
+    <Functions>
+    - cellConsoleVariableAddBool()
+    - cellConsoleVariableAddValidatedBool()
+
+----------------------------------------------------------------------
+2 HID
+----------------------------------------------------------------------
+libpad
+======
+<New Feature>
+- The following function and structure have been added to control 
+  the vibration function of the SIXAXIS(TM) wireless controller. 
+    - cellPadSetActDirect() : Send the vibration data 
+    - CellPadActParam    : Actuator parameter
+
+<Specification Change>
+- In the cellPadGetCapabilityInfo, CELL_PAD_CAPABILITY_ACTUATOR flag 
+  field has been added to detect the vibration function of the SIXAXIS(TM)
+  wireless controller.
+
+<Sample Change (cell/samples/sdk/hid/pad)>
+- The support for the vibration function of the SIXAXIS(TM) wireless 
+  controller has been added.
+
+----------------------------------------------------------------------
+3 codec
+----------------------------------------------------------------------
+libsail
+=======
+<Specification Change> 
+- When the video elementary stream contained in the PAMF file to be 
+  played was a MPEG-2 1280x720p 59.94Hz, libvdec was opened as MP@HL 
+  conforming to the MPEG-2 video standard( libsail uses libvdec internally.).
+  According to the implementation specifications of libvdec, we have 
+  found out that the MPEG-2 video stream that has the above attribute 
+  can be opened as MP@H-14 without a problem, so the control has been 
+  changed accordingly. This change has reduced approximately 3MB of usage
+  memory in the MPEG-2 video stream that has the above attribute.
+  Note that this change does not affect titles already released.
+
+----------------------------------------------------------------------
+4 libresc
+----------------------------------------------------------------------
+<New Fearture>
+- The following files have been added to the library source code of 
+  libresc released for public:
+  - cell/target/ppu/src/resc/src/libresc.vcproj 
+      Project file for ProDG for PLAYSTATION(r)3
+  - cell/target/ppu/src/resc/libresc.sln 
+      Solution file for VisualStudio 2003
+

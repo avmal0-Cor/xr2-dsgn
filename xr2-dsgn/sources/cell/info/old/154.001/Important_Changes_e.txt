@@ -1,0 +1,209 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 154.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 System Software (GUI)
+----------------------------------------------------------------------
+< New Features >
+- The following menus have been added to the system software, but they 
+  cannot be used at the moment. 
+    - Settings -> System Settings -> NP Title ID
+    - Network -> Title Store Preview
+
+----------------------------------------------------------------------
+2 System Utilities (libsysutil)
+----------------------------------------------------------------------
+AV Chat Utility
+===============
+< New Feature >
+- As a model that supports video chat, cameras that support USB Video 
+  Class 1.1 have been added. For the types of USB Video Class 1.1 cameras
+  whose operation is confirmed at the moment, please refer to the technical note in https://ps3.scedev.net/technotes. 
+
+System Cache Utility
+====================
+< Sample Change (samples/sysutil/syscache) >
+- A change has been made so that file check is performed when 
+  cellSysCacheMount() is returned as CELL_SYSCACHE_RET_OK_RELAYED. 
+
+----------------------------------------------------------------------
+3 libcamera
+----------------------------------------------------------------------
+< New Features >
+- Cameras that support USB Video Class 1.1 have been supported. 
+  For the format, resolution, and frame rate, please see below. 
+  In addition, for the types of USB Video Class 1.1 cameras whose 
+  operation is confirmed at the moment, please refer to the technical 
+  note in https://ps3.scedev.net/technotes. 
+    - Format: JPG, YUV422
+    - Resolution: VGA, QVGA, WGA
+    - Frame rate: 25fps or more
+
+- Feature of setting the power line frequency has been added for USB 
+  Video Class 1.1 cameras for preventing flicker. 
+
+- As the enumerator of enum type CellCameraType, USB Video Class 1.1 
+  supporting camera type CELL_CAMERA_USBVIDEOCLASS has been added. 
+
+- As the enumerator of enum type CellCameraAttribute, the following have
+  been added. For details, please refer to "libcamera Reference". 
+    CELL_CAMERA_FORMATCAP
+    CELL_CAMERA_FORMATINDEX
+    CELL_CAMERA_NUMFRAME
+    CELL_CAMERA_FRAMEINDEX
+    CELL_CAMERA_FRAMESIZE
+    CELL_CAMERA_INTERVALTYPE
+    CELL_CAMERA_INTERVALINDEX
+    CELL_CAMERA_INTERVALVALUE
+    CELL_CAMERA_COLORMATCHING
+    CELL_CAMERA_PLFREQ
+    CELL_CAMERA_DEVICEID
+    CELL_CAMERA_DEVICECAP
+
+- Camera device attributes of the EyeToy(TM) USB camera (for PlayStation(R)2)
+  have been added. For details, please refer to "libcamera Reference". 
+
+< Specification Change >
+- For the following attributes, a change has been made so as to retain 
+  the attribute information even when the EyeToy(TM) USB camera 
+  (for PlayStation(R)2) is detached. 
+    CELL_CAMERA_LED
+    CELL_CAMERA_BACKLIGHTCOMP
+    CELL_CAMERA_MIRRORFLAG
+
+< Sample Change (samples/camera/simple) >
+- Initialization processing of a camera that supports USB Video Class 1.1
+  has been added. 
+
+----------------------------------------------------------------------
+4 libgcm
+----------------------------------------------------------------------
+< New Features >
+- cellGcmSetTransferReportData() has been added. 
+
+- Structure CellGcmReportData has been added. 
+
+----------------------------------------------------------------------
+5 libgcm_pm
+----------------------------------------------------------------------
+< New Features >
+- The following events have been added. 
+    CELL_GCM_PM_GCLK_IDX_FETCH_SYS 
+    CELL_GCM_PM_ICLK_SYS_NORMAL_WRITE
+    CELL_GCM_PM_ICLK_SYS_NORMAL_READ
+
+----------------------------------------------------------------------
+6 PSGL
+----------------------------------------------------------------------
+< New Features >
+- GL_SKIP_FIRST_VSYNC_SCE has been added for the argument of glEnable(),
+  and 30fps has been supported. 
+
+- GL_SKIP_FIRST_VSYNC_SCE is now specifiable as an argument of glEnable().
+  When you specify GL_SKIP_FIRST_VSYNC_SCE, it will ignore VBlank once 
+  so that a game application can run at a speed of 30fps. 
+
+- When the bottle neck is RSX(TM) rather than a PPU, it will wait until 
+  the rendering process is completed within psglSwap(). Such load on 
+  the PPU has been reduced.
+
+- GL_TEXTURE_BORDER_COLOR is now specifiable as an argument of 
+  the following functions: 
+    glTexParameterfv()
+    glTexParameteriv()
+
+- The error message output when the texture type is not set correctly 
+  has been fixed. 
+  e.g.) When a 2D texture is bound with the samplerCUBE: 
+        Error: Trying to bind texture object 1(GL_TEXTURE_2D) to 
+        target GL_TEXTURE_CUBE_MAP
+
+- The following resolutions are now supported:
+    CELL_VIDEO_OUT_RESOLUTION_1600x1080
+    CELL_VIDEO_OUT_RESOLUTION_1440x1080
+    CELL_VIDEO_OUT_RESOLUTION_1280x1080
+    CELL_VIDEO_OUT_RESOLUTION_960x1080
+
+- The performance has been improved by optimizing lowlevel. 
+
+- The following member variables have been added to the PSGLdeviceParameters
+  structure: 
+    horizontalScale
+    verticalScale
+  When you use the function of resc, adjust the above member variables 
+  so that you can control the differences in over scan rates.
+
+- A function for getting the device aspect ratio has been added. 
+    GLfloat psglGetDeviceAspectRatio(const PSGLdevice *device)
+
+- Member variable rescInterlaceMode has been added to the structure 
+  PSGLdeviceParameters. 
+  With the following macros, the filter setting of when interlaced 
+  can be set. 
+    RESC_INTERLACE_MODE_NORMAL_BILINEAR
+    ---> Do not use a filter when interlaced
+    RESC_INTERLACE_MODE_INTERLACE_FILTER
+    ---> Use a filter when interlaced
+
+- Functions that are related to the local memory (Bounce Buffer) that
+  is used as temporary within PSGL have been added: 
+    void psglSetBounceBufferSize( GLsizei size );
+    GLsizei psglGetBounceBufferSize(void);
+
+< Specification changes >
+- A part of the macro that is specified as an argument of 
+  psglCreateDeviceExtended() has been changed as follows: 
+    (Old) PSGL_DEVICE_PARAMETERS_RENDER_WIDTH_HEIGHT
+    (New) PSGL_DEVICE_PARAMETERS_RESC_RENDER_WIDTH_HEIGHT
+
+----------------------------------------------------------------------
+7 cgc
+----------------------------------------------------------------------
+< New Feature >
+- Option "-texformat" has been added. 
+
+< Specification Change >
+- The keywords of CgFX that used to be handled as case-sensitive have 
+  become case-insensitive. 
+  Since the cgc default option is "-fx", the variables and functions 
+  within the shaders that have been created may conflict with the following
+  CgFX keywords. In that case, please change the names or add the option 
+  "-nofx" before compiling. 
+  Also, when using the option "-e" to specify an entry explicitly, 
+  the following keywords and the name may conflict. When that happens, 
+  please change the name or add the option "-nofx" before compiling. 
+    asm
+    decl
+    dword
+    float
+    matrix
+    pass
+    pixelfragment
+    pixelshader
+    string
+    technique
+    texture
+    vector
+    vertexfragment
+    vertexshader
+
+----------------------------------------------------------------------
+8 Sample Program
+----------------------------------------------------------------------
+< New Addition >
+  samples/camera/test_driver :
+  This is a test sample that uses the EyeToy(TM) USB camera 
+  (for PlayStation(R)2). 
+    This sample uses the format, resolution, and frame rate that are 
+    supported by libcamera to display the images from the EyeToy(TM) 
+    USB camera (for PlayStation(R)2). 
+    In this sample, the handling of the attaching and detaching events 
+    of the EyeToy(TM) USB camera (for PlayStation(R)2) and the method 
+    of dynamically changing the format, resolution, and frame rate are
+    shown. 
+

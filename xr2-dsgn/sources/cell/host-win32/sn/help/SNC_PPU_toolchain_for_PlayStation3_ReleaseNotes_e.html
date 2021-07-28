@@ -1,0 +1,699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>SNC PPU toolchain for PlayStation®3</TITLE>
+	<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<STYLE TYPE="text/css">	
+<!--
+body         { font-family: Arial, Verdana, Helvetica; font-size: 80%; margin: 0; padding: 0 }
+h1, h2, h3, h4, a:link, a:visited { color: #000000 }
+.warning     { font-weight: bold; color: #6c000a }
+em           { font-style: italic; color: #a90017 }
+.back-to-top { font-size: 70% }
+a:link, a:visited, a:active { color: #009bd4 }
+p.note       { background-color: rgb(237, 245, 251); background-repeat: repeat; 
+               background-attachment: scroll; -moz-background-clip: initial; 
+               -moz-background-origin: initial; 
+               -moz-background-inline-policy: initial; 
+               border-left: 4.5pt solid rgb(103, 180, 221); 
+               border-right: 4.5pt solid rgb(103, 180, 221); 
+               border-top: 0.25pt solid white; 
+               border-bottom: 0.25pt solid white; padding-left: 12pt; 
+               padding-right: 12pt; padding-top: 0cm; padding-bottom: 0cm; 
+               background-position: none 50% }
+pre          { font-family: Courier, serif }
+code         { font-family: Courier, serif }
+div.release  { margin-left: 2em }
+dl           { width: 100% }
+dt           { float: left; color: #808080 }
+dd           { text-indent: 0em; margin-left: 7em }
+p.release-title { background-color: #e0e0e0; width: 100%; margin-top: 0; margin-bottom: 2px; 
+               padding-top: 2; padding-bottom: 2px }
+p.history-title { background-color: #f0f0f0; width: 100%; margin-top: 0; margin-bottom: 0; 
+               padding-top: 2px; padding-bottom: 2px }
+.ln          { color: #006189; font-weight: bold }
+div.footer   { font-size: 75% }
+table.opt { border-width: 1px;
+          	border-color: black
+			border-collapse: seperate;
+            background-color: rgb(237, 245, 251);
+			}
+table.opt tbody {
+               background-color: rgb(237, 245, 251);
+			   font-weight: normal;
+	           font-size: 75%
+			   }
+table.opt th { border-width: 1px; 
+               padding: 1px;
+			   border-color: gray; 
+			   font-weight: bold;
+			   text-align: left;
+			   }
+table.opt td { border-width: 1px; 
+               padding: 1px;
+			   border-color: gray;
+               background-color: white; 
+			   text-align: right;
+			   }
+
+table.opt td.notes {
+			   text-align: left;
+			   font-style: italic;
+			   }
+
+-->
+</STYLE>
+	
+</HEAD>
+
+<!---------------------------------------------------------------------------------------->
+
+<BODY>
+
+<H2>SNC PPU toolchain for PlayStation®3 - 310.1 </H2>
+
+<H3>24th November 2009</H3>
+
+<P>Copyright &copy; 2004-2009 Sony Computer Entertainment Inc. / SN Systems Ltd.</P>
+
+<!---------------------------------------------------------------------------------------->
+
+<P>
+	
+<!---------------------------------------------------------------------------------------->
+
+
+
+<OL>
+	<LI><A href="#Overview">Overview</A></LI>
+	<LI><A href="#Contents">Contents</A></LI>
+	<LI><A href="#Whats_new">What's new</A></LI>
+	<LI><A href="#Installation">Installation</A></LI>
+	<LI><A href="#Operating instructions">Operating instructions</A></LI>
+	<LI><A href="#Limitations and warnings">Limitations and warnings</A></LI>
+	<LI><A href="#Support">Updates and technical support</A></LI>
+</OL>
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+
+<H3>1. <A name="Overview">Overview</A> <A href="#top" CLASS=back-to-top>back to top</A></H3>
+
+<!---------------------------------------------------------------------------------------->
+
+<UL>
+	<LI>
+		There are a few important differences between SNC (SN Systems Compiler) and GCC.  
+		Please see the <A href="#important">Differences between SNC and GCC</A> section for 
+		details.
+	</LI>
+	<LI>
+                This release supports builds under Windows Vista.
+        </LI>
+	<LI>
+		Visual Studio Integration contains a tool, <STRONG>AddSNCConfig_GUI.exe</STRONG>, to simplify the conversion of existing GCC-based projects to use SNC.  
+		Please see the VSI user guide (ProDG_PS3_VS.NET-E.chm) for more information.
+	</LI>
+	<LI>
+		<STRONG>
+		Please see the SNC Migration Guide (help/SNC_Migration_Guide_e.txt) for more information and advice on porting code from GCC to SNC.
+		</STRONG>
+	</LI>
+	</LI>
+</UL>
+
+<P>This release supports:</P>
+
+<UL>
+	<LI>Development tools: DECR-1000.</LI>
+	<LI>SDKs: 310.000 or later.</LI>
+	<LI>SN-DBS v2.0.49.27</LI>
+	<LI>Visual Studio .NET Integration v1.8.6 or later.
+</UL>
+
+<P><B>License terms</B></P>
+<UL>
+	<li>The SNC PPU toolchain conforms to the license of the "PlayStation&reg;3 CELL SDK".</li>
+	<LI>The software in this release does not require a license file to activate it.</LI>
+	<LI>The SNC PPU toolchain may be used with a distributed build system e.g. SN-DBS.</LI>
+</UL>
+
+<!---------------------------------------------------------------------------------------->
+
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+
+<H3>2. <A name="Contents">Contents</A>&nbsp; <A href="#top" CLASS=back-to-top>back to top</A></H3>
+
+<!---------------------------------------------------------------------------------------->
+
+
+<P>This release contains the following SN Systems development tools:</P>
+<UL>
+	<LI><A href="#Assembler">Assembler</A></LI>
+	<LI><A href="#Compiler">SNC C/C++ Compiler</A></LI>
+	<LI><A href="#Linker">Linker</A></LI>
+	<LI><A href="#Archive librarian">Archive librarian</A></LI>
+	<LI><A href="#Binary utilities">Binary utilities</A></LI>
+	<LI><A href="#C++ name demangler">C++ name demangler</A></LI>
+	<LI><A href="#C++ demangler module">C++ demangler module</A></LI>
+	<LI>Libraries</LI>
+	<LI>Documentation</LI>
+</UL>
+
+<!---------------------------------------------------------------------------------------->
+
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+
+<H3>3. <A name="Whats_new">What's new</A> <A href="#top" CLASS=back-to-top>back to top</A></H3> 
+
+<div>
+<ol>
+</ol>
+<a> </a>
+<blockquote><a> </a>
+  <hr><a><!---------------------------------------------------------------------------------------->
+  </a>
+  <p id="reversebitfields"><a><strong>"__unaligned" pointers<br>
+  </strong></a></p>
+</blockquote>
+</div>
+<div class="history">
+<p>This release adds support for the "<code>__unaligned</code>"
+keyword. This is a type
+modifier in pointer definitions; when a pointer is declared with the
+<code>__unaligned</code> modifier, the compiler assumes that the
+pointer addresses data that is not correctly aligned.
+When data is accessed through a pointer declared <code>__unaligned</code>,
+the compiler generates the additional code necessary to read or write
+the
+data without causing alignment errors. Note that there is a performance
+penalty for the use of this additional code, so it is
+obviously best to ensure that data is correctly aligned whenever
+possible.
+</p>
+<p>On the Cell PPU processor, read and write of floating point and
+vector
+data types must be correctly aligned or an exception occurs. The
+hardware will successfully access misaligned integer types.</p>
+<p>This modifier describes the alignment of the addressed data only;
+the
+pointer itself is assumed to be aligned.</p>
+<p>For example, the code snippet below deliberately creates a
+misaligned
+access, but the use of the <code>__unaligned</code> keyword allows the
+code to run successfully.</p>
+</div>
+<pre style="margin-left: 40px;">float read (float __unaligned * f)<br>{<br>&nbsp;&nbsp;&nbsp; return *f;<br>}<br><br>char x [5];<br>float f;<br><br>void foo (void)<br>{<br>&nbsp;&nbsp;&nbsp; f = read ((float *) &amp;x [1]);<br>}</pre>
+<blockquote><a> </a>
+  <p id="change-histories"><a><strong>Change histories</strong></a></p>
+  <a> </a>
+  <ul>
+    <a> </a>
+    <li><a href="#Assembler">Assembler</a></li>
+    <li><a href="#Compiler">SNC C/C++ Compiler</a></li>
+    <li><a href="#Linker">Linker</a></li>
+    <li><a href="#Archive%20librarian">Archive librarian</a></li>
+    <li><a href="#Binary%20utilities">Binary utilities</a></li>
+    <li><a href="#C++%20name%20demangler">C++ name demangler</a></li>
+    <li><a href="#C++%20demangler%20module">C++ demangler module</a></li>
+  </ul>
+  <hr>
+  <h4><a name="Assembler">Assembler - ps3ppuas</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.1748.0)</b></p><p>No changes since last release</p></div>
+  <h4><a name="Compiler">Compiler - ps3ppusnc</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.6306.0)</b></p><p class="history-title">Changes</p><dl class="history"><dt>#67280</dt><dd>Improve compatibility with GCC for the handling of typedefs where an __attribute__((aligned (x))) is applied to the typedefed name, rather than to the underlying type. These types do not have the padding added that would ensure that members of an arrays of this type would be correctly aligned, so the compiler will reject arrays of such types. 
+(<span class="ln">BZ68022</span>)</dd><dt>#67041</dt><dd>Added support for using the function name pre-definitions (e.g. <tt>__FUNC__</tt> ) in message pragmas. 
+(<span class="ln">BZ77911</span>)</dd><dt>#66824</dt><dd>Added support for the <tt>__unaligned</tt> keyword to allow user code to explicitly indicate that a pointer may not have the correct alignment for its type. 
+(<span class="ln">BZ71980</span>)</dd><dt>#63075</dt><dd>This release changes the way the compiler identifies 'system header files' for purposes of suppressing warnings in them, and for the generation of "makefile style" dependency information via the -MMD option.  Prior to SNC 310.1, any include that used the "angle bracket" notation, such as:
+
+<pre>
+#include &lt;filename&gt;
+</pre>
+
+was identified as a 'system header file', whereas any include using the "quoted" notation:
+
+<pre>
+#include "filename"
+</pre>
+
+was identified as a 'non-system header file'.
+
+The new rule is that files that are found via implicitly inserted include directories (usually inside the cell SDK) are deemed to be system header files, except for any directories explicitly added on the command-line via the <tt>-I</tt> option, which was not already being implicitly inserted. For example:
+
+<pre>
+-I c:\usr\local\cell\...
+</pre>
+
+The syntax of the include directive (i.e., <tt>&lt;&gt;</tt> versus <tt>""</tt>) is now irrelevant for classifying a file as a system header file.
+
+Note that  warnings are suppressed for constructs in 'system header files' by default (see the -Xnosyswarn switch); therefore, new warnings may appear when moving to SNC 310.1. In particular, if a non-system header file (say "my_header.h") is included via:
+
+<pre>
+#include &lt;my_header.h&gt;
+</pre>
+
+and "my_header.h" contains constructs that would normally result in a warning being produced, then prior to release 310.1, the warning would have been suppressed because "my_header.h" was viewed as a system header file.  Since "my_header.h" will no longer be interpreted as a system header file, the warnings will now appear.
+(<span class="ln">BZ75846</span>)</dd><dt>#62821</dt><dd>A change has been made to the diagnostics that the compiler issues when an assignment is detected in an 'if' statement. The compiler now detects two different uses of such assignments:
+<pre>
+if (x = 3)  // issues diagnostic 'assign_const_where_compare_meant'
+if (x = y)  // issues diagnostic 'assign_where_compare_meant'
+</pre>
+(<span class="ln">BZ77945</span>)</dd><dt>#62780</dt><dd>Implemented a &quot;tail duplication&quot; transformation to improve runtime performance: When a block branches unconditionally to a very short block, the code of that short target block is duplicated at the end of the original block, thus saving a branch at runtime.  (To minimize increases in code-size, this transformation is only enabled within loops.)
+</dd><dt>#62635</dt><dd>The compiler now issues remarks on declaration of entities with  reserved identifiers (those containing double underscores or starting with an underscore followed by an upper case letter) in user code, as in:
+
+<pre>
+int __foo;
+x.c(1,4): remark 1779: Identifier __foo  is non-standard
+  int __foo;
+</pre>
+
+Note that these are remarks, which are normally suppressed, but can be enabled by either -Xdiag=2 (enable all remarks)  or via --diag_warning=1779.
+
+These remarks are suppressed in system header files irrespective of -Xnosyswarn control.
+(<span class="ln">BZ57644</span>)</dd></dl><p class="history-title">Fixes</p><dl class="history"><dt>#67919</dt><dd>Fixed a problem that resulted in some lines of code not being correctly shown by the debugger in the &quot;mixed&quot; view.
+(<span class="ln">BZ78727</span>)</dd><dt>#67882</dt><dd>When the result of a 32-bit comparison is also the function return result the zero extension to 64-bits could be incorrectly deleted.
+(<span class="ln">BZ79143</span>)</dd><dt>#67508</dt><dd>Fixed a problem where the operator precedence rules were not being applied correctly in a template argument context. For example:
+<pre>
+#define NEXT_POWER_OF_TWO(n) (n &gt; 2 ? 4 : n &gt; 1 ? 2 : 1)
+template &lt;int Value&gt;
+    struct bar
+    {
+        enum { v = Value };
+    };
+int foo ()
+{
+    return bar &lt;NEXT_POWER_OF_TWO (3)&gt; ().v; // Used to return 2; should have been 4.
+}
+</pre>
+(<span class="ln">BZ78986</span>)</dd><dt>#67438</dt><dd>Use of explicit destructors was not being allowed in array context. For example:
+<pre>
+template &lt;typename T&gt;
+    struct vectortest
+    {
+        void clear () { v [0].~T (); } // An error was issued for this line.
+        T * v;
+    };
+void foo ()
+{
+    vectortest &lt;float [4]&gt; vector_of_vectors;
+    vector_of_vectors.clear ();
+}
+</pre>
+(<span class="ln">BZ78889</span>)</dd><dt>#67190</dt><dd>Fixed a case where the use of <tt>__butiltin_addrof</tt> did not force a parameter register to memory. 
+(<span class="ln">BZ78814</span>)</dd><dt>#67117</dt><dd>Fix a compiler internal error that was reported for a rare case involving an implicit conversion of int to bool. For example:
+<pre>
+float bar ();
+bool foo ()
+{
+    return bar () ? 0 : 1;
+}
+</pre>
+(<span class="ln">BZ79589</span>)</dd><dt>#67039</dt><dd>Fixed the code generation for switch statements using a 64-bit value. 
+(<span class="ln">BZ77614</span>)</dd><dt>#66416</dt><dd>Fixed a bug in the optimizor causing compilation failure with the error message of &quot;Internal Error: find_glb.4252&quot;; the bug is related to the optimization on the reassociation of invariant operands of instructions with commutative binary operators.
+(<span class="ln">BZ79399</span>)</dd><dt>#66396</dt><dd>Fixed a problem when unrolling loops and the loop is predicted to be taken.  Previously, if __builtin_expect is used, the -Xunrollssa=&lt;n&gt; value was ignored and the loop would be unrolled regardless of size.  On big loops, the optimiser could then appear to hang.  Now, instead of ignoring the value, the value is weighted by 4.  This increases the importance of prediction, but will not lead to excessive unrolling. 
+(<span class="ln">BZ78053</span>)</dd><dt>#65387</dt><dd>Fixed case where -Xbranchless=2 could generate incorrect code when the difference between the integer selections is constant, and representable as a mask.
+(<span class="ln">BZ78133</span>)</dd><dt>#64884</dt><dd>Fixed a problem where where an implicit <tt>return 0</tt> was not being added to <tt>main ()</tt> functions compiled in C mode.
+(<span class="ln">BZ78494</span>)</dd><dt>#62168</dt><dd>Fixed a problem with switch statements that used 64-bit values.
+(<span class="ln">BZ77614</span>)</dd></dl><p class="release-title">Release : SNC PPU toolchain for PlayStation®3 300.3 (300.3.6159.0)</p><p class="history-title">Changes</p><dl class="history"><dt>#64592</dt><dd>Changed the compiler to be more cautious in dynamic stack allocation, to avoid stack memory allocation failure in compiling huge code.
+(<span class="ln">BZ78639</span>)</dd></dl><p class="history-title">Fixes</p><dl class="history"><dt>#65912</dt><dd>Fixed a bug where if a function called other functions that required more than 64 bytes of outgoing argument space, and the function saved/restored registers in the prolog/epilog, and the function did not have any other stack-requirements for local variables (i.e., the stack-frame was empty, other than the outgoing argument space and register save/restore locations), then the save/restore locations could overlap with the ABI-defined &quot;Parameter Save Area&quot; of the outgoing argument space that was past the initial 64 bytes of outgoing argument space. This could result in run-time failures because the values of saved registers could be over-written by the called routines (if the called routines save their formal arguments to the Parameter Save Area).
+(<span class="ln">BZ79175</span>)</dd><dt>#65903</dt><dd>Fix for a problem that occurred when the last named arg of a varargs function was a char, short or float.
+
+<pre>
+void foo (char x, ...)
+{
+    va_list ap; 
+    va_start (ap, x); 
+}
+</pre>
+(<span class="ln">BZ79168</span>)</dd><dt>#65826</dt><dd>Fixed a bug where a store could be removed incorrectly when there was an array on the stack accessed by an iterating variable in a loop containing multiple returns.
+(<span class="ln">BZ79152</span>)</dd><dt>#65660</dt><dd>Fixed a bug that caused an Internal Compiler Exception when optimizing loops. Example code in which the bug could manifest itself is:
+<pre>
+for (...) { ... }
+do 
+{
+    for (...) { ... }
+    ...
+} while (...);
+</pre>
+(<span class="ln">BZ78980</span>)</dd><dt>#65475</dt><dd>Made alias analysis slightly more conservative in the case when judging whether a store to the stack can interfere with a load from a location that cannot be determined.
+(<span class="ln">BZ78983</span>)</dd><dt>#65281</dt><dd>Fixed a bug where if (for some reason) a routine marked as &#039;__always_inline__&#039; failed to get inlined (i.e., a call to the routine remained), the body of the routine did not get generated, resulting in an unresolved reference at link-time.  Note that although most __always_inline__ routines do get inlined, even with this fix it is still possible for some inlining failures.  This may be because inlining the function is not possible (e.g., variable arguments or recursion); situations of this nature are very rare.
+(<span class="ln">BZ78911</span>)</dd><dt>#65128</dt><dd>Fixed an issue where the top 32 bits of a 64-bit load were not always cleared if the result was immediately used as a 32-bit type.
+(<span class="ln">BZ78865</span>)</dd><dt>#65047</dt><dd>Fixed a bug in register allocation which could cause a run-time failure when the source code contained at least a theoretical uninitialized reference such as:
+<pre>
+  int i;
+    ...
+  if (condition1)
+    i = <expression>;  // only initialization of 'i'
+    ...
+  if (condition2)
+    x = i;  // 'condition2' is known (by the programmer, but not by the compiler) to be true only if 'condition1' was true
+</pre>
+and aggressive branch-optimizations were enabled (via -Xbranchless=1).
+(<span class="ln">BZ78482</span>)</dd><dt>#65043</dt><dd>Compiler failed to mangle names of some extern functions declared inside templates, resulting in undefined symbol errors at link time. For example:
+<pre>
+template &lt;typename T&gt;
+    void hoge &lt;T&gt;::foo ()
+    {
+        extern void simplefoo ();
+        simplefoo ();
+    }
+</pre>
+(<span class="ln">BZ77528</span>)</dd><dt>#64915</dt><dd>Fixed an Internal Compiler Error which could happen compiling d64_abi and/or vecreturn struct-returning functions, when exception handling is enabled.
+(<span class="ln">BZ78598</span>)</dd><dt>#64684</dt><dd>Fixed a problem that could cause the compiler to crash when processing GCC-style computed gotos: val = &amp;&amp;label; goto *val
+(<span class="ln">BZ78686</span>)</dd><dt>#64489</dt><dd>Fixed a bug where a struct that must be aligned at more than the stack-alignment (more than 16 bytes) via the __attribute__((aligned(&lt;n&gt;))) mechanism, is used in a nested call (where a struct-returning-function is used as an actual-argument in a call to a function that takes the struct-argument) as in:
+
+<pre>
+  typedef struct ... { ... } __attribute__ ((aligned(64))) more_than_16_byte_aligned_struct;
+  extern more_than_16_byte_aligned_struct bar (void);
+  extern void foo (more_than_16_byte_aligned_struct);
+    ...
+  foo ( bar() );
+    ...
+</pre>
+
+then the location allocated for the result of the struct-returning function (the result of 'bar()', above) was only 16-byte aligned.  This could cause random stack locations (near the temporary location that was allocated for the result of the struct-returning function) to be over-written.
+(<span class="ln">BZ78570</span>)</dd><dt>#64177</dt><dd>Fixed a bug where when multiple division-by-a-constant and/or multiplication-by-a-constant expressions appeared in a single basic block, an Internal Compiler Error could happen if a function call existed between the two expressions, and if the constants were the same (also could happen, but much less likely, when they were different).
+(<span class="ln">BZ78449</span>)</dd><dt>#63929</dt><dd>Fix for a problem that prevented the compiler from accepting code of the following form:
+<pre>
+template &lt;typename T&gt;
+    class Outer
+    {
+    public:
+        template &lt;bool b&gt;
+            class Inner { };
+
+        template &lt;bool b&gt; friend class Inner;
+    };
+
+int main ()
+{
+    Outer &lt;int&gt; o;
+    return 0;
+}
+</pre>
+(<span class="ln">BZ78310</span>)</dd></dl></div>
+  <h4><a name="Linker">Linker - ps3ppuld</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.3716.0)</b></p><p class="history-title">Changes</p><dl class="history"><dt>#62308</dt><dd>Suppress DWARF .debug_info entries for discarded COMDAT functions.
+(<span class="ln">BZ76969</span>)</dd><dt>#62075</dt><dd>Remove the --no-keep-memory command-line option.
+(<span class="ln">BZ77712</span>)</dd><dt>#62075</dt><dd>Reduce memory usage for large output files.
+(<span class="ln">BZ72190</span>)</dd><dt>#60460</dt><dd>Issue a warning message when command-line inputs are treated as scripts because their type could not be determined.
+(<span class="ln">BZ76191</span>)</dd><dt>#59347</dt><dd>Modified FSELF implementation to reflect current specification.
+(<span class="ln">BZ72624</span>)</dd><dt>#59336</dt><dd>Add support for large numbers of sections in output ELF files.
+(<span class="ln">BZ65903</span>, <span class="ln">BZ68320</span>)</dd></dl><p class="history-title">Fixes</p><dl class="history"><dt>#60291</dt><dd>Improve compatibility with GCC -mno-toc mode when dead stripping. In severe cases, this issue could cause failure to correctly relocate branch instructions.
+(<span class="ln">BZ79969</span>)</dd><dt>#58833</dt><dd>Add support for compressed PRX output.
+(<span class="ln">BZ73814</span>)</dd><dt>#58265</dt><dd>Fix a rare failure to de-duplicate objects referenced by both global and local symbols.
+(<span class="ln">BZ67211</span>)</dd><dt>#58252</dt><dd>Make all warning/error messages use the correct number of dashes when referring to command-line switches.
+(<span class="ln">BZ72768</span>)</dd><dt>#56599</dt><dd>Correct a dead-stripping issue that could cause the weak definition for a symbol to be kept even if a global definition was present.
+(<span class="ln">BZ70351</span>)</dd></dl></div>
+  <h4><a name="Archive librarian">Archive librarian - ps3snarl</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.204.0)</b></p><p>No changes since last release</p></div>
+  <h4><a name="Binary utilities">Binary utilities - ps3bin</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.407.0)</b></p><p class="history-title">Changes</p><dl class="history"><dt>#64356</dt><dd>Add support for disabling pipeline analysis output when disassembling code sections by specifying -c / --concise with the disassemble option. This can significantly improve disassemble times.
+(<span class="ln">BZ74109</span>)</dd><dt>#63893</dt><dd>Add support for writing compressed FSELF output by specifying --compress-output along with --oformat=fself.
+(<span class="ln">BZ71308</span>)</dd><dt>#62634</dt><dd>Add functionality to disassemble a region specified by two program address ranges by specifying --disassemble-ranges=0x0000..0x1000 / --disassemble-ranges=0x0000..0x1000,0x2000..0x3000,.....
+</dd><dt>#62634</dt><dd>Add functionality to disassemble function specific symbols by specifying --disassemble-symbol=&lt;symbol name&gt; / --disassemble-symbol=&lt;mangled-symbol-name&gt; -nd.
+</dd></dl></div>
+  <h4><a name="C++ name demangler">C++ name demangler - ps3name</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.86.0)</b></p><p>No changes since last release</p></div>
+  <h4><a name="C++ demangler module">C++ demangler module - ps3demangle</a></h4>
+<div class="release"><p class="release-title"><b>This release (310.1.86.0)</b></p><p>No changes since last release</p></div> </blockquote>
+</div>
+<br>
+<br>
+<!---------------------------------------------------------------------------------------->
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+
+<H3>4. <A name="Installation">Installation</A> <A href="#top" CLASS=back-to-top>back to top</A></H3>
+
+<!---------------------------------------------------------------------------------------->
+
+<P>Before installing this software you must:</P>
+<UL>
+	<LI>
+		Install the&nbsp;Programmer Tool&nbsp;SDK (e.g. zip file PS3_SDK-310_000.zip)
+	</LI>
+	<LI>
+		Install the Programmer Tool Toolchain for Windows (e.g. zip file PS3_Toolchain-Win_411-310_000.zip)
+	</LI>
+</UL>
+<P>If you want to use the Visual Studio Integration, you must:</P>
+<UL>
+	<LI>
+		Install Visual Studio .NET 2005 or 2008
+	</LI>
+	<LI>
+		Install Visual Studio .NET Integration v1.8.6 or later (available as part of ProDG <A HREF="https://ps3.scedev.net/projects/prodg">here</A>).
+	</LI>
+</UL>
+
+<STRONG>Installing</STRONG>
+<P>
+<UL>
+	<LI>
+		The software is installed from a single zip file (e.g. SNCPPUToolchainforPlayStation3v310.1.zip). <BR>
+		The files in this archive should be extracted into the same directory as the other SDK zip files above.
+	</LI>
+</UL>
+
+<p>
+<strong>NOTE:</strong> This release of the toolchain does not rely on environment variables to locate the SDK.  
+</p>
+<p>
+<strong>The tools should be installed into the 'host-win32/sn/bin' folder within the SDK 
+as the default include paths, libraries etc are located relative to the tool executables.</strong>
+</p>
+
+<!---------------------------------------------------------------------------------------->
+
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+<H3>5. <A name="Operating instructions">Operating instructions</A> <A href="#top" CLASS=back-to-top>back to top</A></H3>
+
+<!---------------------------------------------------------------------------------------->
+<OL>
+<LI><A href="#important">Important differences between SNC and GCC</A>
+	<UL>
+		<LI><A href="#link-compatibility">C and C++ link compatibility</A></LI>
+		<LI><A href="#class-layout">C++ class layout compatibility and vtable pointer placement</A></LI>
+		<LI><A href="#include-paths">Include paths</A></LI>
+		<LI><A href="#linking-and-libraries">Linking and libraries</A></LI>
+	</UL>
+</LI>
+<LI><A href="#examples">Examples</A></LI>
+</OL>
+
+<BLOCKQUOTE>
+
+<HR/>
+
+<!---------------------------------------------------------------------------------------->
+
+<H4><STRONG id="important">Differences between SNC and GCC</STRONG></H4>
+
+<P>
+Please see the SNC Migration Guide for more information and advice on porting code from GCC to SNC.
+</P>
+
+<!---------------------------------------------------------------------------------------->
+
+<P ID="link-compatibility"><STRONG>C and C++ link compatibility</STRONG></P>
+<BLOCKQUOTE>
+<P>
+SNC uses the same C++ ABI as GCC (based on the IA64 C++ ABI). C and C++ code built by SNC and GCC may be mixed freely.
+</P>
+
+</BLOCKQUOTE>
+
+<P ID="class-layout"><STRONG>C++ class layout compatibility and vtable pointer placement</STRONG></P>
+<BLOCKQUOTE>
+<P>
+SNC uses the same C++ ABI as GCC (based on the IA64 C++ ABI).  The layouts of classes and vtables produced by the two compilers are identical.
+</P>
+</BLOCKQUOTE>
+
+<!---------------------------------------------------------------------------------------->
+		
+<P id="include-paths"><STRONG>SDK include paths</STRONG></P>
+<BLOCKQUOTE>
+
+<P>
+The default include paths used by SNC are listed below.
+These are set by the compiler driver but can be suppressed using the 
+-nostdinc option.  Where relative paths are used, these are relative to the compiler executables.
+Because of this, it is essential that the toolchain is installed in the SDK.  When correctly 
+installed, the tool executables should be in the "{cell sdk}\host-win32\sn\bin" 
+directory.
+</P>
+<UL>
+<LI>../../../host-win32/sn/ppu/include,
+<LI>../../../host-win32/sn/ppu/include/sn,
+<LI>../../../host-win32/sn/common/include,
+<LI>../../../host-win32/sn/common/include/sn,
+<LI>../../../target/ppu/include,
+<LI>../../../target/common/include,
+<LI>$(SN_PS3_PATH)/ppu/include,
+<LI>$(SN_PS3_PATH)/ppu/include/sn,
+<LI>$(SN_PS3_PATH)/common/include,
+<LI>$(SN_PS3_PATH)/common/include/sn,	
+</UL>
+
+<p>
+The SN_PS3_PATH environment variable is set by the installers for other SN products.  The include directories
+referencing this variable are used to locate additional header files that may be shipped with these products. 
+</p>
+
+
+</BLOCKQUOTE>
+
+<!---------------------------------------------------------------------------------------->
+<P ID="linking-and-libraries"><STRONG>Linking and libraries</STRONG></P>
+<BLOCKQUOTE>
+
+<P>
+Applications compiled with SNC should link with the SN runtime libraries as well 
+as the GCC specific libraries supplied with the SDK.
+</P>
+
+<P>
+The default linker script <STRONG>$(CELL_SDK)/target/ppu/lib/elf64_lv2_prx.sn</STRONG> now contains default settings for library
+search paths, libraries and other run-time components that must be linked into typical applications.
+There are separate settings for linking with or without C++ exceptions support.  The default is to use
+the no-exceptions versions of the libraries and runtime.  To select the exception handling versions, 
+pass the <CODE>-exceptions</CODE> switch to the linker.
+</P>
+
+<P>
+The defaults are specified in the following sections of the link script:
+<UL>
+<LI>LIB_SEARCH_PATHS - library search paths</LI>
+<LI>STANDARD_LIBRARIES - standard libraries</LI>
+<LI>REQUIRED_FILES - essential C and C++ runtime components</LI>
+</UL>
+</P>
+
+<P>
+The default settings should be sufficient for the majority of applications linking against the 
+SDK.  Additional libraries and search paths can be added on the linker command line.
+</P>
+
+<P>The SNC runtime support libraries are:</P>
+<UL>
+<LI>libsn.a (utility and debug support)</LI>
+<LI>libsnc.a (C runtime support)</LI>
+</UL>
+
+</BLOCKQUOTE>
+
+<!---------------------------------------------------------------------------------------->
+<HR/>
+
+<!---------------------------------------------------------------------------------------->
+<H4 ID="examples"><STRONG>Examples</STRONG></H4>
+
+<P>
+SnMathLib is an example C++ math library with both generic and AltiVec implementations.
+</P>
+
+<UL>
+<LI>host-win32\sn\common\include\sn\SnMathLibDef.h and SnMathLibGeneric.h</LI>
+<LI>host-win32\sn\ppu\include\sn\SnMathLibPPU.h</LI>
+</UL>
+
+<!---------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------->
+</BLOCKQUOTE>
+
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+<H3>6. <A name="Limitations and warnings">Limitations and warnings</A> <A href="#top" CLASS=back-to-top>back to top</A></H3>
+
+<!---------------------------------------------------------------------------------------->
+
+<P><B>Limitations:</B></P>
+<UL>
+	<LI>
+	  Please see limitations listed under the individual tools <A href="#change-histories">here</A>.
+	</LI>
+</UL>
+
+<P><B>Warnings:</B></P>
+<UL>
+	<LI>
+		SNC does not support the use of inline asm with GCC style constraints (raw assembly language is supported). 
+		We prefer an intrinsics-based approach for low-level code as this allows for better integration with the optimizers.  
+		Please contact us if you have examples of code which are not supported by the intrinsics.
+	</LI>
+</UL>
+
+<!---------------------------------------------------------------------------------------->
+
+
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+
+<H3>7. <A name="Support">Updates and technical support</A> <A href="#top" class="back-to-top">back to top</A></H3>
+
+<p>Downloads and technical articles are hosted on DevNet:<br>
+<a href="https://ps3.scedev.net/projects#dl_25">https://ps3.scedev.net/projects#dl_25</a></p>
+
+<p>Training videos covering SN Systems tools are also available:<br>
+<a href="https://ps3.scedev.net/docs/sn_videos_mp4/">https://ps3.scedev.net/docs/sn_videos_mp4/</a></p>
+
+<p>Create and manage private support issues here:<br>
+<a href="https://ps3.scedev.net/support/issues/subscribed/me/">https://ps3.scedev.net/support/issues/subscribed/me/</a></p>
+
+<p>Product licensing information is available here:<br>
+<a href="https://ps3.scedev.net/projects/sn_pls/docs/list">https://ps3.scedev.net/projects/sn_pls/docs/list</a></p>
+
+<p class="note"><b>NOTE:</b> Files downloaded from DevNet are governed by the agreements your organization has with Sony Computer Entertainment Inc. and its affiliates.</p>
+
+<p>Product licenses: (Registration and reissue of license files):<br>
+<a href="https://www.snsys.com/Licensing/Online/">https://www.snsys.com/Licensing/Online/</a></p>
+
+<p>To view this page you must login with your SN Systems user name and password. If you have forgotten these details please visit:<br>
+<a href="http://www.snsys.com/Errors/Password/searcher.asp">http://www.snsys.com/Errors/Password/searcher.asp</a></p>
+
+<p>If you have any problems with the SNSYS.COM website please e-mail webmaster@snsys.com.</p>
+
+<!---------------------------------------------------------------------------------------->
+<HR>
+<!---------------------------------------------------------------------------------------->
+
+<DIV CLASS=footer>
+<P><B>Copyright notices</B></P>
+
+<!---------------------------------------------------------------------------------------->
+<P>
+"ProDG" is a registered trademark of SN Systems Limited.<br>
+"PlayStation" is a registered trademark of Sony Computer Entertainment Inc.
+</P>
+<!---------------------------------------------------------------------------------------->
+
+
+
+</DIV>
+<!---------------------------------------------------------------------------------------->
+</BODY>
+</HTML>
+

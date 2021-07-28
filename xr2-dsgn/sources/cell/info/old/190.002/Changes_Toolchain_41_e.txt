@@ -1,0 +1,254 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 190.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The official version of PLAYSTATION(R)3 Programmer Tool Toolchain 190.002
+(based on GCC4.1.1) will be released. 
+
+For more details on the new features of GCC4.1.1, please refer to 
+"Cell OS Lv-2 Toolchain User'sGuide".
+
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 190.002
+- Bugs fixed in Release 190.002
+
+======================================================================
+New Additions and Changes in Release 190.002
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+Fore more details on changes made accordingly to the migration to 
+GCC4.1.1, please make sure to refer to 
+"Cell OS Lv-2 Toolchain User's Guide". 
+
+<PPU/SPU>
+- Code Instrumentation at Link-Time (CIL) will be released.
+  Accordingly, the following files have been added: 
+  Fore more details on CIL, please refer to "Code Instrumentation 
+  at Link-Time (CIL) User's Guide".
+
+  cell/host-linux/ppu/include/cil/cil.h
+  cell/host-linux/spu/include/cil/cil.h
+  cell/host-linux/ppu/lib/libcilppu.a
+  cell/host-linux/spu/lib/libcilspu.a
+  cell/host-linux/ppu/lib/cil/ppu-lv2/libcilrt.a
+  cell/host-linux/spu/lib/cil/spu-lv2/libcilrt.a
+  cell/host-win32/ppu/include/cil/cil.h
+  cell/host-win32/spu/include/cil/cil.h
+  cell/host-win32/ppu/lib/cilppu.lib
+  cell/host-win32/ppu/lib/cilppu.dll
+  cell/host-win32/ppu/lib/cilppu.def
+  cell/host-win32/spu/lib/cilspu.lib
+  cell/host-win32/spu/lib/cilspu.dll
+  cell/host-win32/spu/lib/cilspu.def
+  cell/host-win32/ppu/lib/cil/ppu-lv2/libcilrt.a
+  cell/host-win32/spu/lib/cil/spu-lv2/libcilrt.a
+
+- Since the following commands had been included as the Performance 
+  analyzer tools 180.002 that were provided in a separate 
+  package, they has been deleted from the ToolChain package. 
+
+  cell/host-linux/ppu/bin/ppu-lv2-gprof 
+  cell/host-linux/spu/bin/spu-lv2-gprof 
+  cell/host-win32/ppu/bin/ppu-lv2-gprof.exe
+  cell/host-win32/spu/bin/spu-lv2-gprof.exe
+
+<PPU>
+- In Toolchain 180.002 and before, the compiler option specifications 
+  did not allow the option to disable the exceptional handling 
+  ( -fno-exceptions ) and another option to disable the RTTI 
+  ( -fno-exceptions ) to be specified separately. 
+  They always had to be specified together.
+  From Toolchain 190.002 onwards, the specifications of these compiler
+  options have been changed as follows:
+
+    - Only -fno-exceptions is specified:
+        The exceptional handling will be disabled but the RTTI will be 
+        enabled
+    - Both -fno-exceptions and -fno-rtti are specified:
+        Both the exceptional handling and the RTTI will be disabled
+    - None of them is specified:
+        Both the exceptional handling and the RTTI will be enabled
+
+  (Note)
+    When linking game application programs, an object and a library 
+    that have the same specification of the above option combination 
+    should be used. 
+    When different option combinations coexist, the link will fail or
+    the game application program will behave incorrectly.
+
+----------------------------------------------------------------------
+GDB 
+----------------------------------------------------------------------
+none
+
+======================================================================
+Bugs Fixed in Release 190.002
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+
+[Bugfix in consequence of migrating to GCC4.1.1 from GCC4.0.2]
+
+<PPU/SPU>
+- In the C/C++ Language-Extension Specifications document, the vector 
+  literal that uses () can be used only in the constant expression
+  (including the constant). When other expression such as 
+  (vector signed int)(x) was used, GCC4.0.2 run incorrectly, however 
+  a warning message was not displayed. In GCC4.1.1, the warning message
+  will be displayed.
+
+- In GCC4.0.2, a description such as (vector unsigned int)1 was 
+  recognized as a vector literal, however it was not permitted 
+  by the "C/C++ Language-Extension Specifications". 
+  In GCC4.1.1, a warning message will be displayed in such case.
+
+- The following bug has been fixed.
+  - When a program was compiled with the -MMD option in Windows environment,
+    and the path to the system header was specified using the -I option,
+    a header file name that existed in the path would be contained in the 
+    output .d file.
+
+- The following bug has been fixed.
+  - When a program such as the code of the example was compiled, 
+    the const variable a and b might be placed in the .bss section, 
+    not the .data section.
+
+  Example)
+  const vector unsigned int a = (vector unsigned int)(vector signed int)
+                                {1,2,3,4};
+  const vector float b = (vector float)(vector unsigned int){1,2,3,4};
+
+- The following bug has been fixed.
+  - The optimization of an empty limited loop statement was not sufficient.
+
+- The following bug has been fixed.
+  - When a program such as the code of the example was compiled, a warning
+    message would be output to the console:
+
+    Example)
+    template<typename T>
+    struct A {
+      int f(int y) {
+        return ({ int t=y+1; t; });
+      }
+    };
+
+<PPU>
+- The following bug has been fixed.
+  - When a header file that uses altivec.h was compiled with the "-x c-header"
+    to generate a pre-compiled header, a compilation process of a program 
+    that used the header file might end in error.
+
+- When the following program was compiled, an internal compiler
+  error occurred. This problem has been fixed. 
+
+  typedef struct _st {
+      int iIndex : 24;
+  } st;
+  void f(void)
+  {
+      st *next = ((void *)0);
+      const static int constreg[] = { 0,};
+      next->iIndex = constreg[0];
+  }
+
+- The following bug has been fixed.
+  - When the program that used the __thread specifier was divided and
+    compiled and the resulting object was linked, the following error
+    might occur. 
+
+      Error: R_PPC64_ADDR32 used with TLS symbol A::x
+
+    <Sample program that uses the __thread specifier >
+
+    --- test1.cpp ---
+      class A {
+      public:
+        static __thread int x;
+      };
+      int main() {
+        return A::x;
+      }
+    -----------------
+
+    --- test2.cpp ---
+      class A {
+      public:
+        static __thread int x;
+      };
+      __thread int A::x=1;
+    -----------------
+
+- When PPU intrinsic function __lwbrx or such was used as shown 
+  in the following example, an internal compiler error occurred. 
+  This problem has been fixed.
+
+    #include <stdio.h>
+    #include <ppu_intrinsics.h>
+
+  int main(void)
+  {
+    unsigned int x = 0x01234567;
+    x = __lwbrx(&x);
+    printf("%08x\n", x);
+    return 0;
+  }
+
+<SPU>
+- The following bug has been fixed.
+  - When a program, that included the system header "spu_internals.h",
+    was compiled with the path to the header file set with the -I option,
+    a warning message would be output to the console.
+
+    C:\support>spu-lv2-gcc -Wall -I%SCE_PS3_ROOT%/target/spu/include -c main.cpp
+    C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: specifying
+     vector types with __attribute__ ((mode)) is deprecated
+    C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: use
+    __attribute__ ((vector_size)) instead
+
+- The following bug has been fixed.
+  - When an alignment that exceeded 16 bytes was specified for the text 
+    section within the assembly source of the object to be linked by 
+    using the compiler option -mspurs-job, as shown below, 
+    there was a problem that job_start.o was not linked to the correct 
+    location: 
+
+       .section .text,"ax",@progbits
+       .align 5
+        .globl foo
+        .type  foo, @function  foo:
+            :
+
+[Bugfix after GCC4.1.1beta2]
+
+<PPU/SPU>
+- When the following example was compiled, an internal compiler error
+  occurred. This problem has been fixed.
+
+    int test (const unsigned char *buf) {
+      int a = 0xffff;
+      int b = 0xffff;
+      int k = 100;
+      while (k--) {
+        a += *buf++;
+        b += a;
+      }
+      return (a | b);
+    }
+
+<PPU>
+- Outputting an extra clrldi(rldicl) instruction is now controlled.
+
+<SPU>
+- When a program that uses cellSpursJobGetCacheList and 
+  cellSpursJobGetInputList functions of cell/spurs.h was compiled,
+  an internal compiler error occurred. This problem has been fixed.
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+none

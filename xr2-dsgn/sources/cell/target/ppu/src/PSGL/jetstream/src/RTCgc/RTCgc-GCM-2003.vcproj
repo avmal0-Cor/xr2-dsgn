@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="libPSGLcgc"
+	ProjectGUID="{7E84C7A5-8B6F-43D3-A3E4-C515A459AB10}"
+	RootNamespace="libPSGLcgc">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="PS3 Debug|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\jsbuild\debug"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="4"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-g -Wall -fno-exceptions -fno-rtti -Werror -fno-strict-aliasing -fno-common -xc++"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\include\STL&quot;;&quot;$(SCE_PS3_ROOT)\ppu\include&quot;;&quot;$(ProjectDir)\..\..\include\export&quot;;&quot;$(ProjectDir)\..\..\include&quot;;&quot;$(ProjectDir)\..\..\include\protected&quot;;&quot;$(ProjectDir)\..\..\include\JSGCM&quot;;&quot;$(ProjectDir)\..\..\include\Cell&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__GCC__;JS_PLATFORM_CELL;_JS_USE_JSGCM;JS_DEBUG;JS_REPORT"
+				ExceptionHandling="FALSE"
+				ProgramDataBaseFileName=""
+				SuppressStartupBanner="FALSE"
+				CompileAs="0"
+				ForcedIncludeFiles=""
+				ForcedUsingFiles=""/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=""
+				AdditionalDependencies=""
+				OutputFile="$(ProjectDir)..\..\..\jsbuild\target\ppu\lib\PSGL\RSX\debug\$(ProjectName).a"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-ld&quot; -r -o &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(OutDir)/obj/$(ProjectName)/RtCgc.obj&quot; --whole-archive --no-whole-archive
+del /f /q &quot;$(TargetPath)&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot;  --redefine-sym ._Znwj=.__PSGL___Znwj  --redefine-sym ._Znwjj=.__PSGL___Znwjj  --redefine-sym ._Znaj=.__PSGL___Znaj  --redefine-sym ._Znajj=.__PSGL___Znajj  --redefine-sym ._ZdlPv=.__PSGL___ZdlPv  --redefine-sym ._ZdlPvj=.__PSGL___ZdlPvj  --redefine-sym ._ZdaPv=.__PSGL___ZdaPv  --redefine-sym ._ZdaPvj=.__PSGL___ZdaPvj  --redefine-sym _Znwj=__PSGL___Znwj  --redefine-sym _Znwjj=__PSGL___Znwjj  --redefine-sym _Znaj=__PSGL___Znaj  --redefine-sym _Znajj=__PSGL___Znajj  --redefine-sym _ZdlPv=__PSGL___ZdlPv  --redefine-sym _ZdlPvj=__PSGL___ZdlPvj  --redefine-sym _ZdaPv=__PSGL___ZdaPv  --redefine-sym _ZdaPvj=__PSGL___ZdaPvj  --rename-section .gnu.linkonce.t._Znwj=.gnu.linkonce.t.__PSGL___Znwj  --rename-section .gnu.linkonce.t._Znwjj=.gnu.linkonce.t.__PSGL___Znwjj  --rename-section .gnu.linkonce.t._Znaj=.gnu.linkonce.t.__PSGL___Znaj  --rename-section .gnu.linkonce.t._Znajj=.gnu.linkonce.t.__PSGL___Znajj  --rename-section .gnu.linkonce.t._ZdlPv=.gnu.linkonce.t.__PSGL___ZdlPv  --rename-section .gnu.linkonce.t._ZdlPvj=.gnu.linkonce.t.__PSGL___ZdlPvj  --rename-section .gnu.linkonce.t._ZdaPv=.gnu.linkonce.t.__PSGL___ZdaPv  --rename-section .gnu.linkonce.t._ZdaPvj=.gnu.linkonce.t.__PSGL___ZdaPvj -N __tls_start -N __tls_file_size -N __tls_memory_size &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(TargetPath)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 Opt|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\jsbuild\opt"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="4"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Wall -fno-exceptions -fno-rtti -O3 -Werror -fno-strict-aliasing -fno-common -xc++"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\include\STL&quot;;&quot;$(SCE_PS3_ROOT)\ppu\include&quot;;&quot;$(ProjectDir)\..\..\include\export&quot;;&quot;$(ProjectDir)\..\..\include&quot;;&quot;$(ProjectDir)\..\..\include\protected&quot;;&quot;$(ProjectDir)\..\..\include\JSGCM&quot;;&quot;$(ProjectDir)\..\..\include\Cell&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__GCC__;JS_PLATFORM_CELL;_JS_USE_JSGCM"
+				ExceptionHandling="FALSE"
+				ProgramDataBaseFileName=""
+				SuppressStartupBanner="FALSE"
+				CompileAs="0"
+				ForcedIncludeFiles=""
+				ForcedUsingFiles=""/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=""
+				AdditionalDependencies=""
+				OutputFile="$(ProjectDir)..\..\..\jsbuild\target\ppu\lib\PSGL\RSX\opt\$(ProjectName).a"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-ld&quot; -r -o &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(OutDir)/obj/$(ProjectName)/RtCgc.obj&quot; --whole-archive --no-whole-archive
+del /f /q &quot;$(TargetPath)&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot;  --redefine-sym ._Znwj=.__PSGL___Znwj  --redefine-sym ._Znwjj=.__PSGL___Znwjj  --redefine-sym ._Znaj=.__PSGL___Znaj  --redefine-sym ._Znajj=.__PSGL___Znajj  --redefine-sym ._ZdlPv=.__PSGL___ZdlPv  --redefine-sym ._ZdlPvj=.__PSGL___ZdlPvj  --redefine-sym ._ZdaPv=.__PSGL___ZdaPv  --redefine-sym ._ZdaPvj=.__PSGL___ZdaPvj  --redefine-sym _Znwj=__PSGL___Znwj  --redefine-sym _Znwjj=__PSGL___Znwjj  --redefine-sym _Znaj=__PSGL___Znaj  --redefine-sym _Znajj=__PSGL___Znajj  --redefine-sym _ZdlPv=__PSGL___ZdlPv  --redefine-sym _ZdlPvj=__PSGL___ZdlPvj  --redefine-sym _ZdaPv=__PSGL___ZdaPv  --redefine-sym _ZdaPvj=__PSGL___ZdaPvj  --rename-section .gnu.linkonce.t._Znwj=.gnu.linkonce.t.__PSGL___Znwj  --rename-section .gnu.linkonce.t._Znwjj=.gnu.linkonce.t.__PSGL___Znwjj  --rename-section .gnu.linkonce.t._Znaj=.gnu.linkonce.t.__PSGL___Znaj  --rename-section .gnu.linkonce.t._Znajj=.gnu.linkonce.t.__PSGL___Znajj  --rename-section .gnu.linkonce.t._ZdlPv=.gnu.linkonce.t.__PSGL___ZdlPv  --rename-section .gnu.linkonce.t._ZdlPvj=.gnu.linkonce.t.__PSGL___ZdlPvj  --rename-section .gnu.linkonce.t._ZdaPv=.gnu.linkonce.t.__PSGL___ZdaPv  --rename-section .gnu.linkonce.t._ZdaPvj=.gnu.linkonce.t.__PSGL___ZdaPvj -N __tls_start -N __tls_file_size -N __tls_memory_size &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(TargetPath)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 GcmHud|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\jsbuild\gcmhud"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="4"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-O3 -Wall -fno-exceptions -fno-rtti -Werror -fno-strict-aliasing -fno-common -xc++"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\include\STL&quot;;&quot;$(SCE_PS3_ROOT)\ppu\include&quot;;&quot;$(ProjectDir)\..\..\include\export&quot;;&quot;$(ProjectDir)\..\..\include&quot;;&quot;$(ProjectDir)\..\..\include\protected&quot;;&quot;$(ProjectDir)\..\..\include\JSGCM&quot;;&quot;$(ProjectDir)\..\..\include\Cell&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;_DEBUG;__GCC__;JS_PLATFORM_CELL;_JS_USE_JSGCM;JS_DEBUG;JS_REPORT;GCM_HUD"
+				ExceptionHandling="FALSE"
+				ProgramDataBaseFileName=""
+				SuppressStartupBanner="FALSE"
+				CompileAs="0"
+				ForcedIncludeFiles=""
+				ForcedUsingFiles=""/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=""
+				AdditionalDependencies=""
+				OutputFile="$(ProjectDir)..\..\..\jsbuild\target\ppu\lib\PSGL\RSX\gcmhud\$(ProjectName).a"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-ld&quot; -r -o &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(OutDir)/obj/$(ProjectName)/RtCgc.obj&quot; --whole-archive --no-whole-archive
+del /f /q &quot;$(TargetPath)&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot;  --redefine-sym ._Znwj=.__PSGL___Znwj  --redefine-sym ._Znwjj=.__PSGL___Znwjj  --redefine-sym ._Znaj=.__PSGL___Znaj  --redefine-sym ._Znajj=.__PSGL___Znajj  --redefine-sym ._ZdlPv=.__PSGL___ZdlPv  --redefine-sym ._ZdlPvj=.__PSGL___ZdlPvj  --redefine-sym ._ZdaPv=.__PSGL___ZdaPv  --redefine-sym ._ZdaPvj=.__PSGL___ZdaPvj  --redefine-sym _Znwj=__PSGL___Znwj  --redefine-sym _Znwjj=__PSGL___Znwjj  --redefine-sym _Znaj=__PSGL___Znaj  --redefine-sym _Znajj=__PSGL___Znajj  --redefine-sym _ZdlPv=__PSGL___ZdlPv  --redefine-sym _ZdlPvj=__PSGL___ZdlPvj  --redefine-sym _ZdaPv=__PSGL___ZdaPv  --redefine-sym _ZdaPvj=__PSGL___ZdaPvj  --rename-section .gnu.linkonce.t._Znwj=.gnu.linkonce.t.__PSGL___Znwj  --rename-section .gnu.linkonce.t._Znwjj=.gnu.linkonce.t.__PSGL___Znwjj  --rename-section .gnu.linkonce.t._Znaj=.gnu.linkonce.t.__PSGL___Znaj  --rename-section .gnu.linkonce.t._Znajj=.gnu.linkonce.t.__PSGL___Znajj  --rename-section .gnu.linkonce.t._ZdlPv=.gnu.linkonce.t.__PSGL___ZdlPv  --rename-section .gnu.linkonce.t._ZdlPvj=.gnu.linkonce.t.__PSGL___ZdlPvj  --rename-section .gnu.linkonce.t._ZdaPv=.gnu.linkonce.t.__PSGL___ZdaPv  --rename-section .gnu.linkonce.t._ZdaPvj=.gnu.linkonce.t.__PSGL___ZdaPvj -N __tls_start -N __tls_file_size -N __tls_memory_size &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(TargetPath)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="PS3 Ultra Opt|Win32"
+			OutputDirectory="$(ProjectDir)..\..\..\jsbuild\ultra-opt"
+			IntermediateDirectory="$(OutDir)/obj/$(ProjectName)"
+			ConfigurationType="4"
+			DeleteExtensionsOnClean="*.obj;*.d;*.map;*.lst;*.pch;$(TargetPath)">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Wall -fno-exceptions -fno-rtti -O3 -Werror -fno-strict-aliasing -fno-common -xc++"
+				Optimization="4"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\include\STL&quot;;&quot;$(SCE_PS3_ROOT)\ppu\include&quot;;&quot;$(ProjectDir)\..\..\include\export&quot;;&quot;$(ProjectDir)\..\..\include&quot;;&quot;$(ProjectDir)\..\..\include\protected&quot;;&quot;$(ProjectDir)\..\..\include\JSGCM&quot;;&quot;$(ProjectDir)\..\..\include\Cell&quot;"
+				PreprocessorDefinitions="SN_TARGET_PS3;NDEBUG;__GCC__;JS_PLATFORM_CELL;_JS_USE_JSGCM;JS_NO_ERROR_CHECK"
+				ExceptionHandling="FALSE"
+				ProgramDataBaseFileName=""
+				SuppressStartupBanner="FALSE"
+				CompileAs="0"
+				ForcedIncludeFiles=""
+				ForcedUsingFiles=""/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=""
+				AdditionalDependencies=""
+				OutputFile="$(ProjectDir)..\..\..\jsbuild\target\ppu\lib\PSGL\RSX\ultra-opt\$(ProjectName).a"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-ld&quot; -r -o &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(OutDir)/obj/$(ProjectName)/RtCgc.obj&quot; --whole-archive --no-whole-archive
+del /f /q &quot;$(TargetPath)&quot;
+&quot;$(SCE_PS3_ROOT)/host-win32/ppu/bin/ppu-lv2-objcopy&quot;  --redefine-sym ._Znwj=.__PSGL___Znwj  --redefine-sym ._Znwjj=.__PSGL___Znwjj  --redefine-sym ._Znaj=.__PSGL___Znaj  --redefine-sym ._Znajj=.__PSGL___Znajj  --redefine-sym ._ZdlPv=.__PSGL___ZdlPv  --redefine-sym ._ZdlPvj=.__PSGL___ZdlPvj  --redefine-sym ._ZdaPv=.__PSGL___ZdaPv  --redefine-sym ._ZdaPvj=.__PSGL___ZdaPvj  --redefine-sym _Znwj=__PSGL___Znwj  --redefine-sym _Znwjj=__PSGL___Znwjj  --redefine-sym _Znaj=__PSGL___Znaj  --redefine-sym _Znajj=__PSGL___Znajj  --redefine-sym _ZdlPv=__PSGL___ZdlPv  --redefine-sym _ZdlPvj=__PSGL___ZdlPvj  --redefine-sym _ZdaPv=__PSGL___ZdaPv  --redefine-sym _ZdaPvj=__PSGL___ZdaPvj  --rename-section .gnu.linkonce.t._Znwj=.gnu.linkonce.t.__PSGL___Znwj  --rename-section .gnu.linkonce.t._Znwjj=.gnu.linkonce.t.__PSGL___Znwjj  --rename-section .gnu.linkonce.t._Znaj=.gnu.linkonce.t.__PSGL___Znaj  --rename-section .gnu.linkonce.t._Znajj=.gnu.linkonce.t.__PSGL___Znajj  --rename-section .gnu.linkonce.t._ZdlPv=.gnu.linkonce.t.__PSGL___ZdlPv  --rename-section .gnu.linkonce.t._ZdlPvj=.gnu.linkonce.t.__PSGL___ZdlPvj  --rename-section .gnu.linkonce.t._ZdaPv=.gnu.linkonce.t.__PSGL___ZdaPv  --rename-section .gnu.linkonce.t._ZdaPvj=.gnu.linkonce.t.__PSGL___ZdaPvj -N __tls_start -N __tls_file_size -N __tls_memory_size &quot;$(OutDir)/obj/$(ProjectName)/$(ProjectName).a.tmp&quot; &quot;$(TargetPath)&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath=".\RTCgc.cpp">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

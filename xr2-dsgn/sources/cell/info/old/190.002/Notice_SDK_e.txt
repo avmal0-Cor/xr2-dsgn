@@ -1,0 +1,419 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 190.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+  - FOOT SW
+
+  The wireless feature (Bluetooth(R)/Wireless LAN) can only be used 
+  on Reference Tools DEH-R1040 and later, which have the necessary 
+  authorization tools.
+  The antenna for the wireless feature is bundled with DEH-1040 and 
+  later Reference Tools. Do not attempt to connect DEH-R1030 and 
+  earlier Reference Tools.
+
+- For specifications regarding the Reference Tool, please refer to 
+  info/Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Software(GUI) 
+----------------------------------------------------------------------
+- Since a change has been made so that a process termination wait occurs 
+  when the power off processing is performed in the case of when booted 
+  from the debugger, with some of the samples that do not support 
+  the termination processing of game applications, a timeout occurs 
+  and the system is forcibly terminated with a warning sound when 
+  the power off processing is performed in the case of when booted from 
+  the debugger. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Web Browser Utility>
+- Files cannot be downloaded with the downloader. 
+
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported. 
+
+< Content Search Utility >
+(Added in Version 190.002)
+- When file paths to the still image and animation thumbnails of content 
+  are created using cellSearchPrepareFile() and the thumbnails are changed 
+  from the system software, the changes will not be reflected unless 
+  cellSearchPrepareFile() is executed again. 
+
+<Save Data Utility>
+(Added in Version 190.002)
+- There is a restriction on the string that is displayed next to 
+  the thumbnail of the save data listed using cellSaveDataListDelete(). 
+
+  When a value is specified to dirNamePrefix as shown below, it should 
+  behave correctly, however, it is always displayed as "Title" in SDK 190: 
+
+     - When "*" is specified, "Title" is displayed. 
+     - When other than "*" is specified, "Subtitle" is displayed. 
+
+  This problem will be fixed in the future SDK. 
+
+(Added in Version 190.002)
+- Once the data is deleted using cellSaveDataListDelete(),the button navigation
+   "Enter" at the bottom of the screen will disappear. 
+  This problem will be fixed in the future SDK. 
+
+(Added in Version 190.002)
+- Once the data is copied using cellSaveDataListImport(),the button navigation 
+  "Enter" at the bottom of the screen will disappear. 
+  This problem will be fixed in the future SDK. 
+
+< Video Utility >
+(Added in Version 190.002)
+- After exporting a file using the video utility, if the directory where 
+  the exported file is stored becomes empty, the directory will be deleted. 
+
+< Audio Setting Utility >
+(Added in Version 190.002)
+- cellAudioInGetAvailableDeviceInfo() does not support devices such as 
+  EyeToy USB Camera(for PlayStation 2)/PLAYSTATION(R)Eye. 
+  Those devices will be supported in the future release.
+
+(Added in Version 190.002)
+- In multi microphone mode, an USB device is registered into the system 
+  software by calling cellAudioInRegisterDevice() with the type of the device 
+  specified to its argument.
+  After the registration processing, when the system software detects a device 
+  that has the same type as the registered device, it automatically enables 
+  the device and allocates a device number.
+  Accordingly, when multiple devices that have the same type as the device 
+  that the application uses are connected to PS3, it automatically detects and 
+  enables all the devices. Therefore, it is not possible to enable only 
+  a single device at the moment. A method to support such feature will be 
+  considered in the feature version upgrade.
+
+----------------------------------------------------------------------
+BD Emulator (HDD)
+----------------------------------------------------------------------
+- When using the BD emulator on Windows, dtcfsutil.exe does not operate 
+  on the msys. Please use dtcfsutil.exe on the command prompt. 
+  There is no problem when using the BD emulator on Linux.
+  Also note that the above restriction is applied when formatting the 
+  HDD format for the BD emulator.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+<cellftp>
+- The -u option of the put command does not work correctly.
+
+- Although the option -u of the copy command or the copydir command 
+  is specified, it does not work correctly if the copy destination is HOSTFS.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+- It may fail to make a connection with Internet Explorer 6.0.
+
+- Passive transfer mode (PASV) is currently not supported.
+
+- Rename commands (RNFR/RNTO) are currently not supported.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with 
+  sys_memory_container_create(), an ID that is the same as that of 
+  the memory container that has already been allocated is returned 
+  for a new memory container. When this occurs, the older memory 
+  container may not be destroyed with sys_memory_container_destroy() 
+  and may not be retrieved by the system even at the time of game 
+  process termination. 
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created 
+  with a game process at the same time is less than 10. 
+
+(Added in Version 190.002)
+- There is following limitation.
+
+  - From SDK190 onwards, the PPU program whose stack size is set to 4KB by 
+    SYS_PROCESS_PARAM SDK190 can not be executed because a DSI occurs before
+    the main function is called. 
+
+    From SDK190 onwards, please set the stack size to 8 KB or more.
+
+(Added in Version 190.002)
+- The performance of the lightweight mutex (lwmutex) associated with 
+  the lightweight condition variable (lwcond) may be degraded. 
+
+  This problem occurs when a PPU thread that is executing sys_lwcond_wait() 
+  does not exists when sys_lwcond_signal() is called. This will degrade 
+  the performance of sys_lwmutex_lock()/unlock() that will be taken place 
+  afterworlds.
+  The performance degradation is observed in a sequence where no waiting 
+  thread exists
+  in lwmutex. Specifically, the performance will be degraded as shown below:
+
+  In sys_lwmutex_lock() : Approximately from 0.17 usec to 1.9 usec
+  In sys_lwmutex_unlock() : Approximately from 0.18 usec to 1.0 usec
+
+  The workarounda is as shown below: 
+
+  -  When there is 1 waiter thread 
+     Use sys_lwcond_signal_all
+
+  -  When multiple waiter threads exist 
+     1) Execute sys_lwcond_signal() only when there is a thread waiting
+     2) Use sys_lwcond_signal_to()
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical 
+  character codes when vertical character displacement is performed 
+  internally.
+  To avoid this problem, directly specify the vertical character codes 
+  or use the single-byte () and {}.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- If the following compile options are specified when compiling 
+  a program on the PPU side, many warnings may be output. 
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs 
+  if -fsingle-precision-constant is specified as the compile option. 
+
+- When including the system header, include it outside extern "C" or 
+  extern "C++". 
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C". 
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below: 
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+(Added in Version 190.002)
+<PPU>
+- When starting up a program in which <iostream> is included, the constructor 
+  of iostream will call the new operator. When you want to avoid calling 
+  "new" before executing the main function, do not use iostream.
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+  * If atexit function is used in a C++ global constructor, the behavior 
+    is different from the C++ standard.  All the registered functions are 
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their 
+  instances in ELF, and pass the pointers to them to PRX.  If they are 
+  created in PRX, a DSI (data storage interrupt) may occur in function 
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be 
+  destroyed.  SPU ABI allows accessing memory at negative offsets from 
+  stack pointer up to -2000 as well as positive offsets, but using 
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf 
+  functions, etc.
+
+----------------------------------------------------------------------
+Vector Math
+----------------------------------------------------------------------
+- A function of the Vector Math library, that calculates the square 
+  root or the inverse number of the square root, does not meet the 
+  operation accuracy of the IEEE float type standard.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- When other USB devices are attached/detached, a few video frames 
+  may be lost during the transition.
+
+- Restrictions on the USB Video Class (UVC) Camera
+  1. Does not support a UVC camera that is not compliant with the UVC 
+     even though it is USB 2.0 compliant. 
+  2. Does not support a camera that has no streaming function.
+  3. Does not support a camera that is connected via the USB 1.1 hub.
+  4. Does not support the mirror function. 
+  5. Support only a single camera.
+  6. EyeToy USB Camera(for PlayStation 2) is given a higher priority 
+     when it is connected. 
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- The system echo-canceller does not support USB loudspeaker. 
+  Audio chat may suffer echo feedback or howling if chat outputs 
+  to USB loudspeaker.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- When connecting or disconnecting a device to a USB port of the 
+  machine body, other USB devices already connected may be 
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB 
+  ports of the machine body.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz) 
+  can cause noise
+
+(Added in Version 190.002)
+- When the sound output is set based on the system utility information 
+  using cellMSSystemConfigureSysUtil(), it is not set correctly. 
+  Check the available audio mode using cellAudioOutGetSoundAvailability(), 
+  then change the sound output using cellAudioOutConfigure().
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace 
+  on the program that is linked with libperf.a of SDK170 or before, 
+  it does not work on the target system that is updated to SDK 180 and later.
+  (applicable to libperf/ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs task>
+(Added in Version 190.002)
+- When the SPURS task calls the synchronization object and the following 
+  conditions are met, an undefined behavior may be observed:
+
+  - Conditions for entering into the WAIT state are met.
+  - The context storage space is set but the LS pattern is not included 
+    in the stack area.
+
+  When the above conditions are met, CELL_SPURS_TASK_ERROR_STAT is returned 
+  and the state of the synchronization object is corrupted. As a result, 
+  when this synchronization object is called afterwards the behavior 
+  will be undefined. 
+  Also, if the caller SPURS task calls an interface that enters into 
+  the WAIT state after receiving this error, the behavior will be undefined. 
+
+<libspurs job>
+(Added in Version 190.002)
+- When cellSpursRunJobChain() is executed, more SPUs than the Ready 
+  Count may temporarily execute a job incorrectly. 
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+(Added in Version 190.002)
+- When the tile setting is made for the overlapping areas in RSX(TM) using 
+  cellGcmSetTile(), the address conversion feature of RSX(TM) will not work 
+  correctly. 
+
+  Accordingly, new functions cellGcmSetTileInfo() and cellGcmBindTile() 
+  have been added to check whether the tile areas are overlapping. 
+
+  Please use cellGcmSetTileInfo(), cellGcmBindTile() and cellGcmUnbindTile() 
+  instead of cellGcmSetTile() and cellGcmSetInvalidateTile() for future 
+  development. 
+  cellGcmSetTile() and cellGcmSetInvalidateTile() will be removed in the 
+  future release. 
+
+(Added in Version 190.002)
+- In the 10th argument sFunc of cellGcmSetZcull(), the constants such as 
+  CELL_GCM_ALWAYS and CELL_GCM_LESS were available. However, since this is not 
+  a correct way to call them, it is now treated as an error when they are 
+  used in the new function cellGcmBindZcull(). Instead, 
+  use CELL_GCM_SCULL_SFUNC_ALWAYS and CELL_GCM_SCULL_SFUNC_LESS. 
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- The windows version of libgcm_tool is available only with VisualStudio2005. 
+  Also note that the sample project file is created using VisualStudio2005.
+  Both the library and the sample are not compliant with VisualStudio2003.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- The user defined resource feature is currently handled as 
+  a beta version. 
+  When submitting a master disc using this user defined source feature, 
+  please make sure to switch to libsail that includes the official version. 
+
+(Added in Version 190.002)
+- Only the playback of a MP4 file that is created by the recording utility 
+  and is placed on the built-in HDD is guaranteed. Do not embed a source code 
+  that plays back other types of MP4 file in the application.
+
+----------------------------------------------------------------------
+NP Commerce
+----------------------------------------------------------------------
+- sceNpCommerceGetProductCategoryStart() does not behave correctly when 
+  CELL_SYSUTIL_LANG_CHINESE_T is specified to the 3rd argument "lang_code". 
+
+----------------------------------------------------------------------
+NP Matching
+----------------------------------------------------------------------
+(Added in Version 190.002)
+- The return value of the NP matching API may be more than 0 
+  in a successful case: 
+  This pehenomenon occurs in the following 2 APIs: 
+    - sceNpMatchingGetResult()
+    - sceNpMatchingGetRoomMemberListLocal()
+
+  This problem occurs when other than NULL is set to the argument buf 
+  of the above APIs and the resulting data size obtained when they are 
+  executed is more than 0. 
+

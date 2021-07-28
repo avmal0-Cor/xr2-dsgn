@@ -1,0 +1,71 @@
+/* Copyright (c) 2008 Sony Computer Entertainment Inc./SN Systems Ltd. */
+
+/*
+ * This linker script is intended to enable the SN Systems PS3 linker to be used
+ * as a standalone tool (i.e. without the compiler driver). It provides a useful 
+ * set of default library search paths and the standard set of objects and 
+ * libraries to be linked.
+ */
+LIB_SEARCH_PATHS
+{
+    exceptions :
+    {
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2"
+
+        "$THIS_CELL_SDK/target/ppu/lib"
+
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib/eh"
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib"
+        "$SN_PS3_PATH/ppu/lib/sn"
+    }
+    no_exceptions :
+    {
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/fno-exceptions"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/noeh"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2/fno-exceptions"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2/noeh"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc"
+        "$THIS_CELL_SDK/host-win32/ppu/ppu-lv2/lib"
+
+        "$THIS_CELL_SDK/target/ppu/lib/fno-exceptions"
+        "$THIS_CELL_SDK/target/ppu/lib/noeh"
+        "$THIS_CELL_SDK/target/ppu/lib"
+
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib"
+        "$SN_PS3_PATH/ppu/lib/sn"
+    }
+}
+
+INCLUDE "$THIS_CELL_SDK/target/ppu/lib/prx32.xr"
+
+/*
+ * The set of GCC runtime support object modules.
+ * note that, for compatibility with GCC, "-mprx-with-runtime" is equivalent to
+ * "--oformat=prx --prx-with-runtime".
+ */
+REQUIRED_FILES
+{
+    prx :              /* selected when using --oformat=prx */
+    {
+    }
+    prx_with_runtime : /* selected when using --oformat=prx --prx-with-runtime */
+    {
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/ecrti.o"
+        "$THIS_CELL_SDK/target/ppu/lib/prx_crt.o"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/crtbegin.o"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/crtend.o"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/ecrtn.o"
+    }
+}
+
+/*
+ * Include the following libraries:
+ * -llv2_stub : ppu-lv2 OS interface. Invoked by both the runtime and the standard libraries.
+ * -lsyscall
+ */
+STANDARD_LIBRARIES { -lgcc -llv2_stub -lsyscall }
+
+/* prx32.sn */

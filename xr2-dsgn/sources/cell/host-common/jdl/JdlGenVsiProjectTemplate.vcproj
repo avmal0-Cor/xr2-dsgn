@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+%(IF_NOT_EXIST:VSI_VERSION_NUMBER)\
+%( DEFINE:VSI_VERSION_NUMBER)8.00%(END)\
+%(END)\
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="$(VSI_VERSION_NUMBER)"
+	Name="$(class)_jdl_gen"
+	ProjectGUID="{%(GUIDHASH)$(class)_jdl_gen%(END)}"%(IF_EQUAL:VSI_VERSION_NUMBER:9.00)
+	TargetFrameworkVersion="196613"%(END)>
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+%(IF_NOT_EQUAL:VSI_VERSION_NUMBER:7.10)\
+	<ToolFiles>
+	</ToolFiles>
+%(END)\
+	<Configurations>
+		<Configuration
+			Name="PS3 Debug|Win32"
+			IntermediateDirectory="PS3_PPU_Debug"
+			ConfigurationType="0">
+			<Tool
+				Name="VCNMakeTool"
+				%(WINDOWS_PATH)BuildCommandLine="cd &quot;$($)(ProjectDir)&quot;&#x0D;&#x0A;jdl $(_ExtraJdlArguments_) &quot;$(build2JdlPath)$(class).jdl&quot;"%(END)
+				%(WINDOWS_PATH)ReBuildCommandLine="cd &quot;$($)(ProjectDir)&quot;&#x0D;&#x0A;jdl $(_ExtraJdlArguments_) &quot;$(build2JdlPath)$(class).jdl&quot;"%(END)
+				CleanCommandLine="cd ."/>
+		</Configuration>
+		<Configuration
+			Name="PS3 Release|Win32"
+			IntermediateDirectory="PS3_PPU_Release"
+			ConfigurationType="0">
+			<Tool
+				Name="VCNMakeTool"
+				%(WINDOWS_PATH)BuildCommandLine="cd &quot;$($)(ProjectDir)&quot;&#x0D;&#x0A;jdl $(_ExtraJdlArguments_) &quot;$(build2JdlPath)$(class).jdl&quot;"%(END)
+				%(WINDOWS_PATH)ReBuildCommandLine="cd &quot;$($)(ProjectDir)&quot;&#x0D;&#x0A;jdl $(_ExtraJdlArguments_) &quot;$(build2JdlPath)$(class).jdl&quot;"%(END)
+				CleanCommandLine="cd ."/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			%(WINDOWS_PATH)RelativePath="$(build2JdlPath)$(class).jdl"%(END)>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

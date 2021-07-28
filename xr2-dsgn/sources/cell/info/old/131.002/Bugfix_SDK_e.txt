@@ -1,0 +1,299 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 131.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 131.002
+======================================================================
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Save Data Utility>
+- When a save data for "PS3" was being copied from an external 
+  storage with the lock on to HDD, the process could fail. 
+  This problem has been fixed.
+
+- In samples/sysutil/savedata, when multiple items matched as a 
+  search result of a prefix to be specified for cellSaveDataFixedLoad(),
+  it entered into an infinite loop. This problem has been fixed.
+
+- In samples/sysutil/savedata sample, a character string specified to 
+  detail has been changed.
+
+- In samples/sysutil/savedata sample, there was a bug in the log that 
+  executes printf. This problem has been fixed.
+
+<System Cache Utility>
+- In the case where a game was started from the debugger, the unmounting
+  process of the system cache area was not performed when the game was 
+  terminated and the power was turned off. This problem has been fixed.
+
+<Disc Boot Game Utility>
+- When the Save Data Utility and Game Data Utility were called with a 
+  disc inserted, a disc insertion event was notified. This problem has 
+  been fixed.
+
+<Video Configuration Utility>
+- sysutil/video/resolution sample was unable to be build in the ProDG 
+  environment. This problem has been fixed.
+
+----------------------------------------------------------------------
+Entire NP
+----------------------------------------------------------------------
+- In SceNpId structures indicating the same NP account, the content of
+  opt handled by NP Basic Utility, NP Manager Utility, NP Matching 
+  Utility and NP Signaling Utility, and the one handled by NP Score 
+  Ranking Utility differed.
+
+  Consequently, when the SceNpId structure obtained by NP Score 
+  Ranking Utility was passed as an argument of NP Basic Utility, NP 
+  Manager Utility, NP Matching Utility, NP Signaling Utility, an error 
+  could occur.
+
+  Also, when the SceNpId structure obtained by NP Score Ranking 
+  Utility and the one obtained by  NP Basic Utility, NP Manager 
+  Utility, NP Matching Utility, NP Signaling Utility were compared, 
+  SCE_NP_UTIL_ERROR_NOT_MATCH was returned although the same account 
+  was indicated.
+
+  These problems have been fixed. No action is required by the 
+  application side.
+
+<NP Basic Utility>
+- When sceNpBasicRegisterHandler() was called at a specific timing, 
+  it was unable to obtain the presence of an offline friend. 
+  This problem has been fixed.
+
+<NP Matching Utility>
+- If the LAN cable was pulled out at a specific timing (before 
+  the completion event of requests from sceNpMatchingSearchJoinRoomGUI() 
+  and sceNpMatchingCreateRoomGUI() was notified) while the NP Matching Utility 
+  was handling a process to join a room, and then the matching context was 
+  deleted by sceNpMatchingDestroyCtx(), the system software could hang up. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- When the DNS cache was used up, the library stopped. This problem 
+  has been fixed.
+
+----------------------------------------------------------------------
+libdbgfont
+----------------------------------------------------------------------
+- In libdbgfont.a for PSGL, when the rendering resolution and the 
+  output resolution of an application differed, libdbgfont was unable
+  to render with a correct resolution. This problem has been fixed.
+
+- In libdbgfont.a for PSGL and libgcm, when the buffer size was an 
+  abnormal value(such as 0 or UINT_MAX), an error handling was not 
+  performed correctly. This problem has been fixed.
+
+- In libdbgfont.a for PSGL and libgcm, when a NULL character was
+  assigned to cellDbgFontPrintf(), cellDbgFontVprintf(), 
+  cellDbgFontConsolePuts(),  cellDbgFontConsolePrintf() and  
+  cellDbgFontConsoleVprintf(), an exception error occurred. This 
+  problem has been fixed.
+
+- In simple_console_gcm sample, even when the sample path was 
+  specified by "$(CELL_SAMPLE_DIR)", it referred to fwgcm sample 
+  specified by "$(CELL_SDK)", so that the sample could not be built 
+  in a Linux environment. This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- A bug described in the Technical Note 200611-01(Bug relating to
+  cellGcmMapMainMemory() ) has been fixed.
+  Refer to the following Technical Note 200611-01:
+  https://ps3.scedev.net/technotes/view/363
+
+- When cellSysmoduleUnloadModule(CELL_SYSMODULE_GCM_SYS) is executed, 
+  a termination process for an interrupt thread and RSX(TM) are now 
+  conducted. Accordingly, DSI and ISI that could be observed when the 
+  game application was terminated will no longer occur.
+
+- The following problem has been fixed.
+
+  - Even if cellGcmSetSurface() was executed after specifying 
+    CELL_GCM_LOCATION_MAIN for the member depthLocation of the structure 
+    CellGcmSurface, the behavior was same as that of when 
+    CELL_GCM_LOCATION_LOCAL was specified. 
+
+  Accordingly, when CELL_GCM_LOCATION_MAIN is specified, a depth buffer 
+  can be now allocated to the main memory.
+
+- In gcm/Dice sample, FWGCMCamControlApplication::onInit() was not called.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- 16 bit texture was converted into 32 bit texture within the library.
+  This has been changed so that 16 bit texture is used as is 
+  without conversion.
+
+- When the memory is allocated twice within the library using 
+  the value specified by the argument of glBufferData() "size", 
+  the memory  allocated later was freed in the next frame.
+  This has been fixed so that the memory fragmentation is resolved.
+
+- Although an incorrect value was passed to the argument of 
+  cgGetString() "sname", CG_INVALID_ENUMERANT_ERROR was not returned.
+  This problem has been fixed.
+
+- When an array of a structure was used in a shader program, 
+  cgnv2elf set unnecessary default data. This problem has been fixed.
+
+- When cgGetNamedParameter() was executed, an assertion occurred. 
+  This problem has been fixed.
+
+- When cgnv2elf was executed, it crashed. 
+  This problem has been fixed.
+
+- When a parameter with not semantics was passed to cgGetParameterSemantic(), 
+  a NULL pointer was returned. This problem has been fixed 
+  so that an empty character string is returned.
+
+- When a sample program was built using PSGL HUD, it hung up or crashed. 
+  This problem has been fixed.
+
+- When "w" key was pressed while the "Call View" menu of the PSGL HUD library 
+  was being displayed, a DSI occurred. 
+  This problem has been fixed.
+
+- In the following sample program, spu_add() is now used to add 
+  vec_uint4 types.
+  samples/graphics/SpecialFeatures/VideoTexturingSPU/spu.c 
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<PPU>
+- In ppu/include/bits/exp2f4.h and ppu/include/bits/logbf4.h, there 
+  was an error in the vector literal description. This problem has been 
+  fixed.
+
+- ppu/include/alloca.h and ppu/include/stddef.h have been modified so 
+  that it now supports the SN Systems' compiler.
+
+- In ppu/include/fastmath.h, a macro was defined duplicatedly. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following samples did not work correctly. This problem has been 
+  fixed.
+  - samples/lv2/cond_var
+  - samples/lv2/raw_spu_printf
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libjpgdec>
+- When an error stream that was shorter than the actual data length was
+  split-input using a callback in a SPU decode process, the following 
+  problem occurred. This problem has been fixed.
+
+  When strmParam.strmSize=0 or strmParam.strmPtr=NULL was set within a 
+  callback function, it hung up with cellJpgDecExtReadHeader() or 
+  cellJpgDecExtDecodeData().
+
+<libvdec>
+- The following problem has been fixed.
+
+  - A problem occurred when calling cellVdecClose() (only with MPEG-2 video). 
+    Details: 
+    If cellVdecClose() was called just after calling cellVdecDecodeAu(), 
+    cellVdecStartSeq(), or cellVdecEndSeq(), the call could stop in 
+    cellVdecClose() and could not return in some rare cases. 
+    In order to avoid this problem, please call cellVdecEndSeq() before 
+    calling cellVdecClose() so that the SEQDONE callback is received 
+    for sure before calling cellVdecClose(). 
+
+- When AVC(CELL_VDEC_CODEC_TYPE_AVC) was selected as a CODEC type at
+  the time of cellVdecQueryAttr() call, the value of cmdDepth obtained
+  was incremented with 1(+1). This problem has been fixed.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- In streaming/simple_player sample, the following items have been 
+  fixed.
+
+  - libsail no longer makes use of 2ch mixdown that uses libmixer
+    (to support 5.1/7.1ch).
+  - Even when calls of cellSailSoundAdapterGetFrame() and  
+    cellSailGraphicsAdapterGetFrame() ended in error, it referred to tag.
+    This problem has been fixed.
+  - An unnecessary path was contained in the Makefile. This has been 
+    deleted.
+  - When a file with an extension .pam is searched, it now determines 
+    whether it is a directory or a file.
+
+----------------------------------------------------------------------
+libaudio
+----------------------------------------------------------------------
+- In sound/audio/playaudio and sound/audio/play2nd samples, a 
+  termination process is now performed for each library, for example,
+  cellGcmFinish() is called.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- In sound/mixer/check8ch, sound/mixer/chstrip, sound/mixer/ssplayer 
+  and sound/mixer/surbus, a termination process is now performed for 
+  each library, for example, cellGcmFinish() is called.
+
+---------------------------------------------------------------------
+libsynth2
+----------------------------------------------------------------------
+- In sound/synth2/whole sample, a termination process is now performed 
+  for each library, for example, cellGcmFinish() is called.
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- In sound/snd3/playsmf and sound/snd3/runhorse samples, a termination 
+  process is now performed for each library, for example, 
+  cellGcmFinish() is called.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- The EyeToy USB Camera (for PlayStation 2) LED was turned off 
+  when it's opened first time.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- The range of microphone sensitivity setting by the system 
+  configuration dialog was narrow.  
+  The mapping of sensitivity 1,2,3,4,5 has been changed.
+
+- There was a case that the microphone is closed when user operates 
+  the system configuration dialog "Audio Device Settings" while 
+  the application has opened and is using the microphone.
+  When microphone device is switched by the menu, the application 
+  receives DETACH / ATTACH message.  This bug appears when 
+  application takes time (such as 500msec) after the ATTACH message 
+  until it calls open function. This bug has been fixed.
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USB driver>
+- When cellUsbdRegisterLdd() and cellUsbdUnregisterLdd() were 
+  repeatedly called for a single LDD, it could access an incorrect 
+  memory. This problem has been fixed.
+
+----------------------------------------------------------------------
+samples/simulation/PhysicsEffects Sample
+----------------------------------------------------------------------
+- A sample build could fail. This problem has been fixed.

@@ -1,0 +1,63 @@
+# SCE CONFIDENTIAL
+# PlayStation(R)3 Programmer Tool Runtime Library 310.001
+#                 Copyright (C) 2007 Sony Computer Entertainment Inc.
+#                                                All Rights Reserved.
+
+# target filenames
+TARGET	:= lib/host-win32/libcgb.a
+
+OBJS_DIR := objs-msys
+
+# source filenames
+SRCS := cgb.cpp
+
+INCL = \
+		
+	../../../../sdk/host-win32/Cg/include \
+    ../../../../host-win32/Cg/include \
+
+	include \
+	$(CELL_SDK)/host-win32/Cg/include
+
+INCLOPTS	= $(addprefix -I,$(INCL))
+
+
+# C compiler flags
+CFLAGS := $(INCLOPTS) -Wall -g
+
+#platform specific flags
+CFLAGS += -DWIN32
+
+# C++ compiler flags
+CXXFLAGS := $(CFLAGS) -fno-exceptions
+# Platform compiler flags
+PLATFORM_CFLAGS :=
+
+# compiler
+CC := gcc
+AR := ar
+
+#defines
+CPP_OBJS := $(patsubst %.cpp, $(OBJS_DIR)/%.o, $(SRCS))
+OBJS := $(patsubst %.c, $(OBJS_DIR)/%.o, $(CPP_OBJS))
+
+# rules
+
+all: $(TARGET)
+
+clean:
+	rm -f $(TARGET) $(OBJS)
+
+$(TARGET): $(OBJS)
+	mkdir -p lib/host-win32
+	$(AR) rus $@ $(OBJS)
+
+$(OBJS_DIR)/%.o: %.c
+	@mkdir -p $(dir $(@))
+	$(CC) $(PLATFORM_CFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $(@))
+	$(CC) $(PLATFORM_CFLAGS) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean

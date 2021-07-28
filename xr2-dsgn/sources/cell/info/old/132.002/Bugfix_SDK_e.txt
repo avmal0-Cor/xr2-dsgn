@@ -1,0 +1,28 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 132.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 132.002 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 132.002
+======================================================================
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+<libpad>
+- With cellPadGetData(), some of the button information of a controller 
+  that was made by a third party was not obtained in some rare cases. 
+  This problem has been fixed. 
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- Even if the NP score ranking transaction context that was used with 
+  sceNpScoreRecordScoreAsync() was destroyed with 
+  sceNpScoreDestroyTransactionCtx(), the internal thread 
+  was not retrieved and leaked. This problem has been fixed. 
+

@@ -1,0 +1,108 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 181.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 181.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 181.001
+======================================================================
+----------------------------------------------------------------------
+System Software(GUI) 
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - Although the system software display setting is set to "Full" 
+    through [Display Settings] -> [RGB Full Range(HDMI)] -> [Full], 
+    it is displayed as [Limited]. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<On-Screen Keyboard Utility>
+- The following problem has been fixed.
+
+  - From SDK180 onward, the specifications have been changed 
+    such that the use of "Numeric" and the "Full-width Numeric" 
+    on the full keyboard panel has been removed but the "Numeric" 
+    and the "Full-width Numeric" on the numeric keypad are used instead. 
+    Switching to "Japanese" under this condition causes a problem.
+    Due to this bug, when a user selects the input mode of "Numeric" and 
+    "Full-width Numeric" on the full keyboard then the "Japanese" input mode, 
+    it becomes unavailable. 
+
+    "Japanese", "Numeric" and "Full-width Numeric" are displayed 
+    as an input mode selection with the full keyboard only 
+    when CELL_OSKDIALOG_PANELMODE_JAPANESE and CELL_OSKDIALOG_PANELMODE_NUMERAL
+     or CELL_OSKDIALOG_PANELMODE_NUMERAL_FULL_WIDTH are specified to 
+    "allowOskPanelFlg" member of "dialogParam"argument of 
+    cellOskDialogLoadAsync() function at the same time. 
+
+    When CELL_OSKDIALOG_PANELMODE_DEFAULT is specified, "Numeric" and 
+    "Full-width Numeric" are not displayed as an input mode, so this problem 
+    does not occur. 
+    Note that this problem does not happen even when transiting as shown 
+    above with the numeric keypad and also when transiting other than as 
+    shown above with the full keyboard panel.
+
+<Web Browser Utility>
+- The following problem has been fixed.
+
+  - When cellWebBrowserInitialize() is repeatedly called, an error 
+    (CELL_SYSUTIL_ERROR_CALLBACK_DISPATCHER_TABLE_FULL) may be returned.
+
+    Note that when a funtion of the Web Browser utility is called ignoring 
+    this error, the behavior of the function will be indeterminate
+    (it may hang up depending on the circumstances). 
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - In libmixer of SDK180.002, the sound volume cannot be adjusted 
+    for 6ch and 8ch. It is adjustable for other channel strips.
+    Note that this problem does not occur if you are using SDK 170 or before. 
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - A DSI exception occurs when the unmapped page is accessed or 
+    when the page access right is violated. 
+    As the result, the r14 and r15 register values of PPU are corrupted. 
+
+- The following problem has been fixed.
+
+  - The r14 and r15 register values of the PPU thread, that has stopped 
+    because it hit the hardware break point, will be corrupted. 
+    As a result, an expected variable value may not be able to be obtained 
+    from the debugger.
+    Also note that when the game application is restarted under such 
+    condition, the r14, r15 register values are still corrupted, 
+    so it may not work correctly.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - When a file is read from the mount point SYS_DEV_HDD0, a DSI exception 
+    may occur within the kernel very occasionally.
+
+    Note that this problem may occur in the following functions of libfs:
+
+    - cellFsRead()
+    - cellFsAioRead()
+    - cellFsReaddir()
+    - Streaming-enabled API
+      (fread(), read(), readdir() and such that use libfs internally are 
+       also applicable)
+
+    Also note that this problem only occur with the system software 
+    version 1.80(SDK 180.002).
+

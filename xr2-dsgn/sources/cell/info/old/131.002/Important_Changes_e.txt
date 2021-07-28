@@ -1,0 +1,407 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 System Software (GUI)
+----------------------------------------------------------------------
+<Specification Changes>
+- The priority of the resolution change that is performed at the time of
+  game boot-up has been changed as follows:  
+     Old) 1080p > 720p > 1080i > SD resolution 
+     New) 1080p > 1080i > 720p > SD resolution
+
+- The specifications of the display when the system software is booted
+  have been changed.
+  - When the system software is booted under the conditions that multiple
+    users are registered and no automatic login user exists,
+    the "login screen" will be displayed.
+  - When the system software is booted under the conditions that only
+    a single user is registered or no automatic login user is registered,
+    the Game Data Utility icon will be focused.
+
+----------------------------------------------------------------------
+2 System Utilities (libsysutil)
+----------------------------------------------------------------------
+Save Data Utility
+=================
+<Sample Change (samples/sysutil/savedata)>
+- SYS_PROCESS_PARAM() has been added. 
+
+----------------------------------------------------------------------
+3 Network
+----------------------------------------------------------------------
+General
+=======
+<Specification Change>
+- As the preparation for using the UPnP feature from more than one 
+  PLAYSTATION(R)3 that are connected to the same NAT router, 15 TCP/UDP
+  port numbers (49152-49166) have been reserved by the system. 
+
+----------------------------------------------------------------------
+4 Cell OS Lv-2
+----------------------------------------------------------------------
+<New Feature>
+- Function for sending a signal to a particular PPU thread that is 
+  waiting with the conditional variable, sys_cond_signal_to(),
+  has been added to cell/target/ppu/include/sys/synchronization.h. 
+
+<Sample Change (samples/lv2)>
+- Changes have been made so as to explicitly specify the priority and
+  stack size of the primary PPU thread. 
+
+----------------------------------------------------------------------
+5 File System
+----------------------------------------------------------------------
+<Sample Changes>
+- With the following samples, SYS_PROCESS_PARAM(1001,0x10000) 
+  has been added:  
+    samples/libfs/discfs/aio 
+    samples/libfs/discfs/simple 
+    samples/libfs/general/aio 
+    samples/libfs/general/simple 
+    samples/libfs/general/stream
+
+----------------------------------------------------------------------
+6 SPU Runtime
+----------------------------------------------------------------------
+libspurs
+========
+<Sample Changes (samples/spu_library/libspurs/advanced/task_sort)>
+- Data prefetching feature has been added. 
+
+- A change has been made so as to write the data sorting result 
+  by using List DMA. 
+
+- A feature of extracting only the part for which data sorting 
+  has been performed and writing that result has been added. 
+
+----------------------------------------------------------------------
+7 HID
+----------------------------------------------------------------------
+libpad
+======
+<New Features>
+- Functions for performing GUI screen operation in the save data utility
+  etc. with the controller that is handled by the driver that is unique 
+  to the game title (LDD controller) have been added.  
+    cellPadLddRegisterController()    Register LDD controller 
+    cellPadLddDataInsert()           Notify system of button data 
+    cellPadLddUnregisterController()  Unregister LDD controller
+
+----------------------------------------------------------------------
+8 libgcm
+----------------------------------------------------------------------
+<New Features>
+- The following functions have been added:   
+    cellGcmSortRemapEaIoAddress() 
+    cellGcmMapEaIoAddress() 
+    cellGcmUnmapIoAddress() 
+    cellGcmUnmapEaIoAddress() 
+    cellGcmSetDrawInlineArray() 
+    cellGcmSetDrawInlineIndexArray32() 
+    cellGcmSetDrawInlineIndexArray16() 
+    cellGcmSetFogMode() 
+    cellGcmSetFogParams() 
+    cellGcmGetLastSecondVTime()
+
+- The following constant macros have been added to the blend equation 
+  that is specified with the argument color of cellGcmSetBlendEquation():
+    CELL_GCM_FUNC_REVERSE_SUBTRACT_SIGNED 
+    CELL_GCM_FUNC_FUNC_ADD_SIGNED 
+    CELL_GCM_FUNC_REVERSE_ADD_SIGNED
+
+- The following constant macros have been added to the fog mode 
+  that is specified with the argument mode of cellGcmSetFogMode():  
+    CELL_GCM_FOG_MODE_LINEAR 
+    CELL_GCM_FOG_MODE_EXP 
+    CELL_GCM_FOG_MODE_EXP2 
+    CELL_GCM_FOG_MODE_EXP_ABS
+    CELL_GCM_FOG_MODE_EXP2_ABS 
+    CELL_GCM_FOG_MODE_LINEAR_ABS
+
+<Specification Change>
+- With cellGcmMapMainMemory(), a change has been made so as to return 
+  the error code CELL_GCM_ERROR_NO_IO_PAGE_TABLE when there is no free 
+  IO page table entry. 
+
+<Sample Changes (samples/gcm)>
+- With the samples of samples/gcm, the following changes have been made:
+  - Changes have been made so as to register a callback with atexit() 
+    and perform flip termination and RSX(R) termination at the time of 
+    process termination. 
+  - SYS_PROCESS_PARAM() has been added. 
+
+- With samples/gcm/Human, the sample that was divided into 
+  four (vertex lighting sample, fragment lighting sample, 
+  normal map lighting sample, and sample that demonstrates how to display
+  the three drawing results at the same time) has been integrated into one. 
+
+- With the samples/gcm/common utility, the following functions for setting
+  the FP16 surface to display buffer have been added:  
+    cellGcmUtilEnableFP16Surface() 
+    cellGcmInitDisplay() 
+    cellGcmUtilResetDisplayBuffer() 
+  The following shader files have been added: 
+    samples/gcm/common/quad_clear_fpshader.cg 
+    samples/gcm/common/quad_clear_vpshader.cg
+
+----------------------------------------------------------------------
+9 libgcm_pm
+----------------------------------------------------------------------
+<New Features>
+- Measurement target events to be set with cellGcmSetPerfMonEvent() 
+  have been added:  
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_TESTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_TESTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_REJECTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_REJECTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_STENCIL_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_STENCIL_CULLED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_ACCEPTED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_Z_TRIVIALLY_ACCEPTED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NOT_CULLED_BUT_FAILS_ZTEST_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NOT_CULLED_BUT_FAILS_ZTEST_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_DEPTH_BOUNDS_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_DEPTH_BOUNDS_CULLED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NEAR_FAR_CLIPPED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_NEAR_FAR_CLIPPED_2 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_CULLED_1 
+    CELL_GCM_PM_GCLK_ZCULL_TILES_TOTAL_CULLED_2 
+ 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET1_MISS_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET1_REQUEST_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET2_MISS_COUNT 
+    CELL_GCM_PM_SCLK_L2_TEXTURE_CACHE_SET2_REQUEST_COUNT 
+ 
+    CELL_GCM_PM_MCLK_FB_RW_COUNT1 
+    CELL_GCM_PM_MCLK_FB_RW_COUNT2 
+    CELL_GCM_PM_MCLK_COMPRESSED_FAST_CLEAR 
+    CELL_GCM_PM_MCLK_EXPANDED_FAST_CLEAR
+
+----------------------------------------------------------------------
+10 libresc
+----------------------------------------------------------------------
+<New Features>
+- Interlace filter (anti-flicker) feature has been added.  
+  According to this, the member interlaceMode of the structure 
+  CellRescInitConfig has been added, and cellRescCreateInterlaceTable()
+  has been added. 
+
+- Functions for setting and getting the register count of the fragment 
+  shader that is used when changing the resolution have been added.  
+    cellRescSetRegisterCount() 
+    cellRescGetRegisterCount()
+
+- A feature of adjusting the difference in overscan rates for each 
+  TV or SD/HD mode has been added.  
+    cellRescAdjustAspectRatio()
+
+- CELL_RESC_PAL_60_INTERPOLATE_DROP_FLEXIBLE has been added to the frame 
+  rate conversion mode which is of when converting PAL and is specified 
+  with CellRescInitConfig.palTemporalMode.  
+  According to this, cellRescSetPalInterpolateDropFlexRatio() 
+  has been added. 
+
+<Specification Change>
+- With cellRescGcmSurface2RescSrc(), a change has been made so that 
+  the values of width and height are doubled before setting the value of
+  the structure CellRescSrc, when the member antialiase of the structure
+  CellGcmSurface that is specified with a pointer with the argument 
+  gcmSurface is set.  
+  When an application that is built with SDK before SDK131 is executed 
+  in the environment of SDK131, the values of width and height are set 
+  to the structure CellRescSrc as they are, as before. 
+
+----------------------------------------------------------------------
+11 PSGL
+----------------------------------------------------------------------
+<New Features>
+- GL_BGRA can be specified to internalFormat argument of 
+  glTextureReferenceSCE().
+
+- How much of main memory is consumed by PSGL can be checked through 
+  "Memory View" of PSGL HUD Library.
+
+<Specification Changes>
+- With cell/samples/graphics/Advanced/ReflectAndRefract,
+   a change has been made so as to use terraincubemap.dds. 
+  Therefore, the following files have been deleted:  
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negx_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negy_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_negz_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posx_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posy_0001.png
+    cell/sample_data/graphics/images/ReflectAndRefract/Terrain_posz_0001.png
+
+----------------------------------------------------------------------
+12 Sound Related
+----------------------------------------------------------------------
+libaudio
+========
+<Sample Changes (samples/sound/audio)>
+- With the samples playaudio and play2nd, the following changes 
+  have been made: 
+  - A change has been made so as to perform the termination processing
+    of each library, such as calling cellGcmFinish() at the time of
+    termination. 
+  - SYS_PROCESS_PARAM() has been added. 
+  - A change has been made so as to output the value of an error code
+    in hexadecimal number when an error occurs. 
+  - A change has been made so that the external sound file can be read
+    also from disc media. 
+
+- With the sample play2nd, it has become possible to open the system 
+  setting dialog from the sample program. 
+
+libmixer
+========
+<Sample Changes (samples/sound/mixer)>
+- With the samples check8ch, chstrip, ssplayer, and surbus, the following
+  changes have been made: 
+  - A change has been made so as to terminate the application by pressing
+    the PS button (ANALOG button) of the controller for a long time. 
+  - A change has been made so as to perform the termination processing
+    of each library, such as calling cellGcmFinish() at the time of 
+    termination. 
+  - SYS_PROCESS_PARAM() has been added. 
+  - A change has been made so as to output the value of an error code 
+    in hexadecimal number when an error occurs. 
+
+- With the sample ssplayer, a change has been made so that the external
+  sound file can be read also from disc media. 
+
+libsynth2
+=========
+<Sample Changes (samples/sound/synth2/whole)>
+- A change has been made so as to terminate the application by pressing
+  the PS button (ANALOG button) of the controller for a long time. 
+
+- A change has been made so as to perform the termination processing 
+  of each library, such as calling cellGcmFinish() at the time 
+  of termination. 
+
+- SYS_PROCESS_PARAM() has been added. 
+
+- A change has been made so as to output the value of an error code 
+  in hexadecimal number when an error occurs. 
+
+- A change has been made so that the external sound file can be read 
+  also from disc media. 
+
+libsnd3
+=======
+<Sample Changes (samples/sound/snd3)>
+- A change has been made so as to terminate the application by pressing
+  the PS button (ANALOG button) of the controller for a long time. 
+
+- A change has been made so as to perform the termination processing 
+  of each library, such as calling cellGcmFinish() at the time 
+  of termination. 
+
+- SYS_PROCESS_PARAM() has been added. 
+
+- A change has been made so as to output the value of an error code 
+  in hexadecimal number when an error occurs. 
+
+- A change has been made so that the external sound file can be read 
+  also from disc media. 
+
+----------------------------------------------------------------------
+13 codec
+----------------------------------------------------------------------
+libpamf
+=======
+<Sample Change (samples/codec/pamf_dmux)>
+- SYS_PROCESS_PARAM() has been added. 
+
+libsail
+=======
+<Sample Changes (samples/streaming/simple_player)>
+- SYS_PROCESS_PARAM() has been added. 
+
+- The contents of simple_player.h have been moved to simple_player.cpp,
+  and simple_player.h has been deleted. 
+
+- The code has been changed to a code that does not use 
+  cellGcmSetWaitLabel(). With the macro #ifdef, it is possible to switch
+  to the conventional cellGcmSetWaitLabel() code. 
+
+- A change has been made so that it can be switched from LPCM 
+  to Dolby(TM) Digital interactive encoding by using the macro #ifdef. 
+
+----------------------------------------------------------------------
+14 SDK File Addition due to the GCC Specification 
+----------------------------------------------------------------------
+<Change>
+- With ToolChain 131 GCC, SN Systems compilers have been supported.  
+  In order to remove the differences between the GCC and 
+  the SN Systems compilers, the following wrapper header files 
+  have been added to the SDK package: 
+    PPU:
+      target/ppu/include/ppu_intrinsics.h
+      target/ppu/include/spu2vmx.h
+      target/ppu/include/si2vmx.h
+    SPU:
+      target/spu/include/spu_intrinsics.h
+      target/spu/include/spu_mfcio.h
+      target/spu/include/vmx2spu.h
+
+----------------------------------------------------------------------
+15 samples/tutorial/CgTutorial Sample
+----------------------------------------------------------------------
+<New Additions>
+- Samples that use libgcm have been added.  
+  According to this, the file configuration under 
+  samples/tutorial/CgTutorial has been changed.  
+
+  Change: The files under samples/tutorial/CgTutorial 
+          have been moved to samples/tutorial/CgTutorial/PSGL 
+  Addition: samples/tutorial/CgTutorial/GCM
+
+----------------------------------------------------------------------
+16 Sample Programs
+----------------------------------------------------------------------
+<New Additions>
+- samples/spu_library/libspurs/advanced/performance 
+  This sample demonstrates how to measure the performance of the functions
+  of libspurs. 
+
+- samples/streaming/psgl_player 
+  This is a sample of a simple movie player (PSGL version) 
+  that uses libsail. 
+
+- samples/gcm/Fog 
+  Sample that uses the fog function of RSX(R). 
+
+- samples/gcm/pmZcull  
+  Sample that measures the effect of Zcull using the performance library.
+
+- samples/mic/feedback_gui 
+  Sample that is equipped with features to call the audio device setting
+  menu or to output a microphone input into a second audio output 
+  such as a headset based on the feedback sample.
+
+- samples/tutorial/SpuGeometricProcess 
+  Sample that performs vertex space conversion and polygon culling using 
+  a SPU(Spu Thread Group, SPURS Jobs)
+
+<Additions of Project Files>
+For ProDG for PLAYSTATION(R)3, project files have been added for some 
+of the following sample programs. 
+As for the unsupported sample programs, project files will be added 
+as soon as they become ready. 
+
+     samples/sysutil/discgame/discchange
+     samples/sysutil/discgame/getbootdiscinfo
+     samples/graphics/
+     samples/gcm/ConvertSwizzle
+     samples/gcm/MSAA/ds2x
+     samples/gcm/MSAA/ds4x
+     samples/gcm/zcull
+     samples/streaming/simple_player
+

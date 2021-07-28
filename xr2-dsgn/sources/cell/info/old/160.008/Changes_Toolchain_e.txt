@@ -1,0 +1,83 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 160.008
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 160.008
+- Bugs fixed in Release 160.008
+
+======================================================================
+New Additions and Changes in Release 160.008
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- A response file that was automatically generated with the compiler 
+  driver use to be deleted when the command that was started with 
+  the compiler driver ended without an error, but a change has been made 
+  so that it is not deleted when the option -save-temps is specified. 
+
+<PPU>
+- A feature of detecting the occurrence of LHS (Load-Hit-Store) 
+  which causes the reduction of PPU performance has been added 
+  to the compiler. 
+  If -mwarn-lhs is specified at the time of compilation, a warning 
+  will be issued when the possibility of LHS to occur in the generated 
+  code is high. 
+  However, only when the options -mwarn-lhs and -g are specified 
+  in combination, the source line where the warning occurred can be 
+  identified. When the option -g is not used in combination, 
+  please note that the possibility of the line number output to 
+  the warning is not correct is high. 
+
+  By default, the feature of detecting the occurrence of LHS which 
+  causes the reduction of PPU performance is not enabled. 
+
+- The performance of the intrinsic function __builtin_memmove has been 
+  improved. 
+  In previous compilers, __builtin_memmove was used only when 
+  the copy source was a static const variable or the amount to copy 
+  was 1 byte. Other than that, the library function memmove was called. 
+  From ToolChain160, when other than the optimization option -O0 is 
+  specified, __builtin_memmove will be used up to 32 bytes (the amount 
+  to copy) even if the copy source is not a static const variable. 
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- The following options have been added to the commands monitor load 
+  and bedbg of ppu-lv2-gdb. 
+  -exceptionhandler: 
+    Option for making the exception handler feature provided with 
+    liblv2dbg valid or invalid
+  -remoteplay: 
+    Option for selecting whether to automatically load or not to load 
+    the prx for remote playback. 
+
+======================================================================
+Bugs Fixed in Release 160.008
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- The following bug has been fixed: 
+  - A program that used a response file could not be linked within 
+    a folder whose name contained a space character.
+  
+<PPU>
+- The linker used to end abnormally with a message such as below. 
+  This problem has been fixed. 
+  c:\usr\local\cell\host-win32\ppu\bin\..\lib\gcc\ppu-lv2\4.0.2\..\..\..
+  \..\ppu-lv2\bin\ld.exe: BFD 2.16.1 (CELL 4.0.38, $Rev: 1058 $) assertion 
+  fail /home/fnami/svn/toolchain/binutils/bfd/elf64-ppc.c:8260
+
+- If an array of constant pointers to functions was defined as 
+  a static variable, an internal compiler error occurred. 
+  This problem has been fixed. 
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+none

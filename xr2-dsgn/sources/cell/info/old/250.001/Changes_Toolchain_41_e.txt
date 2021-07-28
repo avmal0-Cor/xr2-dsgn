@@ -1,0 +1,357 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 250.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 250.001
+- Bugs fixed in Release 250.001
+
+======================================================================
+New Additions and Changes in Release 250.001
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+[Additions]
+(B#55926)
+- Implemented --dont-strip-section switch to suppress removal of named
+  sections during dead stripping.
+
+(B#57388)
+- When specifying the -mbase-toc option, it now places the 64 bit global 
+  variable such as the long long type.
+
+(B#55782)
+- When the EF_PPC64_REL24 flag is set for the object to be passed to the 
+  linker, it is now reflected to the output file.
+
+(B#60945)
+- Implemented --no-toc-restore switch. With this switch, nops following
+  branches are not required and PRX stubs are rewritten to restore the
+  caller's TOC pointer before return.
+
+[Specification Changes]
+(B#55965)
+- The performance to generate many sections for the ELF file to be output 
+  has been improved.
+
+(B#60940)
+- Improved the usefulness of the "Objects that are referenced from ..."
+  section of the strip report. Now, more information is provided on where
+  the objects are and why they appear in the list.
+  Also, objects that are also present in the call graph are not displayed.
+  Eliminated duplicated objects from both this section and the call graph
+  summary. (Note that duplicate objects may appear if the code contains
+  such duplication.)
+
+[Bugfixes]
+(B#57097)
+- The linker fails with an internal error processing .debug_line data
+  when --strip-duplicates is enabled.
+
+(B#53862/B#53883)
+- Fixed generation of relocatable output.
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+[Additions]
+<PPU/SPU>
+(B#54951)
+- A warning on a empty body after if-else was controlled by -Wextra.
+  A new option, -Wempty-body, has been added to control the warning
+  independently of the other warnings controlled by -Wextra.
+
+(B#27216)
+- Added ppu-lv2-gcov/spu-lv2-gcov new options '-s' and '--source-directory'.
+  The two options are identical and specify a directory used to search a source
+  file.
+
+(B#53810)
+- Source files encoded in UTF-16 are now supported.
+
+(B#54637)
+- Added a new predefined macro __PS3_GCC_REVISION__.
+  This macro is defined as a revision number of the toolchain.
+
+(B#55780)
+- Options has been added so that the warning "cannot pass objects of
+  non-POD type xxx through '...'" can be changed to an error.
+  The option to enable the warning is -WnonPOD-varargs (default),
+  and the option to enable the error is -Werror=-WnonPOD-varargs.
+
+<PPU>
+(B#57363)
+- A new linker option '-mfast-libc' has been added to link libcs.a
+  instead of libc.a as the C standard library for PPU.
+  See "Toolchain User's Guide for Cell OS Lv-2" for details.
+
+(B#3424)
+- A new option, -ftree-promote-vector, has been added to be able to
+  get the effect of __vecreg keyword.  Currently only comparisons
+  with constants are converted.
+
+<SPU>
+(B#55128)
+- An option -mfixups that adds a code to relocate data values have been 
+  added.
+  This option enables the use of the virtual function and the global 
+  constructor in the position independent code(PIC).
+
+(B#55128)
+- -shared option is implemented in SPU toolchain to generate dynamic
+  loadable modules.
+  Note that libc.a libstdc++.a libsupc++.a and libgcc.a are not linked
+  by default in case of specifying -shared option. Only libsputhread.a
+  is linked.
+  If you want to use libc.a and so on, please specify these libraries
+  to the command line.
+  About the dynamic loadable module system, please refer to SPURS document.
+
+(B#58292)
+- Support the option '-rdynamic'.
+
+[Specification Changes]
+<PPU/SPU>
+(B#48532)
+- The C outputs the following warning message when an unnecessary const is
+  specified to the return value type. However, the C++ did not output the 
+  warning. This problem has been fixed. It now outputs the warning.
+  warning: type qualifiers ignored on function return type
+  Please refer to the technote 200809-04 for more details:
+  https://ps3.scedev.net/technotes/view/796
+
+(B#57238)
+- Debugging information for static functions in a namespace was not
+  being emitted. This has now been fixed.
+
+(B#57142)
+- A static function that was inlined with a static variable was being
+  outputed even if it was not needed.  This has now been changed to
+  not output the static function if it is not needed.
+
+(B#56189)
+- Corrected the descriptions of the following options and parameters
+  in gcc.info:
+  -finline-functions-called-once
+  -finline-limit
+  max-inline-recursive-depth
+  max-inline-recursive-depth-auto
+
+<PPU>
+(B#54931)
+- In some cases with const pointers/references, the way GCC would
+  produce a load does not use the optimal addressing mode.
+  This has been changed to use the base plus index addressing mode,
+  which is better.
+
+(B#52093)
+- PPU object file that is converted by ppu-lv2-objcopy from SPU ELF is
+  changed so that SN linker can strip it if unused.
+
+(B#31337)
+- When the -mwarn-microcode option was specified to generate the following
+  instructions, a message indicating that it was a microcoded instruction was output 
+  incorrectly. This problem has been fixed.
+    Addition with the CR recording (add./addic.)
+    Subtraction with the CR recording (subfc./subf.)
+    Division by the power of 2 with the CR recording (srawi+addze.)
+
+(B#31337)
+- It has been fixed so that when not generating microcoded instructions
+  (i.e. when -mgen-microcode is not specified), the "nor." instruction,
+  which is microcoded, is not generated.
+
+(B#56292)
+- When executing vec_splats(), if it is required to read the argument of
+  the function from the memory, it now uses 
+  lvlx instead of the following set of instructions:
+  vewx, lvsl, vperm
+
+(B#56401)
+- When a constant could not be handled as a immediate value, the constant 
+  was read from the TOC, passed to vec_splats() and then stored on the 
+  stack.
+  However, storing the constant on the stack and reading it again( lvewx 
+  instruction or such) caused the LHS. To avoid this problem, it now reads
+  the constant directly from the TOC without storing it on the stack(when 
+  -mall-base-toc is specified, the constant is placed on the rodata.cst? 
+  section).
+
+(B#31497)
+- When a source code that has a multidimensional array with the initial 
+  value declared on the stack was compiled, an unnecessary store 
+  instruction was generated. This problem has been fixed.
+
+(B#52448)
+- When vec_cmpeq() was executed followed by vec_all_eq(), 2 vcmpeqfp 
+  instructions were generated. This problem has been fixed. It now 
+  generates only a single instruction.
+
+(B#56791)
+- When using a*b with vector float and -ffast-math, GCC will now
+  produce a vmaddfp with a zero operand for the addition part
+  instead of a negative zero.
+
+(B#56832)
+- When a code that adds -0.0 to a float variable was written, the addition
+  was not eliminated even though it could be optimized. This problem has been fixed.
+
+(B#52563)
+- The C99 math functions isunordered, isequal, isgreaterequal,
+  islessequal, isgreater, isless, isordered and islessgreater
+  emitted mfcr for assignments. This has now been changed to use
+  conditional branches.
+  This change has been made because it was more effective to return the 
+  result using the comparison instruction and the conditional branch 
+  instead of using the mfcr instruction from the performance point of view.
+
+(B#56358)
+- GCC will now use the Load/Store String instructions more with -Os -mstring,
+  reducing the code size.
+  Load/Store String instructions : lswi, lswx, stswi, stswx
+
+(B#57445)
+- The prediction bit for the loop that is performed using the bdnz/dbz 
+  instructions was not output. It now generates a code that performs the 
+  static branch prediction by the compiler if it is likely to get a better
+  result than the dynamic branch prediction. If not, the dynamic branch 
+  prediction by the hardware that updates the branch history table(BHT) is
+  performed.
+
+(B#56884)
+- When vec_lvewx() is executed multiple times for the same address, the 
+  execution of the second vec_lvewx() and the later are now deleted and 
+  the result from the the first vec_lvewx() executed is reused.
+
+(B#57919)
+- When vec_splat() execution is followed by extraction of a value in the 
+  element as shown below, vspltw and such are now deleted and the value in
+  the element is extracted based on the copy position.
+
+  vector float b = vec_splat (a, 0);
+  return b[0];
+
+(B#58037)
+- When executing vec_extract(),the value in the argument was stored on the
+  stack first before reading it. Therefore, reading the value form the 
+  stack in order to pass it to vec_extract() was causing the LHS. To avoid
+  this problem, it now reads the value directly without storing it on the 
+  stack.
+
+(B#43297)
+- When the third argument of spu_madd() is 0, it is not required to 
+  perform the addition part of the multiply-accumulate. Therefore, 
+  spu_madd() is now replaced with spu_mul() to conduct the computation.
+
+[Bugfixes]
+<PPU/SPU>
+(B#3445)
+- Compound literal vector initializers in templates with a value dependent
+  would cause the following internal compiler error.  This has now been fixed.
+  "xxxx.cpp:xx: internal compiler error: Segmentation fault"
+
+(B#54924)
+- The following internal compiler error would happen when using
+  induction variable that was accessed via a different type.  This has been fixed.
+  "xxxx.cpp(xx): internal compiler error: in expand_expr_addr_expr_1, at expr.c:6644"
+
+(B#55046)
+- The following internal compiler error was happening when a
+  bitwise conversion from float to int was used with a later truncation to short.
+  This problem has now been fixed.
+  "xxxx.cpp(xx): internal compiler error: in gen_lowpart_general, at rtlhooks.c:59"
+
+(B#26399)
+- Debug information for using statements in a class were incorrect.
+  This problem has been fixed.
+
+(B#56302)
+- In some cases with -ftree-vectorize, the following internal compiler error
+  would happen.  This problem has now been
+  fixed.
+  "xxxx.cpp:xx: internal compiler error: in vectorizable_type_promotion, at tree-vect-transform.c:3687
+
+(B#51364)
+- Error message for casting away volatile did not mention volatility.
+  This has now been fixed.
+  The message has been changed from "casts away constness" to "casts away qualifiers".
+
+(B#55066)
+- When use %v in printf, a wrong warning was output.
+  This problem has now been fixed.
+
+(B#41025)
+- __vecreg type now gets promoted to vector type when used with the
+  intrinsics for both PPU and SPU.
+
+(B#57136)
+- Division with vector types and -ffast-math option enabled would
+  result in the following internal compiler error. This has now been fixed.
+  "xxxx.cpp:xx: internal compiler error: Segmentation fault"
+
+(B#58205)
+- -fprofile-generate/-fprofile-use usage does not work on Windows
+  when used with absolute paths to the source.  This has now been
+  fixed.
+
+(B#57243)
+- In a C++ class, if an argument of a member function is a function
+  pointer, and a casted address of a function is passed as the default
+  argument, a caller function of the member function might cause the
+  following internal compiler error in some case.
+  "xxxx.cpp: xx: internal compiler error: in make_decl_rtl, at varasm.c:1092"
+  This problem has been fixed.
+
+(B#57002)
+- -fpropagate-restrict caused the following internal compiler error with
+  some C++ code.
+  This problem has now been fixed.
+  "xxxx.xxx:xx: internal compiler error: in gimplify_expr, at gimplify.c:4400"
+
+<PPU>
+(B#55876)
+- When the stack size of a function is close to 32k, the following internal compiler error
+  would happen.  This problem has been fixed.
+  "xxxx.cpp(xx): internal compiler error: in change_address_1, at emit-rtl.c:1833"
+
+(B#55584)
+- With either -mstrings or -Os, GCC would emit an invalid string instruction with the
+   destination overlapping with the register used for the memory address.  This
+   problem has now been fixed.
+
+(B#55130/Bug55647)
+- Constant addresses with either vec_lvlx or inline-asm with the "Z"
+  constraint or the use of the intrinsic __lwarx or __stwcx
+  caused the following error.  This problem has now been fixed.
+  "xxxx.x:xx: error: cannot reload integer constant operand in 'asm'"
+
+(B#56361)
+- With high register pressure in some cases, GCC can produce the following internal compiler
+  error.  This problem has now been fixed.
+  "xxxx.cpp:xx: error: unrecognizable insn:"
+  "xxxx.cpp:xx: internal compiler error: in extract_insn, at recog.c:2087"
+
+(B#58260)
+- The linker name in an error message displayed by collect2 was wrong.
+  This problem has now been fixed.
+
+(B#57053)
+- An invalid form of lwzu instruction was produced.
+  This problem has now been fixed.
+
+<SPU>
+(B#55641)
+- The instructions generated for integer divide are sometimes 
+  scheduled poorly.  This problem has been fixed.
+
+(B#55791)
+- The linker incorrectly warns that an object is non-PIC when it
+  computes an address with a large offset.  This has been fixed.
+
+(B#58327)
+- GCC incorrectly used $79 when it was being explicitly declared with
+  an __asm__ statement.  This has been fixed.
+

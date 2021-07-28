@@ -1,0 +1,2142 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 240.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+
+Please see the new features, changes and notes below that were added 
+to the Reference Tool SDK package.
+
+----------------------------------------------------------------------
+1 New Libraries and Tools
+----------------------------------------------------------------------
+libswcache
+==========
+This library is a collection of C++ template classes that assists main
+memory accesses from SPU. 
+
+Please refer to the "libswcache Overview" and the "libswcache Reference"
+for more details.
+
+libvoice
+=========
+This library provides media I/O services which are embedded in 
+the System Software.
+
+The libvoice is consisted of 2 elements, an input port(IPort) and 
+an output port(OPort), and provides topology management APIs to build up
+the ports.
+
+As for details, please see the "libvoice Overview" and "libvoice Reference"
+ documents.
+
+libcelp8enc
+=========
+libcelp8enc is a codec-related library to encode PCM-formatted audio 
+data into CELP format.
+
+CELP is an encoding format which focuses on efficiently compressing 
+human voice and can encode as fixed-bit-rate format of MPE0 and MPE12 
+(sampling frequency 8000Hz) on libcelp8enc.
+The audio data, encoded with libcelp8enc, can be decoded with libadec.
+
+As for details, please see the "libcelp8enc Overview" and 
+"libcelp8enc Reference" documents. 
+
+Along with the libcelp8enc addition, the following sample data 
+has been added:
+
+ - cell\sample_data\codec\sin_8000_float_celp8enc.bi
+
+License Area Utility
+====================
+This library obtains console license area information 
+from within game applications. 
+
+The license area information is the information of the console license
+ area stored in PLAYSTATION(R)3. 
+
+Please refer to the "License Area Utility Overview" and 
+the "License Area Utility Reference" for more details.
+
+NP Title User Storage Utility
+=============================
+This is a system utility that enables each title/user on 
+the PLAYSTATION(R)Network server to use the storage services. 
+
+Using the NP title user storage utility, each user/title can use 
+the following storage services on the PLAYSTATION(R)Network server.
+
+- Each user can store 32 of 64 bit integers and up to 1MB binary data.
+- Each user can store 128 of 64 bit integers and up to 2MB binary data.
+- Each user can set the access policy to each data.
+
+As for details, please see the "NP Title User Storage Overview" and 
+"NP Title User Storage Reference" documents.
+
+In addition, in the cell\samples\sdk\network\np\npclient sample,
+the NP title user storage utility is used.
+Please refer to this sample, as well.
+
+NP Trophy Utility
+=================
+This utility provides APIs so that game applications could use 
+the trophy system.
+
+With the NP Trophy Utility, the followings can be processed:
+
+- Installing the trophy set into the internal hard disc drive.
+- Awarding trophies to users accordingly to their game-play results.
+- Acquiring data, such as an icon image of trophy to display trophy 
+collections on game applications and awarding status of trophies.
+
+As for details of the trophy system, please see the "Trophy System Overview".
+Also, as for details of the NP Trophy Utility, please see 
+the "NP Trophy Overview" and "NP Trophy Reference".
+
+NP Custom Menu
+==============
+This is a PLAYSTATION(R)Network utility, which adds game-application-specific
+items to the menus which are displayed by the System Software.
+
+The menus to add the items are as shown below:
+
+  - The menu which appears by the selection of game menu buttons on the screen,
+    activated by the newly-added NP Profile Utility.
+
+  - The option menu of each user from the "Friends" column of System 
+    Software (GUI), which is displayed during game-playing, and the menu
+    displayed by button selection of the game menu on the profile screen
+    of each user.
+
+    Also, the features displayed on the System Software during game-playing
+    are the ones that have been added to the System Software 2.40.
+
+  - The option menu of each user which is displayed by the NP friend list
+    utility, and the menu displayed by button selection of the game menu 
+    on the profile screen of each user.
+
+As for details, please see the "NP Custom Menu Overview" and 
+"NP Custom Menu Reference" documents.
+
+Advertising System Client Library
+=================================
+This is a client library of PLAYSTATION(R)3 Advertising System software
+development kit(SDK).
+
+Using this library, you can run dynamic ads in game titles of PLAYSTATION(R)3
+and detect how users see them.
+The client library is used in combination with a server environment,
+in which ads are dynamically relocated.
+
+As for details, please see the "Advertising System Client Library Overview"
+and "Advertising System Client Library Reference" documents.
+
+Custom Theme
+============
+This tool can be used to create an element that can be customized using
+ the custom theme feature of PLAYSTATION(R)3, data specifications of 
+each elements and a theme file.
+
+The Custom Theme feature changes the screen background, icons and 
+sound effects on the system software according to user's preference 
+by installing a theme file.
+
+From SDK 240 onwards, the theme compiler for PLAYSTATION(R)3 
+that was provided in a separate package has been included in the SDK package. 
+
+  - Theme file creation tool:
+    cell\host-win32\bin\p3tcompiler.exe
+    cell\host-win32\bin\GimConv\
+
+  - Sample:
+    cell\samples\util\theme\01\
+
+Note that the "Custom Theme Specifications" is contained at the following
+ location in the separate document package:
+
+   cell\SDK_doc\jp(en)\pdf\NP_commerce
+
+<Changes from Version 1.01 >
+- More icon types that can be customized using this theme 
+  feature have been supported.
+  The editable icons are as shown below:
+
+  icon_poweroff     : Turn Off System
+  icon_playing      : Song now being played icon 
+                      displayed in the Music column
+  icon_playlist     : Playlists
+  icon_playlist_add : Create New Playlist
+  icon_trophy       : Trophy Collection
+  icon_inet_search  : Internet Search
+
+----------------------------------------------------------------------
+System Software (GUI)
+----------------------------------------------------------------------
+New Feature
+
+<Common>
+- When the PS button is pressed during gameplay, the system software (GUI)
+  is now displayed.
+  Accordingly, a new feature has been added to enable an access to each
+  features of the system software at any timing by a user during gameplay. 
+  And the following functions for the system BGM playback and
+  files have been added, too: 
+
+  - Function to disable the system BGM playback
+    cellSysutilDisableBgmPlayback()
+  - Function to enable the system BGM playback
+    cellSysutilEnableBgmPlayback()
+  - Function to obtain the status of the system BGM playback 
+     cellSysutilGetBgmPlaybackStatus()
+  - cell\target\ppu\include\sysutil\sysutil_bgmplayback.h
+
+Please refer to the "Supporting System Software 2.40" for more details.
+
+< System Software Menu >
+- The following menus have been added to the System Software:
+
+  - Settings -> Debug Settings -> NPDRM Debug
+    When it is [On], you can do a test with NPDRM file ownership
+    invalid state.
+
+  - Settings -> Accessory Settings -> Controller Vibration Function
+    This feature switches on/off the vibration feature of a controller. 
+
+  - Settings -> Debug Settings -> BGM Player (Debugger)
+    This item switches the system BGM on/off when the game application 
+    is booted from the debugger.
+    When this item is set to [On], the user can start system BGM playback
+    during gameplay, and when set to [Off], the system BGM playback 
+    is disabled.
+
+  - Settings -> Debug Settings -> Dummy XMB(TM) (In game) Debug
+    This feature simulates a load of when the system software (GUI)
+    is displayed during gameplay.
+
+    When this item is set to [On], the system software (GUI) 
+    is not displayed even when the PS button is pressed during gameplay.
+    Instead, a dummy load is placed on CPU/GPU(the dummy load is toggled 
+    on/off when the PS button is pressed). By testing the stability of 
+    the game performance with the dummy load enabled, whether the system 
+    software (GUI) display can bear the load during gameplay can be checked. 
+
+  - Settings -> Debug Settings -> Dummy BGM Player Debug
+    This feature simulates a maximum load of the SPU/PPU execution 
+    resources and the file read processing that is used and performed 
+    by the system BGM playback. It allows debugging concurrent operation 
+    of the system BGM playback and the gameplay.
+    When this item is set to [On], a feature to simulate the load 
+    is activated instead of the BGM playback. 
+
+  - Settings -> Debug Settings -> Fake Other Region
+    When this item is set to [On], the License Area Utility temporarily 
+    returns "other license area".
+    This setting is only reflected to the utility performance, and differs
+    from the Region of the console that can be changed from Region Settings.
+    Also note that when the development machine is rebooted, it is set
+    back to [Off].
+
+  - Settings -> Debug Settings -> Memory access trap
+    This item enables the Memory access trap feature that performs 
+    memory debug.
+    When this item is set to [On], the user can set a trap to the memory
+    in the heap area in units of 4KB in order to stop a thread 
+    that accesses the trap area.
+
+    Please refer to the "liblv2dbg Overview" and 
+    the "liblv2dbg Reference" for more details on how to use this feature.
+
+  - Settings -> Accessory Settings -> Reassign the Controller
+    This item changes the controller number that is currently in use.
+
+  - Network -> Internet Search
+    This item performs Internet search by an input keyword.
+
+    Note that the Internet search menu "Search" has been added to 
+    the option menu that is provided when the internet browser is 
+    activated from Network -> Internet Browser. 
+
+< Check menu of the "Game" column >
+
+- The check result is now stored in the USB mass storage. 
+  If the USB mass storage is mounted at the time of check, a log will 
+  be stored in the root directly under the following name.
+  Note that the content of the log will be further detailed than 
+  the result that is displayed from the Check menu.
+
+  "Check_(Product code or Savedata directory name)_(Category)_(Date/time).log"
+  
+< Core dump feature >
+- The followings have been added as exceptions that are detected 
+  by the core dump function:
+
+    -  Occurrence of SPU exception
+       SPU exception, which occurs only on a SPU thread, can be detected.
+       SPU exception, which occurs in Raw SPU, can not be detected.
+
+    -  Foot switch operation by users
+       The foot switch feature can be handled only on the Reference Tool.
+
+    -  Signals sent from game applications
+       As for detailed usage, please see the "liblv2dbg Reference" document.
+
+    -  Occurrence of memory access trap
+       As for detailed usage, please see the "liblv2dbg Reference" document.
+
+- Information about light-weight condition variable has been added 
+  to the information, to be output into a core file by the core dump.  
+
+Specification Changes
+< Check menu in the "Game" column >
+- It has been enabled to check the trophy and the game purchase features,
+  etc.
+
+- It has been disallowed to use a name starting with EBOOT for the files
+  and directories of the disc boot game, the HDD boot game, 
+  the game patch and the game data when placing them under the USRDIR 
+  directory(EBOOT.BIN is excluded).
+
+- On the check result log, libraries that are linked to programs and 
+  the versions are listed. 
+
+- When a pre-released library (version:xxx.xx0) is in use, 
+  it is handled as an error. 
+
+- If the check target has a special attribute, it is displayed 
+  on the check result.
+  (For example, remote play of PSP(TM) (PlayStation(R)Portable) is supported.)
+
+< Core Dump feature >
+- The format of the core file has been updated from Version 1 
+  to Version 2.
+  Main changes are shown below:
+  As for the history of changes from the Version 1 to the Version 2,
+  please see the "Core Dump Overview" document.  
+
+  - Changes in the data format of "System Data".
+    A field has been added to record the version of core file format.
+
+  - A data format of the "Process Data" has been added.
+    This is a data format to record detectable exceptions 
+    by the core dump function.
+    In addition to the ordinary detectable PPU exceptions, the 4 exceptions
+    above, newly added to the SDK 240, are collectively recorded following
+    this data format. 
+    Please note the data format of "PPU exception data" which was defined
+    in the Version 1 is no more used in the Version 2. 
+
+  - A data format of the "Lightweight condition variable data" has been added. 
+    This is a data format to record information about lightweight condition
+    variable, which  became the target of core dump in SDK 240.
+
+----------------------------------------------------------------------
+libsysmodule
+----------------------------------------------------------------------
+Common
+====
+New Feature
+- IDs that load modules have been added:
+  -------------------------------------------------------------------
+  ID                                              Description
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_SYSUTIL_NP_TUS      NP title user storage utility
+  CELL_SYSMODULE_VOICE               libvoice
+  CELL_SYSMODULE_ADEC_CELP8          libadec(CELP8 decoder)
+  CELL_SYSMODULE_CELP8ENC            libcelp8enc(CELP8 encoder)
+  CELL_SYSMODULE_SYSUTIL_LICENSEAREA License area utility
+  CELL_SYSMODULE_SYSUTIL_MUSIC2      Music utility
+                                     (playback without using a memory container)
+  CELL_SYSMODULE_AD_CORE             libad(core)
+  CELL_SYSMODULE_AD_ASYNC            libad(asynchronous)
+  CELL_SYSMODULE_AD_BILLBOARD_UTIL   libad(billboard)
+  CELL_SYSMODULE_SYSUTIL_NP_TROPHY   NP trophy utility  
+-------------------------------------------------------------------
+
+- When the game application is started, libsysmodule loads the following
+  PRXs automatically.
+  To enable automatic load of each PRX, set the check box of the 
+  "Load Options" menu to [On] on the target manager.
+  Each PRX is required to use the GPAD(*1).
+
+  - libgcm_hud.sprx 
+  - libcapture.sprx
+
+  Note that the PRX files will be provided in the GPAD package separately,
+  not in the SDK package.
+
+  (*1) GPAD : Graphics Performance Analyzer and Debugger
+       GPAD is a generic name for a Windows tool in which the GCM Replay 
+       and the GCM HUD are integrated.
+
+----------------------------------------------------------------------
+System Utility (libsysutil)
+----------------------------------------------------------------------
+Save Data Utility
+==========================
+New Feature
+
+- From SDK240 onwards, the owner information is stored in the save data. 
+  The information is automatically stored when a save data is newly 
+  created on the system software of SDK 240 or later. 
+
+  Accordingly, the following macros relating to the owner information in 
+  the save data have been added as a bind error that is stored in 
+  a form of a logical OR into the "bind " member of 
+  the CellSaveDataStatGet structure:
+
+  ----------------------------------------------------------------
+  Macros                               | Bind error information
+  ----------------------------------------------------------------
+  CELL_SAVEDATA_BINDSTAT_ERR_NOOWNER   | Save data of unknown owner
+  CELL_SAVEDATA_BINDSTAT_ERR_OWNER     | Save data of other owners
+  CELL_SAVEDATA_BINDSTAT_ERR_LOCALOWNER| Save data, saved by an owner
+                                       | with no account ID
+  ----------------------------------------------------------------
+
+  The save data that is created using an SDK older than SDK 240 
+  does not hold the owner information. In such case, a bind error 
+  CELL_SAVEDATA_BINDSTAT_ERR_NOOWNER is returned.
+  The bind error is mainly output in order to check whether the save 
+  data is duplicated.
+  It can be used along with the NP Trophy utility that has been newly
+  added.
+
+  Please refer to the "Trophy System Overview" and 
+  the "Save Data Utility Overview/Reference" for mode details.
+
+  Note that the specifications of the existing bind information will 
+  be changed due to this new owner information bind. 
+  Please refer to the following "Specification Changes" section fore 
+  more details.
+
+- The following macros have been added:
+  They are specified for the "reCreateMode" member of CellSaveDataStatSet
+  structure to pass parameters from data status callback.
+
+  Macro name  CELL_SAVEDATA_RECREATE_YES_RESET_OWNER
+  Mode  In addition to the ordinary CELL_SAVEDATA_RECREATE_YES process
+        ( to delete existing save data once), this resets the owner 
+        information to be recorded in the save data.
+
+  Macro name  CELL_SAVEDATA_DISABLE_TROPHY_OWNERSHIP_CHECK
+  Mode  If this flag is enabled, transition to a state in which 
+        obtaining trophies is prohibited by the NP Trophy Utility is
+        inhibited.
+
+  As for details, please see the "Trophy System Overview", 
+  "Save Data Utility Overview" and "Save Data Utility Reference" documents. 
+
+Specification Changes
+
+- It has been changed to contain the owner information in the save data that 
+  is created using SDK240 or later. Accordingly, how to judge each bind
+  error that is notified to the game application has been changed as follows: 
+
+  (Before Change) Judge the bind information stored in the save data 
+                  and returns a bind error.
+  (After Change) Judge the owner information in the save data and returns 
+                 an appropriate bind error.
+
+  Note that the save data that is created with an SDK older than SDK 240 
+  is judged as before(as described above in (Before Change)) since 
+  it has no owner information.
+
+  Please refer to the "6 Owner Information" section 
+  of the "Save Data Utility Overview" for more details on the specifications
+  of the bind information.
+
+- The specification on combination use of the following functions for
+  the save data utility and the other utilities has been modified as below. 
+
+  (Before change) Combination use with utilities, which come along 
+                  with screen display, is prohibited.
+  (After change) Combination use with almost all the utilities 
+                 is available.
+
+  (*) However, note that some utilities can not be used simultaneously 
+      with these functions of the save data utility.
+      As for details, please see the Technical Note below:
+
+      Technical Notes: Conflicts between System Utilities
+                 https://ps3.scedev.net/technotes/view/720
+ 
+  Functions:
+    cellSaveDataAutoSave2(), cellSaveDataAutoLoad2(),
+    cellSaveDataUserAutoSave(), cellSaveDataUserAutoLoad(),
+    cellSaveDataListAutoSave(), cellSaveDataListAutoLoad(),
+    cellSaveDataUserListAutoSave(), cellSaveDataUserListAutoLoad()
+
+
+- As for the following APIs, thread priority has been changed from 490 
+  to 2003 to perform basic process of that APIs. 
+
+    cellSaveDataAutoSave2(), cellSaveDataAutoLoad2(),
+    cellSaveDataUserAutoSave(), cellSaveDataUserAutoLoad(),
+    cellSaveDataListAutoSave(), cellSaveDataListAutoLoad(),
+    cellSaveDataUserListAutoSave(), cellSaveDataUserListAutoLoad(),
+    cellSaveDataFixedSave2(), cellSaveDataFixedLoad2(),
+    cellSaveDataUserFixedSave(), cellSaveDataUserFixedLoad(),
+    cellSaveDataListSave2(), cellSaveDataListLoad2(),
+    cellSaveDataUserListSave(), cellSaveDataUserListLoad()
+
+  By lowering the relatively high thread priority, you can reduce 
+  the effect of the thread to the game process. 
+  For example, if a drawing thread is working at priority 1001 on a game,
+  a frame may be skipped at saving/loading. 
+  However along with this change, this can be improved.
+
+
+- The UI operation has been modified as below that activates 
+  when CELL_SAVEDATA_CBRESULT_OK_LAST_NOCONFIRM is returned from a file
+  operation callback function which is specified with the argument 
+  "funcFile" of the following functions.
+
+  (Before change) When a file handling process is completed, 
+                  the message dialog is closed with the message 
+                  below left on the screen.
+
+                  Saving... / Loading... / Deleting...
+
+  (After change) When a file handling process is over, the following
+                 message is displayed for a certain period (1 second) 
+                 before closing the message dialog. 
+
+                Save completed. / Load completed. / Delete completed.
+
+  Functions:
+    cellSaveDataFixedSave2(), cellSaveDataFixedLoad2(),
+    cellSaveDataUserFixedSave(), cellSaveDataUserFixedLoad(),
+    cellSaveDataListSave2(), cellSaveDataListLoad2(),
+    cellSaveDataUserListSave(), cellSaveDataUserListLoad(),
+    cellSaveDataFixedDelete(), cellSaveDataUserFixedDelete(),
+
+Onscreen Keyboard Dialog Utility
+================================
+New Features 
+- When the PS button is pressed while the Onscreen Keyboard Dialog 
+  utility stays resident and the Onscreen Keyboard is hidden, a callback
+  occurs. A function that registers this callback has been added as follows:
+
+  int cellOskDialogExtRegisterForceFinishCallback(cellOskDialogForceFinishCallback pCallback)
+  
+  Note that the prototype declaration of the callback function is 
+  as shown below: 
+  typedef bool (*cellOskDialogForceFinishCallback)( void );
+  
+  Accordingly, the behavior of the system software has been changed 
+  when the PS button is pressed in response to the return value of 
+  cellOskDialogForceFinishCallback().
+  
+  (true)  The Onscreen Keyboard Dialog is ended and the system software
+          is displayed.
+  (false) The Onscreen Keyboard Dialog stays resident and the existing
+          system menu screen is displayed(The system software is not 
+          displayed.).
+
+Sample Change (cell\samples\sdk\sysutil\osk_dialog)
+
+- It has been changed to use the callback function that is called when 
+  the PS button is pressed.
+
+Message Dialog Utility
+======================
+New Feature
+
+- As for the error codes below, a modification has been made 
+  so that corresponding error messages would be displayed in the dialog.
+
+    Error codes which occur in the NP Title User Storage utility. 
+    0x8002a4aa  (SCE_NP_COMMUNITY_SERVER_ERROR_TITLE_USER_STORAGE_BEFORE_SERVICE)
+    0x8002a4ab  (SCE_NP_COMMUNITY_SERVER_ERROR_TITLE_USER_STORAGE_END_OF_SERVICE)
+    0x8002a4ac  (SCE_NP_COMMUNITY_SERVER_ERROR_TITLE_USER_STORAGE_MAINTENANCE)
+
+AV Chat 2 Utility
+=================
+New Features 
+- A video chat feature has been equipped.
+  Please refer to the "AV Chat 2 Overview" and the "AV Chat 2 Reference"
+  for more details.
+
+- cellSysutilAvc2MicRead() has been added to allow game applications 
+  to obtain the voice PCM data that is input from a microphone device 
+  used for the voice chat.
+  Please refer to the "AV Chat 2 Overview" and the "AV Chat 2 Reference"
+  for more details.
+
+Game Content Utility
+====================
+New Feature
+
+- cellGameGetParamString(), which gets PARAM.SFO parameter, has been 
+  modified to get APP_VER parameter as well.
+
+Music Utility
+=============
+Sample Change (cell\samples\sdk\sysutil\music)
+
+- The definition of the memory container has been changed as follows:
+  (Before Change) SYS_MEMORY_ID_INVALID
+  (After Change) SYS_MEMORY_CONTAINER_ID_INVALID
+
+Print Utility
+=============
+Specification Changes
+
+- The print abortion processing on the print progress dialog has been 
+  changed as follows:
+
+  (Before Change) Select "Cancel Printing" to abort printing. 
+  (After Change) When "Cancel" is selected, "Cancel Confirmation" dialog
+                 will be displayed. Select whether to abort printing. 
+                 When the print utility receives the selection, 
+                 it will abort printing accordingly.
+
+
+Content Search Utility
+======================
+New Feature 
+
+- A CELL_SEARCH_SORTKEY_MODIFIEDDATE macro has been added as a sort key
+  for search results. 
+  It can be specified to the argument sortKey of 
+  cellSearchStartContentSearchInList() and cellSearchStartContentSearch().
+
+- A cellSearchGetContentIdByOffset() function has been added to obtain 
+  a content ID or date/time information of a content from search results.
+  Accordingly, a CellSearchTimeInfo structure has been added to store 
+  the Date/Time information of a content.
+
+
+Recording Utility 
+==================
+New Feature 
+
+- The following member and macro have been added to control the system 
+  BGM playback: 
+  - An xmb_bgm member has been added to the CellRecOption structure.
+  - A CELL_REC_OPTION_XMB_BGM macro that can be specified to the option
+    member of the CellRecOption structure has been added.
+
+  Notes on the system BGM playback are provided in the following technical
+  note on DevNet.
+  Please refer to this information before you use the Recording utility.
+
+      Technote: Limitations When Using the Recording Utility
+                https://ps3.scedev.net/technotes/view/759
+
+Specification Change 
+
+- It has been changed not to display the system software (the termination 
+  confirmation dialog was displayed before) although the PS button 
+  is pressed during the period from when cellRecOpen() is executed 
+  until the execution of cellRecClose() is completed.
+  Note that when the PS button is not released immediately but held 
+  down for a while, the termination confirmation dialog will be displayed.
+
+
+Web Browser Utility
+===================
+New Feature
+
+- The following menus have been added to allow Internet search.
+  - "Network -> Internet Search" menu of the system software (GUI)
+  - "Search" menu that is displayed from the option menu that is provided
+     when the Internet browser is activated
+
+- Along with the addition of "Internet Search" menu to the System Software(GUI),
+  CELL_WEBBROWSER_FUNCTION2_SEARCH macro has been added so as to be set for 
+  the second argument "funcset" of cellWebBrowserConfigSetFunction2().
+
+Video Upload Utility
+====================
+Specification Change
+
+- When '<' '>' is contained in the string that is pointed by a member of
+  the CellVideoUploadParam structure, it is replaced with '_' instead of
+  deleting it automatically.
+
+  This specification change is reflected to the following members of 
+  the CellVideoUploadParam structure:
+
+  - u.youtube.pTitle_UTF8
+  - u.youtube.pDescription_UTF8
+  - u.youtube.pKeyword_1_UTF8
+  - u.youtube.pKeyword_2_UTF8
+  - u.youtube.pKeyword_3_UTF8
+
+Game Update Utility
+===================
+New Feature 
+- An extended callback function gameupdatecallbackex() has been added 
+  to receive the results of start/stop of the game application update check. 
+
+  Accordingly, the following extended callback functions have been added:
+
+  - cellGameUpdateCheckStartAsyncEx()
+  - cellGameUpdateCheckFinishAsyncEx()
+  - cellGameUpdateCheckStartWithoutDialogAsyncEx()
+
+PLAYSTATION(R)Home Coordination Utility
+=======================================
+Specification Changes
+
+- Information obtained with the "type" and "dirName" arguments 
+  for a game application activated from the PLAYSTATION(R)Home, 
+  has been modified as below, to show where the game application 
+  is activated from, using cellGameGetBootGameInfo().
+  By this change, you can definitely judge that the game application
+  was activated from the PLAYSTATION(R)Home. 
+
+  (Before change)
+    type : CELL_GAME_GAMETYPE_HDD
+    dirName : NPIA00005 or NPEA00013
+
+  (After change)
+    type : CELL_GAME_GAMETYPE_HOME
+    dirName : 0 length string
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+New Feature
+
+- As a protocol attribute of synchronous primitive, a retry protocol 
+  has been added. 
+  The retry protocol does not select the next owner when a synchronous
+  primitive is unlocked.
+  Also, this can be available only on lightweight mutex.
+  Along with this, SYS_SYNC_RETRY macro has been added that is specified
+  for the "attr_protocol" member of the structure for lightweight mutex
+  attribute (sys_lwmutex_attribute_t).
+
+----------------------------------------------------------------------
+libdbg
+----------------------------------------------------------------------
+Specification Changes
+
+In SDK 240, the following Raw SPU debug functions have been abolished:
+  - cellDbgRawSpuInitialize()
+  - cellDbgRawSpuHandleInterrupt()
+  - cellDbgRawSpuSetRunControl()
+  - cellDbgRawSpuLockExecutionControl()
+  - cellDbgRawSpuUnlockExecutionControl()
+
+  See Also
+
+  Technical Notes: Removal of Raw SPU Debug Functions [cellDbgRawSpuXXXX()] 
+                   from libdbg
+                   https://ps3.scedev.net/technotes/view/693
+
+----------------------------------------------------------------------
+liblv2dbg
+----------------------------------------------------------------------
+New Feature
+
+- The following functions have been added to set the address to DABR 
+  (Data Address Breakpoint Register) and to get it.
+
+    - sys_dbg_set_address_to_dabr()
+    - sys_dbg_get_address_from_dabr()
+
+  If a data access to the address which is set to DABR occurs from 
+  the PPU thread, the cause of PPU exception of 
+  "SYS_DBG_PPU_EXCEPTION_DABR_MATCH" can be detected by exception 
+  handling thread of liblv2dbg.
+
+- The following function has been added to force core dump output 
+  when the core dump function is enabled.
+
+    - sys_dbg_signal_to_coredump_handler()
+
+  If the core dump function is enabled, user can send a signal 
+  to the core dump feature and forcibly execute it at any desired timing. 
+
+- The following functions have been added to set/read memory access
+  trap condition in the specified address range. 
+    - sys_dbg_mat_set_condition()
+    - sys_dbg_mat_get_condition()
+
+  For the memory access trap address, you can set only heap area 
+  of the process.  Also, the address should be specified by 4KB-unit.
+
+  When data access occurs from the PPU program to the address 
+  which is set with sys_dbg_mat_set_condition(), this can be detected 
+  as the cause of PPU exception of "SYS_DBG_PPU_EXCEPTION_DATA_MAT" 
+  by exception handling thread.
+
+  Also, data access from the SPU thread can be detected using 
+  sys_spu_thread_group_connect_event().
+  Memory access trap is available only on the Reference Tool.
+
+  When using the memory access trap, check mark the check box to enable 
+  Load Options of Pro DG Target Manager for PLAYSTATION(R)3.
+----------------------------------------------------------------------
+C/C++_Standard_Library
+----------------------------------------------------------------------
+New Feature 
+
+<PPU>
+
+- A structure ppu_guid_info_t has been added to unistd.h so that an
+  application program can access PPU GUID.
+
+Specification Change 
+
+<PPU>
+- When exporting the functions in the standard library to your own PRX,
+  it is not necessary to register the library by using 
+  sys_prx_register_library() only when the object corresponding to 
+  the standard library definition is linked to the ELF 
+  (e.g. libc_libent.o for libc.a).
+
+  See Also
+
+  Technical Notes:Changes on Building PRX for SDK 2.40
+                  https://ps3.scedev.net/technotes/view/760
+
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+New Feature
+
+- A modification has been made so that the non-preemptive user level 
+  thread "fiber" could be created on the SPU as well. 
+  Along with this change, the following structure/functions have been added.
+
+  Structure
+  - CellFiberSpuContext
+
+  Functions:
+  - cellFiberSpuContextInitialize()
+  - cellFiberSpuContextRun()
+  - cellFiberSpuContextSwitch()
+  - cellFiberSpuContextSelf()
+
+- To a PPU fiber, now you can give a name.
+  Naming the fiber is done with the "name" member of the 
+  CellFiberPpuAttribute structure.
+
+- To the PPU fiber scheduler, a feature to automatically call 
+  cellFiberPpuCheckFlags() has been added .
+  Setting is done with the CellFiberPpuSchedulerAttribute structure 
+  and is valid at initialization.
+
+- A feature has been added to call a callback function when the PPU 
+  fiber is completed.
+  The callback function is set with the CellFiberPpuAttribute structure
+  and is valid at initialization. 
+
+- The following functions have been added to operate a fiber trace of
+  PPU fiber scheduler.
+
+  - cellFiberPpuSchedulerTraceInitialize()
+  - cellFiberPpuSchedulerTraceStart()
+  - cellFiberPpuSchedulerTraceStop()
+  - cellFiberPpuSchedulerTraceFinalize()
+
+- A modification has been made so that the cell::util::fiber::ppu::Runtime 
+  class of the fiber utility, which was previously provided under 
+  cell\samples\common\fiber\, would be provided as a standard feature 
+  of PPU of libfiber.
+  Along with this change, the following header file has been added.
+
+  cell\target\ppu\include\cell\fiber\ppuUtilRuntime.h  
+
+Sample Changes (cell\samples\sdk\fiber\advanced\function_offload_tutorial)
+
+- A part of the fiber utility (cell::util::fiber::ppu::Runtime class),
+  used in the sample, has been changed to a class provided in the PPU of libfiber.
+
+- The description that is contained in the sample has been modified 
+  due to changes in the name and the name space of the fiber utility: 
+
+  - Function_Offload-Tutorial_[je].pdf
+
+----------------------------------------------------------------------
+File Systems
+----------------------------------------------------------------------
+New Feature
+
+- The following 2 functions have been newly added to the standard APIs.
+  These functions execute Read or Write for the specified offsets. 
+    - cellFsReadWithOffset()
+    - cellFsWriteWithOffset()
+
+- To the file formats, which can operate files on the file system, 
+  SDATA has been added.
+  SDATA is a read-only encrypted file with a signature.
+  This can store normal data such as SPU programs and script programs 
+  (Lua etc.).
+  In the ordinary specification, the SPU program needed to be embedded
+  in a SELF file or a SPRX file. However by storing it into the SDATA 
+  file, you can utilize it with more flexibility and higher security.
+
+  - Along with this, the following 2 functions have been added to 
+    the standard APIs. These are the APIs to open SDATA files.
+    - cellFsSdataOpen()
+    - cellFsSdataOpenByFd()
+
+  Also, make_sdata command has been added to create SDATA file (*.sdat).
+
+  (Usage example) % make_sdata  gamedata1.dat  gamedata1.sdat
+
+  As for the details of new feature and SDATA above, 
+  please see the "SDATA Overview" document.  
+
+----------------------------------------------------------------------
+SPU Runtime
+----------------------------------------------------------------------
+libspurs
+========
+<Common>
+
+- Changes in the Simple SPURS Utility(cell\samples\common\spurs)
+  - A simple SPURS job has been added.
+  - The sample programs have been arranged.
+
+  Due to above changes, the following documents have been updated: 
+
+    - Easy SPURS Overview
+      (cell\samples\common\spurs\Easy_SPURS-Overview_*.pdf)
+
+    [Updated information]
+      - A description on VisualStudio has been added to the library 
+        overview.
+      - The sample programs have been arranged.
+      - The description has been updated for additional classes.
+
+    - Easy SPURS Reference
+      (samples/common/spurs/Easy_SPURS-Reference_*.pdf)
+
+    [Updated information]
+      - The following classes have been added:
+        CommandListDispatcher class
+        Job::Command class and a derived class
+        Job::Descriptor class and a derived class
+
+<Core>
+
+New Feature
+
+- A function cellSpursPutUserTrace() has been added to output the user
+  trace information. 
+  After being output, the user trace information can be used with 
+  the trace feature of libtrace which is to be added in the Tuner for 
+  PLAYSTATION(R)3 v240.1.  
+
+<Policy Module>
+
+New Feature
+
+- cellSpursModuleEntryStatus() has been added as a new entry function 
+  of the policy module.
+  In the following points, this differs from the ordinary cellSpursModuleEntry().
+  - The argument of the workload can be set with "data" argument.
+  - The scheduling status, which is one of the activation conditions,
+    can be obtained with "status" argument .  
+
+  On game applications, we recommend you use cellSpursModuleEntryStatus()
+  instead of cellSpursModuleEntry().
+
+Specification Changes
+
+- The maximum value of SPUs, to be specified with the argument "count" 
+  of cellSpursRequestIdleSpu(), has been increased from 7 to 8.
+
+<SPURS job>
+
+New Feature
+
+- job_elf-to-bin.exe has been added as below, as a tool to generate job binary.
+  - cell\host-win32\bin\job_elf-to-bin.exe
+
+- A modification has been made so that the data type of CellSpursJobChain
+  could be used also in the SPU.
+
+<Tasks>
+
+New Feature
+
+- A function cellSpursTasksetAttributeEnableClearLS() has been added.
+  This activates the feature to zero the LS region, which is not specified
+  as a context storage area, when the SPURS tasks are switched.
+
+- A function cellSpursGetLoadableSegmentPattern() has been added. 
+  This notifies the segments in LS pattern, that can be loaded by the 
+  specified FLF. 
+  Using the LS pattern which you gain with this function, you can optimize
+  the cost for context switch and the required size for saving context.
+
+libovis
+=======
+New Feature
+- cellOvisConfigAuto.exe has been added. This operates on a Windows console.
+
+----------------------------------------------------------------------
+Network
+----------------------------------------------------------------------
+libnet
+======
+
+New Feature
+
+The following socket options have been added:
+  - TCP_MAXSEG
+  - TCP_MSS_TO_ADVERTISE
+
+----------------------------------------------------------------------
+PLAYSTATION(R)Network (NP)
+----------------------------------------------------------------------
+
+Common
+=====
+New Feature
+- A sub-signin feature has been added. This enables you to sign 
+  in simultaneously with other local users during game playing.
+
+  As for details of sub-signin, please see the "NP Manager Overview" document.
+
+- As a new feature of the NP Profile utility, sceNpProfileCallGui() 
+  has been added.
+  Using this function, you can browse online profile information of 
+  game players from the System Software GUI.
+  As for details, please see the "NP Library Common API Reference" document.
+
+Sample Changes (cell\samples\sdk\network\np\npclient)
+
+- New process has been added to be performed by the use of the newly-added
+  NP Title User Storage Utility.
+
+NP Basic Utility
+================
+
+Specification Changes
+- The number of friends to be registered on the "Friends" column 
+  in the System Software has been increased from 50 to 100.
+
+Sample Changes (cell\samples\sdk\network\np)
+
+- The number of event queues to be used for the NP basic utility 
+  has been increased from 64 to 128.
+
+NP Signaling Utility
+====================
+New Feature
+
+- A function sceNpSignalingGetConnectionFromPeerAddress() has been added.
+  This obtains a connection ID from the IP address and port number of a pear.
+
+  The following macro has been added as a connection information code:
+
+  --------------------------------------------------------------------
+  Macro                                 | Desctiption
+  --------------------------------------------------------------------
+  SCE_NP_SIGNALING_CONN_INFO_PACKET_LOSS | Packet loss ratio (percentage)
+  --------------------------------------------------------------------
+
+- The followings have been added as extended event types which are 
+  notified by a callback function registered 
+  with sceNpSignalingAddExtendedHandler().
+
+  --------------------------------------------------------------------
+  Macro                                       | Desctiption
+  --------------------------------------------------------------------
+  SCE_NP_SIGNALING_EVENT_EXT_PEER_DEACTIVATED | The connection was 
+                                              | deactivated on the peer.
+                                              | 
+  SCE_NP_SIGNALING_EVENT_EXT_MUTUAL_ACTIVATED | The connection was 
+                                              | activated both 
+                                              | on the local and the peer.
+  --------------------------------------------------------------------
+
+Specification Changes
+
+- The macro name of the following extended event type has been modified as below:
+
+  (Before change) SCE_NP_SIGNALING_EVENT_EXT_ACTIVATED
+  (After change) SCE_NP_SIGNALING_EVENT_EXT_PEER_ACTIVATED
+
+
+- The following error code has been renamed:
+
+  (Before change) SCE_NP_SIGNALING_ERROR_CONN_NOT_ACTIVE
+  (After change) SCE_NP_SIGNALING_ERROR_CONN_IN_PROGRESS
+
+NP Matching 2 Utility
+=====================
+New Features
+
+- A sceNpMatching2ContextStartAsync() function has been added to 
+  asynchronously perform the start processing of the context that is 
+  used by the NP Matching 2 utility.
+
+- A sceNpMatching2AbortContextStart() function has been added to abort
+  the start  processing of the context that is used by the NP Matching 2 
+  utility (sceNpMatching2ContextStart()).
+
+- A sceNpMatching2Init2() function has been added to initialize the 
+  NP Matching 2 utility. From SDK 240 onwards, use sceNpMatching2Init2() 
+  to initialize the NP Matching 2 utility. 
+
+  The difference from sceNpMatching2Init() is that a pointer to 
+  the utility initialization parameter can be set via the param argument.
+  Due to this additional feature, sceNpMatching2Init2() can set 
+  the following items at initialization apart from the stack size and
+  the priority of an internal thread:
+
+    - Heap area that is used by the NP Matching 2 utility
+    - Maximum length of a queue for event data within the system
+
+- A sceNpMatching2Term2() function has been added to terminate 
+  the NP Matching 2 utility. From SDK 240 onwards, use sceNpMatching2Term2()
+  to terminate the NP matching 2 utility.
+
+- The following functions have been added to create and delete a server
+  context explicitly: 
+
+  - sceNpMatching2CreateServerContext()
+  - sceNpMatching2DeleteServerContext()
+
+  In the game application, the number of online users that are using 
+  the NP matching 2 utility can be measured accurately by explicitly 
+  creating/deleting the server context.
+  Please refer to the "NP Matching 2 Utility Overview" and 
+  the "NP Matching 2 Utility Reference" for more details.
+
+- A function sceNpMatching2GetMemoryInfo() has been added to obtain 
+  the memory information of the heap area that is used by the NP Matching 2
+  utility. 
+
+- In the NP matching 2 utility, a function sceNpMatching2GetCbQueueInfo() 
+  has been added to obtain the information of the event data queue 
+  within the system.
+
+- SCE_NP_MATCHING2_SEARCH_ROOM_OPTION_RANDOM has been added as a room
+  search option that is specified via the optParam argument of 
+  sceNpMatching2SearchRoom().
+  Accordingly, room search results that match with the search condition
+  are returned at random.
+
+Specification Changes 
+
+- When the context start processing that is performed using 
+  sceNpMatching2ContextStart() or sceNpMatching2ContextStartAsync() 
+  is completed, not only 0 is returned but also 
+  SCE_NP_MATCHING2_CONTEXT_EVENT_Start is notified to the context 
+  callback function.
+
+- When the context start processing that is performed using 
+  sceNpMatching2ContextStop() is completed, not only 0 is returned 
+  but also SCE_NP_MATCHING2_CONTEXT_EVENT_Stop is notified to the context
+  callback function.
+
+- When NP sign out occurs during the sceNpMatching2ContextStart() processing,
+  the processing will be aborted and SCE_NP_COMMUNITY_ERROR_ABORTED 
+  will be returned. 
+  At the same time, it also unblocks the sceNpMatching2ContextStart()
+  function.
+
+  See Also
+
+  Technical Notes: sceNpMatching2ContextStart() persists blocked 
+                   if a network cable is unplugged while the function 
+                   is being executed. 
+                   https://ps3.scedev.net/technotes/view/752
+
+- The number of maximum lobbies that can join at the same time 
+  has been changed from 2 to 5. 
+
+- The number of maximum rooms that can join at the same time 
+  has been changed from 2 to 5. 
+
+Sample Changes (cell\samples\sdk\network\np\np_matching2)
+
+- Samples under cell\samples\sdk\network\np\np_matching2 have been changed.
+
+  - It has been changed to use sceNpMatching2Init2() instead of 
+    sceNpMatching2Init() for initialization. 
+
+  - It has been changed to use sceNpMatching2Term2() instead of 
+    sceNpMatching2Term() for termination. 
+
+- In the np_gui_matching2 sample, a new feature has been added and 
+  the specifications have been changed as shown below: 
+
+  - It has been changed to use sceNpMatching2ContextStartAsync() 
+    instead of sceNpMatching2ContextStart() for the context start 
+    processing of the NP Matching 2 utility.
+    Accordingly, the context start processing is performed asynchronously.
+
+  - It has been changed to use the following newly added functions 
+    to create and delete a server context explicitly: 
+
+    - sceNpMatching2CreateServerContext()
+    - sceNpMatching2DeleteServerContext()
+
+  - It has been enabled to display the memory usage of the heap area 
+    that is used by the NP Matching 2 utility at the top of the sample
+    screen using the newly added sceNpMatching2GetMemoryInfo().
+
+  - It has been enabled to display the event data queue within the system 
+    that is used by the NP Matching 2 utility at the top of the sample 
+    screen using the newly added sceNpMatching2GetCbQueueInfo().
+
+NP Manager Utility
+==================
+New Feature
+
+- In SDK240, a sub-signin feature has been added to the PLAYSTATION(R)Network. 
+  Along with this, the following functions have been added.
+
+  - sceNpManagerSubSignin()
+  - sceNpManagerSubSignout()
+  - SceNpManagerSubSigninCallback()
+
+  In addition, the following macro constants have been added to show 
+  sub-signin results.
+  - SCE_NP_MANAGER_SUB_SIGNIN_RESULT_OK
+  - SCE_NP_MANAGER_SUB_SIGNIN_RESULT_CANCEL
+
+  As for details of sub-signin, please see the "NP Manager Overview" 
+  and "NP Manager Reference" documents.
+
+NP Score Ranking Utility
+========================
+New Feature
+
+- In SDK240, a sub-signin feature has been added to the PLAYSTATION(R)Network. 
+  Also the feature is supported by the NP score ranking utility.
+  By specifying the NP ID, gained with sub-signin for the argument of 
+  sceNpScoreCreateTitleCtx(), a sub-user can also use the NP score 
+  ranking utility.
+
+NP Friend List Utility
+======================
+Specification Changes
+
+- A modification has been made so that sceNpFriendlist() and 
+  sceNpFriendlistCustom() could be executed without using a memory container.
+  For the argument "containerId" of each function, please specify 
+  SYS_MEMORY_CONTAINER_ID_INVALID.
+
+  Along with this change, definitions of 
+  SCE_NP_FRIENDLIST_MEMORY_CONTAINER_CUSTOM_CORE_FULL and 
+  SCE_NP_FRIENDLIST_MEMORY_CONTAINER_SIZE have been removed from the 
+  cell\target\ppu\include\np\friendlist.h.
+
+- The Onscreen Keyboard that is used within the friend list has been 
+  changed. 
+  With the previous specifications, it was allowed to customize the 
+  Onscreen Keyboard Dialog within the friend list using the lower 
+  32 bits of the argument "options" of sceNpFriendlistCustom().
+  From SDK240 onwards, it has been changed to use the system default 
+  Onscreen Keyboard, and the value in "options" of sceNpFriendlistCustom()
+  will no longer be used.
+
+Sample Changes (cell\samples\sdk\network\np\np_gui)
+
+- Along with the memory container specification change, a modification 
+  has been made so that SYS_MEMORY_CONTAINER_ID_INVALID would be specified
+  for the argument "container" of sceNpFriendlist() and 
+  sceNpFriendlistCustom(), which are used in the sample.
+
+NP IN-GAME Commerce 2 Utility
+=============================
+New Feature 
+- The features of the NP IN-GAME Commerce 2 utility have been provided
+  as an official version.
+
+Specification Changes
+- As is shown below, the macro name and the value have been modified 
+  for the buffer size, which is secured 
+  when sceNpCommerce2GetCategoryContentsGetResult() and 
+  sceNpCommerce2GetProductInfoGetResult()are used.
+
+  -----------------------------------------------------------------
+                   |  [Macro name]                       |  [Value]
+  -----------------------------------------------------------------
+    Before change  |  SCE_NP_COMMERCE2_MAX_RECV_BUF_SIZE |  64KB
+    After change   |  SCE_NP_COMMERCE2_RECV_BUF_SIZE     | 256KB
+  -----------------------------------------------------------------
+
+  The value of SCE_NP_COMMERCE2_GETCAT_MAX_COUNT, which is a macro 
+  to show the maximum value of category contents to obtain,
+  has been modified from 15 to 60.
+
+NP DRM
+=======
+New Feature
+
+- You can now create a NPDRM file with contents expiry date.  
+  When it expires, the contents are no more available.  
+  This is useful for something like a demo version which is open 
+  for a limited time only.  
+  To set the expiry date of contents, please write the value of 
+  LimitedTimeStart and LimitedTimeEnd in the setting file of the NPDRM
+  package you create.
+  As for details, please see the "NPDRM Package Requirements" document.
+
+Specification Changes
+
+- Along with the addition of generic encrypted file (SDATA file) of libfs,
+  the number of files to be opened simultaneously with sceNpDrmOpen() 
+  has been changed as below:
+
+  (Before Change) The number of NPDRM EDATA files to be opened 
+                  at once is 8. 
+  (After Change)  The number of files to be opened at once is 16,
+                  for NPDRM EDATA files and SDATA files collectively.
+NP Clan Utility
+===============
+Specification Changes
+
+- The following error has been modified that is returned 
+  when SCE_NP_CLANS_MESSAGE_OPTIONS_CENSOR flag is not set for the 
+  "option" member of SceNpClansMessage structure and the message 
+  to show this is filtered by the Vulgarity filter.
+
+  (Before change) SCE_NP_CLANS_SERVER_ERROR_INTERNAL_SERVER_ERROR
+  (After change)  SCE_NP_CLANS_SERVER_ERROR_FAILED_TO_SEND_NP_MESSAGE
+
+  Also, when SCE_NP_CLANS_SERVER_ERROR_FAILED_TO_SEND_NP_MESSAGE error
+  is returned, actions of the NP clan are performed as ordinary 
+  however the message is not sent.
+
+  (Example) If SCE_NP_CLANS_SERVER_ERROR_FAILED_TO_SEND_NP_MESSAGE error
+            is returned for the sceNpClansSendInvitation() execution,
+            an invitation message is not sent to a clan.
+            However, the member status in the clan of an invited user 
+            is changed to SCE_NP_CLANS_MEMBER_STATUS_INVITED.
+
+Sample Changes (cell\samples\sdk\network\np)
+
+- To the npclient / np_gui samples, a modification has been made 
+  so as to initialize SceNpClansMemberEntry structure before calling 
+  sceNpClansGetMemberInfo().
+
+Purchase Game Utility
+=====================
+Sample Change (cell\samples\sdk\network\np\game_purchase)
+
+- The TitleID that is set in the game_purchase sample has been changed 
+  because it overlaps with the TitleID of other PLAYSTATION(R)Network 
+  samples as shown below: 
+
+  (Before Change) TitleID = NPXS00021_00
+  (After Change) TitleID = NPXS00022_00
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+Specification Changes
+
+- cellUsbdSetThreadPriority() has been deleted.
+  When setting the priority of threads, please migrate to 
+  cellUsbdSetThreadPriority2().
+  This has been deleted along with specification changes of libusbd 
+  in SDK160.008.
+
+  -------------------------------------------------------------------
+    Specification Changes in SDK160.008
+  -------------------------------------------------------------------
+  - The specifications of the handling and the setting procedure of 
+    the priority of a thread that is generated by libusbd have been 
+    changed.
+    From now on, when setting the priority of a thread, please use 
+    cellUsbdSetThreadPriority2().
+    In addition, since the priority can be set improperly when the 
+    conventional cellUsbdSetThreadPriority() is used, 
+    it will be removed in a future upgrade. 
+  -------------------------------------------------------------------
+----------------------------------------------------------------------
+HID
+----------------------------------------------------------------------
+libkb
+=====
+New Feature
+
+- The Switzerland Keyboard array has been supported.
+  ------------------------------------------------------------
+  System Languages | Macros
+  ------------------------------------------------------------
+  Swiss (French)   | CELL_KB_MAPPING_SWISS_FRENCH_SWITZERLAND
+  Swiss (German)   | CELL_KB_MAPPING_SWISS_GERMAN_SWITZERLAND
+  ------------------------------------------------------------
+
+libpad
+======
+Specification Changes
+
+- Since SDK240, development using the prototype controller, 
+  which has a white, pink, silver, or blue label sealed on its 
+  backside, has been prohibited.
+  By this change, the following message appears when the prototype
+  controller with a label is connected to a development tool. 
+
+  > ps3_game_pad: Controller register version %x.xx is old.
+  > ps3_game_pad: Controller firmware version %x.xx is old.
+  See Also
+
+  Technical Notes: Use of the Prototype Controller Prohibited 
+                   in Game Application Development
+                   https://ps3.scedev.net/technotes/view/695
+libcamera
+=========
+New Feature
+
+- To the CellCameraAttribute structure of camera attributes, the following
+  enum constants have been added for PLAYSTATION(R)Eye as below:
+
+  - CELL_CAMERA_PIXELOUTLIERFILTER
+  - CELL_CAMERA_AGCLOW
+  - CELL_CAMERA_AGCHIGH
+
+  The camera attribute (CellCameraAttribute structure) is set with "attrib"
+  argument of cellCameraGetAttribute() and cellCameraSetAttribute().
+
+----------------------------------------------------------------------
+vectormath
+----------------------------------------------------------------------
+New Feature
+
+- The following vector load functions have been added: 
+
+  - void loadXYZ(Vector3 & vec, const vec_float4 * quad)
+  - void loadXYZ(Point3 &pnt, const vec_float4 * quad)
+
+- The following load/store functions for 4 byte aligned data 
+  have been added:
+
+  - void loadXYZ(Vector3 &vec, const float * fptr)
+  - void loadXYZW(Vector4 &vec, const float * fptr)
+  - void loadXYZ(Point3 &pnt, const float * fptr)
+  - void loadXYZW(Quat &quat, const float * fptr)
+  - void storeXYZ(Vector3 vec, float * fptr)
+  - void storeXYZW(Vector4 vec, float * fptr)
+  - void storeXYZ(Point3 pnt, float * fptr)
+  - void storeXYZW(Quat quat, float * fptr)
+
+- The following load functions with Half-Float conversion 
+  have been added: 
+
+  - void loadHalfFloats(Vector3 & vec0, Vector3 & vec1, 
+                        Vector3 & vec2, Vector3 & vec3,
+                        Vector3 & vec4, Vector3 & vec5,
+                        Vector3 & vec6, Vector3 & vec7,
+                        const vec_ushort8 * threeQuads) 
+  - void loadHalfFloats(Vector4 & vec0, Vector4 & vec1,
+                        Vector4 & vec2, Vector4 & vec3, 
+                        const vec_ushort8 * twoQuads) 
+  - void loadHalfFloats(Point3 &pnt0, Point3 &pnt1, Point3 &pnt2,
+                        Point3 &pnt3, Point3 &pnt4, Point3 &pnt5,
+                        Point3 &pnt6, Point3 &pnt7,
+                        const vec_ushort8 * threeQuads)
+
+- The following load/store functions with Half-Float conversion 
+  for 2 byte aligned data have been added: 
+
+  - void loadHalfFloats(Vector3 &vec, const uint16_t * hfptr)
+  - void loadHalfFloats(Vector4 &vec, const uint16_t * hfptr)
+  - void loadHalfFloats(Point3 &pnt, const uint16_t * hfptr)
+  - void storeHalfFloats(Vector3 vec, uint16_t * hfptr) 
+  - void storeHalfFloats(Vector4 vec, uint16_t * hfptr)
+  - void storeHalfFloats(Point3 pnt, uint16_t * hfptr)
+
+- A wrapper function floatInVec for math functions of standard libraries
+  has been added to floatInVec. Note that the functions that use a value
+  other than float in the argument or in the return value are excluded: 
+
+  - floatInVec acosf(floatInVec x)
+  - floatInVec asinf(floatInVec x)
+  - floatInVec atanf(floatInVec x)
+  - floatInVec atan2f(floatInVec y, floatInVec x)
+  - floatInVec cbrtf(floatInVec x)
+  - floatInVec ceilf(floatInVec x)
+  - floatInVec copysignf(floatInVec x, floatInVec y)
+  - floatInVec cosf(floatInVec x)
+  - floatInVec divf(floatInVec x, floatInVec y)
+  - floatInVec exp2f(floatInVec x)
+  - floatInVec expf(floatInVec x)
+  - floatInVec expm1f(floatInVec x)
+  - floatInVec fabsf(floatInVec x)
+  - floatInVec fdimf(floatInVec x, floatInVec y)
+  - floatInVec floorf(floatInVec x)
+  - floatInVec fmaf(floatInVec x, floatInVec y, floatInVec z)
+  - floatInVec fmaxf(floatInVec x, floatInVec y)
+  - floatInVec fminf(floatInVec x, floatInVec y)
+  - floatInVec fmodf(floatInVec x, floatInVec y)
+  - floatInVec hypotf(floatInVec x, floatInVec y)
+  - floatInVec log10f(floatInVec x)
+  - floatInVec log1pf(floatInVec x)
+  - floatInVec log2f(floatInVec x)
+  - floatInVec logbf(floatInVec x)
+  - floatInVec logf(floatInVec x)
+  - floatInVec modff(floatInVec x, floatInVec* i)
+  - floatInVec negatef(floatInVec x)
+  - floatInVec powf(floatInVec x, floatInVec y)
+  - floatInVec recipf(floatInVec x)
+  - floatInVec rsqrtf(floatInVec x)
+  - floatInVec remainderf(floatInVec x, floatInVec y)
+  - void sincosf(floatInVec x, floatInVec* s, floatInVec* c)
+  - floatInVec sinf(floatInVec x)
+  - floatInVec sqrtf(floatInVec x)
+  - floatInVec tanf(floatInVec x)
+  - floatInVec truncf(floatInVec x)
+
+Sample Changes (cell\samples\sdk\vectormath\CellSkinning)
+
+- animateMeshAOSMatrixHalfFloat() has been added.
+
+- Using newly-added vectormath functions, you can now perform Skinning
+  while converting from fp16 to fp32 with PPU and SPU.
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+New Feature
+
+- To the GTF utility program, a tool (gtf2dds.exe) has been added to 
+  convert gtf-formatted texture into the dds format. 
+  
+    cell\host-win32\bin\gtf2dds.exe
+
+Specification Changes
+
+- The specification of dds2gtf.exe of GTF utility program has been modified.
+  Details of main changes are as shown below:
+
+  - dds2gtf.exe has been relocated.
+    (Before migration) cell\samples\util\gtf\bin\dds2gtf.exe
+    (After migration)  cell\host-win32\bin\dds2gtf.exe
+
+  - A modification has been made so that the default conversion process
+    to a GTF file is done in the Swizzle format as long as possible.
+    Along with this change, the '-l' option has been added and the 
+    '-s' option has been abolished.
+
+    '-l' option:   This converts in linear format as long as possible.
+
+  The specification has been modified so that the options are specified
+  when you create a GTF file which includes multiple textures.
+  Along with this change, the '-p' option has been added.
+
+    (Before Change) dds2gtf -o output.gtf input0.dds input1.dds input2.dds
+    (After Change) dds2gtf -o output.gtf -p input0.dds input1.dds input2.dds 
+
+  - A modification has been made so that the file of 24bit RGB entry 
+    format can be output in Swizzle format.
+
+  - The format to convert files of R16F entry has been modified as below:
+
+      (Before change) DEPTH16_FLOAT
+      (After change) Y16_X16_FLOAT
+
+  - The '-64' and '-a' options have been abolished.
+    When you change the pitch size, please modify it on the game 
+    application side.
+
+Sample Changes (gtf-related in cell\sdk\samples)
+
+- Changes under cell\sdk\samples\util\gtf
+
+  - gtf2dds.exe and its source code have been added.
+  - Along with specification changes in dds2gtf.exe, the source code
+    has been updated.
+
+- Changes under cell\sdk\samples\common\gtf
+
+  - Files under cell\sdk\samples\common\gtf\src have been consolidated
+    to cell\sdk\samples\common\gtf\gtfloader.cpp. 
+    Along with this change, cell\sdk\samples\common\gtf\src
+    has been deleted.
+
+  - The following header files have been consolidated to 
+    cell\sdk\samples\common\gtf\gtfloader.h.
+        cell\sdk\samples\common\gtf\gtftexture.h
+        cell\sdk\samples\common\gtf\gtfutils.h
+
+  - The contents in cell\sdk\samples\common\gtf\src\gtfloader_save_surface.c
+    has been unified to cell\sdk\samples\common\gtf\SurfaceToGtf\main.cpp.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+New Feature 
+
+- It has been enabled to display a warning message when the TXD 
+  instruction is output as a result of fragment shader compilation
+
+Specification Changes 
+
+- In sce-cgc, the default value of "profile" has been changed 
+  from sce_fp_TypeB to sce_fp_rsx.
+  Also, it has been changed to output the following messages 
+  when sce_*_typeC is specified to "profile":
+
+  - Message output when sce_fp_TypeC is specified:
+    "profile sce_fp_TypeC is deprecated. Use sce_fp_rsx instead"
+
+  - Message output when sce_vp_TypeC is specified. 
+    "profile sce_vp_TypeC is deprecated. Use sce_vp_rsx instead"
+
+  Note that although either sce_fp_TypeC or sce_fp_rsx is specified 
+  to "profile", the behavior of sce-cgc does not change 
+  (the behavior of sce_vp_TypeC and sce_vp_rsx is also the same).
+----------------------------------------------------------------------
+libgcm related
+----------------------------------------------------------------------
+libgcm
+======
+New Feature
+
+- On the SPU library, PIC (Position Independent Code) is now supported.
+  Along with this, the following file has been added.
+  - cell\target\spu\lib\pic\libgcm_spu.a
+
+- To the SPU library, cellGcmSetupContextData() function which sets up
+  the context data structure has been added.
+
+- cellGcmCgGetVertexUserClipMask() function has been added. 
+  This obtains user clip mask information that the vertex program has.
+
+- cellGcmCgGetInstructionSlot() function has been added to obtain 
+  a slot number of load destination for the vertex program. 
+
+
+Sample Changes (cell\samples\sdk\graphics\gcm\stereo_font)
+
+- The specification has been changed as below:
+  - A modification has been made so as to dynamically generate fonts
+    using libfont.
+  - A modification has been made so as to call cellGcmSetupContextData()
+   in the SPU program.
+
+cgutil
+======
+New Feature
+
+- The function cellGcmCgGetVertexUserClipMask(), which obtains the user 
+  clip mask information that the vertex program has, has been added 
+  to the libraries / header files under cell\host-win32\Cg. 
+
+Sample Changes (cell\samples\util\Cg\getheader)
+- The getprofile sample has been relocated.
+  (Before migration) cell\host-win32\Cg\sample host-linux\Cg\sample\getprofile
+  (After migration) cell\samples\util\Cg
+
+GCM Method Macro
+================
+New Feature
+
+- A beta version of Runtime library is now provided. 
+  This validates a command buffer, which is created with GCM Method 
+  Macro by a user.
+  Along with this, the following library and a header file have been added.
+  - cell\target\ppu\lib\libdbg_gcm_method_check.a
+  - cell\target\ppu\include\cell\gcm\gcm_method_check.h
+
+- A modification has been made so that the GCM Method Macro could 
+  be used as an offline library or as a SPU library.
+  Along with this change, the following header files have been added.
+  - cell\host-common\include\cell\gcm\gcm_method_data.h
+  - cell\target\spu\include\cell\gcm\gcm_method_data.h
+
+libgcm_pm
+=========
+New Feature
+
+- The following functions, relating to a marker command, have been added
+  to the SPU library. 
+  - cellGcmSetPerfMonMarker()
+  - cellGcmSetPerfMonPushMarker()
+  - cellGcmSetPerfMonPopMarker()
+
+- The followings have been added as events (events of GCLK domain) 
+  which occur in each unit in the Geometry block 
+  - CELL_GCM_PM_HCLK_CELL_MASTER_LOCAL_MEM_READ
+  - CELL_GCM_PM_GCLK_HOST2FE_METHOD_ACTIVE
+  - CELL_GCM_PM_GCLK_HOST2FE_METHOD_IDLE
+  - CELL_GCM_PM_GCLK_HOST2FE_METHOD_STALLING
+  - CELL_GCM_PM_GCLK_HOST2FE_METHOD_STARVING
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+New Feature
+
+- Using Jump-to-self, you can now synchronize RSX(R) and SPU.
+  Since Jump-to-self is now supported, the following functions 
+  have been added to the libraries on the PPU side.
+  - psglFillCommandBufferHole()
+  - psglDrawCommandBufferHole()
+  - psglGenerateCommandBufferHole()
+  - psglValidateStates()
+  - psglInvalidateStates()
+  - psglValidateAttributes()
+  - psglInvalidateAttributes()
+
+- In glEnable() and glDisable(), it has been enabled to specify 
+  GL_FRAGMENT_PROGRAM_CONTROL_CONTROLTXP_SCE.
+
+- Memory management, which is done inside the PSGL, has been enhanced.
+  Fragmentation of memory has been improved with faster memory allocation.
+
+- In glReadPixels(), it has been enabled to obtain a pixel from top down
+  direction of the Y axis.
+  To obtain the pixel from top down direction of the Y axis, specify 
+  a negative value to the fourth argument "height" of glReadPixels().
+
+  # Start from upper left
+  glReadPixels(0,1080,1920,-1080, ... );
+
+- The bounce buffer has been removed due to the improvement made 
+  in the memory management.
+  Accordingly, the behaviors of the following PSGL functions have been
+  changed as follows:
+
+  - psglSetBounceBufferSize() is returned without performing any 
+    processing.
+  - psglGetBounceBufferSize() always returns 0.
+
+- In glMapBuffer(), GL_OUT_OF_MEMORY may occur do to the change 
+  in the memory management. GL_OUT_OF_MEMORY is more likely to occur
+  especially when GL_WRITE_ONLY is specified to the second argument 
+  "access" and mapping/unmapping are repeated.
+  Please refer to the "Graphics Memory Management" section of the 
+  "PlayStation(R) Graphics Library Programming Guide" for more details.
+
+----------------------------------------------------------------------
+Sound related
+----------------------------------------------------------------------
+libaudio
+========
+Specification Changes
+
+- Behavior of audio process in the system layer has been improved. 
+  By this change, stability in audio data processing has been increased
+  even when the data has a deficit.
+
+libmstream
+==========
+Specification Changes
+- _nFlags has been added as a sixth argument of InitialiseAudio() that
+  is described in the following files: 
+    - mscommon.cpp
+    - mscommon.h
+
+  Also, it has been changed to call cellMSSystemInitSPUThread() with 
+  _nFlags assigned in "flags" of the CellMSSystemConfig structure.
+
+  Note that because _nFlags is a default argument, if no value 
+  is specified to nFlags when calling InitialiseAudio(), the default
+  value CELL_MS_NOFLAGS will be assigned in nFlags.
+
+Sample Changes (cell\samples\sdk\sound\multistream)
+
+- Along with specification changes of Toolchain 240, the description 
+  of the default include path has been changed as below: 
+  (Before change) #include <*.h>
+  (After change) #include <sys\*.h>
+
+  As for details of specification changes in Toolchain 240, 
+  please see the cell\info\Changes_Toolchain_41_*.txt.
+
+- The temporary path of SNC has been modified.A ":" (colon) has been 
+  added to the SAMPLE_CELL_SDK path, which is used for SNC. 
+  By this change, the path "c:\usr\local\cell" is now available 
+  for samples which are built on Windows environment.
+
+- The following sample data has been added to be used 
+  for the simple_mp3chain.
+  - cell\sample_data\sound\multistream\waveform\loop_mp3_1.msf
+  - cell\sample_data\sound\multistream\waveform\loop_mp3_2.msf
+
+libscream
+=========
+
+Sample Changes (cell\samples\sdk\sound\scream)
+
+- Along with specification changes in Toolchain 240, the description 
+  of the default include path has been changed as below: 
+  (Before change) #include <*.h>
+  (After change) #include <sys\*.h>
+
+  As for details of specification changes in Toolchain 240, 
+  please see the cell\info\Changes_Toolchain_41_*.txt.
+
+----------------------------------------------------------------------
+codec
+----------------------------------------------------------------------
+Common
+====
+Sample Changes (cell\samples\sdk\codec, cell\samples\sdk\sail)
+
+- To reduce SDK package capacity, the following sample data has been 
+  removed: 
+    - cell\sample_data\codec\sample1_pamf_avc_720x480p_atrac_multi.pam
+    - cell\sample_data\codec\sample1_pamf_m2v_1280x720p_ac3_multi.pam
+
+  Along with this change, the stream data has been modified 
+  that was used in the codec samples below:
+  As for details, please see the readme_*.txt of each sample.
+
+   - cell\samples\sdk\codec\pamf_dmux
+   - cell\samples\sdk\codec\pamf_dmux_trick_play
+   - cell\samples\sdk\sail
+libadec
+=======
+New Feature
+
+- CELP8 decoder has been added to the libadec module. Along with this,
+  the following files have been added.
+
+    cell\sample_data\codec\sin_8000_mpe0.celp
+    cell\sample_data\codec\sin_8000_mpe12_0.celp
+    cell\sample_data\codec\sin_8000_mpe12_1.celp
+    cell\sample_data\codec\sin_8000_mpe12_2.celp
+    cell\sample_data\codec\sin_8000_mpe12_3.celp
+
+libsail
+=======
+New Feature
+
+- A trick play feature has been added.
+  Along with this, the following constants have been added to be 
+  specified for the CellSailStartCommand structure.
+
+  - Constants to be specified for startType.
+    - CELL_SAIL_START_TIME_SCALE
+    - CELL_SAIL_START_EP_SKIP
+    - CELL_SAIL_START_EP_SKIP_REVERSE
+    - CELL_SAIL_START_FRAME_STEP
+
+  - Constant to be specified for seekType.
+    - CELL_SAIL_SEEK_CURRENT_POSITION
+
+  - Constants to be specified for flags.
+    - CELL_SAIL_START_FLAG_PAUSE_BEGIN
+    - CELL_SAIL_START_FLAG_PAUSE_END
+
+- A modification has been made so that index in OpenDML(AVI2.0) format
+  would be supported during AVI file replaying.
+
+Specification Changes
+
+- In the previous specification, only MP4 files created with 
+  the recording utility were supported on libsail. 
+  This has been changed to support general MP4 files as well since 240. 
+
+Sample Changes (cell\samples\sdk\sail)
+
+- The trick play feature has been added to the simple_player 
+  / psgl_player samples.
+
+- Along with specification changes in PSGL, the flag has been modified 
+  as below that is specified for the second argument "access" 
+  of glMapBuffer() of the psgl_player sample.
+
+  (Before change) GL_WRITE_ONLY
+  (After change) GL_READ_WRITE
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+New Feature
+
+- A modification has been made so as to read cgb-formatted binary.
+
+- In the SDK document package, "NVShaderPerf User's Guide" is provided.
+  Along with this, cell\host-win32\Cg\bin\NVShaderPerfReadme_*.txt 
+  has been removed.
+  As for new features, changes, known bugs and limitations of NVShaderPerf,
+  please see the documents under cell\info.
+  As for detailed usage and how to install, please see the 
+  "NVShaderPerf User's Guide" document.
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+Sample Change (cell\samples\sdk\control_console)
+
+- In SDK220.002, a Control Console Client API and a Control Console 
+  Client API sample have been provided. 
+
+  Accordingly, the following samples that show how to create a Windows
+  client that we do not currently recommend have been deleted 
+  from the SDK240 sample package:
+
+  - cell\samples\sdk\control_console\perf_gui
+  - cell\samples\sdk\control_console\deci3_console_terminal
+  - cell\samples\sdk\control_console\basic
+
+  To create a Windows client for the Control Console in the future,
+  please use the following sample:
+  - cell\samples\sdk\control_console\control_console_client_api
+
+----------------------------------------------------------------------
+Sample Programs
+----------------------------------------------------------------------
+Migration of libpad functions / structure
+====================================
+
+Modifications have been made so that old (Before change) functions 
+/ structure would be replaced with the new (After change) ones 
+in the samples. 
+Please note that the (Before change) functions / structure will be 
+prohibited on game applications in SDK250. So, please migrate to 
+the (After change) ones.
+
+
+  --------------------------------------------------------
+  Before migration                  After migration
+  --------------------------------------------------------
+  [Functions]                      [Functions]
+  cellPadGetInfo()                 cellPadGetInfo2()
+  cellPadInfoPressMode()           cellPadGetInfo2()
+  cellPadInfoSensorMode()          cellPadGetInfo2()
+  cellPadGetCapabilityInfo()       cellPadGetInfo2()
+  cellPadSetPressMode()            cellPadSetPortSetting()
+  cellPadSetSensorMode()           cellPadSetPortSetting()
+  --------------------------------------------------------
+  [Structure]                        [Structure]
+  CellPadInfo                       CellPadInfo2
+  --------------------------------------------------------
+<Sample list in target>
+  - samples\sdk\network\np\np_gui_commerce2
+  - samples\sdk\network\np\np_gui_commerce
+  - samples\sdk\network\np\game_purchase
+  - samples\sdk\network\np\np_matching2
+  - samples\sdk\network\np\np_gui
+  - samples\sdk\network\np\common\Input
+  - samples\sdk\voice\Chat
+  - samples\sdk\hid\combine
+  - samples\sdk\hid\pad
+  - samples\sdk\sysutil\subdisplay\msgdialog
+  - samples\sdk\sysutil\video\resolution
+  - samples\sdk\sysutil\video_export
+  - samples\sdk\sysutil\gameupdate
+  - samples\sdk\sysutil\search
+  - samples\sdk\sysutil\discgame\getbootdiscinfo
+  - samples\sdk\sysutil\storagedata
+  - samples\sdk\sysutil\syscache
+  - samples\sdk\sysutil\msgdialog
+  - samples\sdk\sysutil\hddgame\makedir
+  - samples\sdk\sysutil\hddgame\basic
+  - samples\sdk\sysutil\gameexec
+  - samples\sdk\sysutil\music_export
+  - samples\sdk\sysutil\osk_dialog
+  - samples\sdk\sysutil\music
+  - samples\sdk\sysutil\bgdl
+  - samples\sdk\sysutil\music2
+  - samples\sdk\sysutil\recording
+  - samples\sdk\sysutil\sysconf
+  - samples\sdk\sysutil\print
+  - samples\sdk\sysutil\webbrowser
+  - samples\sdk\sysutil\video_upload
+  - samples\sdk\sysutil\userinfo
+  - samples\sdk\sysutil\gameupdate_system
+  - samples\sdk\sysutil\gamedata
+  - samples\sdk\sysutil\savedata\delete
+  - samples\sdk\sysutil\savedata\user
+  - samples\sdk\sysutil\savedata\copy
+  - samples\sdk\sysutil\savedata\basic
+  - samples\sdk\sysutil\gamecontent
+  - samples\sdk\sysutil\photo
+  - samples\sdk\libfs\discfs\change_disc
+  - samples\sdk\lv2\vm_and_webbrowser
+  - samples\sdk\graphics\snavi\src
+  - samples\sdk\graphics\psgl\Common
+  - samples\sdk\mic\feedback_dbgoutput
+  - samples\sdk\mic\multimics
+  - samples\sdk\mic\feedback
+  - samples\sdk\sound\snd3\runhorse_mixer
+  - samples\sdk\sound\snd3\playsmf
+  - samples\sdk\sound\snd3\playsmf_mixer
+  - samples\sdk\sound\snd3\runhorse
+  - samples\sdk\sound\mixer\check8ch
+  - samples\sdk\sound\demo\slope
+  - samples\sdk\sound\synth2\whole
+  - samples\sdk\sound\audio\playaudio
+  - samples\sdk\control_console\pad_grapher
+  - samples\sdk\camera\common
+  - samples\sdk\codec\pamf_dmux_trick_play
+  - samples\fw\src\cell
+  - samples\tutorial\DeferredShading\source
+  - samples\tutorial\ImageProcessing\demosaic
+  - samples\common\padutil
+
+Provision of CgTutorial sample in a separate package
+====================================================
+- The CgTutorial sample that is placed under cell\samples\tutorial\CgTutoria
+  will be deleted from the SDK package. Instead, it will be provided in
+  a separate package later.
+
+New Samples
+============
+- samples\common\fiber\spu
+  SPU Fiber Utility
+
+- samples\sdk\fiber\spu_context
+  This sample shows a simple usage of SPU fiber
+.
+- samples\sdk\fiber\advanced\pointer_chasing
+  This sample detects the pointer to the main memory 
+  (performs pointer chasing) using SPU fiber.
+
+- samples\common\spurs\job_queue
+  This sample shows how to use WorkQueue library which operates 
+  on the SPURS tasks.
+
+- samples\sdk\spu_library\libspurs\advanced\hierarchical_astar
+  This sample finds routes by hierarchical A* algorithm using multiple SPUs.
+
+- samples\sdk\spu_library\libspurs\advanced\sdata
+  This sample shows how to store the SPURS job binary and ELF of task 
+  into the SDATA file before retrieving them from the file and executing them.  
+
+- samples\sdk\spu_library\libspurs\advanced\lua_on_spu
+  This sample performs Lua on SPU.
+
+- samples\sdk\spu_library\libswcache\linked_list_sort
+  This sample describes how to use the basic features of libswcache.
+
+- samples\sdk\spu_library\libswcache\main_memory_access_from_spu
+  This sample handles data in the linked list form on the main memory 
+  using the SPU.
+
+- samples\sdk\libfs\general\sdata_open
+  This sample shows how to read SDATA files using cellFsSdataOpen(),
+  and how to read SDATA files in MSELF files using cellFsSdataOpenByFd().
+
+- samples\sdk\libfs\general\read_with_offset
+  This sample compares the performance time of random accessing 
+  between when both cellFsLseek() and cellFsRead() are used and 
+  when cellFsReadWithOffset() is used.
+
+- samples\sdk\sysutil\avc2\videochat
+  This sample performs voice chat using the AV Chat 2 utility. 
+
+- samples\sdk\sysutil\bgmplayback
+  This sample controls the system BGM playback. 
+  It is an extended version of the cell\samples\sdk\graphics\gcm\basic
+  sample with a control processing of the system BGM playback newly added.
+
+- samples\util\Cg\getheader
+  This sample shows header information of a Shader file in 
+  NV Binary format using cgutil.
+
+- samples\sdk\graphics\psgl\Tutorial\9_AsyncRead
+  This sample obtains screenshots at a fast-pace using PBO and 
+  glReadPixels().
+
+- samples\sdk\graphics\psgl\Advanced\SpuCullingSkinning
+  This sample performs vertex skinning on SPU and culling of triangles,
+  while reducing potential bottlenecks (including the one for fetching
+  vertex attribute).
+
+- samples\sdk\voice\LoopbackTest
+  This sample simply performs loop back test using the libvoice API.
+  This sample outputs audio which is input from a microphone, by reading
+  from the CELLVOICE_PORTTYPE_OUT_VOICE port and then writing out 
+  to the CELLVOICE_PORTTYPE_IN_VOICE.
+
+- samples\sdk\voice\Chat
+  This sample shows how to chat on local network, using APIs of libvoice.
+  Also, chat is supported on both of the formats, peer-to-peer and 
+  client / server.
+  When this sample is used in the client/server configuration, the maximum 
+  number of instances that can be encoded is 4 which is the specification
+  of libvoice.
+ 
+- samples\sdk\sound\multistream\simple_mp3stream
+  This sample shows how to perform loop playback, while resizing 
+  the buffer for the stream data, which is encoded in MP3.
+
+- samples\sdk\sound\multistream\simple_mp3chain
+  This sample performs continuous playback of multiple MP3 files, 
+  using a buffer whose size was changed.
+
+- samples\sdk\sound\multistream\simple_logging
+  This sample shows how to configure MultiStream to record audio output
+  and to output to WAV files without using libaudio.
+- sample\sdk\sail\sync_control
+  This sample controls the non-blocking function libsail as a blocking
+  function, using wrapper functions and classes.
+
+- sample\sdk\sail\sync_control
+  This sample controls the non-blocking function libsail as a blocking
+  function, using wrapper functions and classes.
+
+- sample\sdk\codec\celp8_dec
+  This sample shows how to output / decode CELP8, using the Audio Codec
+  AL library.
+
+- sample\sdk\codec\celp8_dec_multi
+  This sample shows how to output / decode CELP8, using the Audio Codec
+  AL library.
+  With CELP decoder, this performs multi-stream decoding.
+
+- samples\sdk\network\np\nptrophy_navi
+  This sample aims to get kinds and details of a trophy.
+  It browses and unlocks (a processing to award a user with a trophy) 
+  trophies in the game application. 
+  This sample displays the trophies in thumbnailed form, and navigates
+  through among awarded trophies.
+
+- samples\sdk\network\np\np_basic
+  This sample shows how to use basic features of PLAYSTATION(R)Network,
+  using PLAYSTATION(R)Network libraries.
+
+- samples\sdk\network\np\np_matching2\np_matching2_room_pinginfo
+  This sample displays the measurement result of RTT between the user
+  and the owner of each room that is searched using the NP matching 2
+  utility.
+
+- samples\sdk\network\np\np_manager
+  This sample shows how to use the NP manager utility.
+
+- samples\sdk\ad\simpleSample
+  This sample shows basic usage of libad library, step by step.
+  This sample shows how to connect a context and how to report response
+  to new ads after they are downloaded.
+
+
+- samples\sdk\ad\integrationSample
+  This sample shows how to build libad into existing game applications.
+
+  In the program of the sample, comments are inserted to distinguish 
+  the part where libad is built-in from the existing program.
+
+- samples\util\theme\01\
+  p3tcompiler.exe is a program for Windows that creates a theme file 
+  for PLAYSTATION(R)3 based on the XML file and the material data.
+
+- samples\tutorial\performance_tips\Cell\advanced\filter
+  This sample executes a convolution filter of which the kernel size 
+  is variable using multiple SPUs.
+
+Added project file
+==================
+A project file has been added to the following sample program for
+ProDG for PLAYSTATION(R)3.
+
+- samples\util\Cg\getprofile
+- samples\common\spurs\ppu\job
+- samples\sdk\network\np\game_purchase
+- samples\sdk\sail\text_user_data
+- samples\util\cxml\lib\src\cxmlaccess
+- samples\util\cxml\lib\src\cxmlutil
+- samples\util\cxml\read
+- samples\util\cxml\write
+
+As for other sample programs, project files will be added when they 
+are ready.
+
+Changes in Project Files 
+========================
+The versions of the solution file for VisualStudio and the project file
+for ProDG for PLAYSTATION(R)3 that are placed under cell\samples\ 
+have been changed from VisualStudio 2003 to VisualStudio 2005.
+
+----------------------------------------------------------------------

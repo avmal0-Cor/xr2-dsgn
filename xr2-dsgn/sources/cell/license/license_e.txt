@@ -1,0 +1,259 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 320.001
+                    Copyright(C) 2010 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+This file contains the description about the trademarks and 
+the license notices for the software included in the Reference Tool 
+or this package in the following order.
+
+   1. Note on Trademarks
+   2. Note on Licenses and Restrictions on Use - Title Application
+   3. Note on Licenses - Reference Tool and PlayStation(R)3 Console
+   4. Note on License - Other
+
+----------------------------------------------------------------------
+1. Note on Trademarks
+----------------------------------------------------------------------
+"PlayStation","PLAYSTATION","PS3","RSX","PSP","SIXAXIS" and 
+"Cell Broadband Engine" are either registered trademarks or
+trademarks of Sony Computer Entertainment Inc.
+"XMB" is a trademark of Sony Corporation and Sony Computer Entertainment Inc.
+
+"Memory Stick" and "ATRAC" are trademarks of Sony Corporation.
+"Blu-ray Disc" is a trademark.
+The Bluetooth word mark and logos are owned by the Bluetooth SIG, Inc.
+and any use of such marks by Sony Computer Entertainment Inc. is under 
+license.
+
+"DTS" is a registered trademark of DTS, Inc.
+Sony Computer Entertainment Inc. is an authorized licensee of 
+the CompactFlash(R) registered trademark.
+
+"HDMI" is a trademark or a registered trademark of HDMI Licensing LLC.
+
+"EyeToy" is a trademark of Sony Computer Entertainment Europe in Japan 
+and covers the specification of goods for video game software. 
+
+"DivX(R) and associated logos are trademarks of DivX, Inc. 
+and are used under license."
+This attribution must be displayed where other legal attributions are
+displayed on the packaging and documentation of the Digital Content(s)
+or on Licensee's website and/or marketing materials.
+
+Please contact SCE regarding the licenses for the DivX(R).
+
+"PhyreEngine" is a trademark of Sony Computer Entertainment Europe.
+
+All other product and company names mentioned herein, with or without 
+the registered trademark symbol (R) , trademark symbol (TM) or 
+service mark symbol (SM) , are generally trademarks and/or registered 
+trademarks of their respective owners.
+
+----------------------------------------------------------------------
+2. Note on Licenses and Restrictions on Use - Title Application
+----------------------------------------------------------------------
+When using the following library in a title application, please follow
+the restrictions below.
+
+PPU libmt19937.a
+================
+  libmt19937.a uses Mersenne Twister. 
+  Please refer to mt19937.txt in the "others" folder.
+
+  When using the PPU libmt19937.a in a title application, it is 
+  mandatory to have the following notice on the software manual 
+  of the title.
+
+  "This product uses Mersenne Twister.
+    For details, please refer to http://www.scei.co.jp/ps3-license/index.html."
+
+libluautil.a and liblua.a
+=========================
+    "libluautil.a" and "liblua.a" in the following samples use Lua 5.1.
+
+    - cell\samples\tutorial\script\lua_sample
+    - cell\samples\sdk\spu_library\libspurs\advanced\lua_on_spu
+
+    Refer to "Lua50.txt" in the others folder.
+    The sentences in the text file must be written to an instrution
+    manuals of a game application, if those libraries are used in
+    the appliation.
+
+----------------------------------------------------------------------
+3. Note on Licenses - Reference Tool and PlayStation(R)3 Console
+----------------------------------------------------------------------
+Reference Tool and/or PlayStation(R)3 console contain the following 
+software; therefore, the license notices on these software are either
+written in the instruction manual or displayed on the console screen.
+These notices do not need to be given by the title application as long
+as the software is used with the library included in this package. 
+
+AC3 (Dolby Digital)
+  Manufactured under license from Dolby Laboratories.
+  "Dolby" is a trademark of Dolby Laboratories.
+
+AMG
+  (c) 2006 All Media Guide, LLC
+  Content and technology provided by All Media Guide (R).
+
+Anti-Grain Geometry
+  Anti-Grain Geometry - Version 2.0
+  Copyright (C) 2002-2004 Maxim Shemanarev (McSeem)
+  Permission to copy, use, modify, sell and distribute this software
+  is granted provided this copyright notice appears in all copies.
+  This software is provided "as is" without express or implied
+  warranty, and with no claim as to its suitability for any purpose.
+
+ATOK
+  ATOK(R) is a registered trademark of JUSTSYSTEM CORP. in Japan and 
+  other countries.
+
+BCHS
+  Copyright (C) 2004-2006 Cambridge Silicon Radio Ltd,
+
+BSD license
+  Please refer to BSD.txt in the "others" folder.
+
+CLAPACK
+  Please refer to CLAPACK.txt in the "others" folder.
+
+DXT
+  This product adopts S3TC texture compression technology 
+  under license from S3 Graphics, Co., Ltd.
+
+eCOS
+  Please refer to eCOS.txt in the "others" folder.
+
+Expat
+  Please refer to Expat.txt in the "others" folder.
+
+FCollada SDK
+  Please refer to FColladaSDK.txt in the "others" folder.
+
+Flash
+  Contains Macromedia(R) Flash(R) Player technology 
+  by Adobe 
+  Copyright(c) 1995-2006 Adobe Systems Incorporated. 
+  All rights reserved.
+  Flash, Macromedia, and Macromedia Flash are either trademarks 
+  or registered trademarks of Adobe Systems Incorporated in the 
+  United States and/or other countries.
+
+Free BSD License
+  Please refer to FreeBSD.txt in the "others" folder.
+
+FreeType2
+  Portions of this software are copyright(C) 1996-2006 The FreeType 
+  Project (www.freetype.org). All rights reserved.
+
+getopt_long
+  Please refer to getopt_long.txt in the "others" folder.
+
+GIF
+  Copyright (c) 1997 Eric S. Raymond
+
+JPEG
+  This software is based in part on the work of the Independent JPEG Group.
+
+MD4
+  MD4 Message-Digest Algorithm of RSA Data Security, Inc.
+  Please refer to MD4.txt in the "others" folder.
+
+MD5
+  MD5 Message-Digest Algorithm of RSA Data Security, Inc.
+  Please refer to MD5.txt in the "others" folder.
+
+MP3
+  MPEG Layer-3 audio coding technology and patents licensed from 
+  Fraunhofer IIS and Thomson. 
+
+  Please contact SCE when distributing MP3 audio contents to end users 
+  via discs, the network, or any other distribution method.
+
+MPEG4 AVC
+  THIS PRODUCT IS LICENSED UNDER THE AVC PATENT PORTFOLIO LICENSE FOR 
+  THE PERSONAL AND NON-COMMERCIAL USE OF A CONSUMER TO (i) ENCODE VIDEO 
+  IN COMPLIANCE WITH THE AVC STANDARD ("AVC VIDEO") AND/OR (ii) DECODE 
+  AVC VIDEO THAT WAS ENCODED BY A CONSUMER ENGAGED IN A PERSONAL AND 
+  NON-COMMERCIAL ACTIVITY AND/OR WAS OBTAINED FROM A VIDEO PROVIDER 
+  LICENSED TO PROVIDE AVC VIDEO.  NO LICENSE IS GRANTED OR SHALL BE 
+  IMPLIED FOR ANY OTHER USE.  ADDITIONAL INFORMATION MAY BE OBTAINED 
+  FROM MPEG LA, L.L.C.  SEE HTTP://WWW.MPEGLA.COM 
+
+MPEG4 Visual
+  THIS PRODUCT IS LICENSED UNDER THE MPEG-4 VISUAL PATENT PORTFOLIO 
+  LICENSE FOR THE PERSONAL AND NON-COMMERCIAL USE OF A CONSUMER TO 
+  (i) ENCODING VIDEO IN COMPLIANCE WITH THE MPEG-4 VISUAL STANDARD 
+  ("MPEG-4 VIDEO") AND/OR (ii) DECODING MPEG-4 VIDEO THAT WAS ENCODED 
+  BY A CONSUMER ENGAGED IN A PERSONAL AND NON-COMMERCIAL ACTIVITY 
+  AND/OR WAS OBTAINED FROM A VIDEO PROVIDER LICENSED BY MPEG LA TO 
+  PROVIDE MPEG-4 VIDEO.  NO LICENSE IS GRANTED OR SHALL BE IMPLIED FOR
+  ANY OTHER USE.  ADDITIONAL INFORMATION INCLUDING THAT RELATING TO 
+  PROMOTIONAL, INTERNAL AND COMMERCIAL USES AND LICENSING MAY BE 
+  OBTAINED FROM MPEG LA, LLC.  SEE HTTP://WWW.MPEGLA.COM 
+
+NetBSD
+  The communication function includes software developed by
+  the NetBSD Foundation, Inc. and its contributors.
+  Please refer to NetBSD.txt in the "others" folder.
+
+PCRE
+  Please refer to PCRE.txt in the "others" folder.
+
+PlayStation(R)Edge
+  The following samples use the code of PlayStation(R)Edge 1.1.1.
+
+    - cell\samples\tutorial\performance_tips\SpuMixUse
+    - cell\samples\tutorial\performance_tips\Cell\advanced\motion_sample
+
+  Please refer to license_e.txt for more information on the terms 
+  and conditions of PlayStation(R)Edge 1.1.1 stored in the "others" folder
+  for when used with game applications.
+
+SEE
+  Please refer to SEE.txt in the "others" folder.
+
+Squirrel
+  Please refer to Squirrel.txt in the "others" folder.
+
+SSL
+  This product includes RSA BSAFE(R) Cryptographic software from 
+  RSA Security Inc.
+  RSA, BSAFE are either registered trademarks or trademarks of 
+  RSA Security Inc. in the United States and/or other countries.
+  RSA Security Inc. All rights reserved.
+
+TIFF
+  Copyright (c) 1988-1997 Sam Leffler
+  Copyright (c) 1991-1997 Silicon Graphics, Inc.
+
+Zi
+  eZiText(R) and Zi(R) are registered trademarks of Zi Corporation.
+
+All of the Japanese fonts and some parts of the Latin fonts
+  All of the Japanese fonts and some parts of the Latin fonts 
+  in this machine use characters provided by Fontworks Japan, Inc.
+
+----------------------------------------------------------------------
+4. Note on License - Other
+----------------------------------------------------------------------
+When using the following library, the copyright and license notices are
+required.  However, the opt/ultra-opt version (not the debug version), 
+which is used by a title application, does not include this software; 
+therefore, it is unnecessary to have the notice if the application 
+only uses the opt/ultra-opt version of this library.
+
+libPSGL (debug version)
+  Uses the MD5 Message-Digest Algorithm of Aladdin Enterprises available
+  at http://sourceforge.net/project/showfiles.php?group_id=42360.
+  
+  Please refer to Aladdin_Enterprises.txt in the "others" folder.
+
+The FIOS library (libfios.a) uses the zlib(version 1.2.3, July 18th, 2005),
+however, it is not necessary to include information on the license and 
+such in the instruction manual.
+
+The "ppu-lv2-prx-info.exe" uses the zlib(version 1.2.3, July 18th, 2005),
+however, it is not necessary to include information on the license and 
+such in the instruction manual.

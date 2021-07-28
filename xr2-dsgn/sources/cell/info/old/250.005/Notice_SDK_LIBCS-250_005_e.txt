@@ -1,0 +1,24 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 250.005
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+(Added to Release 250.005)
+<PPU>
+- (B#63770)
+  When using libcs.a and specifying a value more than 2GB (0x80000000)
+  to the third argument "n" for the following functions, the calculation
+  is not made correctly.
+   - memcmp
+   - strncasecmp
+   - strncmp
+   - strncat
+

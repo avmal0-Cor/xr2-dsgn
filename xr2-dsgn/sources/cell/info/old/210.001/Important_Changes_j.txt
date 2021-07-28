@@ -1,0 +1,1290 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 200.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 新規ライブラリ及び新規ツール
+----------------------------------------------------------------------
+AVチャット2ユーティリティ
+=========================
+NPマッチング2ユーティリティを用いて開発された、オンライン対戦ゲームに
+対して、ビデオチャットおよびボイスチャットなどの実装を支援するシステム
+ユーティリティ
+
+以下の機能を提供しております。
+- 同一チーム内のメンバによるチームチャットや、指定された特定のメンバ
+  によるプライベートチャットが可能です。
+- 音声通信に利用するネットワーク帯域を段階的に指定できます。
+- 実行に必要なメモリコンテナサイズは4MBとなります。
+- AVチャットユーティリティに比べてPPU負荷、SPU負荷が低減しています。
+
+バックグラウンドダウンロードユーティリティ
+==========================================
+バックグラウンドダウンロードの情報(バックグラウンドダウンロードの状態。
+Run, Pause, Completeなど)を取得するための機能を提供するシステムユーティリティ
+
+ゲームアプリケーションで、ゲームに関係のあるコンテンツ（たとえば
+追加シナリオなど）がバックグラウンドダウンロード中なのかどうかを
+知りたい場合に使用できます。
+詳細については、「バックグラウンドダウンロードユーティリティ概要」及び
+「バックグラウンドダウンロードユーティリティリファレンス」を参照ください。
+
+libjpgenc
+=========
+RGB形式やYCbCr形式などで入力された画像をJPEG形式へエンコードする
+codec関連のライブラリ
+
+SPUまたはPPUを使用してメモリ上に配置された入力画像をエンコードし、メモリ
+またはファイルへ出力します。エンコードされた画像データは、libjpgdecを用いて
+デコードすることができます。
+詳細については、「libjpgdec概要」及び「libjpgdecリファレンス」を参照ください。
+
+これに伴い、以下のサンプルデータを追加しました。
+- cell/sample_data/codec/Beach.bmp
+- cell/sample_data/codec/CherryBlossom.bmp
+- cell/sample_data/codec/Palm.bmp
+- cell/sample_data/codec/Valley.bmp
+
+libpad for Windows
+==================
+Windows 環境で各種コントローラの機能を提供するライブラリ 
+別パッケージで提供していた、libpad for WindowsをSDK210よりSDKの
+パッケージに含めました。
+
+ライブラリ(*.lib,*.dll)のほか、以下のドライバや設定ツールも提供しております。
+- cell/host-win32/include/libpad.h :ヘッダファイル
+- cell/host-win32/bin/sixaxistool.exe :実行ファイル
+- cell/host-win32/bin/sixaxis.inf :インストール用infファイル
+- cell/host-win32/bin/sixaxis.sys :ドライバファイル
+- cell/host-win32/bin/libpad.dll :ライブラリファイル
+- cell/host-win32/lib/libpad.lib :インポートライブラリ
+
+詳細については、「libpad for Windows概要」を参照ください。
+
+----------------------------------------------------------------------
+2 システムソフトウェア(GUI)
+----------------------------------------------------------------------
+新規機能
+
+- ゲーム列で行うコンテンツ情報のチェック機能を以下のコンテンツにおいても
+  対応しました。
+  - ディスク起動ゲーム
+  - セーブデータ(内蔵ハードディスクドライブ以外に保存されたもの)
+
+- ゲーム列で行うHDD起動ゲームのチェック機能にゲーム起動ファイル(EBOOT.BIN)の
+  チェックを追加しました。
+
+- システムソフトウェアに以下のメニューを追加しました。 
+  詳細については、「システムソフトウェア概要」ドキュメントを参照してください。
+  - 設定 -> Debug Settings -> Boot Mode 
+    用途に応じて起動モードを切り替えます。
+  - 設定 -> Debug Settings -> User Process Memory Size 
+    Reference Toolのみのメニュー項目で、ユーザプロセスに割り当てるメモリの
+    サイズを変更します。
+  - 設定 -> Debug Settings -> Blu-ray Disc Access 
+    BDエミュレータの動作を切り替えます。
+  - 設定 -> Debug Settings -> Transfer Rate Pacing for BD Emulator 
+    BDエミュレータ用ハードディスクドライブからのデータ転送速度を調整するか
+    どうかを指定します。
+  - 設定 -> Debug Settings -> HOSTFS Network 
+    HOSTFSが経由するネットワークを切り替えます。
+
+仕様変更
+
+- SDK210の環境で作成されたディスク起動ゲームのディスクより、ゲームアプリ
+  ケーション起動中にディスクがイジェクトされた場合、ゲーム終了フローに
+  進むように変更しました。
+  ディスク入れ替え等でディスクイジェクトによるゲーム終了を抑制する場合は、
+  ディスク起動ゲームユーティリティの機能を使用してください。
+  詳細は「ディスク起動ゲームユーティリティ概要」を参照してください。
+
+- ゲーム -> ゲームデータ管理 におけるゲームデータの情報画面から
+  視聴年齢制限の項目を削除しました。
+
+- ゲーム -> セーブデータ管理 におけるセーブデータの情報画面から
+  視聴年齢制限の項目を削除しました。
+
+----------------------------------------------------------------------
+3 libsysmodule
+----------------------------------------------------------------------
+新規機能
+
+- モジュールをロードする ID を追加しました。
+  -------------------------------------------------------------------
+  ID                              説明
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_BGDL             バックグラウンドダウンロードユーティリティ
+  CELL_SYSMODULE_SYSUTIL_AVCHAT2  AVチャット2ユーティリティ
+  CELL_SYSMODULE_JPGENC           libjpenc(JPEGエンコーダ)
+  -------------------------------------------------------------------
+
+----------------------------------------------------------------------
+4 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+全体
+====
+新規機能
+
+- 各システムユーティリティのヘッダファイル
+  （cell/target/ppu/include/sysutil/sysutil_xxxx.h)において、
+  メモリコンテナサイズのマクロ定義(CELL_XXXXXX_MEMORY_CONTAINER_SIZE)を
+  追加しました。
+
+ゲームデータユーティリティ
+==========================
+仕様変更
+
+- cellGameDataCheckCreate()を廃止しcellGameDataCheckCreate2()へ
+  移行となりました。
+  ヘッダファイルからcellGameDataCheckCreate()の定義を削除したため、
+  ゲームアプリケーションでの移行をお願いします。 
+
+  << cellGameDataCheckCreate2()移行の際の注意点 >> 
+  cellGameDataCheckCreate2()の仕様は、データステータスコールバックで
+  正確なディレクトリサイズが返らない場合があるという点のみ、
+  cellGameDataCheckCreate()と異なります。 
+  正確なディレクトリサイズの取得を行う場合は、cellGameDataGetSizeKB()を
+  ご使用ください。
+
+- ゲームデータにおいて視聴年齢制限の運用を廃止しました。そのため
+  CellGameDataSystemFileParam構造体のメンバparentalLevelとattributeを
+  reserved3に変更しました。ゲームアプリケーションにおいても、
+  parentalLevelとattributeを参照していた部分のコードを削除する必要が
+  ありますので、cell/samples/sdk/sysutil/gamedataサンプルを参考に
+  ゲームアプリケーションのコードの変更をお願いいたします。 
+
+  なお、この視聴年齢制限の運用廃止に伴い、システムソフトウェア(GUI)では
+  ゲームデータの情報画面の視聴年齢制限の項目削除を行いました。
+
+- cellGameDataCheckCreate2()が内部で使用する必要なメモリコンテナサイズを、
+  3MBから2MBに削減しました。
+
+サンプルの変更(cell/samples/sdk/sysutil/gamedata)
+
+- ゲームデータユーティリティの仕様変更に伴い、以下の変更を行いました。
+  - cellGameDataCheckCreate2()使用時のメモリコンテナサイズを2MBに変更
+  - CellGameDataSystemFileParam構造体メンバparentalLevelとattributeに
+    関する記述を削除
+
+セーブデータユーティリティ
+==========================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_savedata.hにおいて、
+  以下のメモリコンテナサイズのマクロ定義を追加しました。 
+
+#define CELL_SAVEDATA_AUTO_MEMORY_CONTAINER_SIZE	(3*1024*1024)  
+#define CELL_SAVEDATA_FIXED_MEMORY_CONTAINER_SIZE	(3*1024*1024)  
+#define CELL_SAVEDATA_LIST_MEMORY_CONTAINER_SIZE	(5*1024*1024)  
+#define CELL_SAVEDATA_COPY_MEMORY_CONTAINER_SIZE	(4*1024*1024)
+
+- セーブデータのオートセーブまたはオートロードの処理状況をユーザに
+  知らせるインジケータの表示が出来るようになりました。 
+
+  インジケータ表示機能を使用する場合はCellSaveDataAutoIndicator構造体を
+  用いて設定を行います。CellSaveDataAutoIndicator構造体の各メンバに
+  適切な値を設定した後に構造体のポインタをデータステータスコールバックに
+  渡されるCellSaveDataStatSet構造体のindicatorメンバに設定して下さい。 
+
+  なお、indicator = NULL の場合は、従来の仕様とおりインジケータの表示無し
+  の設定となります。これに伴い、CellSaveDataStatSet 構造体のreserved メンバを
+  以下のように変更しました。
+    (変更前) void *reserved;
+    (変更後) CellSaveDataAutoIndicator *indicator;
+  互換性を保つ仕様にしておりますがゲームアプリケーションで
+  CellSaveDataStatSet構造体を使用している箇所は、メンバの移行をお願いします。
+
+- セーブデータのディレクトリ名を複数指定する場合の最大文字列長の以下の
+  マクロ定義をcell/target/ppu/include/sysutil/sysutil_savedata.hに
+  追加しました。この最大文字列長を超えた場合、関数よりエラーを返します。 
+
+  CELL_SAVEDATA_PREFIX_SIZE = 256  /*J 複数指定プレフィクス最大サイズ */
+
+- SDK200.002において、以下の機能追加を行いました。 
+ （SDK200.002リリースの際に記載が欠落しておりました） 
+  CellSaveDataStatGet構造体のメンバbindに格納されるバインドエラーの
+  マクロとして以下を追加しました。
+
+  - CELL_SAVEDATA_BINDSTAT_ERR_NOUSERID : ユーザIDが記録されていない
+  - CELL_SAVEDATA_BINDSTAT_ERR_USERID : 他のユーザIDを持つユーザに保存された
+
+仕様変更
+
+- ゲームデータと同様に、視聴年齢制限の運用を廃止し、パレンタルロック
+  レベルによるセーブデータの表示制限をなくしました。
+  これにより、cellSaveDataDelete()および cellSaveDataListDelete() 
+  において、パレンタルロックレベルの設定に関わらず、全てのセーブデータの
+  サムネイルとタイトル、サブタイトル、詳細情報が表示するようになります。
+
+  この視聴年齢制限の運用廃止に伴い、システムソフトウェア(GUI)では
+  セーブデータの情報画面の視聴年齢制限の項目削除を行いました。 
+  この変更に伴い、CellSaveDataSystemFileParam 構造体のメンバを
+  以下のように変更しました。 
+
+    (変更前) unsigned int parentalLevel;  
+    (変更後) char reserved2[4]; 
+
+             reserved2配列には全てゼロを設定するようにしてください。 
+             <ex>   
+             memset( reserved2, 0x0, sizeof(reserved2)/sizeof(reserved2[0]) );
+
+サンプルの変更(cell/sdk/samples/sdk/sysutil/savedata)
+
+- cell/samples/sdk/sysutil/savedata/以下のすべてのサンプルにおいて、
+  cell/target/ppu/include/sysutil/sysutil_savedata.hで定義した
+  メモリコンテナサイズのマクロを使用するように変更しました。
+
+- basicおよびuserサンプルにおいて、以下の変更を行いました。
+  - インジケータ表示機能の処理を追加
+  - パレンタルロックレベルによるセーブデータの表示制限の廃止に伴う対応
+
+- インジケータ表示機能の追加に伴い、basicサンプルのインジケータ表示で
+  使用する、以下の画像ファイルを追加しました。
+    cell/samples/sdk/sysutil/savedata/basic/DATA/MISC/NOW-SAVING.PNG 
+    cell/samples/sdk/sysutil/savedata/basic/DATA/MISC/NOW-LOADING.PNG
+
+ストレージデータユーティリティ
+==============================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_storagedata.hにおいて、
+  以下のメモリコンテナサイズのマクロ定義を追加しました。 
+  #define CELL_STORAGEDATA_MEMORY_CONTAINER_SIZE   (4*1024*1024)
+
+仕様変更
+
+- ストレージメディア上において、処理を行う対象のセーブデータ
+  ディレクトリが存在しない場合に表示するメッセージを変更しました。
+
+  (変更前) 書き出せません(取り込めません) 記録メディアを確認してください。
+  (変更後) 書き出せません(取り込めません) 記録メディアにデータがありません。
+
+サンプルの変更(cell/samples/sdk/sysutil/storagedata)
+
+- サンプルにおいて、cell/target/ppu/include/sysutil/sysutil_storagedata.hで
+  定義したメモリコンテナサイズのマクロを使用するように変更しました。
+
+ミュージックユーティリティ
+==========================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_music.hにおいて、以下の
+  メモリコンテナサイズのマクロ定義を追加しました。
+  // Music Utility（必須＋再生機能用メモリコンテナサイズ） 
+  #define CELL_MUSIC_PLAYBACK_MEMORY_CONTAINER_SIZE  (11 * 1024 * 1024)
+  // Music Utility（選択機能用メモリコンテナサイズ） 
+  #define CELL_MUSIC_SELECT_CONTENTS_MEMORY_CONTAINER_SIZE  (5 * 1024 * 1024)
+
+サンプルの変更(cell/samples/sdk/sysutil/music)
+
+- メモリコンテナサイズのマクロ(CELL_MUSIC_PLAYBACK_MEMORY_CONTAINER_SIZE
+  およびCELL_MUSIC_SELECT_CONTENTS_MEMORY_CONTAINER_SIZE)を使用するように
+  変更しました。
+
+フォトユーティリティ
+====================
+新規機能
+
+- インポートしたフォトファイルについて、以下の機能を追加しました。
+  詳細については、「フォトユーティリティ 概要」および「フォトユーティリティ
+  リファレンス」を参照ください。
+
+  - フォトファイルの補足情報（width, height, rotate, format）取得
+  - フォトファイルのgame_titleおよびgame_commentの取得
+
+  上記の機能追加に伴い、CellPhotoImportFileDataSub構造体の追加および、
+  CellPhotoImportFileData構造体のメンバを以下のように変更しました。 
+
+  (変更前)
+    void *reserved1;
+    void *reserved2;
+  (変更後)
+    CellPhotoImportFileDataSub* data_sub;
+    void *reserved;
+
+サンプルの変更（cell/samples/sdk/sysutil/photo）
+
+- フォトファイルのインポート時に補足情報、game_title、game_commentを
+  表示するようにしました。
+
+録画ユーティリティ
+==================
+新規機能
+- 5.1および7.1 チャンネルオーディオのキャプチャに対応しました。 
+  ゲームアプリケーション側の出力設定を自動判定してキャプチャを行うため、
+  ゲームアプリケーション側にて新たな設定は必要ありません。 
+  生成する動画ファイルの音声は、キャプチャした 5.1および7.1チャンネルの音が
+  2 チャンネルにミックスダウンされたものとなります。
+
+- システム予約の SPU を使うオプションを追加しました。 
+  システム予約の SPU を使う場合は、cellRecOpen() の引数pParam がさし示す
+  CellRecOption構造体を例のように設定してご利用ください。 
+
+  なお、システム予約の SPU を使う場合は、録画ユーティリティと
+  AV Chatユーティリティ を同時使用することはできません。 
+
+ (例)  CellRecOption.option = CELL_REC_OPTION_USE_SYSTEM_SPU; 
+       CellRecOption.value.use_system_spu  
+                            = CELL_REC_PARAM_USE_SYSTEM_SPU_ENALBE; 
+
+  この機能追加に伴い、以下のメンバおよびマクロを追加しました。
+  - CellRecOption構造体に含まれるvalue共用体のメンバ use_system_spu
+  - マクロ CELL_REC_OPTION_USE_SYSTEM_SPU
+
+サンプルの変更(cell/samples/sdk/sysutil/recording)
+
+- サンプル実行中に音声が出力されるようになりました。 
+  2 チャンネル出力の場合は、LRのスピーカ正弦波が鳴り続けます。
+  5.1および7.1 チャンネル出力の場合は、LRスピーカ前方のLRのスピーカから
+  正弦波が鳴り続け、後方のLRスピーカから一定時間ごとに「ポツ」という音が鳴ります。
+
+ユーザ情報ユーティリティ
+========================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_userinfo.hにおいて、以下の
+  メモリコンテナサイズのマクロ定義を追加しました。 
+  #define CELL_USERINFO_MEMORY_CONTAINER_SIZE    (3*1024*1024)
+
+サンプルの変更(cell/samples/sdk/sysutil/userinfo)
+
+- サンプルにおいて、cell/target/ppu/include/sysutil/sysutil_userinfo.hで
+  定義したメモリコンテナサイズのマクロを使用するように変更しました。
+
+オンスクリーンキーボードダイアログユーティリティ
+================================================
+新規機能
+- ハードウェアキーボード入力キーフックコールバックに以下の追加を行いました。
+
+  - ASCIIキー(文字入力に使用するキー)をフックする機能 
+    この機能を使用する場合は、
+    cellOskDialogExtRegisterKeyboardEventHookCallback()のフックの
+    第一引数hookEventModeへ、
+    マクロ CELL_OSKDIALOG_EVENT_HOOK_TYPE_ASCII_KEYを論理和で指定して下さい。 
+    なお、この点に伴いマクロ CELL_OSKDIALOG_EVENT_HOOK_TYPE_ASCII_KEYを
+    追加しました。
+
+仕様変更
+
+  - フックしたイベントをキャンセルする機能 
+    この機能を使用する場合は、
+    cellOskDialogHardwareKeyboardEventHookCallback()の第二引数actionの
+    実体にCELL_OSKDIALOG_CHANGE_EVENT_CANCELを指定して下さい。 
+    なお、この点に伴いマクロCELL_OSKDIALOG_CHANGE_EVENT_CANCELを追加しました。
+
+  - ハードウェアキーボード入力キーフックコールバック関数に付加される情報を
+    追加 
+
+    第三引数pActionInfoが示す領域に入力中の未確定文字列(NULL終端付き)が
+    渡されるようになりました。未確定文字列がない場合はNULL文字のみが渡されます。 
+    これまでどおり、文字列を返却する場合は、pActionInfoが示す領域を直接編集し
+    上書きして構いません。
+
+- cellOskDialogHardwareKeyboardEventHookCallback()で返却可能な文字数の
+  上限(*pActionInfoに設定する文字数上限)を、30文字(NULL文字を含まない)から
+  100文字(NULL文字を含まない)に変更しました。
+
+
+コンテンツ検索ユーティリティ
+============================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_search.hにおいて、
+  以下のメモリコンテナサイズのマクロ定義を追加しました。 
+
+  #define CELL_SEARCH_MEMORY_CONTAINER_SIZE  (2 * 1024 * 1024)
+
+サンプルの変更(cell/samples/sdk/sysutil/search)
+
+- メモリコンテナサイズのマクロ(CELL_SEARCH_MEMORY_CONTAINER_SIZE)を
+  使用するように変更しました。
+
+ImeJpユーティリティ
+===================
+新規機能
+
+- cell/target/ppu/include/sysutil/sysutil_imejp.hにおいて、
+  以下のメモリコンテナサイズのマクロ定義を追加しました。 
+
+  /*システム辞書オンメモリモード*/ 
+  #define CELL_IMEJP_ON_MEMORY_MODE_MEMORY_CONTAINER_SIZE  (6 * 1024 * 1024) 
+  /*システム辞書ファイルモード*/ 
+  #define CELL_IMEJP_FILE_MODE_MEMORY_CONTAINER_SIZE  (4 * 1024 * 1024)
+
+HDD起動ゲームユーティリティ
+===========================
+仕様変更
+
+- CellHddGameSystemFileParam構造体のメンバattributeをreserved3へ
+  変更しました。 
+  ゲームアプリケーションにおいても、attributeを参照していた部分の
+  コードを削除する必要がありますので、cell/samples/sdk/sysutil/hddgame
+  以下のサンプルを参考にゲームアプリケーションのコードの変更を
+  お願いいたします。
+
+- cellHddGameCheck()が内部で使用する必要なメモリコンテナサイズを、
+  3MBから2MBに削減しました。
+
+サンプルの変更(cell/samples/sdk/sysutil/hddgame)
+
+- HDD起動ゲームユーティリティの仕様変更に伴い、basic、makedirのサンプル
+  において以下の変更を行いました。
+  - cellHddGameCheck()使用時のメモリコンテナサイズを2MBに変更
+  - CellHddGameSystemFileParam構造体のメンバattributeをreserved3にする
+   変更
+
+ディスク起動ゲームユーティリティ
+================================
+新規機能
+
+- ディスクの入れ換え通知機能において、ディスクイジェクトによるゲーム終了
+  を行うか否かの設定（有効/無効）が出来るようになりました。
+  この機能は、SDK210以降の環境で作成したゲームアプリケーションから
+  対象となります。
+
+  cellDiscGameRegisterDiscChangeCallback()よりディスク入れ換え通知
+  コールバック関数を登録すると、ディスクイジェクトによるゲーム終了が
+  一時的に無効となります。
+  これによりディスク入れ替えの間にゲームが終了してしまうのを防ぎます。
+
+  一方、cellDiscGameUnregisterDiscChangeCallback()でディスク入れ換え
+  通知コールバック関数の登録が解除されている、もしくは登録がない場合は、
+  ディスクイジェクトによるゲーム終了が有効となり、ゲーム終了処理を行います。
+
+----------------------------------------------------------------------
+5 Cell OS Lv-2
+----------------------------------------------------------------------
+新規機能
+
+- 仮想メモリの機能を追加しました。 
+  仮想メモリの機能とは、物理的なメモリよりも多くのメモリ領域を仮想メモリ
+  としてユーザに提供する機能です。
+  ユーザは、メモリのアクセス速度を除いては、物理的なメモリと同じように
+  仮想メモリを使うことができます。これに伴い、以下の関数を追加しました。
+  - sys_vm_memory_map()
+  - sys_vm_unmap()
+  - sys_vm_append_memory()
+  - sys_vm_retrun_memory()
+  詳細については、「Cell OS Lv-2 システムコール/ライブラリ リファレンス」
+  の「プロセスアドレス空間管理システムコール」の章および、
+  「Cell OS Lv-2 ユーザーズマニュアル」の「仮想メモリ」の章を参照ください。
+
+- コンテキストを持たないSPUスレッドグループを追加しました。 
+  コンテキストを持たないSPUスレッドグループとは、LSのコンテキスト保存用の
+  メモリを確保しないSPUスレッドグループです。メモリ消費量が削減されますが、
+  SPUを占有して動作するため、生成できるSPUスレッドの数、コンテキストの
+  保存や優先度の設定ができないなどの制限があります。 
+  詳細については、「Cell OS Lv-2 ユーザーズマニュアル」の「SPU スレッド管理」
+  の章の「コンテキスト無しSPUスレッドグループ」を参照ください。 
+
+  これに伴い、SPUスレッドグループの属性構造体の typeメンバに設定可能な
+  値として SYS_SPU_THREAD_GROUP_TYPE_EXCLUSIVE_NON_CONTEXT を追加しました。
+  詳細については、「Cell OS Lv-2 システムコール/ライブラリリファレンス」を
+  参照ください。
+
+仕様変更
+
+- プロセスアドレス空間のメモリマップを変更しました。PPCセグメントの消費量を
+  削減するためにプロセスアドレス空間のメモリマップを変更しました。
+  この変更により、PPUプログラムのテキスト領域がPPU/SPU共有領域にマップされる
+  ようになります。 
+  詳細は、技術情報ID-200711-20 
+ 「タイトル : プロセスアドレス空間の メモリマップ変更について」
+  (https://ps3.scedev.net/technotes/view/646) を参照して下さい。
+
+----------------------------------------------------------------------
+6 C/C++標準ライブラリ
+----------------------------------------------------------------------
+新規機能
+
+- 以下の任意個の独立したヒープ領域を管理するメモリ管理関数を追加しました。
+  これに伴い、cell/target/ppu/include/mspace.hのヘッダファイルを
+  追加しました。
+  - mspace_calloc()
+  - mspace_create()
+  - mspace_destroy()
+  - mspace_free()
+  - mspace_is_heap_empty()
+  - mspace_malloc()
+  - mspace_malloc_stats()
+  - mspace_memalign()
+  - mspace_realloc()
+  - mspace_reallocalign()
+
+仕様変更
+
+- unistd.hのヘッダファイルで定義されているfstat()およびstat()を呼び出すと、
+  構造体statの以下のメンバに不定な値が入ってしまうため、仕様変更を行いました。
+
+  st_dev, st_ino, st_nlink, st_rdev, st_blocks 
+
+  fstat()およびstat()を呼んだ場合は、上記のメンバに0が入るようにしました。
+
+- spu_printf.hのヘッダファイルで定義されているspu_printf_initialize()
+  の引数funcにNULLを指定した場合の出力先として、標準出力からSPUの標準出力
+  (SPU stdout)に変更しました。
+
+- _malloc_limit で指定された値がプロセス実行開始時の利用可能メモリサイズ
+  より大きい場合は、以下の警告を出し _malloc_limit は無視されるように
+  変更しました。 
+
+  WARNING : `_malloc_limit' is ignored (maybe too large).
+
+----------------------------------------------------------------------
+7 dtコマンド(cell/host-win32[host-linux]/bin)
+----------------------------------------------------------------------
+新規機能
+
+- dtpreset, dtlreset, dtpon ,dtcparamが以下の起動パラメータに対応しました。
+
+    hostfs={dev|target}
+
+仕様変更
+
+- WindowsおよびLinuxにおけるdtnetmのNagle設定を無効にしました。
+  これにより、デバッガでのステップ実行を行う際の応答性が向上いたしました。
+
+----------------------------------------------------------------------
+8 SPU Runtime
+----------------------------------------------------------------------
+全体
+====
+サンプルの変更(cell/samples/sdk/spu_library/)
+
+- spu_libraryの全サンプルにおいて、spu_printf_initialize()を使用する
+  ように変更しました。
+
+libspurs
+========
+
+<コア>
+新規機能
+
+- spu_printf_initialize()をSPURSと組み合わせて使用することが可能に
+  なりました。
+  これに伴い、spu_printf_initialize()使用時に、SPURSアトリビュートに
+  対してspu_printf()の使用を有効に設定する関数、
+  cellSpursAttributeEnableSpuPrintfIfAvailable()を追加しました。 
+ 
+  また、以下の制限は解除となりました。
+  - (B#43285) 
+    SDK200の新規追加関数spu_printf_initialize()をSPURSと組み合わせて
+    使用することはできません。SPURSに対してspu_printf_attach_group(),
+    spu_printf_attach_thread()を実行すると失敗します。
+    SPURSでspu_printf()を使用する場合は従来通りの方法を行ってください。
+
+- SPURSに割り当てられるSPUスレッドグループのタイプを指定する関数
+  cellSpursAttributeSetSpuThreadGroupType()を追加しました。 
+  このタイプを指定することで、SPUスレッドグループ作成時に、通常の
+  SPUスレッドグループのほか、SPUを占有しLSのコンテキストを保存するための
+  メモリの消費が無いSPUスレッドグループを作ることが出来ます。
+
+<ジョブ>
+新規機能
+
+- SPURSジョブチェインでエラー発生時にhaltさせるように設定する関数、
+  cellSpursJobChainAttributeSetHaltOnError()を追加しました。
+
+仕様変更
+
+- 以下の関数の仮引数名を変更しました。なお、引数の型については変更して
+  おりません。
+
+  - cellSpursJobChainAttributeInitialize() 
+    (変更前)autoReadyCount    (変更後)autoRequestSpuCount 
+    (変更前)readyCount        (変更後)initialRequestSpuCount
+  
+  - cellSpursJobGuardInitialize() 
+    (変更前)readyCount         (変更後)requestSpuCount
+
+- CellSpursJobChainInfo型のメンバを以下のように変更しました。
+  なお、従来のメンバでも使えるよう互換性は保つようにしております。 
+  (変更前)  bool autoReadyCount; 
+  (変更後)  __extension__ union { bool autoReadyCount; 
+                                bool autoRequestSpuCount;}
+
+<タスク>
+新規機能
+
+- cellSpursTaskMain() からリターンすると、デストラクタの呼び出しが行われる
+  ようになりました。
+
+- cellSpursTaskMain() を使用したSPURSタスクのプログラムからexit() を
+  使用できるようになりました。 
+  exit(status) を呼び出すと、デストラクタの呼び出しを行った後、
+  cellSpursTaskExit(status) の呼び出しを行います。
+
+----------------------------------------------------------------------
+9 ファイルシステム
+----------------------------------------------------------------------
+新規機能
+
+- Reference ToolでPLAYSTATION(R)3専用LAN端子を使用したHOSTFSが使えるように
+  なりました。
+
+仕様変更
+
+- 光ディスクからの読み込みでエラーが発生し、CELL_FS_EIOが返された場合は
+  ゲームアプリケーション側で無限リトライを行う必要がありましたが、
+  SDK210からはこの処理を行う必要がなくなりました。 
+
+  SDK210からは光ディスクの読み込みエラーが発生した場合は、ファイル
+  システム側でリトライを行うようになりました。
+  ただし、光ディスクの取り出しによる読み込みエラーは従来と同じく即座に
+  エラー(CELL_FS_EIO)が返ります。
+
+  <SDK200までの手順>
+  1. cellFsRead()を用いてディスクからデータを読み込む
+  2. cellFsRead()の返り値がCELL_FS_EIOの場合にはcellFsFstat()で
+     光ディスクが取り出されたかどうかの確認を行い、cellFsFstat()が
+     CELL_FS_EBADF以外を返した場合には再度1.を繰り返す(光ディスクが
+     取り出されていた場合、すなわちcellFsFstat()がCELL_FS_EBADFを返した
+     場合には、cellFsClose()を呼び出し、cellFsOpen()からやり直す)
+  3. cellFsRead()の返り値がCELL_FS_SUCCEEDEDの場合には通常の処理を行う
+  4. cellFsRead()の返り値がCELL_FS_EIOかCELL_FS_SUCCEEDED以外の場合には
+     エラー処理を行う
+
+  <SDK210からの手順>
+  1. cellFsRead()を用いてディスクからデータを読み込む
+  2. cellFsRead()の返り値がCELL_FS_SUCCEEDEDの場合には通常の処理を行う
+  3. cellFsRead()の返り値がCELL_FS_SUCCEEDED以外の場合にはエラー処理 
+     (ただしディスク入れ替え処理を行う場合にはcellFsRead()の返り値が
+     CELL_FS_EIOの場合cellFsFstat()を呼び出しディスクが取り出されたか
+     どうかの判断を行う)
+
+     ディスク入れ替え処理については、｢libfs概要｣の｢4 使用方法｣にある
+     ｢リムーバブルメディアの取り扱いについて｣を参照してください。
+
+  また、SDK 210より光ディスクを取り出した際にシステムが自動的に
+  ゲームアプリケーションを終了する機構が追加されました。
+  この終了処理が有効なケースは以下の通りです。
+
+  - システムソフトウェアから/app_home以下のEBOOT.BINを実行した場合且つ、
+    ゲームアプリケーション中にて起動ゲームユーティリティのディスク
+    排出コールバック関数(CellDiscGameDiscEjectCallback())を登録して
+    いない場合
+  - システムソフトウェアから光ディスク上のEBOOT.BINを実行した場合且つ、
+    ゲームアプリケーション中にて起動ゲームユーティリティのディスク
+    排出コールバック関数(CellDiscGameDiscEjectCallback())を登録して
+    いない場合
+
+  逆に終了処理が無効なケースは以下の通りです。
+  - ゲームアプリケーションをデバッガから起動した場合
+  - 起動ゲームユーティリティの排出コールバック関数 
+    (CellDiscGameDiscEjectCallback())をゲームアプリケーション中にて
+    登録している場合
+
+  終了処理を有効になっている状況であればディスクの取り出しに対する
+  エラーリトライを考慮する必要はありません。
+
+----------------------------------------------------------------------
+10 Network
+----------------------------------------------------------------------
+libnet
+======
+新規機能
+
+- ゲームアプリケーション側で指定した DNS アドレスの設定および取得を行う、
+  以下の関数を追加しました。
+  - sys_net_set_lib_name_server()
+  - sys_net_get_lib_name_server()
+
+----------------------------------------------------------------------
+11 Network Platform (NP)
+----------------------------------------------------------------------
+NPライブラリ共通
+================
+新規機能
+
+- SCEが個別に提供する有料CDN (Contents Delivery Network)サービスを
+  使用するときに、請求先のリージョンを決定するための情報をURLに付与する
+  ための関数、sceNpUtilBuildCdnUrl()を追加しました。
+
+NPベーシックユーティリティ
+==========================
+仕様変更
+
+- 以下のGUIを使用したメッセージの送信を行う関数が内部で使用するメモリ
+  コンテナサイズを9MBから8MBに削減しました。
+  - sceNpBasicSendMessageGui() 
+  - sceNpBasicAddFriend() 
+  - sceNpBasicSendMessageAttachment()
+
+NPマッチングユーティリティ
+==========================
+仕様変更
+
+- sceNpMatchingSendInvitationGUI()が内部で使用する必要なメモリコンテナ
+  サイズを、9MBから8MBに削減しました。
+
+- NPマッチング2ユーティリティの使用中、具体的にはsceNpMatching2Init()
+  呼び出し後からsceNpMatching2Term()の呼び出しまでの間、NPマッチング
+  ユーティリティを使用することが出来ない仕様になりました。 
+  また、この間にNPマッチングユーティリティの関数を実行すると、
+  SCE_NP_MATCHING_ERROR_UTILITY_UNAVAILABLEエラーを返すように変更しました。
+
+NPマッチング2ユーティリティ
+===========================
+新規機能
+
+- リクエストIDが示すリクエストを中断する関数、sceNpMatching2AbortRequest()を
+  追加しました。
+
+NPルックアップユーティリティ
+============================
+仕様変更
+
+- 以下の関数において、サーバにタイトルスモールストレージファイルを設置して
+  いない場合の仕様を変更しました。
+
+  - sceNpLookupTitleSmallStorage()
+  - sceNpLookupTitleSmallStorageAsync()
+
+  サーバにタイトルスモールストレージファイルを設置していない場合、
+  従来の仕様ではエラーコードSCE_NP_COMMUNITY_ERROR_HTTP_SERVERを返しましたが、
+  SDK210より、サーバに0バイトのファイルが設置されていたものとみなし、
+  上記関数を正常終了するようにしました。
+
+サンプルの変更(cell/sdk/network/np/npclient)
+
+- サーバにタイトルスモールストレージファイルを設置していない場合の仕様変更に
+  対応しました。
+
+NPスコアランキングユーティリティ
+================================
+新規機能
+
+- クランランキングを取得する以下の関数を追加しました。
+  - sceNpScoreGetClansMembersRankingByRange()
+  - sceNpScoreGetClansMembersRankingByRangeAsync()
+  - sceNpScoreGetClansMembersRankingByNpId()
+  - sceNpScoreGetClansMembersRankingByNpIdAsync()
+  - sceNpScoreGetClansMembersRankingByNpIdPcId()
+  - sceNpScoreGetClansMembersRankingByNpIdPcIdAsync()
+  - sceNpScoreGetClansRankingByRange()
+  - sceNpScoreGetClansRankingByRangeAsync()
+  - sceNpScoreGetClansRankingByClanId()
+  - sceNpScoreGetClansRankingByClanIdAsync()
+  - sceNpScoreGetClanMemberGameData()
+  - sceNpScoreGetClanMemberGameDataAsync()
+
+サンプルの変更(cell/sdk/network/np/npclient)
+
+- 新規に追加した、クランランキングを取得する関数の使用例を追加しました。
+
+NPコマースユーティリティ
+========================
+仕様変更
+
+- sceNpCommerceDoCheckoutStartAsync()の第4引数containerで指定する必要な
+  メモリコンテナサイズのマクロ名をSCE_NP_COMMERCE_DO_CHECKOUT_MEMSIZEから、
+  SCE_NP_COMMERCE_DO_CHECKOUT_MEMORY_CONTAINER_SIZEに変更しました。 
+  同時に値も 64MB から 52MB に削減しました。
+
+NP DRMユーティリティ
+====================
+新規機能
+
+- NPDRM でのアクセス権の保護対象に、NPDRM SPU SELFファイルを追加しました。
+  これに伴い、以下の制限がなくなりました。
+  - SPU用のNPDRM SELFファイルを作成してもsys_spu_image_open()で直接ロード
+    することができません。PPUプログラムにSPU ELFを埋め込んでご利用ください。
+
+- make_edata_npdrm コマンドに以下のオプションを追加しました。
+  -i : 作成したNPDRM EDATAの情報を得る
+  -x : 開発中の NPDRM EDATA から元データを得る
+
+----------------------------------------------------------------------
+12 HID
+----------------------------------------------------------------------
+libpad
+======
+仕様変更
+
+- ワイヤレスコントローラ(DUALSHOCK 3)において、USB接続時の同時に振動可能な
+  ワイヤレスコントローラ(DUALSHOCK 3)は最大2台という仕様にしました。
+
+- ワイヤレスコントローラにおいて、USB接続とBluetooth(R)接続の切り替え時間を
+  短縮しました。同時にUSB接続とBluetooth(R)接続の接続切り替え時の安定性を
+  強化しました。
+
+----------------------------------------------------------------------
+13 libmic
+----------------------------------------------------------------------
+新規機能
+
+- cellMicGetSignalAttr()およびcellMicSetSignalAttr()の第2引数sig_attribで
+  指定する信号処理属性として、CELLMIC_SIGATTR_PITCHSHIFTのマクロを
+  追加しました。なお、デフォルトではピッチシフトがオンとなります。
+
+サンプルの変更(cell/samples/sdk/mic/capture)
+
+- キャプチャデータをファイルに保存する際に、バッファのオーバーフローが
+  発生する場合の対策として、リングバッファのクリーンアップ処理を行うよう
+  にしました。
+
+----------------------------------------------------------------------
+14 libcamera
+----------------------------------------------------------------------
+サンプルの変更(cell/samples/sdk/camera)
+
+- simpleおよびtest_drvierサンプルにおいて、PLAYSTATION(R)Eyeから
+  取り込んだRAW(Bayer)データに対応するため、使用する彩度を増やしました。
+
+----------------------------------------------------------------------
+15 cgc
+----------------------------------------------------------------------
+新規機能
+
+- -texformatオプションを使用する際にSampler名が使用出来るようになりました。
+    # sce-cgc -texformat <sampler_name> <format>
+  これにより-texformatオプションの対象を、より容易に指定出来るようになります。
+
+仕様変更
+
+- Visual Studio用のcell/host-win32/Cg/lib/libcgutil.libを、
+  Visual Studio 2003用の仕様から、Visual Studio2005用の仕様に変更しました。
+
+----------------------------------------------------------------------
+16 libgcm
+----------------------------------------------------------------------
+新規機能
+
+- RSX(R)のグラフィックスコマンドを直接生成するGCM methodマクロ（ベータ版）
+  をlibgcmの拡張機能として提供します。
+  詳細については、「GCM Methodマクロ 概要」を参照ください。 
+
+  これに伴い、以下のヘッダファイルを追加しました。
+  - cell/target/ppu/include/cell/gcm/gcm_method_data.h
+
+- cellGcmSetSurface()に、フラグメントプログラムの原点座標およびピクセル
+  中心座標の指定を加えた関数、cellGcmSetSurfaceWindow()を追加しました。 
+
+  これに伴い、以下のマクロ定数をgcm_enum.h に追加しました。
+  - CELL_GCM_WINDOW_ORIGIN_TOP
+  - CELL_GCM_WINDOW_ORIGIN_BOTTOM
+  - CELL_GCM_WINDOW_PIXEL_CENTER_HALF
+  - CELL_GCM_WINDOW_PIXEL_CENTER_INTEGER
+
+- Cgbシェーダ形式のフラグメントプログラムに対してTXP命令の制御を行う
+  以下のマクロ定数をgcm_enum.hに追加しました。
+  - CELL_GCM_SHIFT_SET_SHADER_CONTROL_CONTROL_TXP
+  - CELL_GCM_MASK_SET_SHADER_CONTROL_CONTROL_TXP
+
+- 新規に追加したGCM methodマクロを使用する場合に、コマンドバッファに
+  必要となるワードサイズを指定してオーバーフローチェックを行う関数、
+  cellGcmReserveMethodSize()を追加しました。
+
+- C/C++関数モードによるマクロ定義を行うため、以下のヘッダファイルを追加しました。
+  - cell/target/ppu/include/cell/gcm/gcm_function_macros.h
+  - cell/target/spu/include/cell/gcm/gcm_function_macros.h
+  - cell/host-common/include/cell/gcm/gcm_function_macros.h
+
+  これに伴い、cell/target/ppu(spu)/include/cell/gcm/および
+  cell/host-common/include/cell/gcm/の以下のヘッダファイルにおいても、
+  gcm_function_macros.hをincludeするように変更しました。
+  - gcm_global_implementation.h
+  - gcm_implementation.h
+  - gcm_measure_implementation.h
+  - gcm_prototypes.h
+
+仕様変更
+
+- cellGcmSetFragmentProgramControl()の第3引数の仮引数名をallowTexから
+  controlTxpに変更しました。引数型に関しては、変更ありません。
+
+- libgcm_spu.aおよびlibgcm_tool.aよりcellGcmSetFlip()を削除しました。
+
+----------------------------------------------------------------------
+17 libgcm_pm
+----------------------------------------------------------------------
+新規機能
+
+- Debugging Station にてlibgcm_pmを使用して、計測結果のカウント値を取得
+  出来るようになりました。
+
+- SCLKドメインのイベント（CELL_GCM_PM_SCLK_*）に以下のイベントを追加しました。
+  - CELL_GCM_PM_SCLK_SCT2TEX_ACTIVE
+  - CELL_GCM_PM_SCLK_SCT2TEX_STALLING
+  - CELL_GCM_PM_SCLK_SCT2TEX_STARVING
+  - CELL_GCM_PM_SCLK_SQD_ENDSEG_SLOT_LIMIT_FOR_QUAD
+
+----------------------------------------------------------------------
+18 PSGL
+----------------------------------------------------------------------
+新規機能
+
+- 16bitデプスバッファをサポートしました。 
+  以下の関数の引数internalformatにてGL_DEPTH_COMPONENT16が指定可能に
+  なります。 
+    glTexImage2D(), glTexImage3D(), glBufferSurfaceSCE() 
+    glRenderbufferStorageOES(), glTextureReferenceSCE()
+
+仕様変更
+
+- PSGLライブラリの内部にてcellGcmSetTile()を呼んでいた箇所を
+  cellGcmBindTile()に変更しました。バイナリ提供されているPSGLライブラリを
+  そのまま使用している場合は特に影響はありません。SDK 210より前の
+  ソースコードを参照している場合はご注意下さい。
+
+----------------------------------------------------------------------
+19 サウンド関連
+----------------------------------------------------------------------
+libmstream
+==========
+新規機能
+
+- DSPエフェクトの*.picファイルを、ゲームタイトルに直接リンク可能な
+  形式であるPPUのオブジェクトファイル(*.ppu.o)として、以下で提供する
+  ことになりました。 
+
+  cell/target/spu/lib/pic/multistream/
+
+サンプルの変更(cell/samples/sdk/sound/multistream)
+
+- multistreamの全てのサンプルにおいて、SNC PPU Toolchainを用いたビルドに
+  対応しました。
+
+- いくつかのサンプルで使用しているATRACライブラリにおいて、SPUスレッドから
+  SPURSを使用するように変更しました。
+
+- simple_createdsp_tdサンプルの以下のPPUプログラムにおいて、コンパイル
+  オプション-fPICの指定を削除しました。 
+  cell/samples/sdk/sound/multistream/simple_createdsp_td/proj/sn/simple_createdsp_td.vc
+proj
+
+- dspshellサンプルにおいて、MS_DSP_INFO構造体にメンバを追加しました。
+
+----------------------------------------------------------------------
+20 codec
+----------------------------------------------------------------------
+libadec
+=======
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+
+    関数：cellAdecOpenEx()
+
+  詳細については、「libadecリファレンス」および「libadec概要」を参照してください。 
+  このインターフェイスの追加に伴い、同一SPURSインスタンスにおいて
+  libadecと他のライブラリを併用することが可能になりました。
+
+libvdec
+=======
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    構造体：CellVdecTypeEx 
+            CellVdecResourceEx 
+            CellVdecResourceSpurs
+    関数：  cellVdecOpenEx ()
+
+  詳細については、「libvdecリファレンス」および「libvdec概要」を参照してください。 
+  
+  このインターフェイスの追加に伴い、同一SPURSインスタンスにおいて
+  libvdecと他のライブラリを併用することが可能になりました。
+
+- CODEC種別ごとに定義された固有の情報(CODEC固有情報)を指定することが
+  可能になりました。各種CODEC固有情報の指定することで、メモリの消費量を
+  最適化することが出来るようになります。
+  これに伴い、以下の構造体および関数を追加しました。
+    構造体： CellVdecTypeEx 
+             CellVdecMpeg2SpecificInfo 
+             CellVdecAvcSpecificInfo 
+             CellVdecDivxSpecificInfo
+    関数：   cellVdecQueryAttrEx()
+
+仕様変更
+
+- MPEG2ビデオおよびMPEG4 AVCにおいて内部で使用するメモリサイズを削減しました。 
+  削減量は、MPEG2ビデオでは約1.5MB、MPEG4 AVCでは約3MBとなります。
+
+サンプルの変更(cell/samples/sdk/codec/m2v_dec)
+
+- デコーダ属性情報の取得にcellVdecQueryAttr()を、デコーダのオープンに
+  cellVdecOpen()を使用していましたが、それぞれ新規追加関数の
+  cellVdecQueryAttrEx()およびcellVdecOpenEx()を使用するように変更しました。
+
+libdmux
+=======
+新規機能
+
+- ユーザデータエレメンタリストリームの多重化分離に対応しました。
+  これに伴い、以下の構造体を追加しました。
+  - CellDmuxPamfEsSpecificInfoUserData
+  - CellDmuxPamfAuSpecificInfoUserData
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    構造体：CellDmuxResourceEx
+    関数  ：cellDmuxOpenEx()
+
+  詳細については、「libdmuxリファレンス」および「libdmux概要」を参照してください。 
+
+  このインターフェイスの追加に伴い、同一SPURSインスタンスにおいて
+  libdmuxと他のライブラリを併用することが可能になりました。
+
+仕様変更
+
+- 多重化分離器が内部で使用するメモリサイズを36KB削減しました。
+
+サンプルデータの変更(cell/sample_data/codec)
+
+- cell/sample_data/codecの以下データについて削除および追加を行いました。 
+  削除したデータ： sample1_pamf_avc_1280x720p_atrac_multi_lpcm_stereo.pam 
+  追加したデータ：
+  sample1_pamf_avc_1280x720p_avc_720x480p_atrac_multi_lpcm_stereo_userdata.pam
+
+libsail
+=======
+新規機能
+
+- SPURSインスタンスの共有に対応しました。cellSailPlayerInitialize2()に
+  よってCellSailPlayerResource構造体のデータを使用してSPURSインスタンスを
+  ユーザが与えることができます。
+
+- cellSailPlayerOpenStream()でオープンされたソースストリームに対して
+  cellSailDescriptorCreateDatabase()を呼ぶことが可能となりました。 
+  これによりPAMFストリームデータの場合には、ブロックされることなく
+  CellPamfReader構造体のデータを取得することが可能となりました。
+
+libpamf
+=======
+新規機能
+
+- CellPamfAvcInfo構造体のメンバprofileIdcで指定するMPEG4 AVCストリームの
+  プロファイルに、以下のマクロ定数を追加しました。
+  - CELL_PAMF_AVC_PROFILE_MAIN
+  - CELL_PAMF_AVC_PROFILE_HIGH
+- ユーザデータストリームを扱えるようになりました。 
+  これに伴い、streamTypeにおいてユーザデータストリームを指定するための
+  マクロ定数CELL_PAMF_STREAM_TYPE_USER_DATAを追加しました。
+
+libvpost
+========
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    構造体：CellVpostResourceEx
+    関数  ：cellVpostOpenEx()
+  詳細については、「libvpostリファレンス」および「libvpost概要」を
+  参照してください。 
+
+  このインターフェイスの追加に伴い、同一SPURSインスタンスにおいて
+  libvpostと他のライブラリを併用することが可能になりました。
+
+仕様変更
+- ライブラリ内部で使用する必要なメモリサイズを1003520 byte削減しました。
+
+libpngdec
+=========
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    構造体：  CellPngDecExtThreadInParam 
+              CellPngDecExtThreadOutParam
+    関数：    cellPngDecExtCreate()
+
+  詳細については、「libpngdecリファレンス」および「libpngdec概要」を
+  参照してください。このインターフェイスの追加に伴い、同一SPURSインスタンスに
+  おいてlibpngdecと他のライブラリを併用することが可能になりました。
+
+仕様変更
+
+- SPUを使用してデコードする場合のメモリ使用量を98KB削減しました。
+
+サンプルの変更(samples/sdk/codec/png_dec)
+
+- サンプルの処理内容が把握しづらい部分を全面的に見直し、改良を行いました。
+
+libjpgdec
+=========
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    構造体： CellJpgDecExtThreadInParam 
+             CellJpgDecExtThreadOutParam
+    関数：   cellJpgDecExtCreate()
+  詳細については、「libjpgdecリファレンス」および「libjpgdec概要」を
+  参照してください。このインターフェイスの追加に伴い、同一SPURS
+  インスタンスにおいてlibjpgdecと他のライブラリを併用することが
+  可能になりました。
+
+仕様変更
+
+- SPUを使用してデコードする場合のメモリ使用量を158KB削減しました。
+
+サンプルの変更(samples/sdk/codec/jpg_dec)
+
+- サンプルの処理内容が把握しづらい部分を全面的に見直し、改良を行いました。
+
+libcelpenc
+==========
+新規機能
+
+- 以下のSPURSインスタンス共有版のインターフェイスを追加しました。
+    関数：cellCelpEncOpenEx()
+  詳細については、「libcelpencリファレンス」およびlibcelpenc概要」を
+  参照してください。 
+
+  このインターフェイスの追加に伴い、同一SPURSインスタンスにおいて
+  libcelpencと他のライブラリを併用することが可能になりました。
+
+----------------------------------------------------------------------
+21 ハッシュ関数ライブラリ
+----------------------------------------------------------------------
+サンプルの変更(cell/samples/sdk/hash)
+
+- 以下のhashサンプルのプロジェクトファイルについて、SNC PPU Toolchainを
+  用いたビルドに対応しました。
+  - cell/samples/sdk/hash/ppu/collision
+  - cell/samples/sdk/hash/ppu/hmac
+  - cell/samples/sdk/hash/ppu/sum
+  - cell/samples/sdk/hash/ppu/sumSPURS
+  - cell/samples/sdk/hash/ppu/testsuite
+
+----------------------------------------------------------------------
+22 汎用のバイナリデータフォーマットCXML
+----------------------------------------------------------------------
+サンプルの変更(cell/samples/util/cxml)
+
+- サンプルにおいて共通のmakefileを使用するように変更しました。
+
+----------------------------------------------------------------------
+23 GTF
+----------------------------------------------------------------------
+新規機能
+
+- DDS2GTFユーティリティプログラム(cell/samples/util/gtf/bin/dds2gtf.exe)
+  において、以下の入力フォーマットに対応しました。
+  - DXT5NM
+  - G8B8
+
+----------------------------------------------------------------------
+24 物理効果サンプル (cell/samples/tutorial/PhysicsEffects)
+----------------------------------------------------------------------
+新規機能
+
+- cell/samples/tutorial/PhysicsEffectsにおいて、以下の機能を追加しました。
+  - 複数のジョイントを合成できるようになりました。
+  - Continuous Collision Detectionに対応しました。
+  - 凸メッシュを扱えるようになりました。
+  - 個々の剛体に32bitのユーザデータを付加することができるようなりました。
+
+- cell/samples/tutorial/PhysicsEffects/Tutorials/Tutorial1において、
+  モーションブレンディングのシーンを追加しました。
+
+仕様変更
+
+- 物理効果サンプルにおいて、物理演算、レイキャストは複数のSPURSタスクに
+  分割され、並列処理を行うようになりました。
+
+- 剛体数や形状数の制限が無くなりました。
+
+- 物理エンジンの更新に伴い、以下のサンプルを削除しました。
+  - cell/samples/tutorial/PhysicsEffects/Demo/ParallelOptimization
+  - cell/samples/tutorial/PhysicsEffects/Demo/PhysHair
+  - cell/samples/tutorial/PhysicsEffects/Demo/PhysWater
+  - cell/samples/tutorial/PhysicsEffects/Demo/PhysCloth
+  - cell/samples/tutorial/PhysicsEffects/Demo/PhysSoftBody
+
+----------------------------------------------------------------------
+25 サンプルプログラム
+----------------------------------------------------------------------
+新規サンプル
+============
+- samples/sdk/lv2/vm_and_container
+  仮想メモリの単純な使用方法と、仮想メモリに割り当てられている物理メモリを
+  一時的にメモリコンテナとして使用する方法を示したサンプル
+- samples/sdk/lv2/vm_and_savedata
+  仮想メモリに割り当てられている物理メモリを一時的にシステムユーティリティ
+  に貸し出す方法を示したサンプル
+
+- samples/sdk/network/np/np_drm_spu_self
+  NPDRM ライブラリを利用して NPDRM SPU SELF をロードするサンプル
+
+- samples/sdk/sysutil/bgdl
+  設定したcontent_id のコンテンツについて、バックグラウンドダウンロードを
+  行いその状態を調べ、画面を表示するサンプル
+
+- samples/sdk/sysutil/avc2/voicechat
+  AVチャット2ユーティリティを利用してボイスチャットを行うサンプル
+
+- samples/sdk/network/np/np_matching2/np_matching2_group_room
+  チーム対戦などのための機能や入室制限などをサポートするルームグループの
+  機能と使用例を示すサンプル
+
+- samples/sdk/network/np/np_matching2/np_matching2_invitation
+  セッションへユーザを招待するいくつかの手段を示すサンプル
+  ロビーメンバ、NPサインイン中のユーザ、NPオフラインを含むNPユーザに
+  招待データを渡す方法を示します。
+
+- samples/sdk/network/np/np_matching2/np_matching2_search_user
+  ユーザ属性の使用例を示すサンプル
+  オンラインIDで指定するユーザが参加しているセッションを検索し参加する
+  方法を示します。
+
+- samples/sdk/network/np/np_matching2/np_matching2_team_id
+  ルームメンバ基本情報のチームIDの使用例を示すサンプル
+  チームIDによるメッセージの宛先指定と更新通知機能の利用方法を示します。
+
+- samples/sdk/sound/multistream/simple_mp3loop
+  一つのMP3形式のオーディオストリームをループ再生するための基本的な
+  実装を示したサンプル
+
+- samples/sdk/codec/pamf_dmux_user_data
+  libdmuxを使用してPAMFユーザデータを再生するサンプル
+
+- samples/sdk/codec/jpg_enc
+  JPEG エンコーダライブラリのサンプル
+  ファイルにより記録されたbitmap形式のデータを読み込み、JPEG形式にエンコード
+  してファイルへ出力します。
+
+- samples/tutorial/Controller/CustomController
+  カスタムコントローラを使用して、システムダイアログの操作を行うサンプル
+
+- samples/tutorial/Controller/PadUtility
+  cell/samples/common/padutil 以下にあるパッドユーティリティライブラリの
+  使用方法を示したサンプル
+
+- samples/tutorial/DeferredShading
+  RSX(R)を活用してDeferred Shading の使用方法を示したサンプル
+
+- samples/tutorial/PhysicsEffects/SampleGames/CatchThrow
+  広大なフィールドにおけるキャラクター制御をワイヤレスコントローラと
+  連動しながら行うサンプルゲーム
+
+- samples/tutorial/PhysicsEffects/SampleGames/Shooting
+  Continuous Collision Detection（弾丸）、ラージメッシュを使用した
+  キーフレームアニメーション、メッシュ変形の処理を示すサンプルゲーム
+
+- samples/tutorial/PhysicsEffects/SampleGames/Fluid
+  パーティクル流体の処理を示すサンプルゲーム
+
+プロジェクトファイルの追加
+==========================
+ProDG for PLAYSTATION(R)3用に以下のサンプルプログラムに対してプロジェクトファイル
+を追加しました。
+
+- samples/sdk/spu_library/libspurs/advanced/in_ls_transfer_between_jobs
+- samples/sdk/spu_library/libspurs/advanced/inter_work_load_communication1_event_
+flag
+- samples/sdk/spu_library/libspurs/advanced/job_dynamic_job_submit/adhoc_job_sub
+mit
+- samples/sdk/spu_library/libspurs/advanced/job_dynamic_job_submit/memcpy
+- samples/sdk/prx
+
+未対応のサンプルプログラムについては準備が出来次第、追加を行っていく予定です。
+
+サンプルフレームワークの変更(cell/samples/fw)
+=============================================
+- cell/samples/fw/src以下のファイルの整理を行いました。 
+  psgl/FWCellGLWindow.cpp は cell/FWCellGLWindow.cppと同じファイルのため、
+  削除しました。
+  これに伴い、cell/samples/fw/fw.mkでのビルド対象のファイルを 
+  cell/FWCellGLWindow.cpp に変更しました。
+

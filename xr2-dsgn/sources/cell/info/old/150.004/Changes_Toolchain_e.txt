@@ -1,0 +1,370 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 150.004
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 150.004
+- Bugs fixed in Release 150.004
+
+======================================================================
+New Additions and Changes in Release 150.004
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- The linker option "-q" and "--gc-sections" can now be specified at
+  the same time so that the following restriction is resolved: 
+  - When "-q" and "--gc-sections" are specified as a linker option at
+    the same time, "-q" will be enabled but not "--gc-sections".
+
+<PPU>
+- When a structure that has only a single vector-type member specified
+  with __attribute__((vecreturn)) is used as a return value,
+  the structure is now returned via the VMX register.
+
+  Example)
+  struct return_in_vec0 {
+    vector float f;
+  } __attribute__ ((vecreturn));
+
+  This change has been made to resolve the following bug.
+  - A function that returns a vector type value may store the return
+    value into the R3 register, not the VR3 register.
+
+- The implementation of the intrinsic of ppu_intrinsics.h "__mftb"
+  has been changed to avoid the errata in Cell processor.
+
+<SPU>
+- When a function with no inline declared is specified with
+  __attribute__((__always_inline__)), and compiled with -fpic option,
+  a message "sorry, unimplemented: inlining failed in call to ..." 
+  was displayed, however, it now displays the following warning: 
+  "you might need to add the inline keyword"
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- The information of synchronous objects can now be obtained through
+  following commands:
+
+  info-mutex
+  info-lwmutex
+  info-cond
+  info-rwlock
+  info-semaphore
+  info-eventqueue
+
+  In response to this change, the information of synchronous objects 
+  is now displayed by executing info-all command.
+
+- Setting of DABR (Data Access Breakpoint) has become available.
+  Accordingly, the breakpoint for a memory access can now be set on GDB.
+
+======================================================================
+Bugs Fixed in Release 150.004
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU>
+- When the precompiled header was used for compilation and a dependency
+  file was created with -MMD option, the header filename that was
+  associated with the precompiled header was not written into the
+  dependency file. This problem has been fixed in this release.
+  Note that the current toolchain uses the precompiled header only for
+  the initially specified header file.
+
+  Example)
+  --- Source file (test.cpp) ---
+  #include "test1.h"
+  #include "test2.h"
+  #include "test3.h"
+
+  --- Compile ---
+  $ ppu-lv2-g++ test1.h
+  $ ppu-lv2-g++ test2.h
+  $ ppu-lv2-g++ test3.h
+  $ ppu-lv2-g++ -MMD -c test.cpp
+
+  --- test.d generated in the previous release ---
+  test.o: test.cpp test2.h test3.h
+
+  --- test.d generated in this release ---
+  test.o: test.cpp test1.h.gch test2.h test3.h
+
+- When __attribute__(( align )) was specified to the class member that
+  was defined using a template in C++, the compiler ended abnormally
+  due to an internal compiler error. This problem has been fixed. 
+
+- In the declaration of the vector literal, when the elements within { }
+  were omitted, it was  interpreted differently from the definition
+  of C/C++ language extension. This problem has been fixed.
+
+  In the previous compiler, the following sentence (1) was wrongly
+  treated as equivalent to (2) due to this bug as shown below: 
+
+    (1) vector unsigned int v4 = (vector unsigned int){0x01234567};
+
+    (2) vector unsigned int v4 = (vector unsigned int){0x01234567,
+                                                       0x01234567,
+                                                       0x01234567,
+                                                       0x01234567};
+
+  From this release onwards, the above initialization syntax is
+  interpreted as defined in the specifications as shown below:
+
+        vector unsigned int v4 = (vector unsigned int){0x01234567,
+                                                       0x0,
+                                                       0x0,
+                                                       0x0};
+
+- If a C++ program containing friend functions in a templace class was
+  compiled, an internal compiler error might occur. This problem has
+  been fixed.
+
+- When a program such as the code shown in the following example was
+  compiled, the const float variable b was placed in the .bss section,
+  not the .data or .rodata section. This problem has been fixed. 
+
+  Example)
+  const float a = 2.0f;
+  const float b = a + a;
+
+  Note that a known bug still exists in the const vector variable.
+
+- The following bugs have been fixed: 
+  - When a directory contains a program that includes a header file for
+    C++ and a subdirectory that has the same name as the header file,
+    a compile error will occur when a program such as the code of
+    the example is compiled.
+
+    "ppu-lv2-gcc -I .. -c testfile.cpp"
+
+  - In a program such as the code of the example, a correct value may
+    not be assigned to the variable b:
+
+    Example)
+    {
+       namespace Units
+       {
+           const float a = 0.5f;
+           const float b= 1.0f / a;
+       }
+    }
+
+  - The size of the precompiled header that the Compiler for Windows
+    can generate is 128M bytes or less.
+
+  - There is a problem that the class type and the structure type of 
+    an object is not aligned as specified with __attribute__((align)). 
+    In such a case, please specify the alignment of the first members
+    of the class type and the structure type. Depending on the problem, 
+    it may be possible to avoid it. 
+
+    Code with the problem: 
+      template<class T> class test
+      {
+          public:
+                  T a[4];
+                  T b[4];
+                  T c[4];
+      };
+      typedef test<float> __attribute__ ((aligned (16))) align_test;
+
+     Code in which the problem is avoided: 
+       template<class T> class test
+       {
+           public:
+                    __attribute__ ((aligned (16))) T a[4];
+                    T b[4];
+                    T c[4];
+       };
+       typedef test<float> align_test;
+
+  - When accessing an address that is assigned to the pointer variable 
+    with __restrict attribute specified, such attribute will not 
+    be reflected.
+
+<PPU>
+- The "-fprefetch-loop-arrays" option now considers the PPU's cache
+  block size (128 bytes). 
+
+- A message "defined in discarded section" was output when being linked.
+  This problem has been fixed.
+
+- When the following intrinsics in ppu_intrinsics.h were used, a warning
+  message was displayed. This problem has been fixed.
+
+    __lhbrx, __lwbrx, __ldbrx, __sthbrx, __stwbrx,
+    __stdbrx, __lwarx, __ldarx, __stwcx, __stdcx
+
+- The linker algorism has been fixed so as to reduce the link time. 
+
+- The following PPU intrinsics and macros have been fixed:
+
+  (1) The types of the arguments and return values have been changed
+      from double to float so that it follows the documents: 
+
+      __fmadds, __fmsubs, __fnmadds, __fnmsubs, __fres, __fsqrts
+
+  (2) The intrinsic definition has been deleted from the instructions
+      that is not documented and not implemented in PPU. 
+
+      __fre
+
+- The register's constraint condition was wrong for the intrinsic
+  "__setflm" in ppu_intrinsics.h. This problem has been fixed. 
+
+- The function descriptor was not deleted when "--gc-sections" was
+  specified. This problem has been fixed.
+
+- When a function was called via a function pointer, an internal
+  compiler error might occur. This problem has been fixed.
+
+- The following bugs have been fixed: 
+  - When a program that uses __lwbrx and __stwcx functions are
+    compiled with the "  -Wstrict-aliasing=2" option, the following
+    warning message will be output.
+    "warning: type-punning to incomplete type might break 
+     strict-aliasing rules"
+
+  - When a program such as the code of the example is compiled,
+    an internal compile error will occur.
+
+    Example)
+    struct A
+    {
+      A(void*);
+      ~A();
+    };
+
+    void foo(const int i, bool b)
+    {
+      b ? A(0) : i;
+    }
+
+  - When ppu-lv2-strip or spu-lv2-strip is in use, the following
+    warning message may be displayed on the console.
+
+      $ ppu-lv2-strip -s -o test_strip.elf test.elf
+      BFD: test.elf: warning: Empty loadable segment detected, 
+                              is this intentional ?
+      BFD: test_strip.elf: warning:
+                              allocated section `.tbss' not in segment
+
+    Note that the behavior of the ELF file that is generated by this
+    command will have no problem even when this warning message is
+    output.
+
+  - When a program such as the code of the example is executed, an
+    exception error will occur with throw, and the program will stop.
+
+    Example)
+    void test()
+    {
+        char s[16];
+        throw s;
+    }
+
+    int main()
+    {
+        try {
+            test();
+        }
+        catch(char *s){
+            throw;
+        }
+        return 0;
+    }
+
+<SPU>
+- In gcc.info file, a description of Machine Constraints, that is
+  specific to SPU and used for the inline assembler, has been added. 
+
+- A code that is generated by the compiler for the following sentence
+  is now further optimized. 
+
+    if(flag) spu_ienable();
+
+- When -fstack-check option was specified, the stack check code was
+  output redundantly. This problem has been fixed.
+
+- When the intrinsic "spu_insert" or "spu_shuffle" was used in
+  ?: operator, a message "type mismatch in conditional expression"
+  was wrongly output. This problem has been fixed.
+
+  Example)
+  vec_float4 test(int n)
+  {
+     return ((n == 0) ? (vec_float4)(0) :
+                        spu_shuffle((vec_float4)(0),
+                                    (vec_float4)(0),
+                                    (vec_uchar16)(0)
+                        )
+            );
+  }
+
+- A warning message "creating run-time relocation" was not output
+  where necessary. This problem has been fixed. 
+
+- When a value other than a multiple of 16 is set to the offset of
+  the lqd instruction using the inline assembler as shown below,
+  a warning message is now displayed:
+
+    lqd register,8(register)
+
+- When an operation was carried out for a variable with
+  __attribute__ ((__mode(TI))) specified, an internal compiler error
+  might occur. This problem has been fixed.
+
+- The SPU compiler inserted a lnop instruction when 16 load/store 
+  instructions were consecutively output. It now inserts a hbrp
+  instruction instead.
+
+- The following bug has been fixed: 
+  - In a program that is compiled with the -fPIC option, the address
+    of the member declared in a structure may not be set correctly.
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+<Windows/Linux>
+- The following problems have been fixed.
+  - When ppu-lv2-gdb/spu-lv2-gdb was booted by a user directly, 
+    the argument "info-spurs" might not be passed due to script 
+    description.
+    Rewrite gdbinit.ppu or gdbinit.spu before use as shown below:
+
+    1. Search "define info-spurs"
+    2. Rewrite "monitor spursinfo \$arg0" that was described 
+       in the next line of the sercheed line as "monitor spursinfo $arg0"
+
+  - When debugging a program, in which multiple PPU threads existed,
+    using bedbg, the message "watch dog timeout" might be displayed 
+    on GDB.
+
+  - When info-spurs command was executed on GDB, a file information 
+    "File not found" would be always displayed for spurs_kernel.elf or 
+    stripped elf.
+
+  - When SPU threads were generated repeatedly in the PPU program booted 
+    using bedbg -c option, execution of each SPU threads might not 
+    be restarted.
+
+  - When a null character ("") was contained in the string 
+    that was passed as an argument(arg/env) during execution, 
+    arg/env might not be recognized correctly from the subsequent 
+    use of arg/env. 
+
+<Windows>
+- The following problems have been fixed.
+  - The following 4 commands that were used to debug a Raw SPU 
+    by bedbg were not available.
+    
+    rawspustoplist, rawspuid, rawspuinfo, lsaddr
+
+    For details of this bug, see the Technical Note 200610-22.
+    https://ps3.scedev.net/technotes/view/345/1
+

@@ -1,0 +1,1125 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 300.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+Please see the New Features, changes and notes below that have been 
+added to the Reference Tool SDK package.
+
+----------------------------------------------------------------------
+New Librarie
+----------------------------------------------------------------------
+
+librudp
+=======
+
+This library is in the PRX format and assists in reliable data transfer over 
+UDP (User Datagram Protocol; RFC 768).
+
+Compared to TCP over UDPP2P that is supported by the NP Signaling utility, 
+it provides more features desired by online games and realizes transfer 
+with smaller packet header with higher efficiency.
+
+It is mainly assumed to be used along with the UDPP2P protocol, however, it is 
+also possible to use it in parallel with other transfer methods(such as a user 
+defined NAT traversal system over UDP or a communication with the game server 
+over UDP).
+
+For more details, please refer to the "librudp Overview/Reference" documents.
+
+New Sample
+
+- cell\samples\sdk\network\rudp\simple
+  This sample demonstrates how to use the context event handler, 
+  the polling functions, and the blocking functions of librudp.
+
+----------------------------------------------------------------------
+Development Environment ( Reference Tool(DECR-1000) )
+----------------------------------------------------------------------
+
+Specification Change
+
+- The audio channels output from [ANALOG AUDIO OUT 1/2/3/4] 
+  has been changed as below:
+
+    (Before)
+      1: L/R
+      2: LFE/C
+      3: Ls/Rs
+      4: Le/Re
+
+    (After)
+      1: Le/Re
+      2: L/R
+      3: LFE/C
+      4: Ls/Rs
+
+----------------------------------------------------------------------
+System Software (GUI)
+----------------------------------------------------------------------
+
+<System Software (GUI) Menu>
+
+New Features
+
+- Settings column -> Sound Settings -> Audio Multi-Output
+
+  The [Audio Multi-Output] feature can be enabled or disabled by specifying 
+  [On] or [Off] in the [Audio Multi-Output] setting.
+
+   When the [Audio Multi-Output] is enabled, the 2ch audio will be output 
+   to destinations other than the one selected by [Audio Output Settings]. 
+   For example, when HDMI is selected as an audio output destination via 
+   [Audio Output Settings], then the 2ch audio will be multi-output to 
+   the optical digital and the AVMULTI. 
+   When a multi channel audio such as LPCM 5.1ch 48kHz or Dolby Digital 
+   / DTS is output to an audio output destination that is selected via 
+   [Audio Output Settings], the system software internally outputs downmixed 
+    to 2ch audio to those destinations other than the audio output destination 
+    selected via [Audio Output Settings].
+
+   As a result, the Audio Multi-Output processing is automatically 
+   performed by the system software, thus the game application does not 
+   need to be aware of the ongoing Audio Multi-Output processing. 
+
+   By utilizing this feature, when multiple audio output devices(such as
+   a TV or an AV amplifier) are connected to PlayStation(R)3, it will be 
+   possible to output audio from a desired audio output device without 
+   changing [Audio Output Settings] of the system software. 
+
+   Note that when [Audio Multi-Output] is disabled, audio is output only 
+   to the audio output destination selected via [Audio Output Settings].
+
+   * Notes
+   - It is not possible to output LPCM 7.1ch audio to HDMI. It is 
+     limited to 5.1ch audio at maximum. 
+   - When [Audio Output Settings] is updated, the setting of 
+     [Audio Multi-Output] will be reset to [Off].
+   - The application obtains information of the audio output 
+     destination selected via [Audio Output Settings] using the audio 
+     setting utility API. Although [Audio Multi-Output] is enabled, the 
+     behavior of the API will be as defined, and only the information 
+     of the audio output destination selected via [Audio Output Settings]
+     can be obtained.
+
+    * Please refer to "Audio Configuration Utility" in this file for more
+      details.
+
+- PlayStation(R)Network column -> What's New
+- Video column -> PlayStation(R)Store
+- Game column -> PlayStation(R)Store
+
+  When it is signed up to PlayStation(R)Network, it will be possible to 
+  access  recently played game, various information such as latest news
+  from these icons.                              
+
+- Network column -> Internet Browser -> Triangle button (Menu)
+   -> File -> [Print This Screen] menu
+
+  The print feature is now available from the Internet Browser.
+
+- Settings column -> Debug Settings -> Disc Auto-Start at System Startup
+
+  Whether to enable/disable the disc automatic boot when the power is 
+  turned on can be selected from a menu item provided only on the 
+  development kit.
+  However, when [System Settings] -> [Disc Auto-Start] is set to [Off], 
+  this setting will take precedence, so the disc is not automatically 
+  booted when the power is turned on.
+
+Specification Changes
+
+- The graphics design of the icons and the backgrounds of the system 
+  software have been renewed. 
+
+  [Classic] setting has been added to the menu of "Settings Column -> 
+  Theme Settings" to return the design of the backgrounds and icons back to 
+  the old design.
+
+- The PLAYSTATION(R)3 logo is no longer displayed when the game is 
+  booted.
+
+- The design and the layout of the display area in the upper right 
+  of the system software has been changed.
+
+  In addition to the clock and the information board that have been 
+  displayed, the following 4 information will be provided:
+   - Display of new text chat rooms 
+   - Display of new messages
+   - Number of online friends
+   - Avatar icon
+
+- The disc automatic boot feature when the power is turned on with a 
+  disc inserted has been changed.
+  Please be aware that the automatic boot feature will not work when 
+  the following conditions are met: 
+  - When [System Settings] -> [Disc Auto-Start] is set to [Off]
+  - When [System Settings] -> [Display[What's New]] menu is se to [On],
+    and it is already signed up or has become online at least once 
+    even if it is not signed up 
+
+- The logo screen of when the power is turned on has been changed. 
+
+<Core Dump Features>
+
+New Feature
+
+- A feature has been added to output a normal core file and generate a 
+  text file that contains minimum debug information (crash log file) at 
+  the same time.
+  A large amount of information such as full register information and 
+  memory information at the time of crash will be recorded into the core 
+  file, but only the exception information that is output to the console
+  (TTY) by Cell OS Lv-2 will be recorded into the crash log file.
+
+    [Output destination]    Same destination as the core file
+    [File name]         File name of the core file with the extension 
+                        changed to ".log"
+
+----------------------------------------------------------------------
+libsysmodule
+----------------------------------------------------------------------
+
+Common
+======
+
+New Feature
+
+- An ID to load a module has been added.
+  -------------------------------------------------------------------
+  ID                                  Description
+  -------------------------------------------------------------------
+  CELL_SYSMODULE_RUDP                 librudp
+  -------------------------------------------------------------------
+
+----------------------------------------------------------------------
+System Utility (libsysutil)
+----------------------------------------------------------------------
+
+Save Data Utility
+=================
+
+New Feature
+
+- The following functions have been added to assist in displaying the save 
+  data list by a game title unique GUI:
+
+    cellSaveDataGetListItem()
+      This function quickly obtains information of multiple save data 
+      relating to the current user.
+
+    cellSaveDataUserGetListItem()
+      This function quickly obtains information of multiple save data of a 
+      user who has the ID that is specified to the userId argument.
+
+  The followings are supplementary notes of the above functions:
+ 
+  - The functions are available only in the data list callback and in the 
+    data specification callback.
+    It can obtain multiple save data information quicker than the existing 
+    procedure where the following functions are called repeatedly to obtain 
+    data one by one:
+
+    cellSaveDataAutoSave2()
+    cellSaveDataAutoLoad2()
+    cellSaveDataListAutoSave()
+    cellSaveDataListAutoLoad()
+    cellSaveDataUserAutoSave()
+    cellSaveDataUserAutoLoad()
+    cellSaveDataUserListAutoSave()
+    cellSaveDataUserListAutoLoad()
+
+  - The functions quickly obtain information of multiple save data, but are 
+    available only in the data list callback and the data specification 
+    callback.
+
+  - The information obtained can be used by the application as a condition
+    when displaying its own list of save data, or when selecting save data 
+    to be included in (or excluded from) the save data list that is obtained
+    from the Save Data utility function.
+
+  - The functions are both extended features, thus it is required to statically
+    link libsysutil_savedata_stub.a and load libsysutil_savedata using an API 
+    of libsysmodule.
+
+New Sample
+
+- cell\samples\sdk\sysutil\savedata\mylist
+  This sample shows save data in a list using a game title unique GUI and the 
+  feature of the Save Data utility that obtains the list item information of 
+  save data.
+
+
+Audio Configuration Utility
+===========================
+
+Notes on New Feature
+
+- It has been enabled to perform an audio multi-output from the menu added to 
+  the system software(GUI)(Sound Settings -> Audio Multi-Output).
+
+  Note that the behavior of and the obtained information by the Audio 
+  Configuration utility have not been changed.
+
+  Please refer to the following notes on the audio multi-output performed by 
+  the Audio Configuration utility:
+
+  - When Sound Settings -> Audio Multi-Output is set to On, audio is output to 
+    slave ports at the same time, however, information of the devices connected
+    to those ports cannot be obtained.
+
+  - When Audio Multi-Output is set to On, it is restricted to output Linear PCM
+    7.1ch audio to HDMI. Accordingly, this restriction is applied to the 
+    information that can be obtained by cellAudioOutGetDeviceInfo().
+
+  Please refer to the chapter 2 "User Configuration of Audio Output" in the 
+  "Audio Configuration Utility Overview" document for more details.
+
+
+System BGM
+==========
+
+New Feature
+
+- The system workload has been supported.
+
+  This feature can be used to request a game application to allocate an 
+  SPU required for the system BGM playback processing as a system workload 
+  and then play back a BGM.
+
+  For more information on the system workload, please refer to "SPURS System 
+  Workload Integration Guide" for more details.
+
+New Sample
+- cell\samples\sdk\sysutil\bgmplayback
+  This sample plays back a system BGM as a system workload. 
+
+Music Utility
+=============
+
+New Feature
+
+- In the playback features that uses/does not use a memory container, 
+  functions that start initialization have been added for when the features
+  are executed as a system workload:
+
+    cellMusicInitializeSystemWorkload()
+    cellMusicInitialize2SystemWorkload()
+
+  When the initialization is started by the above functions, the playback 
+  features will request a game application to allocate an SPU required for 
+  the playback processing as a system workload.
+
+  For more information on the system workload, please refer to "SPURS System 
+  Workload Integration Guide".
+
+Sample Change(cell\samples\sdk\sysutil\)
+
+- In the music and the music2 samples, the newly added processing of the 
+  initialization functions has been added.
+
+
+Music Decode Utility
+====================
+
+New Feature
+
+- In the normal decode feature and the memory saving decode feature, functions 
+  that start initialization have been added for when the features are executed 
+  as a system workload:
+
+    cellMusicDecodeInitializeSystemWorkload()
+    cellMusicDecodeInitialize2SystemWorkload()
+
+  When the initialization is started by the above functions, the decode 
+  features will request a game application to allocate an SPU required for the 
+  decode processing as a system workload.
+
+  For more information on the system workload, please refer to "SPURS System 
+  Workload Integrartion Guide".
+
+Sample Change(cell\samples\sdk\sysutil\)
+
+- In the music_decode and the music_decode2 samples, the newly added processing
+  of the initialization functions has been added.
+
+Recording Utility
+=================
+
+New Features
+
+- MPEG-4 Advanced Coding Efficiency(M4HD) that can record 1280x720 screen 
+  size at maximum in the form of MPEG-4 has been added as a recordable 
+  video/audio format.
+  Accordingly, the following macro constants have been added:
+
+    CELL_REC_PARAM_VIDEO_FMT_M4HD_LARGE_1536K_30FPS
+    CELL_REC_PARAM_VIDEO_FMT_M4HD_LARGE_2048K_30FPS
+    CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_2048K_30FPS
+    CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_5000K_30FPS
+    CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_11000K_30FPS
+
+  To use M4HD, specify any one of the above macros to the videoFmt member 
+  of the CellRecParam structure.
+
+  Note that the quality of M4HD is higher than MPEG-4 SP but lower than AVC.
+  Also, if the screen size is LARGE(480x368(4:3) or 640x368(16:9)), the 
+  required memory of M4HD will be less than both MPEG4 SP and AVC.
+
+- Metadata can be now added to movies.
+
+  There are 2 kinds of metadata that describe a main movie and a scene
+  (a part of the movie).
+  Each metadata can be set using new structures described later and a 
+  metadata file will be generated at the time of movie recording.
+
+  To generate a metadata file, set the followings to the CellRecOption 
+  structure and execute cellRecOpen():
+
+    - Specify a new option CELL_REC_OPTION_METADATA_FILENAME to "option"
+    - Specify a movie file name with ".vmd" attached to value.metadata_filename
+
+  To add metadata to the generated metadata file, set a value to the newly 
+  added structures shown below, then execute cellRecSetInfo():
+
+    CellRecMovieMetadata : Structure to set the following metadata that 
+                           describe a main movie
+    CellRecSceneMetadata : Structure to set the following meta data that 
+                           describe a scene
+
+  The following metadata that describe movies are settable to the 
+  above structures:
+
+    - Structure(CellRecMovieMetadata) to set the following metadata that 
+      describe a main movie:
+
+      - Title name of the game application
+      - Title of the movie
+      - Description of the movie
+      - Data for developers(*)
+
+      (*)This metadata can be used for any purpose by the application.
+
+    - Structure (CellRecSceneMetadata) to set the following metadata that 
+      describe a scene:
+
+      - Type of the scene(chapter, highlight clip or user clip)
+      - Start/End time of the scene
+      - Title of the scene
+      - Tag information of the scene(*)
+
+      (*)This metadata can be used for any purpose by the application.
+
+  Please refer to the "Movie Metadata" section of the "Recording Utility
+  Overview" document for more details on the metadata.
+
+Specification Change
+
+- As a result of the addition of the recordable video/audio format(M4HD), 
+  the upper limit of the memory container size that the Recording utility 
+  requires and is defined in sysutil_rec.h has been updated as shown below:
+
+  (SDK versions older than SDK300)
+    #define CELL_REC_MAX_MEMORY_CONTAINER_SIZE ( 9 * 1024 * 1024 )
+
+  (SDK300 and later)
+    #define CELL_REC_MAX_MEMORY_CONTAINER_SIZE ( 16 * 1024 * 1024 )
+
+Contents Search Utility
+=======================
+
+New Features
+
+- From SDK300 onwards, the Recording utility can attach metadata(scene 
+  information etc.) to movies. 
+  Accordingly, the following functions that search scene information have 
+  been added:
+
+    cellSearchStartSceneSearch()
+      This function specifies a game title or a tag string and obtains the 
+      specified scene information.
+
+    cellSearchStartSceneSearchInVideo()
+      This function specifies a video and a scene type and obtains the 
+      specified scene information.
+
+  Also, a structure CellSearchVideoSceneInfo that indicates a scene contents 
+  and a constant CellSearchSceneType that indicates a scene type have been 
+  added.
+
+- From SDK300 onwards, the Recording utility can attach metadata(data for 
+  developers etc.) to movies.
+  Accordingly, a function cellSearchGetContentInfoDeveloperData() has been 
+  added to obtain data for developers that is set to a video contents.
+
+  The data for developers can be used as follows:
+
+  Assuming, for example, a user ID of the current user is set as metadata of 
+  a movie(data for developers), a movie is recorded, then a metadata file of 
+  the movie is generated. 
+
+  This file can be used to configure a system to search video contents within 
+  the application, then select whether to include the video contents in the 
+  list based on the data for developers of the obtained contents information so
+  that, for example, only movies in which your own gameplay is recorded can be 
+  listed up.
+
+  As shown in the following practical application, the metadata of a movie
+  (data for developers) can be used in many ways by setting various 
+  information:
+
+  (Practical Application)
+      When a user ID and a character name are set to the metadata of movies
+      (data for developers):
+ 
+      Select movies in which a character (e.g. a boss character) of a game 
+      application that a user played appears, then create a collection of 
+      movies that show a match with the boss character.
+
+New Sample
+
+- cell\samples\sdk\sysutil\search_scene_demo
+  This sample searches a movie or a scene, which is created by the Recording 
+  utility, using the Contents Search utility.
+
+Custom Theme Utility
+====================
+
+New Features
+
+- A theme file that includes RAF(Rich Appearance Format) has been now enabled 
+  to run on the system software of PlayStation(R)3. Accordingly, it will be 
+  provided as an official version.
+
+- tangent_normal_map has been added so that it can be specified as a map method
+  ("type" attribute of the <texture> element) of a texture to be described in a
+  RAF scene file. It will be handled as a normal line in a tangent space.
+
+Specification Changes
+
+- The following restriction on the number of polygons of a model to be set as 
+  a RAF Actor has been removed:
+
+    The number of polygons of a model to be set as an Actor will be restricted 
+    to 30000.
+
+- The following specification has been added for the usage amount of the 
+  intermediate buffer for RAF Actors:
+
+  - The usage amount of the intermediate buffer is limited to the total size of 
+    the output model data as much as the number of Actors. In other words, it 
+    is limited to 1.25 MB. The output model data size of the Actors is 
+    calculated as follows:
+
+      (Number of polygons * 6) + (Number of vertices * Vertex size)
+
+Background Download Utility
+===========================
+
+Specification Change
+
+- The maximum number of registerable background downloads(number of
+  BGDL queues) has been changed from 16 to 32.
+
+----------------------------------------------------------------------
+C/C++_Standard_Library
+----------------------------------------------------------------------
+
+Specification Change
+
+<SPU>
+
+- The specification of atexit() function, when called from SPU DLL, 
+  has been changed.
+  Each DLL has its own queue to register function pointers, and 
+  the functions are called when the DLL is unloaded.
+
+----------------------------------------------------------------------
+SPU Runtime
+----------------------------------------------------------------------
+
+libspurs
+========
+
+<Common>
+
+New Sample
+
+- cell\samples\tutorial\FunctionOffloadToSpu\ppu_call_by_jdl
+  This sample program demonstrates how to call PPU functions from 
+  offloaded SPU program using JDL and libswcache.
+
+Sample Change(cell\samples\sdk\spu_library\libspurs\advanced\)
+
+- The job_dynamic_job_submit sample has been deleted.
+
+  The above sample is to demonstrate how to dynamically push a job into 
+  the SPURS job chain, however, the same feature is provided as an SDK 
+  library(SPURS jobqueue) from SDK250.001 onwards.
+  The above sample was also provided during the transition period, however, 
+  it has been deleted from SDK300.001.
+
+    See Also: cell\info\old\250.001\Important_Changes_*.txt
+
+<Core>
+
+New Features
+
+- The limitedly released system workload feature that was announced in 
+  "New Libraries and Tools" of SDK280.001 version of Important_Changes_*.txt 
+  will be provided as an official version.
+
+    See Also: cell\info\old\280.001\Important_Changes_*.txt
+
+- An SPU to preempt when a deadline-miss occurred in an execution of a system 
+  workload can be now set in the following function:
+
+    cellSpursSetPreemptionVictimHints()
+
+  However, the flag isPreemptible, which is set per preemption candidate SPU 
+  for when a deadline-miss occurs, is just a hint for the Cell OS Lv-2.
+  If a deadline-miss occurs, the SPU will be preempted although there is no SPU
+  with "true" set. In this case, the behavior of the SPU to be preempted will 
+  become unpredictable.
+
+<Job Queue>
+
+New Feature
+
+- In the SPURS jobqueue, an interface CopyPush has been added to return
+  an error immediately without entering into the wait state when it is 
+  not possible to push a job because there is no space in the command queue.
+
+  Accordingly, the following functions and methods have been added:
+
+  - A function and methods to copy a job descriptor of a job to the buffer 
+    that is allocated to the port and pass the copy to the job queue module:
+
+    - C language interface
+      - cellSpursJobQueuePortTryCopyPush()
+
+    - C++ language interface
+      - cell::Spurs::JobQueue::Port::tryCopyPush()
+      - cell::Spurs::JobQueue::PortContainer::tryCopyPush()
+
+  - A function and methods to specify a tag ID for synchronization among jobs 
+    and copy a job descriptor of a job to the buffer that is allocated to the 
+    port and then pass the copy to the job queue module:
+
+    - C language interface
+      - cellSpursJobQueuePortTryCopyPushJob()
+
+    - C++ language interface
+      - cell::Spurs::JobQueue::Port::tryCopyPushJob()
+      - cell::Spurs::JobQueue::PortContainer::tryCopyPushJob()
+
+New Sample
+
+- cell\samples\sdk\spu_library\libspurs\jobqueue\jobqueue_flush_trans_vertex
+  This sample demonstrate how to use the SPURS jobqueue with JOBLIST command 
+  and FLUSH command using the vertex conversion as a material.
+
+Sample Change(cell\samples\sdk\spu_library\libspurs\jobqueue\)
+
+- The directory name where the hello_and_yield and the sync_command samples 
+  are located has been changed as follows:
+
+  (Old) hello_and_yield 
+  (New) jobqueue_hello_and_yield 
+
+  (Old) sync_command 
+  (New) jobqueue_sync_command 
+
+<Task>
+
+New Feature
+
+- The SPURS task module trace is now output.
+
+  USER_START and USER_STOP of the program name "TKST" indicate the start 
+  and the end of the task module respectively.
+
+
+libspudll
+=========
+
+New Feature
+
+- The destructor of a static object defined in a function of the SPU DLL
+  was called when the main function was terminated, but not when the DLL 
+  was unloaded.
+
+  Due to the specification change in the "C/C++ Standard Library" in order 
+  to respond to this problem, the destructor is now also called at the time 
+  of unload.
+
+libswcache
+==========
+
+New Features
+
+- By defining the preprocessor macro CELL_SWCACHE_SIZE_CHECK before including 
+  cell\target\common\include\cell\swcache\pointer.h, it is now possible to 
+  stop with an ASSERT when it is attempted to cache an object that is larger 
+  than the object cached in DefaultCache with the template class 
+  cell::swcache::Pointer.
+
+- By defining the preprocessor macro CELL_SWCACHE_SIZE_CHECK before including 
+  cell\target\common\include\cell\swcache\patch_object.h, it is now possible
+  to stop with an ASSERT when it is attempted to cache an object that is 
+  larger than the object cached in DefaultCache with the template class 
+  cell::swcache::PatchObject.
+
+  The above new features are to support the following restriction on the 
+  alias check.
+  
+    When the beginning address of an object is matched but the size of the
+    cache object differs, this will be detected as a cache-hit. If the object 
+    is larger than the cache size of when an area is initially allocated to the
+    heap memory, and is detected as a cache-hit afterwards, this will lead to a
+    data access to an area outside of the cache object.
+
+    This case occurs when data is accessed using the base class and its 
+    derived class.
+
+- A macro PS3PrintCellSwcacheDefaultCache() has been added to dump the contents
+  of the object that is cached in DefaultCache using the ProDG Debugger for 
+  PlayStation(R)3.
+
+----------------------------------------------------------------------
+Network
+----------------------------------------------------------------------
+
+libnet
+======
+
+Specification Change
+
+- To reduce the overhead due to UDPP2P header, 
+  the specification of UDPP2P header has been changed.
+
+libssl
+======
+
+New Feature
+
+- A SSL certificate "GeoTrust Equifax Secure Global eBusiness CA-1" 
+  has been added.
+  Along with this, a flag to load the certificate has been added 
+  as below:
+
+    CELL_SSL_LOAD_CERT_EQUIFAX_SEC_G_EBUS1
+
+libnetctl
+=========
+
+New Feature
+
+- The following function has been added so that the Network Start Dialogue 
+  utility can be aborted even though the screen is being displayed on the 
+  system software:
+  
+  - cellNetCtlNetStartDialogAbortAsync() 
+
+----------------------------------------------------------------------
+PlayStation(R)Network (NP)
+----------------------------------------------------------------------
+
+NP Basic
+========
+
+New Feature
+
+- The validity period can now be set to the game boot invitation message 
+  and the game boot custom data attachment message.
+
+  When SCE_NP_BASIC_MESSAGE_FEATURES_BOOTABLE is specified to the msgFeatures 
+  member of the SceNpBasicMessageDetails structure that is passed to 
+  sceNpBasicSendMessageGui() as an argument, if an OR of a value that can be
+  obtained by SCE_NP_BASIC_MESSAGE_FEATURES_EXP_MIN(m) is specified to 
+  msgFeatures, the validity period of the message can be specified in minutes.
+
+Specification Change
+
+- If an application starts up from ProDG Target Manager for 
+  PlayStation(R)3 with the boot attribute set to the game boot 
+  invitation message or the game boot custom data attachment message, 
+  sceNpBasicRecvMessageAttachmentLoad() will read the file of 
+  /app_home/bootable_message_data.dat as the attached data.
+
+  On Target Manager, the boot attribute can be set to the game boot 
+  invitation message or the game boot custom data attachment message 
+  by selecting menus in the following order:
+
+  Target -> Properties... -> Misc. Load Options -> 
+  Enable miscellaneous settings -> Game Attribute:
+
+  The boot attribute is available from Target Manager v300.1 onward.
+
+Sample Change(cell\samples\sdk\network\np\np_basic)
+
+- The game boot invitation message and the game boot custom data 
+  attachment message with the validity period specified can be now 
+  sent.
+
+NP Profile
+==========
+
+New Feature 
+
+- sceNpProfileAbortGui() has been added to abort an online profile GUI 
+  of a player that is displayed by calling sceNpProfileCallGui().
+
+  Note that the function reference of the NP profile is provided in the 
+  "NP Library Common API Reference" document.
+
+Sample Change (cell\samples\sdk\network\np\np_basic)
+
+- The online profile GUI display can be now aborted using 
+  sceNpProfileAbortGui().
+
+NP IN-GAME Commerce 2
+=====================
+
+New Features
+
+- A feature has been added to specify multiple product IDs and obtain 
+  game information of the specified products in a list.
+  This list is called as a product information list.
+
+  Accordingly, the following functions have been added:
+
+  - sceNpCommerce2GetProductInfoListCreateReq()
+    This function creates a commerce 2 request to obtain the product 
+    information list.
+
+  - sceNpCommerce2GetProductInfoListStart()
+    This function starts the acquisition of the product information list.
+
+  - sceNpCommerce2GetProductInfoListGetResult()
+    This function obtains the product information list.
+
+  - sceNpCommerce2InitGetProductInfoListResult()
+    This function initializes the product information list that is obtained 
+    by sceNpCommerce2GetProductInfoListGetResult() so as to allow 
+    sceNpCommerce2GetGameProductInfoFromGetProductInfoListResult() to read 
+    the product information.
+
+  - sceNpCommerce2DestroyGetProductInfoListResult()
+    This function deletes the product data that is initialized by 
+    sceNpCommerce2InitGetProductInfoListResult().
+
+  - sceNpCommerce2GetGameProductInfoFromGetProductInfoListResult()
+    This function reads game product information such as the product name or 
+    the number of SKUs contained from the initialized product information list.
+
+- A product code input (SCE_NP_COMMERCE2_STORE_BROWSE_TYPE_PRODUCT_CODE) has 
+  been added as a boot type that can be specified to the first argument 
+  targetType of the sceNpCommerce2ExecuteStoreBrowse() function that starts 
+  store browsing.
+
+- An in-game product store browsing has been added to allow product purchase 
+  while a game being started.
+  Accordingly, the following functions have been added:
+
+  - sceNpCommerce2DoProductBrowseStartAsync()
+    This function starts in-game product store browsing.
+
+  - sceNpCommerce2DoProductBrowseFinishAsync()
+    This function finishes in-game product store browsing.
+
+  With the existing store browsing, it was required to terminate the 
+  application, then restart the application automatically after a user purchase 
+  operation was completed.
+
+  However, since the newly added in-game product store browsing performs a product 
+  purchase without terminating the application, it is no longer required to restart 
+  the application.
+
+- A function sceNpCommerce2GetPrice() has been added to output a price in an 
+  appropriate format per country/area.
+
+  Each format of the price differs among countries and areas such as 
+  the position of the currency code and whether to use the comma or 
+  the period as a decimal point.
+
+  This function returns a price string in an appropriate format based on the 
+  region information of an account that is obtained from the server when 
+  creating a session. Thus, please use this function for displaying the price 
+  to users.
+
+Specification Change
+
+- In the PlayStation(R)Network server update conducted on 
+  2009/4/28, the second argument service_id of 
+  sceNpCommerce2DoDlListStartAsync() has become available.
+
+  When a service ID is specified to the argument service_id, 
+  a download list specific to that service can be displayed.
+
+Sample Changes(cell\samples\sdk\network\np\np_gui_commerce2)
+
+- The following menus have been added to the main screen:
+
+  	- Menu to display the download list that shows only the service IDs
+
+  - Menu to execute in-game product store browsing
+
+  - Menu to execute store browsing in the product code input mode
+
+- It has been changed to use sceNpCommerce2GetPrice() for price display.
+
+NP Score Ranking
+================
+
+New Features
+
+- The following functions have been added to detect an invalid string 
+  and convert it into '*':
+
+    sceNpScoreSanitizeComment()
+    sceNpScoreSanitizeCommentAsync()
+
+  Please use the functions to check strings that are viewed by all players 
+  and remain for a long time.
+
+- The following constants have been added to show the maximum length of a 
+  string that can be specified by the following functions that checks invalid
+  strings:
+
+  ----------------------------------------------------------------------
+  Constant                              Related Function
+  ----------------------------------------------------------------------
+  SCE_NP_SCORE_SANITIZE_COMMENT_MAXLEN  sceNpScoreSanitizeComment()
+                                        sceNpScoreSanitizeCommentAsync()
+  ----------------------------------------------------------------------
+  SCE_NP_SCORE_CENSOR_COMMENT_MAXLEN    sceNpScoreCensorComment()
+                                        sceNpScoreCensorCommentAsync()
+  ----------------------------------------------------------------------
+
+  Since strings are set in UTF-8, the maximum length is indicated in the 
+  byte length, not the string length.
+
+Specification Change
+
+- The maximum length of an invalid string that can be checked by the 
+  following functions has been extended to 255 bytes:
+
+    sceNpScoreCensorComment()
+    sceNpScoreCensorCommentAsync()
+
+  Accordingly, the type of the second argument of the above functions has 
+  been changed from "const SceNpScoreComment *" to "const void *".
+
+Sample Change(cell\samples\sdk\network\np\npclient)
+
+- A function that checks an invalid string using the new function 
+  sceNpScoreSanitizeComment() has been added.
+
+NP Trophy
+=========
+
+New Feature
+
+- On the "Trophy Collection" screen of the system software, acquisition
+  conditions of each trophy can now be displayed in groups per extended 
+  pack.
+
+  To group the acquisition conditions of each trophy per extended pack, 
+  create trophy groups in units of extended packs, and set the followings:
+
+    - Define a trophy set to have the trophies of an extended pack belong 
+      to a trophy group
+
+    - Always set a still image icon, a title name and detailed information 
+      of the default language per trophy group
+      
+      Whether to set a still image icon, a title name and detailed information 
+      of other languages except the default language is optional.
+      
+  Please refer to the "Trophy System Overview" document for more details.
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+
+New Feature
+
+- libvoice now shares the voice decoder among multiple voice input 
+  ports (CELLVOICE_PORTTYPE_IN_VOICE). 
+
+  libvoice internally allocates 32 voice decoders at maximum in the
+  system memory mode and 8 voice decoders in the 1MB game memory mode.
+  Since each voice input port needs an decoder to process the voice
+  data, the number of voice input ports was limited depending on the
+  number of voice decoders.
+
+  Since the voice decoders are now shared among multiple voice input
+  ports (CELLVOICE_PORTTYPE_IN_VOICE), the number of voice input ports
+  is no longer limited by the number of voice decoders.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+
+New Features
+
+- Added -no-capture and -no-capture-preprocess options.
+
+  Cgc capture can be enabled from options or environment variables.
+  However, there was no way to force Cgc capture to be off.
+
+  These new options allow Cgc capture to be forced off via options.
+
+  This came about because of problems with unsetting environment
+  variables in Windows when using DLLs.
+
+  The -no-capture option forces capture off, 
+  regardless of other options or environment variables.
+  This is effectively the same as the default behavior of Cgc.
+
+  The -no-capture-preprocess option forces the capture of 
+  preprocessed source off.
+
+  If Cgc capture is on and specified to capture preprocessed source 
+  (environment variable SCECGC_CAPTUREPREPROC or 
+  option -capture-preprocess), and -no-capture-preprocess is also specified,
+  then Cgc allows regular capture.
+
+  If Cgc capture is on and not specified to capture preprocessed source 
+  (not environment variable SCECGC_CAPTUREPREPROC nor 
+  option -capture-preprocess is specified), 
+  the option -no-capture-preprocess has no effect.
+
+- #pragma disablepc TEXCOORD <#>
+  Added pragma for disabling perspective correction 
+  per texture coordinate.
+  This is cumulative with the texture coordinate 
+  disabled from command-line options.
+
+- Added an option (-mnvbh) to generate a different 
+  layout from default NV shader binary layout (-mnvb).
+
+  In the default NV shader binary layout (-mnvb), 
+  the Program Header (fragment or vertex) is generated 
+  after Parameter Tables.
+
+  Use -mnvbh to create a layout in which Program Header 
+  (fragment or vertex) is generated after NV Binary Header and 
+  before Parameter Tables.
+
+- Removed the restriction that libcgc cannot to be linked with 
+  -fno-exceptions and -fno-rtti options and objects compiled
+  using these compile options.
+
+  Please note that the above removal of the restriction 
+  has not been described in "Cg Compiler User's Guide" yet.
+
+Specification Change
+
+- -noentry option has been removed.
+  Cg Compiler listed -noentry as a valid option, 
+  which in fact provides no functionality in PS3 SDK.
+
+----------------------------------------------------------------------
+codec
+----------------------------------------------------------------------
+
+libvdec
+=======
+
+New Feature
+
+- The memory usages required for decoding a DivX(R) video using libvdec 
+  has been reduced.
+
+  The memory usages required for decoding when the CODEC information specific 
+  to the DivX(R) video is not specified at all are compared as shown below:
+
+  - Mobile profile
+    SDK280: 2.2MB
+    SDK300: 1.6MB
+
+  - Home Theater profile
+    SDK280: 4.3MB
+    SDK300: 3.5MB
+
+  - HD 720 profile
+    SDK280: 7.8MB
+    SDK300: 6.6MB
+
+  - HD 1080 profile
+    SDK280: 15.5MB
+    SDK300: 13.5MB
+
+  Note that the above information is not reflected to the table in the "Note" 
+  section of the structure CellVdecDivxSpecificInfo2 in the "libvdec Reference"
+  document.
+
+libsail
+=======
+
+libsail_rec
+===========
+
+New Features
+
+- To speed up the encoding processing of the MPEG-4 AVC encoder, the 
+  following 2 methods have been supported:
+
+  - Speed up by multiple SPUs
+    The encoding processing is speeded up by using multiple SPUs in 
+    parallel.
+    Set 2 or more as the number of SPUs that the MPEG-4 AVC encoder 
+    uses to the parameter type CELL_SAIL_PARAMETER_VENC_AVC_NUM_OF_SPUS 
+    of the cellSailRecorderSetParameter() function that sets each 
+    parameter to the CellSailRecorder structure.
+
+  - Speed up by multi slices
+    When speeding up by multiple SPUs, set 2 or more as the maximum number 
+    of slices within a picture to the extended parameter identification 
+    number CELL_SAIL_AVC_ENC_EX_PARAM_MAX_SLICE_NUM of the MPEG-4 AVC 
+    encoder extended parameter structure CellSailAvcEncExParam so as to 
+    get a better result.
+
+    Also, it is recommended to specify the same value as the number of
+    SPUs, which is specified to the parameter type 
+    CELL_SAIL_PARAMETER_VENC_AVC_NUM_OF_SPUS of 
+    cellSailRecorderSetParameter(), to this parameter.
+
+- MPEG-4 video HD encoder is now specifiable as an encoder type to the 
+  CellSailBsVideoParameter structure that sets a parameter of the video
+  encoder. 
+
+  The MPEG-4 video HD encoder can encode a video whose screen size is
+  1280x720 and whose frame rate is 29.97Hz by a single SPU in real time 
+  using the ACE(Advanced Coding Efficiency) profile.
+
+----------------------------------------------------------------------
+Physics Effect Sample (cell\samples\tutorial\PhysicsEffects)
+----------------------------------------------------------------------
+
+Physics Effect Library and Framework for Physics Effect
+=======================================================
+
+Specification Change
+
+- The maximum number of shapes that can be contained in a compound 
+  shape of a rigid body has been extended to 64.
+
+Sample Change(cell\samples\tutorial\PhysicsEffects\Tutorials\Tutorial1)
+
+- The extended number of shapes that can be contained in a compound 
+  shape of a rigid body (64 at maximum) has been supported.
+
+----------------------------------------------------------------------
+Sample Program (cell\samples)
+----------------------------------------------------------------------
+
+New Feature
+
+- It has been enabled to build the common Makefile even when an SPASM 
+  formatted file is included as a build target.
+
+----------------------------------------------------------------------
+

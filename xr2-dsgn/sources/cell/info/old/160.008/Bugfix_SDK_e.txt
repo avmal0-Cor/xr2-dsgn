@@ -1,0 +1,564 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 160.008
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 160.008 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 160.008
+======================================================================
+----------------------------------------------------------------------
+Win32 version dtcfilesv(host-win32/bin/dtcfilesv.exe)
+----------------------------------------------------------------------
+- Opened files were unable to be deleted. This problem has been fixed.
+
+- When a file name was contained in a file path, ENOTDIR was not 
+  returned. This problem has been fixed.
+
+- When ULLONG_MAX was specified to the file size "size" of 
+  cellFsFtruncate()/cellFsTruncate(), EINVAL was not returned. This 
+  problem has been fixed.
+
+- Calls of cellFsOpenDir()/opendir() toward "/host_root/c:/" were ended 
+  in error. This problem has been fixed.
+
+- The length of a file path was limited to 255 bytes or less. This 
+  problem has been fixed. Note that the absolute path handled by the 
+  host is limited to 1055 characters.
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libpngdec>
+- When a decoding processing was performed in PNG data that contained 
+  a color table, a communication with the kernel occurred per line of 
+  the decoding processing. In such situation, the kernel's processing 
+  load increased which could cause a negative impact on other 
+  processing such that a sound was muted. This problem has been fixed.
+
+<libsail>
+- Samples under samples/streaming now renders images with a correct 
+  image size to which the pixel aspect ratio is reflected.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<PPU/SPU>
+- When an argument of the following functions of complex.h was 
+  specified with a maximum value of either positive or negative for 
+  both the real and the imaginary parts, an incorrect result was 
+  returned. This problem has been fixed:
+  cacosh, cacoshf, cacoshl
+  ctan, ctanf, ctanl
+  ctanh, ctanhf, ctanhl
+  csqrt, csqrtf, csqrtl
+
+<PPU/SPU>
+- When an argument of the following functions of complex.h was 
+  specified with a maximum positive value for both the real and the
+  imaginary parts, an incorrect result was returned. This problem has
+  been fixed:
+  clog, clogf, clogl
+  cpow, cpowf, cpowl
+
+<PPU/SPU>
+- When a string that contains an incorrect character was passed to the
+  following functions, a correct pointer was not returned in a 
+  position specified to the second argument. This problem has been fixed.
+  wcstod, wcstof, wcstold
+
+<PPU/SPU>
+- When an argument of the following functions of complex.h was specified 
+  as 1 for the real part and 0 for the imaginary part, an incorrect result
+  was returned. This problem has been fixed.
+  catanh, catanhf, catanhl
+
+<PPU/SPU>
+- When an argument of the following functions of complex.h was specified 
+  with a negative value, an incorrect result was returned. This problem has 
+  been fixed.
+  lgamma, lgammaf, lgammal
+
+<PPU/SPU>
+- When an argument of the following functions of math.h was specified with
+  a maximum positive value, an incorrect result was returned. This problem 
+  has been fixed.
+  asinh, asinhf, asinhl
+
+<PPU/SPU>
+- When an argument of the following functions of math.h was specified with 
+  a value more than 1.0, a negative NaN sign was returned. This
+  problem has been fixed.
+  atanh, atanhf, atanhl
+
+<PPU/SPU>
+- When an argument of the following function of math.h was specified with a 
+  maximum negative value, an incorrect result was returned. This problem has 
+  been fixed.
+  cosh, coshf, coshl
+
+<PPU>
+- The following problem has been fixed.
+
+  - powf(0.1f, 46.0f) returns "INFINITY"; it should return "0.0f" instead.
+    powf(0.001f, -15.0f) returns "0.0f"; it should return "INFINITY" instead.
+    powf(-INFINITY, y) returns "0.0f" in condition that the argument y is 
+    a negative odd integer; it should return "-0.0f" instead.
+
+<PPU>
+- When the compiler option was set to -00 when using Mersenne Twister 
+  (libmt19937.a), an error occurred while linking. Also, functions of 
+  libmt19937.a were not available with C++. These problems have been fixed.
+
+<PPU/SPU>
+- When the abs function of the valarray header was specified with an argument 
+  in valarray<int> form, an error occurred while compiling. 
+  This problem has been fixed.
+
+<PPU>
+- When the first argument of the memalign function of stdlib.h header was 
+  specified with 0xFFFFFFFF, execution of the program was stopped. 
+  This problem has been fixed.
+  
+<PPU/SPU>
+- The following problem has been fixed.
+
+  - If programs that include header stdlib.h are compiled with any of the 
+    following options, errors will be reported at link-time (PPU side) or 
+    compile-time (SPU side, C++).
+    -D_NO_INLINE_DEFINITIONS
+    -std=c89
+    -std=gnu89
+    -std=c++98
+
+<PPU/SPU>
+- include guard has been fixed so that a problem does not occur when the 
+  bits/tt800.h header is directly included.
+
+<PPU/SPU>
+- "_" is now added at the begginig of the follwoing mascos that are used within
+  a header so that they do not overlap with the names defined when creating 
+  an application:
+  CPOLY(x)        ppu/include/bits/sincos_c.h
+  POW2(x)         ppu/include/bits/sincos_c.h
+  SPOLY(x)        ppu/include/bits/sincos_c.h
+  LOWER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MATRIX_A        ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  UPPER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MAX_RESULT      ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LN2           ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LOG2E         ppu/include/bits/f_expf.h, spu/include/bits/f_expf.h
+  M_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800_QWORDS  ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  VERSION_1       spu/include/bits/strncmp.h
+  VERSION_2       spu/include/bits/strncmp.h
+  VERSION_3       spu/include/bits/strncmp.h
+  VERSION_4       spu/include/bits/strncmp.h
+
+<PPU/SPU>
+- When the member function in the vector header "vector::begin" was used, a 
+  warning message was displayed. This problem has been fixed.
+  Accordingly, the following notice on GCC has been also cancelled.
+
+  <PPU>
+  - When a program such as the code of the example is compiled, a warning
+    message will be output to the console.
+
+    Example)
+    std::vector<bool> myArray
+    std::vector<bool>::iterator it = myArray.begin()
+
+<PPU/SPU>
+- When the following headers were used to compile with the -Wshadow option, a 
+  warning message was displayed. This problem has been fixed.
+  PPU: complex, istream, string, valarray, xlocnum, xlocale
+  SPU: strcat.h, strcpy.h, strncat.h, strncpy.h, complex, valarray
+
+<PPU>
+- The fegetexceptflag function of the fenv.h header did not return a 
+  correct value. This problem has been fixed.
+
+<PPU>
+- The feholdexcept function of the header fenv.h did not return a 
+  correct value.  This problem has been fixed.
+
+<SPU>
+- The following problem has been fixed.
+
+  - If rounding mode is set by function fesetround in fenv.h, there is 
+    a bug that the setting is effective in only the operations on slice 
+    1 of vector double type.  Round to nearest even mode (default) is 
+    used for the operations on double type and on slice 0 of vector 
+    double type.
+
+    The problem can be worked around by using the following code 
+    instead of fesetround.  Replace FE_TOWARDZERO with the mode to be 
+    set.
+    vector unsigned int r=spu_mffpscr();
+    r=spu_sel(r,spu_splats(((unsigned int)FE_TOWARDZERO*5)<<8),
+            ((vector unsigned int){0x0000FF00,0,0,0}));
+    spu_mtfpscr(r);
+    See also technical notes "Rounding control of SPU 
+    double-precision floating-point operations".
+
+<PPU>
+- The lrintf function of the fastmath.h header did not return a correct 
+  value.
+  This problem has been fixed.
+
+<PPU>
+- When the closedir function was called repeatedly, the mutex IDs ran 
+  out. This problem has been fixed.
+
+<PPU>
+- The following header files have been fixed so as to support the SN 
+  Systems compiler:
+  ppu/include/bits/fmodf4.h
+  ppu/include/bits/remainderf4.h
+  ppu/include/stddef.h
+  ppu/include/yvals.h
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- When a Raw SPU was discarded, the associated interruption thread and 
+  tag were not collected. This problem has been fixed.
+
+- When "type" that is the argument of sys_spu_thread_group_create() had 
+  an invalid value, ENOSYS could be returned instead of EINVAL. 
+  This problem has been fixed.
+
+- The specifications of sys_spu_image_import() has been changed so as 
+  to conform with TRC. 
+  When a SELF file is passed, it now returns ENOEXEC.
+
+- sys_raw_spu_create()/sys_spu_thread_group_create() could return EABORT. 
+  This problem has been fixed.
+
+- When attempted to change the access right to the same area twice or 
+  more using sys_mmapper_change_address_access_right(), the second and 
+  the subsequent calls failed. This problem has been fixed.
+
+----------------------------------------------------------------------
+System Software(GUI) 
+----------------------------------------------------------------------
+- The following restrictions has been removed from SDK160 or later 
+  onwards:
+
+  - The following menus have been added to the system software, but 
+    they cannot be used at the moment. 
+     - Settings -> System Settings -> NP Title ID
+     - Network -> Title Store Preview
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< Video Settings Utility >
+- The following restrictions has been removed from SDK160 or later 
+  onwards:
+
+  - The current SDK does not support the function of 
+    CELL_VIDEO_OUT_PORT_NETWORK, which will be officially included 
+    in the future version upgrade. 
+
+< Audio Settings Utility >
+- The following restrictions has been removed from SDK160 or later 
+  onwards:
+
+  - The current SDK does not support the function of 
+    CELL_AUDIO_OUT_PORT_NETWORK, which will be officially included 
+    in the future version upgrade. 
+
+<Message Dialog Utility>
+- The following problem has been fixed.
+
+ - When a system utility that has a screen UI such as a message dialog 
+   utility or a save data utility is called immediately after a message 
+   dialog is forcibly terminated by cellMsgDialogAbort(), 
+   CELL_SYSUTIL_ERROR_BUSY is returned even for a case that was not 
+   treated as an error by the previous SDKs.
+
+   When CELL_SYSUTIL_ERROR_BUSY is returned, wait for about 0.2 seconds 
+   and perform sleep, then retry the program. 
+
+<Save Data Utility>
+- After invalid content information was displayed, other valid content 
+  information could not be displayed as well. 
+  This problem has been fixed.
+
+- When saving new data, the save data icon could not be displayed 
+  correctly. This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- In the scoreComment argument of sceNpScoreRecordScore() and 
+  sceNpScoreRecordScoreAsync(), NULL and an empty string can now be 
+  specified.
+
+- In the asynchronous API of the Score Ranking, memory for an 
+  argument with const attached is now held in a separate memory within
+  a library, and the memory can be released immediately after it 
+  returns from a function.
+  Note that since the attached data in the 6th argument of 
+  sceNpScoreRecordGameDataAsync() requires a large amount of memory, 
+  the specifications is left as is. This information is added to the 
+  reference document.
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- When an event such as offline or out of context occurred, the 
+  Presence event was wrongly notified. This problem has been fixed.
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- A file whose size was 4GB or more was unable to download. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- When the network API was called, the error code (0x800100**) of Lv-2
+  kernel should have been returned, however, -0x800100** was returned
+  incorrectly instead. This problem has been fixed.
+
+- When socketselect() and socketpoll() APIs returned an error, not only
+  the target socket but also other sockets were set to ready. Thus, it
+  was unable to identify which socket was notified as an error. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- Inline function header file has been fixed so that the SN Systems 
+  PPU Compiler can be used for compiling.
+
+- cellGcmSetSurface() for the SPU library did not generate a command
+  correctly. This problem has been fixed.
+
+- The order of inputs from Texture Remapping for RSX(TM) error output 
+  message was not correct. This problem has been fixed.
+
+- In tutorial/CgTutorial/GCM/ShadowMap sample, the zooming direction 
+  when operated through L1/R1 buttons were the other way around. This 
+  problem has been fixed.
+
+- The following restrictions has been removed from SDK160 or later 
+  onwards:
+
+  - The following constant macros are to be deleted in the future 
+    version.
+    CELL_GCM_BLEND_COLOR
+    CELL_GCM_BLEND_EQUATION
+    CELL_GCM_FUNC_FUNC_ADD_SIGNED
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- When a texture in the FP16 format was converted into the swizzle 
+  format using DDS2GTF, it was rotated by 90 degrees to the left. This 
+  problem has been fixed.
+
+- When creating a cube map in a linear format, the Face did not have 
+  to be 128 byte aligned. This problem has been fixed.
+
+----------------------------------------------------------------------
+libdbgfont
+----------------------------------------------------------------------
+- A fragment program used within libdbgfont_gcm was unable to be 
+  analyzed using GCM HUD. This problem has been fixed.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- When an oblique face was handled with 512.f or more of character 
+  size specified, the coordinates were not displayed correctly due to
+  internal operation process overflow, and it operated incorrectly. 
+  This problem has been fixed.
+
+- When the following open functions were called, and the CellFont 
+  structure was not initialized to 0 before a value was received in it, 
+  the renderer was unable to connect to the font. This problem has been
+  fixed.
+  Also, a successful message was wrongly output for a CellFont 
+  structure that had actually hung up when a renderer related function
+  was called. This problem has been fixed.
+
+
+  cellFontOpenFontset()
+  cellFontOpenFontsetOnMemory()
+  cellFontOpenFontFile()
+  cellFontOpenFontMemory()
+
+- The following problem has been fixed.
+
+  - cellFontRenderSurfaceSetScissor() cannot reset the scissoring area 
+    so that the area can be expanded. To enable such reset, start over
+    with cellFontRenderSurfaceInit().
+
+- The following problem has been fixed.
+
+  - The initial size of the rendering work buffer is allocated as 
+    the buffer initial size that is specified with the argument 
+    CellFontRendererConfig of cellFontCreateRenderer(), but when 
+    a rendering function if called, it is changed to the buffer size 
+    that becomes necessary at that time. Therefore, it is meaningless 
+    to specify the initial size. 
+    (With CellFontRendererConfig_setAllocateBuffer(&config,initSize,maxSize),
+    it is not possible to control the memory allocation 
+    operation even when initSize == maxSize.)
+
+  It now can control the memory reallocation process because it was 
+  fixed as initSize == maxSize.
+
+- The following problem has been fixed.
+
+  - With the following functions, hangul characters cannot be rendered 
+    to the correct base line position. 
+    When using hangul characters, please do not use them. 
+
+    Functions for getting glyph information
+    cellFontGenerateCharGlyph()
+    cellFontGenerateCharGlyphVertical()
+
+    Functions for rendering from glyph information
+    cellFontGlyphRenderImage()
+    cellFontGlyphRenderImageHorizontal()
+    cellFontGlyphRenderImageVertical()
+
+    Functions for vertical rendering
+    cellFontRenderCharGlyphImageVertical()
+
+    A function to return position information for vertical rendering 
+    based on glyph information
+    cellFontGlyphGetVerticalShift()
+
+- A correct value was not returned to the metrics information for 
+  vertical writing. This problem has been fixed.
+   Vertical.bearingX  Fixed a bug that an obviously wrong value was 
+                      returned.
+   Vertical.advance   Fixed a bug that a smaller value than the height
+                      of a double-byte character was returned.
+   Vertical.bearingY  Fixed the value accordingly to the height of a 
+                      double-byte character.
+
+- When an oblique face was specified using a vertical writing 
+  function, it did not tilt from the write point. This problem has 
+  been fixed.
+
+- Although an extra cellFontEndLibrary() was called, CELL_OK was 
+  returned. This problem has been fixed.
+
+- When NULL was specified to the pointer to the buffer that was
+  required for use with the following functions, it hung up. This 
+  problem has been fixed.
+   cellFontOpenFontMemory()
+   cellFontOpenFontFile()
+   cellFontGetCharGlyphMetrics()
+   cellFontGetCharGlyphMetricsVertical()
+   cellFontGetRenderCharGlyphMetrics()
+   cellFontGetRenderCharGlyphMetricsVertical()
+   cellFontRenderCharGlyphImage()
+   cellFontRenderCharGlyphImageHorizontal()
+   cellFontRenderCharGlyphImageVertical() 
+
+- A warning error occured when a sample compared the format variables
+  int32_t and uint32_t fo during compilation. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs job>
+- When multiple read only data that had the same effective address but 
+  different sizes existed, an area for the read only data was not 
+  correctly reserved. This problem has been fixed.
+
+- When the same read only data was specified to the job descriptor more 
+  than once, the job streamer caused a memory corruption. This 
+  problem has been fixed.
+
+- Although a buffer size of 255KB or more was specified to the job 
+  descriptor, an error was not returned. This problem has been fixed.
+
+- job_inout_dma sample was set to use the input buffer. This problem
+  has been fixed so that it uses both input/output buffers.
+
+- In job_hello and job_joblist samples, the variable of the 
+  CellSpursJob128 former structure was 16 byte aligned. This problem 
+  has been fixed.
+
+<libspurs task>
+- The cell_spurs_print_task command of the GDB script for SPURS could
+  display a wrong information. This problem has been fixed. 
+
+- sample_spurs_lfqueue sample did not initialize the CellSpursLFQueue
+  structure to zero. This problem has been fixed.
+
+<libsync>
+- sample_sync_lfqueue sample did not initialize the CellSyncLFQueue 
+  structure to zero. This problem has been fixed.
+
+<libdaisy>
+- The following restrictions has been removed from SDK130 or later:
+
+  - When the template arguments tOutPort, tInPort and tMode are specified 
+    at the time of instance creation using the cell::Daisy::Glue template 
+    class as shown below, QUEUE_IS_BUSY may be retuned repeatedly instead 
+    of TERMINATED(correct return value) even though all the data flow 
+    processes are completed when the function step() is called for the 
+    instance.
+    tOutPort
+    Instance with tMode = COPY(Default value) specified when this instance 
+    is created using the cell::Daisy::Pipe::OutPort template class or 
+    the cell::Daisy::GatherPipe::OutPort template class.
+
+    tInPort
+    Instance with tMode = REFERENCE specified when this instance is created 
+    using the cell::Daisy::Pipe::InPort template class or 
+    the cell::Daisy::ScatterPipe::InPort template class
+
+    tMode = ONE_PORT
+
+- When multiple SPUs accessed the memory using 
+  QueueControl::SharedMemory{Reader,Writer}, it did not wait correctly 
+  until the DMA was completed. This problem has been fixed.
+
+- The tile sample did not initialize the memory area correctly. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- The cellConsolePerfDataSetColumnList() function crashed when trying 
+  to use performance data. This problem has been fixed.
+
+----------------------------------------------------------------------
+GPIO System Call
+----------------------------------------------------------------------
+- In SDK160 and before, the GPIO System Call returned an error if the 
+  device was not equipped with the GPIO device. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+- When a device that was connected to USB1.x HUB was disconnected, the 
+  detach callback function was not called. This problem has been fixed.
+
+----------------------------------------------------------------------
+samples/simulation/PhysicsEffects/Demo/ParallelOptimization Sample
+----------------------------------------------------------------------
+- In Parallel_Physics_Samples-Walkthrough_j(e).pdf file, a mistake was
+  found in the figure 5 on page 10. This problem has been fixed.
+
+

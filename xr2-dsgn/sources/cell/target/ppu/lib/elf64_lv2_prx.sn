@@ -1,0 +1,58 @@
+/* Copyright (c) 2007-2008 Sony Computer Entertainment Inc./SN Systems Ltd. */
+
+/*
+ * This linker script is intended for use when ps3ppuld (the SN Systems PS3 linker)
+ * is being used from the command line. It provides a useful set of default library
+ * search paths and a standard set of objects and libraries to be linked.
+ */
+LIB_SEARCH_PATHS
+{
+    exceptions :
+    {
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2"
+
+        "$THIS_CELL_SDK/target/ppu/lib"
+
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib/eh"
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib"
+        "$SN_PS3_PATH/ppu/lib/sn"
+    }
+    no_exceptions :
+    {
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/fno-exceptions"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1/noeh"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.1.1"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2/fno-exceptions"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2/noeh"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc/ppu-lv2/4.0.2"
+        "$THIS_CELL_SDK/host-win32/ppu/lib/gcc"
+        "$THIS_CELL_SDK/host-win32/ppu/ppu-lv2/lib"
+
+        "$THIS_CELL_SDK/target/ppu/lib/fno-exceptions"
+        "$THIS_CELL_SDK/target/ppu/lib/noeh"
+        "$THIS_CELL_SDK/target/ppu/lib"
+
+        "$THIS_CELL_SDK/host-win32/sn/ppu/lib"
+        "$SN_PS3_PATH/ppu/lib/sn"
+    }
+}
+
+INCLUDE "$THIS_CELL_SDK/target/ppu/lib/elf64_lv2_prx.x"
+
+/*
+ * The set of GCC runtime support object modules that are required by almost all programs.
+ */
+REQUIRED_FILES { ecrti.o crt0.o crt1.o crtbegin.o crtend.o ecrtn.o }
+
+/*
+ * Include the following libraries:
+ * -lc        : GCC C library
+ * -lgcc      : GCC runtime support library
+ * -lstdc++   : GCC C++ standard library
+ * -lsupc++   : GCC C++ runtime support library
+ * -llv2_stub : ppu-lv2 OS interface. Invoked by both the runtime and the standard libraries.
+ */
+STANDARD_LIBRARIES { -lc -lm -lgcc -lstdc++ -lsupc++ -lsnc -llv2_stub -lsyscall }
+
+/* eof elf64_lv2_prx.sn */

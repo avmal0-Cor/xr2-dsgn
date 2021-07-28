@@ -1,0 +1,69 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 170.003
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 System Utilities (libsysutil)
+----------------------------------------------------------------------
+Remote Play Utility
+===================
+<Specification Changes>
+- The specification has been changed so that CELL_SYSUTIL_DRAWING_BEGIN 
+  is not returned for the callback functions of the system utilities 
+  when the title application is booted in remote play status. 
+
+- With the remote play utility, a change has been made so as to free 
+  an SPU after using it (so as not to occupy an SPU). 
+
+----------------------------------------------------------------------
+2 cgc
+----------------------------------------------------------------------
+<New Features>
+- The following linux version libcgb library and header file 
+  have been added: 
+    cell/host-linux/Cg/include/cgb.h 
+    cell/host-linux/Cg/lib/libcgb.a
+
+----------------------------------------------------------------------
+3 Sample Programs
+----------------------------------------------------------------------
+<New Additions>
+- samples/camera/eyetoy2_raw_to_rgba
+  This sample demonstrates how to use a SPURS task and convert RAW8 data
+  into rgba data. It is implemented with PLAYSTATION(R)Eye. 
+
+- samples/camera/eyetoy2_raw_to_yuv
+  This sample demonstrates how to use a SPURS task and convert RAW8 data
+  into the three buffers of raster data (Y, U, V). It is implemented 
+  with PLAYSTATION(R)Eye. 
+
+- samples/camera/yuv422_to_rgba
+  This sample demonstrates how to use a SPURS task and convert YUV422 data
+  into rgba data. It is implemented with PLAYSTATION(R)Eye or a camera that
+  supports USB Video Class 1.1. 
+
+- samples/camera/yuv422_to_yuv
+  This sample demonstrates how to use a SPURS task and convert YUV422 data
+  into the three buffers of raster data (Y, U, V). It is implemented 
+  with PLAYSTATION(R)Eye or a camera that supports USB Video Class 1.1. 
+
+<Change of samples/tutorial/SpuGeometricProcess>
+- For the surface on the Tiled area of the main memory, subject depth 
+  post effect processing by SPU (Depth of Field) has been added.
+
+<Addition of Project File>
+For ProDG for PLAYSTATION(R)3, project file has been added for 
+the following sample program: 
+  - samples/tutorial/SpuGeometricProcess
+
+As for the unsupported sample programs, project files will be added 
+as soon as they become ready. 
+
+<Change of Project Files>
+- A change has been made so as to delete the suo files for VisualStudio
+  .Net 2003 under cell/samples and provide the information of program 
+  execution environment with vcproj files. 

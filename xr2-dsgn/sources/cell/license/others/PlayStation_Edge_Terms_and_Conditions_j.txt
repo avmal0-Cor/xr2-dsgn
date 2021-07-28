@@ -1,0 +1,67 @@
+﻿PlayStation(R)Edge使用条件
+
+ 1. PlayStation(R)Edge（ソースコードであるかバイナリコードであるかを問わず、以下「本ソフトウェア」という）は、株式会社ソニー・コンピュータエンタテインメントまたはその関連会社とのツール・ミドルウェアライセンス契約、ツール貸与契約、デベロッパー・パブリッシャーライセンス契約（またはそれらと同等の契約）に基づいて提供され、これらの契約条件に従って使用できる他、以下に定める条件（以下「本使用条件」という）に従って使用することができます。
+
+ なお、貴殿の所属する法人が株式会社ソニー・コンピュータエンタテインメントまたはその関連会社と上記契約を締結していない場合は、貴殿は本ソフトウェアを使用できません。
+
+ 2. 本ソフトウェアをインストールすることにより、貴殿は貴殿の所属する法人を代表して本使用条件に同意したものとみなされます。
+
+ 3. 本ソフトウェアは、あらゆるプラットフォーム上のツール・ミドルウェア製品およびゲームタイトルの開発のために使用および改変することができます。
+
+ 4. 本ソフトウェアおよびその改変物は、以下に定める条件に従って再配布することができます。
+
+ a. 本ソフトウェアの作成者を偽って表示してはいけません（貴殿が本ソフトウェアの作成者であると主張してはいけません）。
+
+ b. 本ソフトウェアおよびその改変物を製品に組み込んで使用する場合、製品のドキュメント内にクレジット表記を行っても良いですが、表記義務はありません。
+
+ c. 本ソフトウェアの改変物は改変されたものである旨を明示しなければならず、それがオリジナルであると偽って表示してはいけません。
+
+ d. 本ソフトウェアおよびその改変物は、ゲームタイトルその他の最終消費者向け完成品の一部としてバイナリコードの形態で最終消費者または販売業者へ再配布できます。
+
+ e. 本ソフトウェアおよびその改変物は、ツール・ミドルウェアの一部としてソースコードまたはバイナリコードの形態でゲームデベロッパー・ゲームパブリッシャーへ再配布できます。ただし、当該ゲームデベロッパー・ゲームパブリッシャーに対して本条に定める制限を課し、遵守させなければなりません。
+
+ f. 本ソフトウェアおよびその改変物は、ゲームタイトルの一部としてソースコードまたはバイナリコードの形態で第三者に再配布できます。ただし、当該第三者と秘密保持契約を締結し、当該第三者に対して本ソフトウェアの情報を守秘させ、また、本条に定める制限を課し、遵守させなければなりません。
+
+ g. 本ソフトウェアをソースコードで再配布する場合は、本条を改変せずに相手方に表示しなければなりません。
+
+ 5. 第4条に違反した場合、株式会社ソニー・コンピュータエンタテインメントおよびその関連会社は、通知により直ちに本ソフトウェアを使用する権利を終了させることができます。
+
+ 6. 本使用条件に定める他、本ソフトウェアの使用は、株式会社ソニー・コンピュータエンタテインメントまたはその関連会社とのツール・ミドルウェアライセンス契約、ツール貸与契約、デベロッパー・パブリッシャーライセンス契約（またはそれらと同等の契約）に従うものとします。
+
+
+********************
+PlayStation(R)Edge Zlibコンポーネントに関して
+PlayStation(R)Edge Zlibはzlib（http://www.zlib.net/）のソースを改変して使用しております。このコンポーネント及び関連するファイルの使用条件は、上記のライセンス条件のみならず、下記のライセンス条件に従う必要があります。
+
+/* zlib.h -- interface of the 'zlib' general purpose compression library
+  version 1.2.3, July 18th, 2005
+
+  Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  Jean-loup Gailly jloup@gzip.org
+  Mark Adler madler@alumni.caltech.edu
+
+*/
+********************
+
+********************
+PlayStation(R)Edge LZOコンポーネントに関して
+本ソフトウェアはPlayStation(R)Edge LZOコンポーネント(http://www.oberhumer.com/products/lzo-professional/)を含んでいます。
+第4.b条にもかかわらず、PlayStation(R)Edge LZOコンポーネントを貴殿のミドルウェアやゲームタイトルなどのアプリケーション内で使用する場合、貴殿のアプリケーションのゲーム内エンディングクレジットセクション/ファイル（もしあれば）と取扱説明書などの付属ドキュメント内に「Data compression by oberhumer.com」と表示しなければなりません。
+********************

@@ -1,0 +1,1173 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 190.002
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの新規機能、変更点、注意事項を
+記述します。
+
+----------------------------------------------------------------------
+1 新規ライブラリ及び新規ツール
+----------------------------------------------------------------------
+SPU アセンブリ・プリプロセッサ（SPASM）
+======================================
+- SPU アセンブリ・プリプロセッサ（SPASM）ツール 
+  SPASMの関連ファイルは以下となります。詳細については、「SPU アセンブリ・
+  プリプロセッサ（SPASM）ユーザガイド」を参照してください。
+  - cell/host-linux/bin/spasm
+  - cell/host-linux/bin/spaspp
+  - cell/host-win32/bin/spasm.exe
+  - cell/host-win32/bin/spaspp.exe
+
+libscream
+=========
+- 別パッケージで提供していた、SCREAM ランタイムライブラリをSDKのパッケージに
+  含めました。
+
+ゲームアップデートユーティリティ
+================================
+- PLAYSTATION(R)3でサポートするパッチ配信システムを利用するための
+  ユーティリティ 
+  パッチの有無を確認し、必要があればダウンロード、インストール、
+  ゲームアプリケーションの再起動を行います。
+
+ImeJpユーティリティ
+===================
+- カナ漢字変換機能を実現するIME(Input Method Engine)ライブラリ
+  オンスクリーンキーボードダイアログユーティリティを使用せずに、
+  ゲームアプリケーション独自のユーザインタフェースで日本語入力などを
+  行いたい場合にご利用ください。
+  また、別パッケージでImeJpユーティリティ辞書作成ツールを提供しています。
+  このツールを用いて作成した独自の辞書でカナ漢字変換を行うこともできます。
+
+コンテンツ検索ユーティリティ
+============================
+- 内蔵ハードディスクドライブに保存されている音楽/写真/ビデオの
+  コンテンツを検索し、そのメタ情報やコンテンツへのファイルパスを取得する
+  システムユーティリティ
+  音楽コンテンツに関しては、選択コンテキストを取得することができ、それを
+  ミュージックユーティリティで再生できます。
+  詳細については、「コンテンツ検索ユーティリティ 概要」および
+  「コンテンツ検索ユーティリティ リファレンス」を参照してください。
+
+録画ユーティリティ
+==================
+- PLAYSTATION(R)3上で動作するゲームアプリケーションの画面表示と音声出力を
+  キャプチャし、MP4ファイルフォーマットの動画ファイルを生成して
+  内蔵ハードディスクドライブに保存するシステムユーティリティ 
+
+  詳細については、「録画ユーティリティ 概要」および
+  「録画ユーティリティ リファレンス」を参照してください。
+
+プリントユーティリティ
+======================
+- ゲームアプリケーションから印刷機能を呼び出すために使用する
+  システムユーティリティ 
+  PLAYSTATION(R)3では、ユーザが使用するプリンタ機器やその動作モードを
+  システムソフトウェアで設定するしくみになっています。
+  プリントサービスユーティリティはシステムに登録されたプリンタ情報を用いて、
+  ゲームアプリケーションで印刷機能を提供します。 
+  詳細については、「プリントユーティリティ 概要」および
+  「プリントユーティリティ リファレンス」を参照してください。
+
+ビデオユーティリティ
+====================
+- ゲームアプリケーションが持っているビデオファイルをシステムソフトウェアに
+  登録するシステムユーティリティ 
+  詳細については、「ビデオユーティリティ 概要」および「ビデオユーティリティ
+  リファレンス」を参照してください。
+
+----------------------------------------------------------------------
+2 dtlib
+----------------------------------------------------------------------
+<仕様変更>
+- 以下のファイルは不要な為、削除しました。
+  - cell/host-win32/bin/msvcr80.dll
+  - cell/host-win32/bin/msvcp80.dll
+
+----------------------------------------------------------------------
+3 デバッガ関連(bedbg)
+----------------------------------------------------------------------
+<仕様変更>
+- Multiple SELF formatのファイルからロードしたPRXに対応するシンボル
+  ファイルをシンボル情報設定ファイルに定義出来るようになりました。 
+  Multiple SELF formatからPRXを読み込む時はファイルの先頭からのオフセットを
+  指定する為、そのオフセットを含めて以下のように定義して下さい。
+
+    （例）Multiple SELF formatのimage.mselfの0x10000からPRXを読み込む場合
+          (PRXのシンボルファイルはwork/test1.prx)
+          /app_home/image.mself::0x10000,work/test1.prx
+
+- bedbgスクリプトにおいて、info-prx及び、info-prx-fullコマンドのセグメント
+  情報に関する表示内容を変更しました。以下のように、セグメント情報の
+  (ラベル)名を「Segment番号」から「Segmentのアクセス属性」にしました。
+
+  変更前: 
+  $(ppu-gdb) info-prx-full 
+ 
+  [PRX Information] 
+   ID StartEntry StopEntry Segment 0 (size) Segment 1 (size) 
+   Segment 2 (size)Segment 3 (size) Segment 4 (size) Ver Name 
+ 
+  変更後: 
+  $(ppu-gdb) info-prx-full 
+ 
+  [PRX Information] 
+   ID StartEntry StopEntry Segment [R-X/R--/---] (size) Segment [RW-/---/---]
+   (size) Segment [R--/---/---] (size) Segment [RW-/RW-/---] (size)
+   Segment [RW-/RW-/RW-] (size) Ver Name
+
+----------------------------------------------------------------------
+4 BDエミュレータ
+----------------------------------------------------------------------
+<仕様変更>
+- Disc Image Generator for PLAYSTATION(R)3を使用して作成されたBlu-ray 
+  Discマスターディスク用のイメージファイルを使用できるようになりました。 
+  BDエミュレータの使用方法については、「Referenceシステム 活用ガイド」の
+  ドキュメントを参照ください。
+
+----------------------------------------------------------------------
+5 Control Console
+----------------------------------------------------------------------
+<新規機能>
+- 独自のメモリアロケータを使用する為に以下の関数を追加しました。
+  - cellConsoleInitWithAllocator()
+  - cellConsoleMemalign()
+  - cellConsoleFree()
+
+- マルチスレッド対応のWindows用ライブラリを追加しました。
+  - cell/host-win32/lib/control_console_win_mt.lib
+
+----------------------------------------------------------------------
+6 システムソフトウェア(GUI)
+----------------------------------------------------------------------
+<新規機能>
+- システムソフトウェアの以下のメニューを追加しました。
+  - 設定 -> Debug Settings -> Core Dump 
+    - 「On (Save to /app_home)」または「On (Save to /dev_ms)」を選択した
+       場合、コアダンプ機能が有効になり特定の要因でコアファイルが
+       出力されるようになります。 
+
+    なお、出力されたコアファイルを使用したデバッグは、別パッケージで
+    提供しているProDG Debugger(9月末リリース予定)のみでのサポートとなります。
+    ToolChainパッケージのGDBではサポートを行いませんので、ご注意ください。 
+
+    - 「Off」を選択した場合はコアダンプ機能が無効になり、PLAYSTATION(R)3
+      と 同様の挙動となります。
+
+    なお、「Core_File_Format-Specifications」のドキュメントは、別パッケージ
+    として後日リリースする予定です。
+    SDKのドキュメントパッケージ(PS3_SDKDoc-190_01-Latest-*.zip) には含まれて
+    いませんので、ご注意ください。
+
+  - 設定 -> Debug Settings -> Format BD Emulator HDD 
+    Reference Tool に搭載されている BD エミュレータ用 HDD のフォーマットを
+    行うことができます。
+
+  - ゲーム -> /app_home/PS3_GAME 
+    Reference Toolと同様にゲーム列から/app_home/PS3_GAMEの起動ができます。
+
+- 「設定 -> システムアップデート」のメニューにおいて、システムソフトウェアの
+   アップデートを"/app_home"からできるようになりました。 
+   "/app_home/PS3_UPDATE/PS3UPDAT.PUP"となるようにアップデートデータを置いて
+   ください。
+
+<仕様変更>
+- システムソフトウェアが使用するメインメモリのサイズを削減しました。
+  この変更に伴いゲームアプリケーションで使用出来るメインメモリのサイズは
+  以下の通りになります。
+  - コンソールモード：208MB -> 209MB
+  - ツールモード ：400MB -> 404MB
+
+- システムソフトウェアが使用するビデオメモリのサイズを削減しました。
+  この変更に伴いゲームアプリケーションで使用出来るビデオメモリのサイズは
+  以下の通りになります。
+  - コンソールモード、ツールモード：232MB ->234MB
+
+- システムソフトウェアの 設定 -> 本体設定 以下の"★"マーク付きのメニュー
+  (開発機のみで対応しているメニュー)を、設定 -> Debug Settings以下に移動
+  しました。
+
+- システムソフトウェアのメニュー名を変更しました。
+  - (変更前) 設定 -> 本体設定-> NP Title ID
+  - (変更後) 設定 -> Debug Settings-> Service ID
+
+----------------------------------------------------------------------
+7 libsysmodule
+----------------------------------------------------------------------
+<新規機能>
+- モジュールをロードする ID を追加しました。
+  [ID]                          [説明]
+  CELL_SYSMODULE_ADEC_MP3       libadec(MP3デコーダ)
+  CELL_SYSMODULE_VIDEO_EXPORT   ビデオユーティリティ
+  CELL_SYSMODULE_SYSUTIL_REC    録画ユーティリティ
+  CELL_SYSMODULE_IMEJP          ImeJpユーティリティ
+  CELL_SYSMODULE_PRINT          プリントユーティリティ
+  CELL_SYSMODULE_PHOTO_IMPORT   フォトユーティリティ(インポート機能)
+  CELL_SYSMODULE_PHOTO_DECODE   フォトユーティリティ(デコード機能)
+  CELL_SYSMODULE_MUSIC_EXPORT   ミュージックユーティリティ(エキスポート機能)
+  CELL_SYSMODULE_SYSUTIL_SEARCH コンテンツ検索ユーティリティ
+
+- PLAYSTATION(R)3 Performance analyzer tools 190.xxx以降のPA Suiteで
+  ゲームアプリケーションを起動したとき libprof を自動的にロードする
+  ようになりました。
+
+----------------------------------------------------------------------
+8 システムユーティリティ(libsysutil)
+----------------------------------------------------------------------
+セーブデータユーティリティ
+==========================
+<新規機能>
+- ゲームアプリケーションが指定した既存のセーブデータのリストを表示し、
+  ユーザが選択したセーブデータの削除処理を実行する関数、
+  cellSaveDataListDelete()を追加しました。
+
+<仕様変更>
+- 以下の関数を呼び出す際に必要なメモリコンテナサイズを4MBから3MBに削減
+  しました。
+  - cellSaveDataAutoSave2()
+  - cellSaveDataAutoLoad2()
+  - cellSaveDataListAutoSave()
+  - cellSaveDataListAutoLoad()
+
+- 以下の関数において、コピー元データ確定時に、コピー確認ダイアログを表示し、
+  コピー元データの確認をするように変更しました。
+  - cellSaveDataFixedImport()
+  - cellSaveDataFixedExport()
+
+<サンプルの変更(cell/samples/sdk/sysutil/savedata/basic)>
+- cellSaveDataAutoSave2()およびcellSaveDataAutoLoad2()呼び出し時の
+  メモリコンテナサイズを4MBから3MBに変更しました。
+
+- DEBUG_MODEのマクロ定義を行った時のみデバッグ用のコードが有効になるように
+  しました。
+
+- 以下のコードのように、データリストコールバック関数の引数getを用いて、
+  表示するデータの個数が表示個数の上限を超えないようにするための
+  チェックコードを追加しました。
+
+  if( get->dirListNum>CELL_SAVEDATA_LISTITEM_MAX ) {
+      set->fixedListNum = CELL_SAVEDATA_LISTITEM_MAX;
+  }
+  else {
+      set->fixedListNum = get->dirListNum;
+  } /*J fixedList の項目数 */
+
+ビデオ設定ユーティリティ
+========================
+<新規機能>
+- 映像出力の現在の設定を取得する関数、 cellVideoOutGetConfiguration() を
+  追加しました。
+
+オーディオ設定ユーティリティ
+===========================
+<新規機能>
+- 現在の音声出力設定情報を取得する関数、cellAudioOutGetConfiguration() を
+  追加しました。
+
+- DTS interactive encoding に対応しました。システムソフトウェアの音声出力設定
+  で DTS が設定されている場合、cellAudioOutGetSoundAvailability()に
+  CELL_AUDIO_OUT_CODING_TYPE_DTSを指定すると、利用可能なチャンネル数が
+  返ります。利用可能なチャンネルある場合、cellAudioOutConfiugration() の 
+  encoder にCELL_AUDIO_OUT_CODING_TYPE_DTS を指定すると DTS 出力を行うことが
+  出来ます。
+
+- CellAudioOutConfiguration構造体のメンバencoderで指定するオーディオエンコーダ
+  として、DTS Interactiveを追加しました。音声出力の設定を変更する場合は、
+  cellAudioOutConfigure()を使用してください。
+
+- 出力可能な音声出力にDTSを追加しました。 
+  cellAudioOutGetSoundAvailability()を用いる事により、接続機器がDTSを使用
+  出来るか否か、確認できます。
+
+オンスクリーンキーボードダイアログユーティリティ
+================================================
+<新規機能>
+- 中国語（繁体字）パネルにピンイン入力機能を追加しました。
+  オンスクリーンキーボードダイアログ内のオプションで入力方法を切り替える
+  ことができます。
+
+- 中国語（簡体字）パネルを追加しました。これに伴いパネルフラグのマクロ、 
+  CELL_OSKDIALOG_PANELMODE_SIMPLIFIED_CHINESE を追加しました。
+
+- 使用パネルフラグにデフォルト（日本語禁止）を追加しました。これに伴い、
+  パネルフラグマクロCELL_OSKDIALOG_PANELMODE_DEFAULT_NO_JAPANESEを
+  追加しました。
+
+<仕様変更>
+- 必要なメモリコンテナサイズを最低7MBから以下のサイズに削減しました。 
+  詳細は、「オンスクリーンキーボードダイアログユーティリティ リファレンス」を
+  参照ください。
+  - 日本語エンジン使用パターン         : 5MB
+  - 欧米語/中国語エンジン使用パターン  : 3MB
+  - 入力エンジン不使用パターン         : 2MB
+
+- 以下のように中国語パネル（繁体字）のマクロ名を変更しました。 
+  従来のマクロ名でも使えるよう互換性は保つようにしております。
+  - (変更前) CELL_OSKDIALOG_PANELMODE_CHINA_TRADITIONAL
+  - (変更後) CELL_OSKDIALOG_PANELMODE_TRADITIONAL_CHINESE
+
+<サンプルの変更(cell/samples/sdk/sysutil/osk_dialog)>
+- 使用パネル構成を変更し、メモリコンテナを適切なサイズに変更するメニューを
+  追加しました。
+
+メッセージダイアログユーティリティ
+==================================
+<新規機能>
+- メッセージダイアログを閉じる関数、cellMsgDialogClose()を追加しました。
+
+<サンプルの変更(cell/samples/sdk/sysutil/msgdialog)>
+- 新規関数cellMsgDialogClose()の使用するように変更しました。
+
+AVチャットユーティリティ
+========================
+<新規機能>
+- NPマッチングユーティリティにて作成したルームオーナー権限自動移譲属性
+  付きのルームにおいてルームオーナー権限の移譲に対応しました。 
+  権限の移譲は以下のタイミングによって行われます。
+  - AVチャット中にルームオーナーが脱退した時
+  - sceNpMatchingGrantOwnership()を呼んだ時
+  
+  これに伴い、以下のマクロを追加しました。
+  - CELL_SYSUTIL_AVC_ATTRIBUTE_ROOM_PRIVILEGE_TYPE
+  - CELL_SYSUTIL_AVC_ROOM_PRIVILEGE_TYPE_AUTO_GRANT
+
+  詳細は、「AVチャット 概要」及び「AVチャット リファレンス」を参照ください。
+
+- cellSysutilAvcSetAttribute()で設定するAVチャットユーティリティの
+  内部属性IDにCELL_SYSUTIL_AVC_ATTRIBUTE_VIDEO_MAX_BITRATEを追加しました。
+  これにより、ネットワークを経由して他のメンバに送信する映像ストリームの
+  帯域の上限(目安)を設定することが出来ます。 
+  ビデオチャットでは自分の映像ストリームを複数のメンバに送信する為、
+  メンバの人数が多くなればなるほど、ネットワークの帯域を消費します。
+  その場合は上記の設定を用いて、映像ストリームの帯域の上限(目安)を設定して
+  下さい。帯域の上限(目安)として設定できる値は、64,000bps～512,000bpsとなります。 
+  ただし、あくまでも目安である為、映像の内容によっては設定値を超えるデータが
+  出力される事があります。
+   詳細は、「AVチャット リファレンス」を参照ください。
+
+<仕様変更>
+- ルームオーナーがルームを作成してから、他のメンバがルームに参加するまでの
+  手順を更新しました。
+  詳細は、「AVチャット 概要」及び「AVチャット リファレンス」を参照ください。
+
+  (SDK181までの手順)
+  1.ルームオーナーがNPマッチングユーティリティを使用してルームを作成する。
+  2.ルームオーナーがcellSysutilAvcJoinRequest()を用いてAVチャットセッション 
+    を開始する。
+  3.ルームオーナーから他のメンバへAVチャットセッションを開始したことを通知 
+    する。
+  4.他のメンバはルームオーナーからの通知を受け取りcellSysutilAvcJoinRequest() 
+    でAVチャットセッションに参加する。
+
+  (SDK190からの手順)
+  1.ルームオーナーがNPマッチングユーティリティを使用してルームを作成する。
+  2.１５秒以内にメンバはcellSysutilAvcJoinRequest()でAVチャットセッションに 
+    参加する。 
+    ただし、１５秒以内にルームオーナーがAVチャットセッションに参加しない場 
+    合は参加しているメンバのコールバック関数に
+    CELL_AVC_EVENT_PARAM_ERROR_TIMEOUTのエラーが通知されます。
+
+<サンプルの変更(cell/samples/sdk/sysutil/avc)>
+- ルームオーナー権限移譲処理を追加しました。
+
+サブディスプレイユーティリティ
+==============================
+<仕様変更>
+- 接続されたPSP(R) (PlayStation(R)Portable)からのPSボタン入力は無視するに
+  変更しました。 
+  PLAYSTATION(R)3のコントローラからのPSボタン入力のみ受け付けます。
+
+- AVチャットユーティリティと同時に使用出来るようになりました。
+
+フォトユーティリティ
+====================
+<新規機能>
+- インポート機能を追加しました。インポート機能とは、システムソフトウェアの
+ 「フォト」列にあるフォトファイルをユーザがGUIで選択し、ゲームアプリケーション側
+  に取り込む機能です。
+
+- デコード機能を追加しました。デコード機能とは、ゲームアプリケーションが持って
+  いるフォトファイルをデコードして、任意のサイズのRGBA画像に展開する機能です。
+
+<サンプルの変更(cell/samples/sdk/sysutil/photo)>
+- インポート機能とデコード機能を追加しました。
+
+ミュージックユーティリティ
+==========================
+<新規機能>
+- エキスポート機能を追加しました。
+  エキスポート機能は、ゲームデータディレクトリまたはHDD起動ゲーム
+  ディレクトリ内にあるミュージックファイルをひとつ指定して、
+  システムソフトウェアの「ミュージック」列に移動・登録する機能です。
+
+- エラーダイアログの表示によるエラー通知方法を変更しました。 
+  CellMusicCallback()の引数paramに以下のマクロを返すことでエラーダイアログの
+  表示タイミングを通知できるようになりました。 
+
+    CELL_MUSIC_DIALOG_OPEN  : エラーダイアログが開かれる前の通知 
+    CELL_MUSIC_DIALOG_CLOSE : エラーダイアログが閉じられる前の通知  
+
+  また、ダイアログ表示を伴うエラーが発生したときのコールバック関数への
+  通知方法は、以下の手順となります。
+  (a)まず、ダイアログが表示されたこと(CELL_MUSIC_DIALOG_OPEN)を通知する 
+  (b)続いて、エラー発生を通知する 
+  (c)ユーザがダイアログを閉じたときに、ダイアログが閉じられたことを
+     (CELL_MUSIC_DIALOG_CLOSE)通知する 
+
+  なお、ダイアログ表示を伴わないエラーが発生したときには、エラー発生の通知のみ
+  が行われます。
+
+----------------------------------------------------------------------
+9 Cell OS Lv-2
+----------------------------------------------------------------------
+<新規機能>
+- Multiple SELF Formatをサポートしました。 
+  複数のPRXやSPU SELF等のファイルを１つのファイル(Multiple SELF Formatの
+  ファイル)にまとめる事により、ファイルのオープン・クローズ処理を短縮する事が
+  可能です。
+  Multiple SELF Formatの詳細は、「MSELF ユーザガイド」及び「Cell OS Lv-2 
+  ユーザーズマニュアル」を参照ください。 
+  これに伴い、以下のファイルを追加しました。
+  - cell/target/ppu/include/sys/mself_header.h
+  - cell/host-linux/bin/check_mself
+  - cell/host-linux/bin/make_mself
+  - cell/host-win32/bin/check_mself
+  - cell/host-win32/bin/make_mself.exe
+
+  また、Multiple SELF Format ファイルに格納されている SPU のSELFをオープン 
+  する関数、sys_spu_image_open_by_fd() 及び、Multiple SELF Format ファイルに
+  格納 されているPRX をロードする関数、 sys_prx_load_module_by_fd() を追加
+  しました。 
+  関数に関しての詳細は、「Cell OS Lv-2 システムコール/ライブラリ リファレンス」を
+  参照ください。
+
+- SPU thread と Raw SPU におけるページフォルト(不正アクセス)通知機能に対応しました。
+
+<仕様変更>
+- ゲームアプリケーションの終了処理を変更しました。 
+  ゲームアプリケーションの終了時にsys_spu_thread_group_join() でSPUの処理待ちを
+  しているPPU スレッドに対しては今までESTATを返していました。
+  しかし、SDK 190以降ではSPUの処理待ちをしているPPU スレッドは起床せずに、
+  そのままPPUのスレッドを破棄するように変更しました。
+
+----------------------------------------------------------------------
+10 C/C++標準ライブラリ
+----------------------------------------------------------------------
+<新規機能>
+- cell/target/ppu/include/unistd.hにgetargc()とgetargv()を追加しました。
+
+- cell/target/ppu/include/stdio.hにfileno()を追加しました。
+
+<仕様変更>
+- 構造体timespecの定義を、cell/target/ppu/include/time.hから
+  cell/target/ppu/include/pthread_types.hに移動しました。 
+  また、構造体timespecの定義にC++のusing宣言を追加しました。これにより、
+  cell/target/ppu/include/pthread.hのpthread_cond_timedwait()と、
+  cell/target/ppu/include/semaphore.hのsem_timedwait()を使用する場合に、
+  cell/target/ppu/include/time.hをincludeする必要がなくなりました。
+
+- cell/target/ppu/include/string.hの以下の関数の高速化を行いました。
+  - memchr(), memcmp(),memset()
+  - strcat(), strchr(), strcmp(), strcpy(), strlen(), strncat(),  
+    strncmp(), strncpy(),strrchr()
+
+- cell/target/ppu/include/stdio.hのfseek()の実装を改良し、シーク先の
+  データがバッファ内にあるときには、ファイルから読み直さないように
+  変更しました。
+
+- ゲームアプリケーション起動時に行うC/C++標準ライブラリの初期化にて、
+  暗黙的にmalloc()を使用しないようにしました。malloc()はCell OS Lv-2の
+  システムコールで取得したメモリを内部で保持し続ける構造になっています
+  (free()を呼んでも返却はしません）。その為、ゲームアプリケーションから
+  malloc() (malloc()を内部で暗黙的に呼び出す関数も含む)を呼び出していない
+  場合は、結果としてシステムコールで取得出来るメモリが増える事になります。
+
+----------------------------------------------------------------------
+11 SPU Runtime
+----------------------------------------------------------------------
+libspurs
+========
+<新規機能>
+
+[タスク]
+- タスクセットが所属するSPURSインスタンスを取得するPPU用の関数、
+  cellSpursTasksetGetSpursAddress()を追加しました。
+
+- cellSpursGetTasksetInfo()の引数infoで指し示す構造体において以下の情報が
+  取得できるようになりました。
+  - タスクセットのメモリサイズ
+  - タスクにアタッチされているタスク終了コードコンテナへのポインタ
+
+  これに伴い、以下の構造体メンバを追加しました。
+  - CellSpursTasksetInfo構造体にメンバsize_t, size_tasksetを追加。
+  - CellSpursTaskInfo構造体にメンバeaTaskExitCodeを追加。
+
+[ジョブ]
+- SPURS GDBスクリプトがSET_LABELとSYNC_LABELコマンドに対応しました。
+
+- ジョブチェインが所属するSPURSインスタンスを取得するPPU用の関数、
+  cellSpursJobChainGetSpursAddress()を追加しました。
+
+- SPURSの実行時の内部情報が表示できる、以下のProDG用スクリプトを追加しました。
+  - cell/host-win32/etc/spurs_prodg.h 
+  - cell/host-win32/etc/spurs_prodg.c 
+  - cell/host-win32/etc/spurs_prodg_autodump.c
+
+<仕様変更>
+
+[コア]
+- 以下の関数で指定したSPURSインスタンスの領域が、SPU Threadからアクセス
+  不可能の領域やページフォルトから復帰可能な領域の場合に、
+  CELL_SPURS_CORE_ERROR_PERMを返すようになりました。
+  - cellSpursInitialize()
+  - cellSpursInitializeWithAttribute()
+  なお、この仕様変更に伴い、上記の関数で指定したSPURSインスタンスの領域が、
+  SPU Threadからアクセス不可能の領域の場合、SPURSが実行を開始すると例外が
+  発生するという不具合はなくなりました。
+
+[タスク]
+- cellSpursTasksetAttributeSetTasksetSize()の引数sizeに、
+  CELL_SPURS_TASKSET_SIZEもしくはCELL_SPURS_TASKSET_CLASS1_SIZE以外の
+  サイズを指定した場合、CELL_SPURS_TASK_ERROR_INVALを返すように変更しました。
+
+[ジョブ]
+- cellSpursJobChainAttributeInitialize()の引数tag1及びtag2に、31を指定した場合、
+  CELL_SPURS_JOB_ERROR_INVALを返す仕様に変更しました。
+
+----------------------------------------------------------------------
+12 ファイルシステム
+----------------------------------------------------------------------
+<新規機能>
+- 「標準API」にcellFsGetDirectoryEntries()を追加しました。 
+  既存のcellFsReaddir()とcellFsStat()の両方の機能を持ちつつ、これら2つの
+  関数を呼び出して処理するよりも、高速に処理を行う関数です。
+  なお、この高速処理が可能なファイルシステムは、現在のところ FAT とDISCFS
+  のみとなります。
+
+- Cell OS Lv-2 の Multiple SELF Format サポートに伴い、Multiple SELF Format
+  ファイルをオープンするためのフラグCELL_FS_O_MSELF を追加しました。
+
+----------------------------------------------------------------------
+13 Network
+----------------------------------------------------------------------
+libnet
+======
+<新規機能>
+- 初期化パラメータsys_net_initialize_parameter_tのメンバflags に指定できる
+  フラグ、SYS_NET_INIT_ERROR_CHECK を追加しました。 
+  このフラグを指定して sys_net_initialize_network_ex() を呼ぶと、初期化済みの
+  場合に SYS_NET_ERROR_EBUSY が返ります。
+
+<仕様変更>
+- UDPP2P の短命仮想ポート番号の割り当て範囲を変更しました。 
+  (変更前) 49167 から 65535 
+  (変更後) 32768 から 39999
+
+- DNSの問い合わせ処理で、DNSのサービスを提供していないサーバをプライマリDNS
+  とした場合、セカンダリDNSとしたサーバにもリトライするように変更しました。
+
+libnetctl
+=========
+<仕様変更>
+- ネットワーク開始ダイアログユーティリティに必要なメモリコンテナサイズを８MB
+  から3MB に削減しました。
+
+----------------------------------------------------------------------
+14 Network Platform (NP)
+----------------------------------------------------------------------
+全般
+====
+<新規機能>
+- PLAYSTATION(R)Network接続中、サーバからシステム(クライアント)に対して
+  キープアライブパケットを送信するようになりました。 
+  これに伴い、60秒の間サーバから無通信状態が続くと、ネットワークの途中経路に
+  問題が発生したと判断して、NP からサインアウトするようになります。
+
+<サンプルの変更(cell/samples/sdk/network/np/np_game)>
+- NPスコアランキングの以下の機能を追加しました。
+  - リプレイデータの使用
+  - 週間ランキング、月間ランキング情報をスコアボードに表示
+  - 回線品質の表示
+
+NPベーシックユーティリティ
+==========================
+<新規機能>
+- フレンドリストの項目のプレゼンス詳細情報を取得する以下の関数を追加しました。
+  - sceNpBasicGetFriendPresenceByIndex()
+  - sceNpBasicGetFriendPresenceByNpId()
+
+- カスタム招待メッセージの情報を取得する以下の関数を追加しました。
+  - sceNpBasicGetCustomInvitationEntryCount()
+  - sceNpBasicGetCustomInvitationEntry()
+
+- GUI経由でメッセージの添付データを受信する関数、sceNpBasicRecvMessageCustom()
+  を追加しました。この関数を使用するとカスタム招待を受信することができます。
+
+- 現在表示中のNPベーシックのGUIを中断する関数、sceNpBasicAbortGui()を
+  追加しました。
+
+- メッセージと添付データを使用済みにする関数、sceNpBasicMarkMessageAsUsed()を
+  追加しました。
+
+- sceNpBasicSendMessageGui()の引数msg->mainTypeで指定するマクロ変数、
+  SCE_NP_BASIC_MESSAGE_MAIN_TYPE_INVITEを追加しました。 
+  引数msg->mainTypeにSCE_NP_BASIC_MESSAGE_MAIN_TYPE_INVITEを指定すると、
+  添付データ付きメッセージの送信が行えます。
+
+- 同じNPコミュニケーションIDのユーザに詳細なプレゼンスの更新情報を発行する関数、
+  sceNpBasicSetPresenceDetails()を追加しました。
+
+<仕様変更>
+- プレゼンス更新頻度の上限を1分に1回から、1分に6回に変更しました。
+
+NPマネージャユーティリティ
+==========================
+<新規機能>
+- 外部サービスプロバイダ認証チケットをリクエストする関数、
+  sceNpManagerRequestTicket2()を追加しました。 
+  引数versionに取得したいチケットバージョンを指定してください。
+
+NPフレンドリストユーティリティ
+==============================
+<新規機能>
+- フレンドリストGUIを表示してユーザがメッセージの送信・受信・閲覧や、
+  フレンドリストの管理を行う関数、sceNpFriendlistCustom()を追加しました。
+  詳細については、「NPライブラリ共通API リファレンス」を参照ください。
+
+<仕様変更>
+- 必要なメモリコンテナの最低サイズを16MBから12MBに変更しました。
+
+NPシグナリングユーティリティ
+============================
+<新規機能>
+- コネクションのピア（相手）のNP IDからコネクションIDを取得する関数、
+  sceNpSignalingGetConnectionFromNpID()を追加しました。
+
+- sceNpSignalingGetConnectionInfo()にてコネクション情報を取得するための
+  以下のマクロコードを追加しました。
+  - SCE_NP_SIGNALING_CONN_INFO_PEER_ADDRESS : 
+    ピアのIPアドレスとポート番号を取得する
+  - SCE_NP_SIGNALING_CONN_INFO_MAPPED_ADDRESS : 
+    ピアからみた自分のIPアドレスとポート番号を取得する
+
+<仕様変更>
+- sceNpSignalingGetConnectionInfo()の引数codeに
+  SCE_NP_SIGNALING_CONN_INFO_PEER_NPID を指定した場合に限り、コネクション
+  状態がアクティブでなくてもピアのNP IDの値を返すようにしました。
+
+----------------------------------------------------------------------
+15 HID
+----------------------------------------------------------------------
+libkb
+=====
+<新規機能>
+- 簡体中国語キーボード配列 CELL_KB_MAPPING_CHINESE_SIMPLIFIED をサポート
+  しました。
+
+libpad
+======
+<新規機能>
+- PLAYSTATION(R)3仕様のコントローラ、高精度スティック搭載のコントローラの
+  性能情報を取得する関数、cellPadGetCapabilityInfo()を追加しました。
+
+----------------------------------------------------------------------
+16 libresc
+----------------------------------------------------------------------
+<新規機能>
+- 構造体CellRescInitConfigのメンバに、垂直同期(VSYNC)、水平同期(VSYNC)の
+  どちらにフリップが同期するかを指定するflipModeを追加しました。
+
+- 構造体CellRescInitConfigのメンバinterlaceModeで指定するコンボリューション
+  フィルタとしてRSX(R)の texture filter 機能でサポートしている以下のフィルタを
+  追加しました。
+  - CELL_RESC_3X3_GAUSSIAN
+  - CELL_RESC_2X3_QUINCUNX
+  - CELL_RESC_2X3_QUINCUNX_ALT
+
+<仕様変更>
+- インターレスフィルタと、PAL補間モードが同時に使える仕様に変更しました。 
+  構造体CellRescInitConfigのメンバinterlaceModeにCELL_RESC_INTERLACE_FILTER
+  を設定した場合でも、メンバpalTemporalModeに以下のenum値を設定出来るように
+  なりました。
+  - CELL_RESC_PAL_60_INTERPOLATE
+  - CELL_RESC_PAL_60_INTERPOLATE_30_DROP
+  - CELL_RESC_PAL_60_INTERPOLATE_DROP_FLEXIBLE
+
+- hud関連のサンプル（cell/samples/resc/basic_hud）及びライブラリ
+  (cell/target/ppu/lib/libresc_hud.a)は、SDKパッケージから削除し、
+  別パッケージで提供されているRSX(TM) Tools パッケージに含めてリリースする
+  ことになりました。
+
+- 構造体CellRescInitConfigのメンバratioModeでCELL_RESC_PANSCANを指定すると、
+  通常スケールの時に4:3 になるように、画面外の両脇が切り落とされる仕様に
+  なっております。しかしながら、cellRescAdjustAspectRatio()の以前の仕様では、
+  横方向の縮小を行ったとき両脇部分が表示されませんでした。そのため、仕様を
+  変更し縮小度合いに応じて両脇部分の画像が表示されるようにしました。
+
+----------------------------------------------------------------------
+17 libgcm
+----------------------------------------------------------------------
+<新規機能>
+- 以下の関数を追加しました。
+  - cellGcmSetDefaultCommandBufferAndSegmentWordSize()
+  - cellGcmGetDefaultCommandWordSize()
+  - cellGcmGetDefaultSegmentWordSize()
+  - cellGcmCgSetInstructionSlot()
+  - cellGcmSetTileInfo()
+  - cellGcmBindTile()
+  - cellGcmUnbindTile()
+  - cellGcmBindZcull()
+  - cellGcmUnbindZcull()
+  - cellGcmSetVertexProgramParameterBlockPointer()
+  - cellGcmSetVertexDataArrayFormat()
+  - cellGcmSetVertexDataArrayOffset()
+  - cellGcmSetInlineTransferAlignedPointer()
+  - cellGcmSetVertexProgramConstantsAlignedPointer()
+  - cellGcmSetVertexProgramParameterBlockAlignedPointer()
+  - cellGcmSetDrawInlineArrayAlignedPointer()
+  - cellGcmSetDrawInlineIndexArray32AlignedPointer()
+  - cellGcmSetDrawInlineIndexArray16AlignedPointer()
+  - cellGcmResetDefaultCommandBuffer()
+  - cellGcmSetFragmentProgramLoadLocation() 
+  - cellGcmSetUpdateFragmentProgramParameterLocation() 
+  - cellGcmSetVertexDataBase()
+
+<仕様変更>
+- cellGcmSetFragmentProgramOffset() のreserved引数を、引数locationとしました。 
+  引数locationでは、フラグメントプログラムの配置場所としてメインメモリと
+  ローカルメモリのいずれかを指定する事ができます
+
+- cellGcmInit()で確保するローカルメモリサイズを232MBから234MBに増加
+  したため、cellGcmGetConfiguration()で取得できるユーザが使用可能な
+  ローカルメモリのサイズも232MBから234MBに変更しました。
+
+- cellGcmSetDrawArrays(), cellGcmSetDrawInlineArray()の内部では
+  CELL_GCM_RESERVE()を呼び出してコマンドバッファの領域を確保しています。
+  このCELL_GCM_RESERVE()の呼び出し方法を以下のように変更しました。
+  (変更前)１度だけCELL_GCM_RESERVE()を呼び出して必要なコマンドバッファを 
+           確保。
+  (変更後)必要なコマンドバッファのサイズをRSX(R)が１度に処理できる
+          最大数で分割。 
+          分割したサイズを用いて複数回、CELL_GCM_RESERVE()を呼び出し、
+          トータルで必要なコマンドバッファを確保。
+  なお、上記の仕様変更により以下の不具合が修正されます。
+    - デフォルトのコマンドバッファを使用している状態にて、
+      cellGcmSetDrawArrays(),cellGcmSetDrawInlineArray()の何れかの関数を
+      呼び出すとメモリ破壊が起こる事があります。
+
+- 以下の関数の内部で使用しているマクロCELL_GCM_MEMCPY() のコピーサイズ
+  (第三引数)を64バイトに変更しました。CELL_GCM_MEMCPYは__builtin_memcpyに
+  置き換わるようにマクロ定義していますが、64バイトを超えるコピーの際に
+  memcpy()に置き換わる事があります。その為、サイズを64バイト固定にして
+  __builtin_memcpyに置き換わる事を保証しました。
+  - cellGcmSetVertexProgramParameterBlock()
+  - cellGcmSetVertexProgramConstants()
+  - cellGcmSetPolygonStipplePattern()
+
+<サンプルの変更(cell/samples/sdk/graphics/gcm)>
+- すべてのgcmサンプルにおいて、ターゲット上で動作するプログラムランチャ
+  (samples/sdk/graphics/snavi)に対応しました。
+
+- GCC4.1.1コンパイラの警告を回避するため、すべてのgcmサンプルにおける
+  CG プログラムの外部参照型を uint32_t型 から _CGprogram型へ変更しました。
+
+- すべてのgcmサンプル内でcellGcmSetTile(),cellGcmSetInvalidateTile()を
+  使用したコードをcellGcmSetTileInfo(),cellGcmBindTile(),
+  cellGcmUnbindTile()を使用するように変更しました。
+
+- すべてのgcmサンプルでcellGcmSetZcull()を使用していたコードをcellGcmBindZcull(),
+  およびcellGcmUnbindZcull()を使用するよう変更しました。 
+  なお、cellGcmBindZcull()の引数sFuncではCELL_GCM_SCULL_SFUNC_ALWAYS又は、
+  CELL_GCM_SCULL_SFUNC_LESSを指定するようにしました。
+
+- pm_zcull サンプルにおいて、描画オブジェクトの操作時の上/下/左/右/L3/R3 
+  ボタンの挙動が滑らかになるようにしました。
+
+----------------------------------------------------------------------
+18 libgcm_pm
+----------------------------------------------------------------------
+<新規機能>
+- 以下のPMイベントを追加しました。
+  - CELL_GCM_PM_HCLK_COMMAND_FEED
+  - CELL_GCM_PM_GCLK_VPC_CULL_FRUSTUM
+  - CELL_GCM_PM_GCLK_VPC_CULL_ZERO_AREA
+  - CELL_GCM_PM_GCLK_VPC_CULL_BACKFACE
+  - CELL_GCM_PM_SCLK_SQD_ENDSEG_REGISTER_LIMIT
+  - CELL_GCM_PM_SCLK_SQD_ENDSEG_SHADER_STATE_BUNDLE
+  - CELL_GCM_PM_SCLK_SQD_ENDSEG_SLOT_LIMIT_FOR_SQC
+  - CELL_GCM_PM_SCLK_SQD_ENDSEG_TRIANGLE_LIMIT
+  - CELL_GCM_PM_SCLK_L1_TEXTURE_CACHE_REQUEST_GREATER_THAN_4_COUNT
+  - CELL_GCM_PM_SCLK_L1_TEXTURE_CACHE_INDEX_COLLISION
+  - CELL_GCM_PM_SCLK_2D_TRANSFER_WAITS_FOR_3D
+  - CELL_GCM_PM_SCLK_FINERASTERTILES_COVERED
+  - CELL_GCM_PM_SCLK_FINERASTERTILES_FASTZ
+  - CELL_GCM_PM_ICLK_DEBUG_AUDIO_TRANSFER
+
+----------------------------------------------------------------------
+19 サウンド関連
+----------------------------------------------------------------------
+libaudio
+========
+<新規機能>
+- オーディオポートへデータを書き込む以下の関数を追加しました。
+  - cellAudioAddData()
+  - cellAudioAdd2chData()
+
+- オーディオイベント用のイベントキューを生成する関数、
+  cellAudioCreateNotifyEventQueue()を追加しました。
+
+<仕様変更>
+- オーディオポートのブロック数として、32ブロックの設定（CELL_AUDIO_BLOCK_32)
+  を廃止しました。オーディオポートのブロック数は、CELL_AUDIO_BLOCK_8 又は、
+  CELL_AUDIO_BLOCK_16 を設定してください。
+
+<サンプルの変更(cell/samples/sdk/sound/audio/)>
+- playaudio、play2ndのサンプルにおいて、音声出力にDTSが使用出来るか否かの
+  確認や、DTS Interactiveオーディオエンコーダを使用したコードを追加しました。
+
+libsynth2
+=========
+<サンプルの変更(cell/samples/sdk/sound/synth2/)>
+- wholeサンプルでlibaudioを使用するように変更しました。
+
+- cell/samples/sdk/sound/synth2以下のサンプルにおいて、音声出力にDTSが
+  使用出来るか否かの確認や、DTS Interactiveオーディオエンコーダを使用した
+  コードを追加しました。
+
+libsnd3
+=======
+<サンプルの変更(cell/samples/sdk/sound/snd3/)>
+- cell/samples/sdk/sound/snd3以下のサンプルにおいて、音声出力にDTSが使用出来るか
+  否かの確認や、DTS Interactiveオーディオエンコーダを使用したコードを追加しました。
+
+- playsmf及びrunhorseのサンプルでlibaudioを使用するように変更しました。
+
+libmstream
+==========
+<新規機能>
+- 以下のMP3データ再生に関する関数を追加しました。
+  - cellMSStreamSetSecondReadSkip()
+  - cellMSStreamGetMP3FramePos()
+- 独立した8つのゲインパラメータを使いストリームのルーティング出力を制御する
+  以下の関数を追加しました。
+  - cellMSStreamSetRouting8()
+  - cellMSStreamSetRoutingWet8()
+  - cellMSStreamSetRoutingDry8()
+
+<仕様変更>
+- 構造体CellMSInfoのメンバSubBusGroupの型宣言をunsigned char型からint型に変更
+  しました。従来の環境で作成したゲームアプリケーションをSDK190の環境で実行する
+  場合は、再コンパイルしてから使用してください。
+
+- MP3データの再生時のエラー処理を改善しました。
+
+libscream
+=========
+<仕様変更>
+- 不正なMultiStreamバスをCellScreamInit構造体のメンバsubBusに設定して
+  cellScreamStartSoundSystem()を呼び出した際にCELL_SCREAM_BAD_MS_BUSを返す
+  ようにしました。
+
+- scream.hを移動しました。
+  - (移動前)cell/target/ppu/include/scream.h
+  - (移動後)cell/target/ppu/include/cell/scream.h
+- screamLegacy.hの名前を変更し移動しました。
+  - (移動前)cell/samples/sound/SCREAM/screamLegacy.h
+  - (移動後)cell/target/ppu/include/cell/scream/legacy.h
+
+----------------------------------------------------------------------
+20 codec
+----------------------------------------------------------------------
+libadec
+=======
+<新規機能>
+- MP3デコーダを追加しました。詳細については、「libadec 概要」及び
+  「libadec リファレンス」を参照してください。
+
+<仕様変更>
+- Cell OS Lv-2の「SPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能」の追加に伴い、cellAdecOpen()で指定するメモリ領域に以下の制約事項を
+  追加しました。
+
+  - cellAdecOpen()で指定するメモリ領域には、ページフォルト通知機能を有効に
+    した領域を指定してはいけません。
+  詳細については、「libadecリファレンス」のcellAdecOpen()の解説を参照してください。
+  なお、この制約事項が既存のゲームタイトルに影響を与えることはありません。
+
+libvdec
+=======
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellVdecOpen()で指定するメモリ領域に以下の制約事項を
+  追加しました。
+  
+  - cellVdecOpen()で指定するメモリ領域には、ページフォルト通知機能を有効に
+    した領域を指定してはいけません。
+  詳細については、「libvdecリファレンス」の構造体CellVdecResourceの解説を参照
+  してください。なお、この制約事項が既存のゲームタイトルに影響を与えることは
+  ありません。
+
+libjpgdec
+=========
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellJpgDecCreate()で確保されるメモリ領域に以下の
+  制約事項を追加しました。
+  - cellJpgDecCreate()で確保されるメモリ領域には、ページフォルト通知機能を
+    有効にした領域を指定してはいけません。
+  詳細については、「libjpgdecリファレンス」のcellJpgDecCreate()の解説を参照して
+  ください。なお、この制約事項が既存のゲームタイトルに影響を与えることはありません。
+
+libpngdec
+=========
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellPngDecCreate()で確保されるメモリ領域に以下の制約事項
+  を追加しました。
+  - cellPngDecCreate()で確保されるメモリ領域には、ページフォルト通知機能を
+    有効にした領域を指定してはいけません。
+  詳細については、「libpngdecリファレンス」のcellPngDecCreate()の解説を参照
+  してください。なお、この制約事項が既存のゲームタイトルに影響を与えることは
+   ありません。
+
+libcelpenc
+==========
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellCelpEncOpen()で指定するメモリ領域に以下の制約事項を
+  追加しました。
+  - cellCelpEncOpen()で指定するメモリ領域には、ページフォルト通知機能を有効に
+    した領域を指定してはいけません。
+  詳細については、「libcelpenc リファレンス」の構造体CellCelpEncResourceの解説を
+  参照してください。なお、この制約事項が既存のゲームタイトルに影響を与えることは
+  ありません。
+
+libvpost
+========
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellVpostOpen()で指定するメモリ領域に以下の制約事項を
+  追加しました。
+  - cellVpostOpen()で指定するメモリ領域には、ページフォルト通知機能を有効に
+    した領域を指定してはいけません。
+  詳細については、「libvpostリファレンス」の構造体CellVpostResourceの解説を
+  参照してください。なお、この制約事項が既存のゲームタイトルに影響を与えることは
+  ありません。
+
+libdmux
+=======
+<仕様変更>
+- Cell OS Lv-2のSPUスレッドからのメインメモリアクセスに対するページフォルト
+  通知機能の追加に伴い、cellDmuxOpen()で指定するメモリ領域に以下の制約事項を
+  追加しました。
+  - cellDmuxOpen()で指定するメモリ領域には、ページフォルト通知機能を有効に
+    した領域を指定してはいけません。
+  詳細については、「libdmuxリファレンス」の構造体CellDmuxResourceの解説を
+  参照してください。なお、この制約事項が既存のゲームタイトルに影響を与えることは
+  ありません。
+
+libsail
+=======
+<新規機能>
+- MP4ファイル(ISO/IEC14496-16)の再生に対応しました。 
+  対応するCODECは以下となります。
+  - ビデオ：MPEG-4 Video(ISO/IEC 14496-2)
+  - オーディオ：MPEG-4 AAC(ISO/IEC 14496-3,Subpart4)
+  なお、MP4ファイルを再生する場合はユーザ定義ソースを使うことができません。 
+  "x-cell-fs"のプロトコル名（URIスキーマ）のみ使用可能です。また再生品質を
+  保障できるのは録画ユーティリティで作成され、かつ内蔵HDDに存在している
+  MP4ファイルのみです。それ以外のMP4ファイルの再生を行うようなコードを製品に
+  組み込まないようにしてください。
+
+- MP4ファイル(ISO/IEC14496-16)の再生に対応に伴い、以下の定数マクロ、構造体、
+  関数を追加しました。
+
+  [定数マクロ]
+  - CELL_SAIL_STREAM_MP4
+  - CELL_SAIL_SEEK_MP4_SCALE_AND_TIME
+  - CELL_SAIL_TERMINUS_MP4_SCALE_AND_TIME
+  - CELL_SAIL_AUDIO_FS_96000HZ
+  - CELL_SAIL_AUDIO_FS_88200HZ
+  - CELL_SAIL_AUDIO_FS_64000HZ
+  - CELL_SAIL_AUDIO_FS_24000HZ
+  - CELL_SAIL_AUDIO_FS_22050HZ
+  - CELL_SAIL_AUDIO_FS_16000HZ
+  - CELL_SAIL_AUDIO_FS_12000HZ
+  - CELL_SAIL_AUDIO_FS_11025HZ
+  - CELL_SAIL_AUDIO_FS_8000HZ
+  - CELL_SAIL_MP4_MEDIA_AUDIO
+  - CELL_SAIL_MP4_MEDIA_VIDEO
+  - CELL_SAIL_MP4_AUDIO_SAMPLE_CODING_MP4A
+  - CELL_SAIL_MP4_VIDEO_SAMPLE_CODING_MP4V
+  - CELL_SAIL_MP4_TRACK_REFERENCE_SYNC
+
+  [構造体]
+  - CellSailMp4Movie
+  - CellSailMp4Track
+  - CellSailMp4DateTime
+  - CellSailMp4MovieInfo
+  - CellSailMp4TrackInfo
+
+  [関数]
+  - cellSailMp4MovieGetBrand()
+  - cellSailMp4MovieIsCompatibleBrand()
+  - cellSailMp4MovieGetMovieInfo()
+  - cellSailMp4MovieGetTrackByIndex()
+  - cellSailMp4MovieGetTrackById()
+  - cellSailMp4MovieGetTrackByTypeAndIndex()
+  - cellSailMp4TrackGetTrackInfo()
+  - cellSailMp4TrackGetTrackReferenceCount()
+  - cellSailMp4TrackGetTrackReference()
+  - cellSailMp4ConvertTimeScale()
+
+
+libpamf
+=======
+<新規機能>
+- 以下の定数マクロを追加しました。
+  - CELL_PAMF_AVC_LEVEL_3P2
+  - CELL_PAMF_AVC_FRC_24
+  - CELL_PAMF_AVC_FRC_25
+  - CELL_PAMF_AVC_FRC_30
+  - CELL_PAMF_AVC_FRC_50
+  - CELL_PAMF_M2V_MP_H14
+  - CELL_PAMF_M2V_FRC_24
+  - CELL_PAMF_M2V_FRC_25
+  - CELL_PAMF_M2V_FRC_30
+  - CELL_PAMF_M2V_FRC_50
+
+----------------------------------------------------------------------
+21 サンプルプログラム
+----------------------------------------------------------------------
+SDK190より、cell/samples以下のサンプルプログラムは、サンプルデータパッケージ
+(PS3_SDK_SampleData-XXX_XXX.zip)と統合し、別パッケージ(PS3_SDK_Sample-190_002)
+で提供することになりました。
+以下にPS3_SDK_Sample-190_002で提供されるサンプルプログラムのSDK190.002での
+仕様変更と新規追加を示します。
+
+全般
+====
+<仕様変更>
+- cell/samplesのサンプル構成を大幅に変更し、以下のようなディレクトリ構成で
+  サンプルを提供します。この変更に伴い、cell/samples以下で提供している
+  makefileやProDG for PLAYSTATION(R)3用プロジェクトファイルの更新も行いました。
+  SDK181以前のサンプル構成でパスを参照しているゲームアプリケーションは、
+  パスを変更する必要がありますので、ご注意ください。 
+  詳細については、cell/samples/readme_j(e).txtを参照して下さい。
+  - cell/samples/sdk:      SDKで提供されている各モジュールのサンプル
+  - cell/samples/tutorial:  各種テクニック、Tipsに関すチュートリアル
+  - cell/samples/common: 各種サンプルで利用される共通のコード
+  - cell/samples/fw:       サンプルフレームワーク(fwgcmを含む)
+  - cell/samples/mk:      共通Makefile
+  - cell/samples/util:    ユーティリティ 
+                          (cxml、gtf、Debugging Station用ランチャ)
+
+新規追加
+========
+- samples/sdk/sysutil/recording
+  録画ユーティリティの基本的な使い方を示すサンプル 
+  PLAYSTATION(R)3上で動作するゲームアプリケーションの画面表示と音声出力を
+  録画しMP4ファイルフォーマットの動画ファイルを生成します。
+  ビデオユーティリティを用いて、生成した動画ファイルをシステムソフトウェアに
+  登録するまでの処理を示しています。
+
+- samples/sdk/sysutil/music_export
+  ゲームデータディレクトリにあるミュージックファイルをシステムソフトウェアの
+  「ミュージック」列に登録し、システムソフトウェアが管理する内蔵ハードディスク
+   上にコピーするサンプル
+
+- samples/sdk/sysutil/video_export
+  ゲームデータディレクトリにあるビデオのファイルを、システムソフトウェアの
+  「ビデオ」列に登録し、システムソフトウェアの管理する内蔵ハードディスク上に
+  コピーするサンプル
+
+- samples/sdk/sysutil/imejp
+  カナ漢字変換を実現するImeJpユーティリティの基本的な使い方を示したサンプル
+
+- samples/sdk/sysutil/print
+  リストアップされたJPEG ファイルの中から画像を選択し印刷設定を行った後に、
+  JPEG画像の印刷を行うサンプル
+
+- samples/sdk/sysutil/gameupdate
+  ゲームアップデートユーティリティを使用して、実際にゲームデータを作成、
+  確認するサンプル
+
+- samples/sdk/sysutil/gameupdate_system
+  ゲームアップデートユーティリティを使用しないで、システムソフトウェアによる
+  アップデートの動作を確認するサンプル
+  ゲームアップデートユーティリティのサンプルとほぼ同じ内容ですが、ゲーム内から
+  ゲームアップデートユーティリティの呼び出しは行っていません。システムソフトウェアの
+  アップデートに依存します。
+
+- samples/sdk/lv2/multi-self
+  Multiple SELF Format ファイルに格納されているPRX のロード及び、SPU プログラム
+  ファイルのオープンを行うサンプル
+
+- samples/sdk/spu_library/libspurs/job/job_sync_label
+  SPURSジョブでSYNC_LABELコマンドの使用方法を示したサンプル
+
+- samples/sdk/spu_library/libspurs/job/job_stall_successor
+  SPURSジョブで後続のジョブのDMAをストールさせる方法を示したサンプル
+
+- samples/sdk/spu_library/libspurs/advanced/in_ls_transfer_between_jobs
+  SPURSジョブ間でLSを使ったデータ転送を示したサンプル
+
+- samples/sdk/sound/audio/2in1out
+  libaudio の単一ポートに 2つのサウンドデータをミックスして出力するサンプル
+
+- samples/sdk/sound/synth2/whole_mixer
+  samples/sdk/sound/synth2/wholeサンプルのlibmixer 使用版サンプル
+
+- samples/sdk/sound/snd3/playsmf_mixer
+  samples/sdk/sound/snd3/playsmfサンプルのlibmixer 使用版サンプル
+
+- samples/sdk/sound/snd3/runhorse_mixer
+  samples/sdk/sound/snd3/ runhorseサンプルのlibmixer 使用版サンプル
+
+- samples/sdk/sound/scream/scream_routing
+  MultiStreamでサンプルを再生しながらSCREAMのサウンドバンクから単一サウンドを
+  再生する方法を示したサンプル
+
+- samples/sdk/sound/scream/simple_scream
+  SCREAMおよびMultiStreamを用いてSCREAMサウンドバンクから単一サウンドを再生
+  する方法を示したサンプル
+
+- samples/sdk/graphics/snavi
+  ターゲット上で動作するプログラムランチャ 
+  samples/sdk/graphics/gcm 以下にあるグラフィックスサンプルを、パッド操作により
+  ターゲットの再起動を行うことなく実行することが出来ます。
+
+- samples/sdk/graphics/resc/combination
+  libresc の機能の全体を手軽に閲覧できるサンプル 
+複数の描画サンプルをベースにlibresc の効果・画質を確認する事ができます。
+
+- samples/sdk/codec/mp3_dec
+  MP3のデコード出力生成の方法を示したサンプル
+  ファイル内のMP3のデータをデコードし、ミキサーライブラリへ出力します。
+
+- samples/tutorial/performance_tips/SpuPostProcess/MotionBlur
+  MotionBlurエフェクトにおいて、フレームバッファに対するフィルタ処理をSPUで行う
+  サンプル 
+  SPU PostEffectとして、RSX(R)で描画をおこなったFrameBufferをメインメモリに転送し、
+  SPUで処理を行っています。
+
+- samples/tutorial/performance_tips/Cell/spu_tips/branch
+  gccの__builtin functionを使用し、SPUのbranchストールの軽減方法を示したサンプル 
+  オリジナル関数と、最適化された関数を併記し、ストールの軽減を説明しています。 
+
+- samples/tutorial/performance_tips/Cell/spu_tips/data_dependency 
+  SPUにおいて、データ依存によるストールの軽減方法を示したサンプル 
+  ソフトウェアパイプライニング、ポインタエイリアシング除去を紹介しています。
+
+- samples/performance_tips/Cell/spu_tips/dma 
+  SPUのdma処理を効率的に行う方法を示したサンプル 
+  DMAアドレスのアライメントや複数バッファを使用した処理方法を紹介しています。
+
+- samples/performance_tips/Cell/spu_tips/instruction 
+  SPUの乗算、ベクトルスロット内演算等を効率的に記述する方法を示したサンプル
+
+<サンプルの変更(cell/samples/performance_tips/Cell/ppu_tips/lhs)>
+- PPUのLHS ストールサイクルを減らす方法を追加しました。また、サンプルの
+  パフォーマンスの改善を行いました。
+

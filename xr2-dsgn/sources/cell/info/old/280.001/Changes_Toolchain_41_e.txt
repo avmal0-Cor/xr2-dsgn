@@ -1,0 +1,207 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 280.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 280.001
+- Bugs fixed in Release 280.001
+
+======================================================================
+New Additions and Changes in Release 280.001
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+[Additions]
+(B#68110)
+- Implemented the --package switch. Using this switch places all 
+  inputs into a single zip file, along with a link response file to 
+  replicate the link the zip file was created with.
+
+(B#68111)
+- Implemented compressed FSELF support. Compression is enabled via 
+  the --compress-output switch when producing FSELF output.
+
+[Specification Changes]
+(B#70848)
+- Deprecated the --no-keep-memory option. The current implementation 
+  only works in limited circumstances; the option may be removed 
+  pending review of its usefulness.
+
+(B#70847)
+- Deprecated the --external-make-fself option. Changes to the 
+  make_fself tool make it difficult to implement correctly.
+
+(B#67212)
+- Permit symbols from an object file to redefine those in an archive.
+
+[Bugfixes]
+(B#71092)
+- Fix a spurious undefined symbol error when dead stripping code 
+  containing overlapping symbols.
+
+(B#67957)
+- Implemented more efficient PRX generation.
+
+(B#70265)
+- Previously --strip-unused incorrectly enabled dead stripping 
+  on data sections with the SHF_MERGE flag set.
+  Fixed the dead stripping configuration so that --strip-unused-data 
+  enables this behaviour, and --strip-unused leaves such sections 
+  alone.
+
+(B#72051)
+- Warning L0095 did not emit the object file name for archives 
+  previously; now it does.
+
+(B#69641)
+- Corrected an error that caused --no-keep-memory to produce broken 
+  output.
+
+(B#66794)
+- Fix a failure in the internal PRX fixup that occurred when linking 
+  relocatable output containing PRX stubs.
+
+(B#67399)
+- Correct inconsistencies between the linker manual and the program 
+  help text.
+
+(B#67414)
+- Fix a crash when using the --defsym command-line switch.
+
+(B#67111)
+- Fix failure to link when THIS_CELL_SDK environment variable is not 
+  set under Linux.
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+[Additions]
+<PPU>
+(B#54159)
+- when using option -mno-toc GCC will generate code that does not 
+  use the TOC for accessing any data, does not save and restore the 
+  TOC register for function pointer calls, and does not add a nop 
+  instruction after regular function calls.
+
+[Specification Changes]
+<PPU/SPU>
+(B#52010)
+- (ppu/spu)-lv2-gccbug has been removed from Toolchain Package.
+
+<PPU>
+(B#66953)
+- Added "T (TLS: thread local storage)" in the "Key to Flags" that 
+  is shown by ppu-lv2-readelf with -S option.
+
+<SPU>
+(B#70890)
+- The location of job_crt.o has been changed from the SDK package 
+  to the toolchain package.
+
+    Old location in SDK package:
+      target\spu\lib\job_crt.o
+      target\spu\lib\pic\job_crt.o
+
+    New location in toolchain package:
+      host-win32\spu\lib\gcc\spu-lv2\4.1.1\job_crt.o
+      host-win32\spu\lib\gcc\spu-lv2\4.1.1\pic\job_crt.o
+
+[Bugfixes]
+<PPU/SPU>
+(B#66952)
+- In some cases with -fprofile-arcs or -fprofile-generate 
+  and anonymous namepsaces, GCC would crash.
+  This problem has now been fixed.
+
+(B#67355)
+- In some cases an internal compiler error in mark_operand_necessary 
+  would happen.  This problem has now been fixed.
+
+(B#67975)
+- The following internal compiler error could happen if the 
+  variable that is accessed via a different type hold an address of 
+  another variable while inside a loop.
+
+    internal compiler error: in for_each_index, at tree-ssa-loop-im.c:222
+
+  This problem has been fixed.
+
+(B#67976)
+- The following internal compiler error would happen 
+  when using induction variable that was accessed via a different 
+  type with a component reference.
+
+    internal compiler error: in expand_expr_addr_expr_1, at expr.c:6740
+
+  This has been fixed.
+
+(B#33722)
+- Vector context sensitive keyword does not work with macros.
+  This problem has now been fixed.
+
+(B#56880)
+- A response file with an empty line at the begining did not work.
+  This problem has now been fixed.
+
+(B#25449)
+- Debugging information for __builtin_va_list defined 
+  by the compiler was not generated.
+  This has now been fixed.
+
+(B#58092)
+- ProDG watch could not find local variables.
+  This problem has now been fixed.
+
+(B#12256)
+- When .debug_loc was generated, it was necessary to generate 
+  DW_AT_entry_pc, but it was not generated.
+  This has now been fixed.
+
+<PPU>
+(B#47040)
+- When both -mno-sn-ld and --target-help were used, 
+  the following error was displayed:
+
+    Windows:
+      cc1.exe: error: unrecognized command line option "---target-help"
+
+    Linux:
+      "a.out" can't open
+      ppu-lv2-prx-fixup: 'a.out' can't read
+
+  This has now been fixed.
+
+(B#65930)
+- Using section anchors in combination with the -strip-unused-data 
+  linker option generated incorrect code.
+  This has been fixed.
+
+(B#70047)
+- When linking libsupc++.a to PRXs, the following 
+  link error occurred.
+  This problem has been fixed.
+
+    Error: '_ZZN11__sce_local10get_globalEvE6global' is TLS variable.
+    PRX doesn't support TLS now!
+
+(B#58074)
+- An argument type of __frsp was not right.
+  This has now been fixed.
+
+<SPU>
+(B#67265)
+- When a program which requires runtime relocation was compiled 
+  without -fpic and linked with -fpic and -mno-fixups options, 
+  no warning was displayed.
+  This bug has been fixed.
+
+(B#67272)
+- A warning like below was displayed even if 
+  -mno-warn-reloc was specified.
+
+    warning: section '.text' in 'xxxx.o' is non-PIC
+
+  This problem has been fixed.

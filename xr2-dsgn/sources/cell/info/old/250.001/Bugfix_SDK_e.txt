@@ -1,0 +1,1148 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 250.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 250.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 250.001
+======================================================================
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - When a game data that contains an animation icon and a BGM with 
+    no loop setting is deleted,the system software may rarely freeze.
+    (TechnoteID:200810-10   https://ps3.scedev.net/technotes/view/814)
+
+<Check menu in the Game column>
+- In the check result for a corrupted system file(PARAM.SFO), 
+  an incorrect log was output. This problem has been fixed. 
+
+- When the library name output in the check result log was longer 
+  than 31 byte, the end of the name was not displayed correctly. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Message Dialog Utility>
+- (B#56607)
+  When a GUI enabled system utility such as the Message Dialog utility or 
+  the Save Data utility was called immediately after a message dialog is 
+  aborted by cellMsgDialogAbort(), CELL_SYSUTIL_ERROR_BUSY could be 
+  returned. This problem has been fixed.
+
+- (B#55781)
+  When cellMsgDialogClose() was called while attempting to close 
+  a message dialog by an input device such as a controller, it could hang up. 
+  This problem has been fixed.
+
+- In the samples\sdk\sysutil\msgdialog\main.c , the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Content Search Utility>
+- In the samples\sdk\sysutil\search\main.cpp , the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Video Upload Utility>
+- (B#59936)
+  It could not be cancelled until the upload processing was completed. 
+  This problem has been fixed.
+
+- (B#59608)
+  It could time out before the upload processing was completed. This 
+  problem has been fixed.
+
+<Audio Configuration Utility>
+- (B#54458)
+  In the multi microphone mode, it has been changed so that the system 
+  software terminates the device even when cellAudioInUnregisterDevice() 
+  is not called for the voice input device that the application uses at 
+  the time of application termination.
+
+<User Information Utility>
+- In the samples\sdk\sysutil\userinfo\graphics.c , the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<On-Screen Keyboard Utility>
+- In the samples\sdk\sysutil\osk_dialog\graphics.cpp , the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Storage Data Utility>
+- In the samples\sdk\sysutil\storagedata\graphics.c , the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Music Utility>
+- In the samples\sdk\sysutil\music\main.cpp , the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\sysutil\music2\main.cpp , the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- The following problem has been fixed:
+
+  - The repeat mode may be unable to be set from the content selection UI.
+    The procedure that causes this problem is as shown below:
+
+    1. Call cellSearchGetMusicSelectionContextOfSingleTrack() and get a
+       selection context for playing back a single track.
+    2. Call cellMusicSetSelectionContext() or cellMusicSetSelectionContext2().
+    3. Call cellMusicSelectContents() or cellMusicSelectContents2() to 
+       change the repeat mode of the playback mode. The setting will not be 
+       reflected and a single music is played.
+
+- The following problem has been fixed:
+
+  - cellMusicSetSelectionContext() or cellMusicSetSelectionContext2() 
+    returns an error with a specific context.
+    The steps to reproduce the problem are as shown below:
+
+    1. Call cellMusicSelectContents() or cellMusicSelectContents2() to
+       display the content selection UI.
+    2. Select a content from the [Other] folder through the folder 
+       category [Track].
+    3. Obtain the context using cellMusicGetSelectionContext() or 
+       cellMusicGetSelectionContext2() and set the context using 
+       cellMusicSetSelectionContext() or cellMusicSetSelectionContext2().
+       But the context cannot be played back.
+
+<Save Data Utility>
+- In the samples\sdk\sysutil\savedata\basic(copy/delete/user)\graphics.c , 
+  the calculating formula of a parameter to be passed to cellGcmSetViewport() 
+  was not correct. This problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the following save data samples, when overwriting an existing data, 
+  the calculating formula of required disc space for when a file that 
+  should have been present could not be found was not correct. This 
+  problem has been fixed.
+
+  Applicable samples:
+  cell\samples\sdk\sysutil\savedata\basic\saveload.c
+  cell\samples\sdk\sysutil\savedata\user\saveload.c
+
+  Fixed lines:
+  1530th line of cell\samples\sdk\sysutil\savedata\basic\saveload.c
+  1565th line of cell\samples\sdk\sysutil\savedata\user\saveload.c
+
+    <SDK240 or before>
+      /* If none exist, use the size of the new file itself */
+      DIFF_SIZEKB += SIZEKB(dataParam->fileList[i].fileSize);
+      PRINTF(" file %s is not exist. DIFF_SIZEKB : %d\n", dataParam->fileList[i].fileName, DIFF_SIZEKB );
+
+    <SDK250 onwards>
+      /* If none exist, use the size of the new file itself */
+      DIFF_SIZEKB = SIZEKB(dataParam->fileList[i].fileSize);
+      PRINTF(" file %s is not exist. DIFF_SIZEKB : %d\n", dataParam->fileList[i].fileName, DIFF_SIZEKB );
+
+- The following problem has been fixed:
+
+  - CellSaveDataDirStat returns wrong mtime and atime values.
+    To mtime, the time when the data is updated should be returned in the 
+    GMT form, however, a value with the time zone corrected the other way 
+    around is returned.
+
+    Example)
+      Data that is stored at GMT+9:00 in Japan time and 10:00 in GMT:
+        Expected value 10:00
+        Actual value   10:00 - 9:00 = 1:00
+
+    This problem has been fixed as follows:
+
+    <SDK240 and before>
+     ctime : GMT
+     mtime : Time zone corrected the other way around
+     atime : Same as mtime
+
+    <SDK250 onwards>
+     ctime : GMT
+     mtime : GMT
+     atime : Same as mtime
+
+    To keep the compatibility, it behaves correctly only with titles that 
+    are compiled using SDK 250 or later and corrects the time zone the
+    other way around as before with titles that are compiled using SDK 240
+    or before.
+
+- In the following APIs that display the progress bar, the incremental 
+  value of the progress bar that was specified by 
+  the argument CellSaveDataCBResult.progressBarInc of the data status 
+  call back was ignored. 
+  This problem has been fixed.
+
+    cellSaveDataAutoSave2(), cellSaveDataAutoLoad2(),
+    cellSaveDataUserAutoSave(), cellSaveDataUserAutoLoad(),
+    cellSaveDataListAutoSave(), cellSaveDataListAutoLoad(),
+    cellSaveDataUserListAutoSave(), cellSaveDataUserListAutoLoad(),
+    cellSaveDataFixedSave2(), cellSaveDataFixedLoad2(),
+    cellSaveDataUserFixedSave(), cellSaveDataUserFixedLoad(),
+    cellSaveDataListSave2(), cellSaveDataListLoad2(),
+    cellSaveDataUserListSave(), cellSaveDataUserListLoad()
+
+    Example)
+    <SDK240 and before>
+                                 -> Actual display of the progress bar 
+    Increment the progress value by 50 using the data status call back  
+    -> 0 % 
+    Increment the progress value by 50 using the file operation call back 
+    -> 50 %
+    Specify OK_LAST using the file operation call back and terminate the 
+    processing
+    -> 100% (It automatically reaches to 100% when it is terminated 
+       normally.)
+
+    <SDK250 onwards>
+                                 -> Actual display of the progress bar 
+    Increment the progress value by 50 using the data status call back  
+    -> 50 % 
+    Increment the progress value by 50 using the file operation call back 
+    -> 100 %
+    Specify OK_LAST using the file operation call back and terminate the 
+    processing
+    -> 100%
+
+- When calling cellSaveDataFixedDelete() or cellSaveDataUserFixedDelete(),
+  if a value other than 0 was specified to the member variable fileListMax
+  of the CellSaveDataSetBuf structure, the log displayed to the console 
+  was not correct. This problem has been fixed.
+
+    <SDK240 and before>
+      ****** sysutil savedata parameter error : 7 ******
+      
+      This means that CellSaveDataSetBuf.bufSize is invalid.
+
+    <SDK250 onwards>
+      ****** sysutil savedata parameter error : 9 ******
+
+      This means that CellSaveDataSetBuf.fileListMax is invalid.
+
+- The following problem has been fixed:
+
+ - This problem can occur in the file operation callback of any of the 
+   save data utility functions in the list below.
+   If a partial read is specified using the member variables fileOffset and 
+   fileSize of the CellSaveDataFileSet structure, and all of the following
+   conditions apply, the function call will fail and return 
+   CELL_SAVEDATA_ERROR_INTERNAL.
+
+   - Specified read size is larger than 24KB
+   - Specified read size is not an integer multiple of 96KB
+   - End of file is not read
+
+   The problem exists for the following functions.
+
+   cellSaveDataListSave2()
+   cellSaveDataListLoad2()
+   cellSaveDataFixedSave2()
+   cellSaveDataFixedLoad2()
+   cellSaveDataAutoSave2()
+   cellSaveDataAutoLoad2()
+   cellSaveDataListAutoSave()
+   cellSaveDataListAutoLoad()
+   cellSaveDataUserListSave()
+   cellSaveDataUserListLoad()
+   cellSaveDataUserFixedSave()
+   cellSaveDataUserFixedLoad()
+   cellSaveDataUserAutoSave()
+   cellSaveDataUserAutoLoad()
+   cellSaveDataUserListAutoSave()
+   cellSaveDataUserListAutoLoad()
+ (TechnoteID:200807-18  https://ps3.scedev.net/technotes/view/770)
+
+<AV Chat 2 utility>
+- The following problem has been fixed:
+
+  - To use the direct streaming mode, it is required to perform signaling 
+    between players using the NP signaling library in the game. 
+    This restriction will be removed from the future release.
+
+<System BGM>
+- In the samples\sdk\sysutil\bgmplayback\main.cpp , the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows: 
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- In dds2gtf, the following problem has been fixed:
+  - The program version has been updated to 2.01 as a fixed version. 
+    This can be used to handle the problem where a texture with an 
+    incomplete mipmap cannot be converted.
+
+- In gtf2dds, the following problems have been fixed:
+   - A problem where a texture with an incomplete mipmap cannot be 
+     converted
+   - A problem where a texture with no pitch size specified cannot be 
+     converted correctly
+  The program version has been updated to 2.01 as a fixed version.
+
+- samples\util\gtf
+  - The source code has been updated to 2.01 accordingly to the bugfix 
+    applied to dds2gtf and gtf2dds.
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- It did not work on Windows Vista x64, This problem has been fixed.
+
+- A memory leak occurred when the fragment and the vertex shaders were
+  being measured by the RSX(TM) profile. This problem has been fixed.
+
+----------------------------------------------------------------------
+libvpost
+----------------------------------------------------------------------
+- (B#57939)
+  samples\sdk\vpost
+  When the sample was ended (when "Switch Power Off" was performed on 
+  the ProDG Target Manager for PLAYSTATION(R)3), a message "shutdown 
+  sequence timed out" was output incorrectly. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+libatrac3plus
+----------------------------------------------------------------------
+- (B#58003)
+  samples\sdk\codec\atrac3plus_simple
+  samples\sdk\codec\atrac3plus_spurs
+  samples\sdk\codec\atrac3plus_streaming
+
+  When the samples were ended(when "Switch Power Off" was performed on 
+  the ProDG Target Manager for PLAYSTATION(R)3), a message "shutdown 
+  sequence timed out" was output incorrectly. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#47128)
+  It has been clarified that the upper limit of the number of samples 
+  obtainable via cellSailSoundAdapterGetFrame() is 2048. It now returns 
+  an error when a value that is larger than 2048 is specified.
+
+- (B#57330)
+  cellSailGraphicsAdapterPtsToTimePosition() and 
+  cellSailSoundAdapterPtsToTimePosition() returned an invalid value 
+  immediately after a movie was started. This problem has been fixed.
+
+- (B#57017)
+  When cellSailPlayerBoot() was called with insufficient memory, an 
+  exception occurred. This problem has been fixed.
+
+- (B#58404)
+  When cellSailPlayerFinalize() was called while a movie was being 
+  played, an exception occurred. This problem has been fixed.
+
+- (B#58406)
+  When cellSailPlayerFinalize() was called while the DivX(R) and the MP4 
+  files were being opened using cellSailPlayerOpenStream(), the loaded prx
+  was not unloaded although it was not required anymore. This problem has 
+  been fixed.
+
+----------------------------------------------------------------------
+libadec
+----------------------------------------------------------------------
+- When the following files were being compiled using the SNC compiler, 
+  a warning message was output. This problem has been fixed:
+  samples\sdk\codec\ac3_dec
+  samples\sdk\codec\lpcm_dec
+  samples\sdk\codec\m2bc_dec
+  samples\sdk\codec\m4aac_dec
+  samples\sdk\codec\mp3_dec
+
+- (B#58003) 
+  samples\sdk\codec\celp_dec 
+  samples\sdk\codec\celp_dec_multi 
+  samples\sdk\codec\celp8_dec 
+  samples\sdk\codec\celp8_dec_multi 
+
+  When the samples were ended(when "Switch Power Off" was performed on 
+  the ProDG Target Manager for PLAYSTATION(R)3), a message "shutdown 
+  sequence timed out" was output incorrectly. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- The following restriction has been removed because this problem occurs 
+  only on the DEH-1000 which is an old development machine.
+
+  - When connecting or disconnecting a device to a USB port of the
+    machine body, other USB devices already connected may be
+    disconnected or may have an impact on its data communication.
+    To avoid these problems, connect a self power hub to one of the USB
+    ports of the machine body.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problems have been fixed.
+  - (B#58301)
+    When the DUALSHOCK(R)3 wireless controller which is being connected 
+    wirelessly is powered off through the PS button menu "Turn Off the 
+    Controller", the port lamp is kept lit without turning off the power 
+    and it becomes inoperative.
+  
+  - (B#59302)
+    In a game title that uses cellPadClearBuf() often, the system menu 
+    that is displayed when the PS button is pressed and the system utility
+    dialog or the like become very uneasy to operate.
+
+- samples\sdk\hid\pad\sample.c
+  - (B#56830)
+    When initializing an array variable actprm using memset(), the 
+    initialization size is now correctly used.
+    (Wrong)   memset(&actprm[i], 0x00, sizeof(actprm));
+    (Correct) memset(&actprm[i], 0x00, sizeof(CellPadActParam));
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- The following problems have been fixed:
+  - Driver installation fails.
+  - The driver file is copied in a wrong folder.
+
+----------------------------------------------------------------------
+libkb
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#53677)
+    On the Japanese keyboard, when the "\" key is pressed, the 
+    "backslash" key is incorrectly input.
+    (Note that the "backslash" key is input as before to keep the 
+    compatibility with game titles that are created using SDK 240 or 
+    older.)
+
+  - (B#56982)
+    If the ALT or the SHIFT keys is pressed when closing the Onscreen 
+    Keyboard dialog via the Enter key, the key may be still kept pressed 
+    when the dialog is opened the next time.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- The delay in cellCameraRead() when a camera is being disconnected has 
+  been reduced.
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- (B#56416)
+  Although the kernel memory was sufficient, SYS_NET_ENOBUFS was 
+  returned incorrectly. This problem has been fixed.
+  This problem has been fixed.
+ (TechnoteID:200807-23   https://ps3.scedev.net/technotes/view/775)
+
+- (B#57223)
+  When the NACK message was returned for the DHCPREQUEST message while 
+  using the DHCP, the network became unavailable. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+NP Sample Program
+----------------------------------------------------------------------
+- In the samples\sdk\network\np\np_game sample, the following problems 
+  have been fixed:
+  - In the np.cpp file, the length of the message queue that is used for 
+    passing a called back event to other thread has been changed to 127.
+    (TechnoteID:200807-04   https://ps3.scedev.net/technotes/view/756)
+  - In the np.cpp file, it has been enabled to free the memory of an 
+    event that could not be pushed to the message queue.
+    (TechnoteID:200807-04   https://ps3.scedev.net/technotes/view/756)
+  - In the np_basic.cpp file, it has been enabled to retry the processing 
+    of sceNetBasicGetEvent() so that a dropped notification event can be 
+    also handled.
+    (Technote ID:200807-04   https://ps3.scedev.net/technotes/view/756)
+  - In the pad.cpp file, the Enter button was not displayed correctly when
+    the region was Japan or such.
+  - In the gamemain.cpp file, the position of CGameBase::onUpdate() is not
+    correct.
+  - In the gamemain.cpp file, it has been changed so that the game data 
+    can be sent to each guest in order to synchronize the drawing even 
+    when the game of the host is over.
+  - In the gamemain.cpp file, it is now adjusted when the drawing frame 
+    of the guest proceeds far in advance.
+  - In the np_signaling.cpp file and such, the term "activated" has been 
+    changed to "established".
+  - A description on the source code and such has been added to the readme
+    files.
+
+----------------------------------------------------------------------
+NP Signaling Utility
+----------------------------------------------------------------------
+- When calling the NP Signaling API, it could be blocked for about 200ms 
+  at maximum depending on the call timing. This problem has been fixed.
+
+- When the peer was deactivated after connection establishment, and the 
+  peer was reactivated before the connection was disconnected, 
+  SCE_NP_SIGNALING_EVENT_EXT_PEER_ACTIVATED was not notified correctly. 
+  This problem has been fixed.
+
+- In SDK 240, the specifications of sceNpSignalingGetConnectionFromNpId() 
+  has been changed. 
+  Changes have been made regarding its return value 
+  and the connection ID to be obtained as the third argument, 
+  conn_id, as follows. 
+ (TechnoteID:200808-01 https://ps3.scedev.net/technotes/view/780)
+
+    Specifications in SDK versions earlier than SDK 240
+      0 is returned as the return value and a connection ID can be 
+      obtained only when the connection state is 
+      SCE_NP_SIGNALING_CONN_STATUS_PENDING or 
+      SCE_NP_SIGNALING_CONN_STATUS_ACTIVE.
+
+    Specifications in SDK versions 240 and later
+      In addition to the above, 0 is returned as the return value 
+      and a connection ID can be obtained in the 
+      SCE_NP_SIGNALING_CONN_STATUS_INACTIVE state, where 
+      activation has been performed by a peer but not carried out 
+      yet locally.
+
+  Although it had to behave as specified by the previous specifications 
+  before the change with an application that was built using an SDK older
+  than SDK 240, it behaved as the specifications after the change. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- When sceNpBasicRecvMessageAttachmentLoad() returned ENOENT(0x80010006) 
+  at a specific timing and then sceNpBasicRecvMessageAttachment() was 
+  called, it got into an invalid state or hang up. This problem has been 
+  fixed.
+
+- The utility was blocked when sceNpBasicAddPlayersHistoryAsync() and 
+  other NP basic function were called at the same time. This problem has 
+  been fixed.
+
+- (B#60397)
+  sceNpBasicAddPlayersHistoryAsync() incorrectly returned 
+  SCE_NP_BASIC_ERROR_INTERNAL_FAILURE where SCE_NP_BASIC_ERROR_BUSY 
+  should have been returned instead. This problem has been fixed.
+ (TechnoteID:200809-10 https://ps3.scedev.net/technotes/view/802)
+
+- The following problem has been fixed:
+
+  - (B#60574)
+    In SDK 240, a modification has been made to increase the maximum 
+    registerable number of friends to "Friends" column in the system 
+    software from 50 to 100. However, when an SDK version lower than SDK 
+    240 is used, because the following functions does not support this
+    change, 100 friends can be wrongly obtained although the number of 
+    friend list entries and presence information to be retrieved should be 
+    up to 50, even if 100 friends are registered:
+
+    sceNpBasicGetFriendListEntryCount()
+    sceNpBasicGetFriendListEntry()
+    sceNpBasicGetFriendPresenceByIndex()
+    sceNpBasicGetFriendPresenceByNpId()
+  (TechnoteID:200809-09 https://ps3.scedev.net/technotes/view/801)
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following prolems have been fixed:
+
+  - When the maximum number of members who can join a lobby
+    is set to a value 65 or over, the lobby member IDs 
+    of some lobby members may be judged as being invalid.
+   (TechnoteID:200808-02   https://ps3.scedev.net/technotes/view/781)
+
+  - When obtaining a list of external room member data by calling 
+    sceNpMatching2GetRoomMemberDataExternalList(), the number of
+    elements on the list (roomMemberDataExternalNum), which is 
+    included in the event data of the reported event, is always 0.  
+   (TechnoteID:200809-05   https://ps3.scedev.net/technotes/view/797)
+
+  - When an error occurs and a session of the NP matching 2 service becomes 
+    disconnected, the session may remain on the server without being cleared 
+    as it should be.  This will enable you to obtain session information that 
+    should not normally be obtained. However, an attempt to join the session 
+    will fail.
+   (TechnoteID:200804-15   https://ps3.scedev.net/technotes/view/724)
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following prolems have been fixed:
+
+  - (B#42911)
+    When NULL is passed to the argument "path" of 
+    cellFsAllocateFileAreaWithoutZeroFill(), an exception occurs.
+
+  - (B#49341)
+    Although an incorrect value is passed to the argument "page_type" of 
+    cellFsSetIoBufferFromDefaultContainer(), CELL_FS_SUCCEEDED is 
+    returned incorrectly.
+
+  - (B#49344)
+    Although an incorrect value is passed to the argument "page_type" of 
+    cellFsSetIoBuffer(), CELL_FS_SUCCEEDED is returned incorrectly.
+
+  - (B#54533)
+    When NULL is passed to the argument "buf" of cellFsWriteWithOffset() 
+    for a file that resides on the system cache (SYS_DEV_HDD1) and the 
+    function is called, CELL_FS_SUCCEEDED is returned incorrectly.
+
+  - (B#58001)
+    The SDATA file on the system cache area (within /dev_hdd1) cannot be 
+    read properly.
+    (TechnoteID:200809-03 https://ps3.scedev.net/technotes/view/795)
+
+  - (B#58586)
+    When the callback function that is passed to the argument "func" of 
+    cellFsAioRead() or cellFsAioWrite() is called, the asynchronous I/O 
+    identifier may not be set to the argument "xid" of the callback 
+    function.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The following problem has been fixed:
+  - (B#54134)
+    When an address that causes an illegal access is passed to a system 
+    call that takes a process address as its argument, and the memory 
+    access trap feature is in the enabled state, a kernel panic occurs.
+   (TechnoteID:200807-09  https://ps3.scedev.net/technotes/view/761)
+
+- (B#54807)
+  In sys_memory_container_create(), when it was attempted to create a 
+  memory container and reached to the upper limit of the creatable memory
+  containers, the same ID as the memory container that was already 
+  allocated was returned for the newly created memory container. This 
+  problem has been fixed.
+  It now fails and returns EAGAIN when the upper limit of the creatable 
+  memory containers is exceeded.
+
+- (B#56251)
+  When sys_timer_disconnect_event_queue() returned ESRCH, the following 
+  calls of sys_timer_disconnect_event_queue() caused the kernel to 
+  deadlock. This problem has been fixed.
+
+- (B#56756)
+  sys_vm_get_statistics() could destroy the user memory. This problem has 
+  been fixed.
+ (TechnoteID:200807-14  https://ps3.scedev.net/technotes/view/766)
+
+- (B#57965)
+  While accessing a virtual memory area, if sys_vm_unmap() was 
+  executed for that area, the kernel got panicked. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+liblv2dbg
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#55381)
+    In sys_dbg_mat_get_condition(), when an address for which the memory
+    access trap is not set is specified on the heap area, an undefined 
+    value is returned where SYS_DBG_MAT_TRANSPARENT should have been 
+    returned instead.
+    (TechnoteID:200807-10  https://ps3.scedev.net/technotes/view/762)
+
+  - (B#56970)
+    When an area that is not 4KB aligned is spefied to the first argument 
+    "addr" of sys_dbg_mat_set_condition() and the function is executed, 
+    the specified area cannot be freed.
+    (TechnoteID:200807-21  https://ps3.scedev.net/technotes/view/773)
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#56312)
+  When cellFiberPpuInitialize() was called and then called again while 
+  the PPU fiber was in use, the behavior became undefined. This problem 
+  has been fixed.
+
+- (B#58064)
+  When finalize() was called in the cell::fiber::ppu::util::Runtime class,
+  because the PPU thread was not joined, the worker PPU thread leaked as a
+  zombie. This problem has been fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libsheap>
+- (B#57520) 
+  Depending on the heap size specified to cellSheapQueryFree(), the 
+  function could not be returned. This problem has been fixed.
+
+<libspurs>
+- (B#58176)
+  When the Tuner for PLAYSTATION(R)3 obtained the SPURS trace from 
+  the SPURS instance for which "false" was specified to exitIfNoWork 
+  at the initialization, an exception could occur with the SPU thread 
+  that was allocated to the SPURS when cellSpursFinalize() was called.
+
+<libspurs Task>
+- (B#58212)
+  When CellSpursLFQueue was initialized by CELL_SPURS_LFQUEUE_PPU2SPU and 
+  cellSpursLFQueuePush() was called from multiple PPU threads concurrently,
+  it asserted incorrectly. This problem has been fixed.
+
+<libspurs job>
+- (B#57574)
+  When the Adhoc Job Submit library that is provided as a sample program 
+  was executed, it could hang up, the job was not executed correctly or 
+  the same job was wrongly executed multiple times. This problem has been 
+  fixed. 
+  (TechnoteID:200808-09   https://ps3.scedev.net/technotes/view/788)
+
+- The following problem has been fixed:
+  - (B#57691)
+    In the SPURS job, a bug was found that performs the job with 
+    a stack size which is different from the one specified for 
+    the job descriptor. 
+   (TechnoteID:200808-08   https://ps3.scedev.net/technotes/view/787)
+
+- (B#57810)
+  When CELL_SPURS_JOB_TYPE_MEMORY_CHECK was specified to the member 
+  variable jobType of the job descriptor for which 0 was specified as the 
+  scratch buffer size, and then a job binary that was built with the 
+  linker option -mspurs-job-initialize was specified, it could destroy an 
+  irrelevant data area on the local storage when the job was executed. 
+  This problem has been fixed.
+
+- (B#57842)
+  A job with CELL_SPURS_JOB_TYPE_MEMORY_CHECK specified should reserve 
+  its buffer size 16 bytes larger than usual for embedding a check maker, 
+  however, when a pipeline stall occurred within the SPU, it reserved 32 
+  bytes larger than usual incorrectly. This problem has been fixed.
+
+- (B#56530)
+  When dynamically rewriting a command that was placed immediately after 
+  the GUARD command(within the same 128 byte line), an older command could
+  be executed. This problem has been fixed.
+
+<libswcache>
+- (B#55627)
+  The value of the directory size of DefaultCache was not as specified. 
+  This problem has been fixed.
+
+<libsync>
+- (B#58212)
+  When CellSyncLFQueue was initialized by CELL_SYNC_LFQUEUE_PPU2SPU and 
+  cellSyncLFQueuePush() was called from multiple PPU threads concurrently,
+  it asserted incorrectly. This problem has been fixed.
+
+- (B#56628)
+  An unnecessary macro CELL_SYNC_QUEUE_MINIMUM_BUFFER_SIZE has been 
+  deleted from cell\target\ppu(spu)\include\cell\sync\queue.h.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The following problem has been fixed:
+  - Depending on the memory state of the CellFont structure to be passed 
+    to cellFontOpenFontset()/cellFontOpenFontsetOnMemory(), a CellFont 
+    structure that does not properly handle fonts may be returned.
+   (TechnoteID:200808-03  https://ps3.scedev.net/technotes/view/782)
+
+- When the U+0000(NULL) code was passed to the following functions, an 
+  appropriate error value was not returned. This problem has been fixed.
+
+  cellFontGetCharGlyphMetrics()
+  cellFontGetCharGlyphMetricsVertical()
+  cellFontGenerateCharGlyph()
+  cellFontGenerateCharGlyphVertical()
+  cellFontGetRenderCharGlyphMetrics()
+  cellFontGetRenderCharGlyphMetricsVertical()
+  cellFontRenderCharGlyphImage()
+  cellFontRenderCharGlyphImageHorizontal()
+  cellFontRenderCharGlyphImageVertical()
+  (CELL_FONT_ERROR_NO_SUPPORT_CODE is now returned correctly.)
+
+- samples\sdk\font\fw_cubeWithFont\fonts_render.c 
+  - In cellFontRenderTrans_blendCast_ARGB8(), when the image width was an 
+    odd value, an extra memory access occurred. This problem has been 
+    fixed.
+
+- samples\sdk\font\fw_cubeWithFont\fonts_bitmap.c 
+  - In FontBitmapCharGlyph_Trans_blendCast_ARGB8(), when the surface 
+    coordinates argument "xf" or "yf" was specified as 0.0f, the drawing 
+    position was not placed correctly. This problem has been fixed.
+
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- The following problem has been fixed:
+  - (B#56227)
+    When converting a vertex shader file from nv to cgb format,
+    the instruction slot value was not passed through and was always 0.
+
+- The following problem has been fixed:
+  - (B#56228)
+    When user removed LevelA and/or LevelB headers from cgb file,
+    cellCgbRead() would have crashed because it did not have checks
+    for those cases.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- The following problem has been fixed:
+  - (B#32884)
+    When a Cg code that contains the structure array is compiled, the 
+    following error is output:
+    ShadowInst_Util.cg(62) : error C6016: Profile requires arrays with
+    non-constant indexes to be uniform
+
+- The following problem has been fixed:
+  - (B#55213)
+    When it performs compilation on the host, it may crash. To avoid this 
+    problem, a signal handler has been added.
+
+- The following problem has been fixed:
+  - (B#56016)
+    When creating a cgb shader, a memory leak may occur.
+
+- The following problem has been fixed:
+  - (B#57239)
+    The vertex program performs invalid dual-issue code scheduling and 
+    register allocation.
+    This problem can be identified because the RC register is displayed 
+    unexpectedly instead of the output register.
+
+----------------------------------------------------------------------
+PhysicsEffectsSamples
+----------------------------------------------------------------------
+- When creating a large mesh automatically, it now detects and discards 
+  an invalid surface. 
+  The calculation result of a rigid body simulation was not correct.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#58167)
+  In the following graphics samples, the calculating formula of a 
+  parameter to be passed to cellGcmSetViewport() was not correct. This
+  problem has been fixed as follows:
+
+  - Samples under samples\common\
+  - Samples under samples\sdk\graphics\
+  - Samples under samples\fw\
+
+  (Wrong) offset[1] = h - y + scale[1];
+  (Correct) offset[1] = y + h * 0.5f;
+ (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- (B#58199)
+  The samples\sdk\graphics\gcm\report_to_main_memory sample has been 
+  updated.
+  - Because the reference of time measurement data was not synchronized 
+    correctly, the time was not measured correctly. This problem has been 
+    fixed.
+  - The CPU-based Occlusion Culling algorism now uses information of the 
+    previous frame to make it efficient.
+  - It has been refactored entirely.
+
+- (B#58152)
+  The callback function of the default command buffer 
+  "gCellGcmCurrentContext->callback" is a function within the PRX module.
+  When the optimization option of the SNC "-Xnotocrestore=2" is specified,
+  the SNC generates a code that does not use the TOC register. This causes
+  a problem when the callback function of the default command buffer is 
+  called.
+  To avoid this problem, a callback wrapper function for the SNC 
+  cellGcmCallbackForSnc() has been added and the CELL_GCM_RESERVE() macro 
+  has been fixed.
+  
+- (B#39526)
+  In cellGcmSetDrawIndexArray(), when it was specified as count=0x7ff, the
+  size of CELL_GCM_RESERVED() was calculated 1 word larger than it should 
+  have been. This problem has been fixed.
+
+- (B#57061)
+  In cellGcmInlineTransfer(), When the Measure mode was used, the 
+  paddedSizeInWords variable was undefined and a compilation error 
+  occurred. This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm_pm
+----------------------------------------------------------------------
+- (B#58507)
+  The measurement result that was obtained using the 
+  CELL_GCM_PM_RCLK_CROP_SUBPACKET_COUNT event was not correct. This 
+  problem has been fixed.
+
+----------------------------------------------------------------------
+libcgutil
+----------------------------------------------------------------------
+- There was a misdescription regarding the following issue in the 
+  Reference document. It has been corrected according to the actual 
+  behavior. Therefore, the sce-cgc compiler itself will not be modified.
+
+  - (B#49558)
+    cellGcmCgGetParameterOrdinalNumber() returns an unexpected value.
+    In this release of sce-cgc, a correct value is not returned because it
+    is required to modify the sce-cgc compiler to fix this problem. 
+    It will be fixed in the future release.
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- (B#57969)
+  There was a problem that is caused by the endian in 
+  cellGcmSetVertexProgram, cellGcmSetVertexProgramLoad and 
+  cellGcmSetVertexProgramLoadSlot. The specifications have been clarified 
+  and the code has been fixed as shown below:  
+  - cellGcmSetVertexProgram should pass the little-endian ucode.
+  - cellGcmSetVertexProgramLoad should pass the big-endian ucode.
+  - cellGcmSetVertexProgramLoadSlot should pass the little-endian ucode.
+  For more information on this issue, please refer to the 
+  "Offline Library" section of the libgcm Overview document and the 
+  SCE-CGC Toolchain User's Guide document.
+
+----------------------------------------------------------------------
+C/C++ Standard Library
+----------------------------------------------------------------------
+- (B#54085) PPU
+  While a process that uses multiple threads was being terminated, if 
+  other thread used the stream, a DSI error occurred. This problem has 
+  been fixed so that it does not occur often.
+
+- (B#54561) PPU/SPU
+  When +-0.5 or +-2.5 and such was passed to the following functions of 
+  math.h, the value was rounded up to the nearest odd value. This problem has
+  been fixed so that when an integer+0.5 is passed to the 
+  argument, it is rounded to the nearest even value.
+  
+  PPU: llrint, lrint, nearbyint, rint, llrintf, lrintf, nearbyintf, rintf
+  SPU: llrint, lrint, nearbyint, rint
+  
+  Note that the following functions round the value passed to the 
+  argument toward 0 in the same way as the previous release:
+
+  llrintf, lrintf, nearbyintf, rintf
+
+- (B#55060) PPU/SPU
+  When the following specifiers were used as an output conversion 
+  specification of a function such as printf, the numbers of digits of other 
+  elements decreased depending on the value of element 0. This problem 
+  has been fixed.
+  
+  PPU: %vf, %vg, %va,
+  SPU: %vf, %vg, %va, %vLf, %vLg, %vLa
+
+- (B#58625) SPU
+  Depending on the order to include the errno.h and the sys/return_code.h
+  headers, the value of the following macros could have a different value.
+  This problem has been fixed.
+
+  EDOM, ERANGE, EILSEQ, EFPOS, EINTR
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - It is described in the libfios reference that 
+    op::getRequestedSize() and op::getFulfilledSize() return the same 
+    value when the processing is completed, however, it may return a 
+    different value.
+
+  - When scheduler::readDirectory() or scheduler::readDirectorySync() is 
+    executed for a directory, and if the directory is deleted and then a 
+    new directory is created with the same name as the deleted directory, 
+    scheduler::readDirectory() and scheduler::readDirectorySync() may not 
+    work correctly with the newly created directory.
+
+  - op::waitMultipleTimeout() does not timeout as specified. Please use 
+    op::waitMultipleDeadline() instead.
+
+  - When attempting to create a directory in an overlaid directory using 
+    scheduler::createDirectory() or scheduler::createDirectorySync(), the 
+    directory is not created in the expected path.
+
+----------------------------------------------------------------------
+BD Emulator
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#53128)
+    When an eject operation is performed while using the BD emulator, 
+    a DSI occurs on the Lv-2 OS.
+
+- The emulation accuracy for the dual layer Blu-ray Disc has been 
+  improved.
+
+----------------------------------------------------------------------
+libad
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - Although the http proxy server is set via the network settings of 
+    the system software, the library does not use the setting. 
+    The library itself is designed to support the proxy servers, however, 
+    the proxy server setting is not reflected because of this bug.
+
+    Game applications do not crash or access an invalid memory, but a user 
+    accessing Internet using the proxy server cannot receive dynamic in-game 
+    advertisement data that is sent from the server or send a viewer report 
+    to the server.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - The "SNC Release" build configuration for the simple_pitchshift sample 
+    contains a wrong output filename causing the built executable to fail.
+
+  - The simple_mp3XXXX samples do not free the MP3 stream memory 
+    that is used within the samples at the time of shutdown.
+
+  - When the CELL_MS_DEBUG_FLAG and an odd number of MP3 stream data are 
+    used together, an SPU thread exception may occur.
+
+  - The members inMasks and outMasks of the MS_DSP_INFO structure that stores 
+    the MultiStream DSP effect information are not initialized correctly. 
+
+  - When the last stream buffer is ATRAC decoded and the resulting size 
+    becomes smaller than the full ATRACK packet, a noise can be heard.
+
+  - An error occurs because the sub bus dependencies are not initialized 
+    correctly. 
+
+- cellMSCoreSetRouting() did not support the wet/dry input gains respectively. 
+  This has been supported. 
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#42862)
+    When reading a color value from a floating point frame buffer, 
+    the output from glReadPixels() is not clamped before it is converted 
+    to the integer format.
+
+  - (B#43819)
+    When glGenerateMipmapOES() is used while using the GL_BGRA texture, 
+    the GL error (GL_INVALID_ENUM) occurs.
+
+  - (B#49298)
+    When glGetIntegerv() is called with either of the following values 
+    specified to pname, it always returns [1,1] as the minimum and 
+    the maximum values:
+
+    GL_SMOOTH_POINT_SIZE_RANGE
+    GL_SMOOTH_LINE_WIDTH_RANGE
+    GL_ALIASED_POINT_SIZE_RANGE
+    GL_ALIASED_LINE_WIDTH_RANGE
+
+  - (B#55045)
+    An assert occurs when the first PSGL device created is deleted and 
+    then it is created for the second time.
+
+  - (B#55052)
+    When GL_SKIP_FIRST_VSYNC_SCE is disabled within the rendering loop, 
+    the PSGL may cause an RSX(TM) or a PPU deadlocks. 
+
+  - (B#55737)
+    When glBufferData() is called with the bugger size specified to 
+    0x7FFFFFFF, the PSGL does not report GL_OUT_OF_MEMORY correctly.
+
+  - (B#57158)
+    psglValidateStates() takes a mask value as an argument, but the mask 
+    is not functioning correctly. As a result, it always behaves in 
+    the same way as when PSGL_VALIDATE_ALL is specified. Also, 
+    it does not return an expected value.
+
+    - Expected value
+      A combination of bit masks of any states that were not validated 
+      because of the mask 
+
+    - Wrong value
+      A combination of bit masks that the PSGL validates because of 
+      the state change within the PSGL library
+
+  - (B#57665)
+    When glMapBuffer() is frequently called with its argument "access" 
+    specified with the GL_WRITE_ONLY flag, the GL_OUT_OF_MEMORY error occurs. 
+
+  - (B#57676)
+    The PSGL report is not generated correctly for freeing 
+    the graphics memory. 
+
+  - (B#52695)
+    When a non matrix type is specified to cgGetTypeSizes(), it returns 
+    a value that differs from what is described in the document.
+
+  - (B#48442)
+    When analyzing the cg using cgGetNextLeafParameter(), the CG_GLOBAL 
+    parameter cannot be found due to texDepth2D.
+
+  - (B#57295)
+    When requesting a tile memory by calling an API such as 
+    glBufferSurfaceSCE(), the title regions run out quicker than expected 
+    and the PSGL returns the GL_OUT_OF_MEMORY error.
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+- When libvoice was terminated abruptly, the resource was not freed. 
+  This problem has been fixed. 
+
+- The energy level always returned 0 for a non-microphone port. This problem 
+  has been fixed. 
+  CELLVOICE_ATTR_ENERGY_LEVEL now returns a correct value to all ports.
+
+- When setting or getting an attribute(CELLVOICE_ATTR_VAD), 
+  an appropriate error code was not returned. This problem has been fixed. 
+  CELLVOICE_ATTR_VAD can be now applied to only the microphone port and 
+  it now returns CELL_VOICE_ERROR_ARGUMENT_INVALID for other ports. 
+
+- When multiple IN_VOICE/OUT_VOICE ports are created more than libvoice 
+  can handle, an assert could occur. This problem has been fixed. 
+  It now returns CELL_VOICE_ERROR_RESOURCE_INSUFFICIENT when multiple 
+  IN_VOICE/OUT_VOICE ports are created more than libvoice can handle.
+
+- When writing into the microphone port, libvoice could hang up. 
+  This problem has been fixed. 
+
+- A pulse noise appeared at the begging of each sound fragment. 
+  This problem has been fixed. 
+
+- The VAD was too sensitive to the USB headset. 
+  This problem has been fixed. 
+

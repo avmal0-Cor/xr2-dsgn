@@ -1,0 +1,491 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 300.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following shows known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- For specifications regarding the Reference Tool, please refer to 
+  SDK_doc\jp(en)\pdf\development_basic\Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+<Check menu in the Game column>
+- Validation of a media or the file system itself cannot be performed 
+  from the Check menu in the Game column.
+
+  When submitting a master disc, make sure to verify the disc that no error
+  is present using the Disc Image Generator for PLAYSTATION(R)3 or
+  the Disc Image Checker for PLAYSTATION(R)3.
+
+- When performing the check from the Check menu in the Game column, 
+  if the number of result files exceeds approximately 80 to 100 depending 
+  on each check item, the file entries of the root directory in the USB 
+  mass storage run out and the subsequent check result files may no 
+  longer be stored.
+  In such case, move the check result files to another directory.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported.
+
+<Content Search Utility>
+- When file paths to the still image and animation thumbnails of content
+  are created using cellSearchPrepareFile() and the thumbnails are changed
+  from the system software, the changes will not be reflected unless
+  cellSearchPrepareFile() is executed again.
+
+<Game Update Utility>
+-  When the Reference Tool is booted having "Debugger mode" specified to
+   "Boot parameters" using the Administration Tool or the like,
+   the patch distribution feature of the Game Update utility cannot be
+   utilized.
+
+<Screenshot Utility>
+- The value set to the PNG chunk is stored when it is copied from the 
+  system software to an external media (Memory Stick(TM) or such), 
+  however, when the stored data is imported into the system software, the 
+  value is not reflected to the information screen of the system software.
+  This is a current limitation but to be supported in the future system 
+  software.
+
+<Background Download utility>
+- The following is a notice regarding the behavior of background downloads
+  when they are performed while a game application is running.
+
+  Although a background download will usually continue while a game
+  application is running, it will be stopped by any one of the following
+  conditions.
+
+    - The game application has created more than one socket
+    - There is more than one connection that uses the NP signaling utility
+    - The AV chat utility or the AV chat 2 utility is being used
+
+  The background download will resume once the condition that stopped it
+  no longer applies. 
+  Please do not create a game application that is dependent on the progress of
+  background downloads.
+
+  If new conditions are added to the above list of conditions that stop
+  background downloads given the addition of a new utility, or if there are
+  any changes regarding this issue, it will be announced in this technote.
+  (TechnoteID:200803-15  https://ps3.scedev.net/technotes/view/708)
+
+<Audio Configuration Utility>
+- In the multi microphone mode, cellAudioInRegisterDevice() is executed with
+  an audio input device type preferred by the application specified to the
+  argument deviceType in order to resister the audio input device into
+  the system.
+  When cellAudioInRegisterDevice() is called, the system software
+  automatically assign a device number regardless of whether a matching audio
+  input device is found or not. Whether the audio input device that has the
+  device number is available or not can be checked through polling using
+  cellMicIsAttached() of libmic or an event notification from libmic.
+
+  Since a device number is automatically assigned as described above,
+  when multiple USB devices(audio input device) of the type that the game
+  application prefers are connected to PlayStation(R)3, which device being
+  connected to a USB port has which device number cannot be uniquely
+  identified.
+  In such case, a user interface should be implemented to identify it such
+  as by displaying an indicator (volume) or the like on the screen.
+  Note that a mechanism that can explicitly assign a device number to
+  a specific device will be provided in the future release.
+
+<Web Browser Utility>
+(Added to Release 300.001)
+- The print feature from the Internet Browser has been made available, 
+  however, it does not work on the Web Browser utility.
+
+<Remote Play Utility>
+(Added to Release 300.001)
+- When connected to PlayStation(R)3 from a mobile phone that has the remote 
+  play feature, application boot is not supported due to the differences 
+  between the number of buttons, the image size and the resolution when 
+  compared to PSP(R).
+
+----------------------------------------------------------------------
+DECI3 CTRLP
+----------------------------------------------------------------------
+- Because the ProDG Target Manager for PLAYSTATION(R)3 of v250.1 or 
+  later uses CTRLP to establish a connection, when the ProDG 
+  Target Manager for PLAYSTATION(R)3 is connected with a target, 
+  the cell\host-common\samples\ctrlp sample program does not work. 
+  When the sample program is started up, it shows "dt_register error" 
+  and is terminated. 
+
+  To run the ctrlp sample, disconnect the ProDG Target Manager 
+  for PLAYSTATION(R)3.
+
+----------------------------------------------------------------------
+dt Command
+----------------------------------------------------------------------
+- When boot=dbg is set using a dtcparam that is provided in SDK192 or
+  before and the boot parameter is displayed using the dtcparam command
+  in SDK200 or later, boot=unknown is displayed. Reset boot=dbg using the
+  dtcparam command in SDK200 or later.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+- The sample value to be specified for the argument "samples" of
+  cellSurMixerSurBusAddData() must be multiples of 4.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- Only the playback of a MP4 file that is placed on the built-in HDD is 
+  guaranteed. Do not embed a source code that plays back other types of 
+  MP4 file in the application.
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace
+  on the program that is linked with libperf.a of SDK170 or before,
+  it does not work on the target system that is updated to SDK 180 and
+  later.
+  (applicable to libperf\ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+- (B#43808)
+  The Tuner for PLAYSTATION(R)3 cannot be used to measure the performance
+  of the sample program of libperf because the measurement module on
+  the target is utilized.
+
+- In DECR-1400, the external memory for tracing is not implemented. 
+  Therefore, the external memory cannot be specified to the trace 
+  buffer.
+  If it is specified, EPERM (0x80010009) is returned as an error at 
+  the time of call to cellPerfAddCBEpm().
+
+  Accordingly, the samples\sdk\libperf\ppu sample will not work.
+
+- (B#73661)
+  When the system call trace of Lv-2 is enabled together with the back trace 
+  feature and if a stack is placed in the VM area or the page fault 
+  notification area, an exception error occurs in the target program.
+  To avoid this problem, always place the stack in an area that is readable 
+  or set the back trace size to 0 to disable the back trace feature. 
+
+----------------------------------------------------------------------
+PlayStation(R)3 Sample Browser 
+----------------------------------------------------------------------
+(Added to Release 300.001)
+- When a search is performed using the search history within the 
+  "Search" view, the search text field becomes empty.
+
+(Added to Release 300.001)
+- When 20 or more sample nodes are moved in the "Contents" view, they 
+  cannot be returned back to the previous condition although the "Back" 
+  button is pressed.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- The maximum buffer size is better to be 128msec for each microphone.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical
+  character codes when vertical character displacement is performed
+  internally.
+  To avoid this problem, directly specify the vertical character codes
+  or use the single-byte () and {}.
+
+- The function for vertical writing does not support the proportional
+  vertical writing layout.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- The maximum size of a single DSP page is limited to 12 KB.
+  When using a custom DSP effect, the file size must not exceed 12KB.
+  Note that the maximum size of a single DSP page is defined by 
+  CELL_MS_DSP_PAGESIZE in mstream.h. 
+
+- cellMSSystemConfigureSysUtil() is to be deleted in the future.
+  Please migrate to cellMSSystemConfigureSysUtilEx(), that has been added
+  to SDK200.002, in the game application.
+
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz)
+  can cause noise.
+
+- When each sample is compiled using the SNC compiler, the sample data may not
+  be loaded correctly because the environment variable CELL_SDK is used in
+  the sample data path.
+  When the CELL_SDK is defined with a path other than "usr\local\cell",
+  it is required to alter the SAMPLE_CELL_SDK path in the sample source
+  according to the environment.
+  This problem does not occur when the GCC compiler is used.
+
+- The DSP effects .pic files can be found under 
+  cell\samples\sdk\sound\multistream\dspeffects\. However, for your
+  convenience, please find the PPU converted object files (*.ppu.o), 
+  located under cell\target\ppu\lib\pic\multistream\.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- As a part of the reduction in the memory usage of the system software
+  in SDK220, the amount of memory that is used by the file system by
+  default has been reduced.
+  Due to this change, the performance may be degraded slightly as
+  compared to SDK21x when data is written and read in finer units (16KB
+  or less). Also, when multiple file accesses are made from multiple
+  threads at the same time, the request processing time may slightly
+  increase.
+  Adding memory from the application using cellFsSetIoBuffer() or other 
+  APIs that are newly added could improve but also degrade the performance.
+  Be sure to check the performance before you introduce the method.
+
+- When the number of files to open at the same time in the CFS(SYS_DEV_HDD0) 
+  exceeds the upper limit, an error is returned from SDK220 onwards.
+  Please be noted that when you update SDK21x to SDK220, an error that
+  was not returned previously may be observed.
+
+- (B#47766)
+  A bug has been found that blocks the file operation permanently
+  after you specify 0 for the file size at calling cellFsTruncate()
+  or cellFsFtruncate() for the /dev_hdd0.
+  (TechnoteID:200804-07 https://ps3.scedev.net/technotes/view/716)
+
+(Added to Release 300.001)
+- (B#54524)
+  When cellFsWriteWithOffset() is called for /dev_hdd0 and a very large value 
+  (8EB or more, or 0x8000000000000000ULL or more in hexadecimal) is specified 
+  to the argument "offset", the kernel crashes.
+
+(Added to Release 300.001)
+- (B#74139)
+  When cellFsAllocateFileAreaWithoutZeroFill() is called for the system cache 
+  (/dev_hdd1) or the mount point for debug(/dev_ms, /dev_usb), if the following
+  conditions are all met, the system freezes.
+  (Condition1) The file size increases when the API is called.
+  (Condition2) The number of block size allocated to the file size is same 
+               before and after the API is called(no change in the block 
+               allocation).
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- To use Edge Zlib or Edge LZMA, you must download and install
+  PLAYSTATION(R)Edge 1.0.0.
+
+- Regardless of whether you are using NPDRM files or not, you must
+  link with libsysutil_np_stub.a.
+
+(Added to Release 300.001)
+- fios_parameters::sharedPath is now obsoleted. Don't set it true,
+  since it will be removed in the future SDK.
+
+(Added to Release 300.001)
+- When the --xml option is specified as shown below, the correct behavior of 
+  the PSARC tool is an archive file creation.
+
+  % psarc --xml=somewhere/fbspec.xml
+
+  However, the PSARC of SDK300 displays a message that shows the usage and the 
+  archive file is not be created.
+
+  This problem can be avoided by inserting the "create" command before the 
+  --xml option as shown below:
+
+  % psarc create --xml=somewhere/fbspec.xml
+  (TechnoteID:200909-09 https://ps3.scedev.net/technotes/view/953)
+
+- When creating an archive file, if the file to be archived has the
+  same name as the output file, and the -y or -overwrite option is
+  specified, the file to be archived is overwritten, and thus becomes
+  unrecoverable.
+
+- The psarc tool does not currently align encrypted files within
+  PSARC-MSELF archives at optimal offsets. This can result in slightly
+  reduced performance. A future version of the tool will fix the
+  problem.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- The PPU program whose stack size is set to 4KB by
+  SYS_PROCESS_PARAM can not be executed because a DSI occurs before
+  the main function is called.
+
+  [Workaround]
+  Please set the stack size of a Primary PPU Thread to 8 KB or more.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<SPU>
+- (B#20077) 
+  When the new_handler is not set in the C++ library, and failed to allocate
+  memory using "new", it enters into the infinite loop.
+
+- If the following compile options are specified when compiling
+  a program on the PPU side, many warnings may be output.
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When including the system header, include it outside extern "C" or
+  extern "C++".
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C".
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below:
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- When starting up a program in which <iostream> is included, the constructor
+  of iostream will call the new operator. When you want to avoid calling
+  "new" before executing the main function, do not use iostream.
+
+<PPU>
+- (B#16130)
+  When the ios_base class or a derived class(fstream, iostream,
+  stringstream, strstream, etc.) is used in the PRX, a DSI(data 
+  storage interrupt) may occur in the _Fac_tidy() function when 
+  the PPU program is ended.
+  To avoid this problem, perform either of the followings:
+    * Statically link libstdc++.a to the PRX
+    * Generate an object in the ELF and pass the pointer to it to the PRX 
+  Note that <iostream> cannot be used in the PRX.
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+- A correct value cannot be obtained for the following bundle states:
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_SURFACE_COLOR_TARGET
+  CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_POLYGON_STIPPLE_PATTERN
+
+- For the bundle state CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_COLOR_MASK, 
+  not only a value of cellGcmSetColorMask but also of cellGcmSetColorMaskMrt 
+  is obtained. 
+
+----------------------------------------------------------------------
+Toolchain / SPASM
+----------------------------------------------------------------------
+- (B#62636)
+  No warnings are output when a macro is invoked with the wrong number of 
+  arguments.
+  Behavior is undefined.
+
+- (B#62638)
+  Branch hints get scheduled too early to assemble.  It is possible for 
+  this case to occur with large programs.  The case can be improved by using 
+  the "-Or" (optimize registers) command line option.
+
+- (B#71003)
+  SPASM does not warn/error when comments are nested.
+
+----------------------------------------------------------------------
+Custom Theme
+----------------------------------------------------------------------
+- When the effect sound data is too long, the sound may be interrupted 
+  at a specific stage. Please refer to the "Custom Theme Specifications" 
+  document for more details.
+
+Notes:
+- The [BD/DVD Settings] menu in the [Settings] column has been renamed 
+  to [Video Settings] menu in the system software 250 and later. 
+  However, the icon ID that is used within the theme compiler should be 
+  specified with "icon_bdvd_setting" as before.
+
+- When a background in the RAF format is applied and the Internet browser 
+  is activated, the standard background is displayed for a moment. 
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- cellGcmSetZcull() cannot set the unbind feature for the Zcull area.
+  To set the unbind feature for the Zcull area, use cellGcmUnbindZcull().
+
+- When the tile setting is made for the overlapping areas in RSX(TM) using
+  cellGcmSetTile(), the address conversion feature of RSX(TM) will not work
+  correctly.
+
+  Accordingly, new functions cellGcmSetTileInfo() and cellGcmBindTile()
+  have been added to check whether the tile areas are overlapping.
+
+  Please use cellGcmSetTileInfo(), cellGcmBindTile() and cellGcmUnbindTile()
+  instead of cellGcmSetTile() and cellGcmSetInvalidateTile() for future
+  development.
+  cellGcmSetTile() and cellGcmSetInvalidateTile() will be removed in the
+  future release.
+
+----------------------------------------------------------------------
+Sample Program
+----------------------------------------------------------------------
+- In gcm samples, we have found an error setting of cellGcmSetViewport().
+  However, this does not affect the behavior of the samples.
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<FunctionOffload Tutorial(samples\tutorial\FunctionOffloadToSpu)>
+(Added to Release 300.001)
+- (B#76381)
+  In the samples\tutorial\FunctionOffloadToSpu\ppu_call_by_jdl sample, 
+  the use of the PPU function call feature from the asynchronous 
+  interface(xxxxx_async structure) is restricted with SDK300.
+
+----------------------------------------------------------------------
+BD Emulator
+----------------------------------------------------------------------
+- The read time may differ from the actual drive depending on 
+  the access pattern of the Blu-ray Disc drive. 
+
+----------------------------------------------------------------------
+librudp
+----------------------------------------------------------------------
+(Added to Release 300.001)
+- (B#76318)
+  When cellRudpEnd() is called from another thread while 
+  cellRudpProcessEvents() is being called, a deadlock occurs or it crashes.
+
+  The application should make sure that cellRudpProcessEvents() is not called 
+  from another thread when terminating the library by calling cellRudpEnd().
+  Note that this problem will be fixed in the future release.
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+(Added to Release 300.001)
+- When a system workload is being used, and libvoice is used at 
+  the same time as the recording utility, a bug causes the system software 
+  to preempt the SPU. This leads to a drastic decrease in SPU usage 
+  efficiency for the game application. When using a system workload, 
+  please avoid using libvoice and the recording utility at the same time. 
+  (TechnoteID:200909-08 https://ps3.scedev.net/technotes/view/952)
+
+(Added to Release 300.001)
+- cellVoiceGetPortInfo() may return incorrect port state for a 
+  microphone port when a microphone is unplugged and plugged in 
+  again.

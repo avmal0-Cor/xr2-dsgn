@@ -1,0 +1,233 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Toolchain 310.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PlayStation(R)3 
+Programmer Tool Toolchain package. 
+
+- Additions of new features and changes in Release 310.001
+- Bugs fixed in Release 310.001
+
+======================================================================
+New Additions and Changes in Release 310.001
+----------------------------------------------------------------------
+SN Systems Linker
+----------------------------------------------------------------------
+[Additions]
+(B#73814)
+- Add support for compressed PRX output.
+
+(B#65903,B#68320)
+- Add support for large numbers of sections in output ELF files.
+
+[Specification Changes]
+(B#77712)
+- Remove the --no-keep-memory command-line option.
+
+(B#76969)
+- Suppress DWARF .debug_info entries for discarded COMDAT functions.
+
+(B#76191)
+- Issue a warning message when command-line inputs are treated as 
+  scripts because their type could not be determined.
+
+(B#72624)
+- Modified the FSELF implementation to reflect the current specification.
+
+(B#72190)
+- Reduce memory usage for large output files.
+
+[Bugfixes]
+(B#79969)
+- Improve compatibility with GCC -mno-toc mode when dead stripping. 
+  In severe cases, this issue could cause failure to correctly relocate 
+  branch instructions.
+
+(B#72768)
+- Make all warning/error messages use the correct number of dashes when 
+  referring to command-line switches.
+
+(B#70351)
+- Correct a dead-stripping issue that could cause the weak definition 
+  for a symbol to be kept even if a global definition was present.
+
+(B#67211)
+- Fix a rare failure to de-duplicate objects referenced by both global 
+  and local symbols.
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+[Additions]
+<PPU/SPU>
+(B#74072)
+- Added option '--binary-symbol-prefix <prefix>' to spu-lv2-objcopy
+  and ppu-lv2-objcopy.
+
+(B#76503)
+- When using the compiler options -dp with -S or -save-temps, the 
+  compiler will include critical path information in the assembly 
+  output.
+
+<PPU>
+(B#75707)
+- Added -mno-toc=<num> option.
+  <num> should be one of '0', '1', '2'.
+  -mno-toc=2 behaves same as -mno-toc (no trailing integer) of the previous 
+  release.
+  -mno-toc=1 is similar to -mno-toc=2, but keeps TOC save/restore instructions 
+  around calls via function pointers.  This can be used to avoid the 
+  limitation of -mno-toc of the previous release.
+  -mno-toc=0 always emits nops and TOC save/restore instructions.
+  The default is -mno-toc=0.
+
+[Specification Changes]
+<PPU/SPU>
+(B#75017)
+- The specification of the integral constant expression of C++ has been 
+  extended to accept conversions to floating point types.
+  The conversions must be operands of further conversions to integral or 
+  enumeration types.
+  If -Wno-constant-expression is specified, warnings on such conversions 
+  are suppressed.
+  If -pedantic is specified, such conversions are treated as errors.
+
+<PPU>
+(B#77237,B#77972)
+- A part of the fix in SDK3.0.0 SDK package has been changed to be moved 
+  to the toolchain.
+  Now GCC defines CELL_GCM_SNC_NOTOCRESTORE_2 macro as a one of predefined 
+  macros when -mno-toc or -mno-toc=2 is specified.
+  To avoid the recurrence of the problem below, please do not combine 
+  SDK3.1.0 SDK package and SDK3.0.0 toolchain package.
+  - Problem with libgcm Caused by Enabling -mno-toc (GCC Option) for 
+    Application Build
+    (Technical Notes ID:200907-13  https://ps3.scedev.net/technotes/view/940)
+  - Problem on incorrect dead-stripping of PRX
+
+<SPU>
+(B#75162)
+- Improved the output of the linker option '--stack-analysis'.  When
+  generating a map file with '-Map map.txt', '--stack-analysis'
+  now prints a call graph with more details.
+
+(B#76503)
+- Improved performance and code size of generated SPU code by 
+  reducing unnecessary nops and register copies.
+
+(B#74827)
+- Objects linked with -mspurs-job were changed from job_start_gcc.o 
+  to job_start.o.
+
+(B#73739)
+- The algorithm for calculating the SPU GUID has been changed 
+  to reduce the possibility of the identifier collision.
+
+[Bugfixes]
+<PPU/SPU>
+(B#73429)
+- The following internal compiler error might occur:
+    internal compiler error: in int_mode_for_mode, at stor-layout.c:249
+  This problem has been fixed.
+
+(B#72731)
+- The C++ preprocessor might cause segmentation fault.
+  This problem has been fixed.
+
+(B#66343)
+- There was a problem in the behavior of qualified name lookup.
+  The following example did not cause the expected error.
+    namespace Y {
+      void f();
+    }
+    namespace A {
+      using namespace Y;
+    }
+    namespace B {
+      void f();
+    }
+    namespace AB {
+      using namespace A;
+      using namespace B;
+    }
+    int main()
+    {
+      AB::f(); // error: call of overloaded 'f()' is ambiguous
+               // candidates are: void B::f(), void Y::f()
+      return 0;
+    }
+  This problem has been fixed.
+
+(B#75704)
+- Assume derived class D inherits from multiple classes with virtual methods.
+  When casting a const reference of D to a non-const reference of 
+  one of D's base classes, the resulting reference pointed to an incorrect 
+  address.
+  This problem has been fixed.
+
+(B#76934)
+- Context sensitive keyword vector might not be recognized correctly 
+  when written as 'vector vector::xxx()'.
+  This problem has been fixed.
+
+(B#77076)
+- The following internal compiler error might occur:
+    internal compiler error: in import_export_decl, at cp/decl2.c:1727
+  This problem has been fixed.
+
+(B#77629)
+- When SDK was installed other than /usr/local/cell, -frepo option did not work.
+  This problem has been fixed.
+
+(B#76337)
+- Some error messages were not displayed with preceding "error:" strings.
+  This problem has been fixed.
+
+(B#77574)
+- An escape character (\) did not work for doubles quote in the response file 
+  of Windows.
+  This problem has been fixed.
+
+<PPU>
+(B#72249)
+- ppu-lv2-ar fails with the 'ru' command.  This has been fixed.
+
+(B#75167)
+- When the following code were optimized, x.f and y.f were allocated in the same register. 
+
+  struct S {
+    float f;
+    int i;
+  } __attribute__((d64_abi));
+
+  struct S g(struct S x, struct S y)
+  {
+    struct S z;
+    z.f = x.f + y.f;
+    z.i = x.i + y.i;
+    return z;
+  }
+
+  This problem has been fixed.
+
+(B#74690)
+- The following problem has been fixed:
+  - Bug in PPU VMX Intrinsic Function "vec_lvlx"
+    (Technical Notes ID:200908-02  https://ps3.scedev.net/technotes/view/944)
+
+(B#77070)
+- The following bug has been fixed.
+  - The compiler crashed when using -mno-toc and optimizing code
+    containing loops.
+
+(B#71022)
+- The following internal compiler error might occur in optimizing operations 
+  on vector types.
+  The problem has been fixed.
+  internal compiler error: in rs6000_split_lve, at config/rs6000/rs6000.c:2931
+
+<SPU>
+(B#74996)
+- The SPU linker crashed when using option --stack-analysis.
+  This has been fixed.

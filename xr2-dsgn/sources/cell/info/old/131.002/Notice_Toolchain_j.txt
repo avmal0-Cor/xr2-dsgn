@@ -1,0 +1,475 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 131.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にPLAYSTATION(R)3 Programmer Tool Toolchain に関する既知の不具合・
+制限事項を記述します。
+
+新規に更新した箇所にリリースバージョンを追加しましたので参照してください。
+
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+- Windows版コンパイラで生成できるプリコンパイルヘッダのサイズは、128M
+  バイトまでとなっています。
+
+- {}を使うベクタリテラルでは、(vector signed int){1}のように
+  {}内の要素を省略すると、仕様どおりに動作しない不具合があります。
+  (vector signed int){1,2,3,4}のように、すべての要素を指定してください。
+
+- クラスや構造体型に対して、__attribute__((align))の指定通りにオブジェクトが
+  アラインされない不具合があります。このような場合、クラスや構造体の最初の
+  メンバに対してアライン指定をしてください。問題によっては回避出来る場合が
+  あります。
+
+  不具合のみられるコード：
+    template<class T> class test
+    {
+        public:
+                T a[4];
+                T b[4];
+                T c[4];
+     };
+    typedef test<float> __attribute__ ((aligned (16))) align_test;
+
+   回避コード:
+     template<class T> class test
+     {
+         public:
+                  __attribute__ ((aligned (16))) T a[4];
+                  T b[4];
+                  T c[4];
+     };
+     typedef test<float> align_test;
+
+- C++用のヘッダファイルをインクルードするプログラムが存在するディレクトリ内に、
+  そのヘッダファイルと同名のサブディレクトリが存在した場合、
+  プログラムを以下のようにコンパイルを実施するとコンパイルエラーとなります。
+
+  "ppu-lv2-gcc -I .. -c testfile.cpp"
+
+- 例のコードのようなプログラムにおいて、変数bに正常な値が代入されない
+  ことがあります。
+
+  例)
+  {
+     namespace Units
+     {
+         const float a = 0.5f;
+         const float b= 1.0f / a;
+     }
+  }
+
+
+- 例のコードのようなプログラムをコンパイルすると、コンパイル内部エラーが
+  発生します。
+
+  例)
+  struct A
+  {
+    A(const A&);
+    A& operator=(const A&);
+    static void bar();
+    void baz() volatile;
+  };
+  void A::baz() volatile
+  {
+    bar();
+  }
+
+- __restrict属性のついたポインタ変数に代入されたアドレスに対するアクセス
+  については、その属性が有効になりません。
+
+- ppu-lv2-strip、もしくはspu-lv2-stripを使用した場合に、
+  以下のような警告がコンソール上へ出力されることがあります。
+
+    $ ppu-lv2-strip -s -o test_strip.elf test.elf
+    BFD: test.elf: warning: Empty loadable segment detected, 
+                            is this intentional ?
+    BFD: test_strip.elf: warning: allocated section `.tbss' not in segment
+
+  ただし、これらの警告が出力された場合でも、このコマンドによって生成される
+  ELFファイルの動作上の問題はありません。
+
+- リンカーオプションとして"-q"と"--gc-sections"を同時に利用した場合、
+  -qオプションは有効となりますが、--gc-sectionsオプションは無効となります。
+
+- 以下のように、ソースファイルがヘッダファイルをインクルードする
+  場合でヘッダのプリコンパイルを行った場合、-MMDオプションを指定
+  して依存ファイルを生成すると、ソースファイル内で最初に記述したヘッダ
+  ファイルのみ依存ファイルに書き込まれないという不具合があります。
+
+  なお、-MMDオプションはコンパイルと依存ファイルの生成を同時に行い、
+  また、makeは既存の依存ファイルを参照するため、一度正しくない依存
+  ファイルを生成してしまうと、以降makeが通らないという状態に陥る
+  可能性があります。この場合は、依存ファイルを破棄してからmakeを
+  行うようにしてください。
+
+    --- ソースファイル(test.cpp) ---
+    #include "test1.h"
+    #include "test2.h"
+    #include "test3.h"
+
+    --- コンパイル ---
+    $ ppu-lv2-g++ test1.h
+    $ ppu-lv2-g++ test2.h
+    $ ppu-lv2-g++ test3.h
+    $ ppu-lv2-g++ -MMD -c test.cpp
+
+(Release 131.002 追加)
+- ヘッダファイルを-MDまたは-MMDオプションを指定してプリコンパイルすると、
+  生成される依存ファイルが.oファイルのものになるという不具合があります。
+  このような場合は、例のように出力ファイルを明示してプリコンパイルして
+  ください。
+
+  例: ppu-lv2-gcc -MMD test.h -o test.h.gch
+
+- vmx2spu.hまたはspu2vmx.hをC言語のプログラムで使用すると、エラーが
+  表示されてしまう不具合があります。C++言語のプログラムで使用するように
+  してください。
+
+- (vector signed int)(x)のように()を使うベクタリテラルで、定数及び
+  定数式以外(変数など)は使用できませんが、使用した場合にはエラーが
+  表示されないという不具合があります。
+
+
+- Windows環境において、例のコードのようなプログラムを-frepoオプション指定で
+  コンパイルしリンクを行うと、リンクエラーが発生する不具合があります。
+
+  例) 
+      template<typename T>
+         T Max(T a, T b) 
+                { 
+                  return a > b ? a : b;
+                }
+
+      int main(){
+                  char cbuf;
+                  cbuf = Max('1', '2');
+                }
+
+
+<PPU側>
+- ベクタ型メンバ1個のみの構造体を返り値とする関数は、返り値をVR3レジスタで
+  返さず、R3レジスタに返り値の番地を格納します。
+
+- __lwbrx, __stwcx関数を利用するプログラムを"-Wstrict-aliasing=2"の
+  コンパイラオプションをつけてコンパイルすると、以下の警告が出力されます。
+
+  warning: type-punning to incomplete type might break strict-aliasing rules
+
+- 例のコードのようなプログラムをコンパイルすると、コンパイラ内部エラーが
+  発生します。
+
+  例)
+  struct A
+  {
+    A(void*);
+    ~A();
+  };
+
+  void foo(const int i, bool b)
+  {
+    b ? A(0) : i;
+  }
+
+- 例のコードのようなプログラムをコンパイルした場合、警告がコンソール上へ
+  出力されることがあります。
+
+  例)
+  std::vector<bool> myArray
+  std::vector<bool>::iterator it = myArray.begin()
+
+- 例のコードのような2つのプログラムをコンパイルした場合、それぞれの
+  生成されるコードが異なります。
+
+  例)
+  --- program1 -----
+   A foo;
+   B bar;
+   foo = *reinterpret_cast<A *>(&bar);
+  --- program2 ----
+   A foo;
+   B bar;
+   *reinterpret_cast<B *>(&foo) = bar;
+
+- 例のコードのようなプログラムを実行させると、throwで例外エラーが発生し、
+  プログラムが停止します。
+
+  例)
+  void test()
+  {
+      char s[16];
+      throw s;
+  }
+
+  int main()
+  {
+      try {
+          test();
+      }
+      catch(char *s){
+          throw;
+      }
+      return 0;
+  }
+
+- 例のコードのようなプログラムを、-O2以上の最適化オプションをつけて
+  コンパイルした結果が、gcc3.4でコンパイルした結果に比べて最適化されません。
+
+  例)
+  typedef union
+  {
+    float f[4];
+    vector float vf;
+  }
+  Union128;
+  vector float
+  make_vector_from_float (float x, float y, float z, float w)
+  {
+    Union128 u;
+
+    u.f[0] = x;
+    u.f[1] = y;
+    u.f[2] = z;
+    u.f[3] = w;
+    return u.vf;
+  }
+
+- 例のコードのようなプログラムをコンパイルした場合、const変数bが.data
+  セクションではなく、.bssセクションに置かれることがあります。
+
+  例)
+  const int a = 2;
+  const int b = a+a;
+
+- 以下のように__threadを利用したプログラムをコンパイルした場合、
+  コンパイルエラーとなります。
+
+  class rage{
+     static int s_ThreadPrefix;
+  };
+  __thread int rage::s_ThreadPrefix = 1;
+
+- スペース文字を含む名称のフォルダ内でレスポンスファイルを利用したプログラム
+  のリンクは行えません。
+
+- プリコンパイルヘッダを作成するために、altivec.hを使うヘッダファイルを
+  "-x c-header"をつけてコンパイルした場合、それを利用するプログラムの
+  コンパイルでエラーとなる場合があります。
+
+- 空ループ文についての最適化が十分ではありません。
+
+- 例のようなコメントを記述したプログラムをコンパイルすると、警告が
+  コンソール上へ出力されます。
+
+  例)
+  //int blahblah;\
+  //int behbeh;
+
+- Windows環境で-MMDオプションを使用してコンパイルする時に、-Iオプションで
+  システムヘッダへのパスを指定すると、出力される.dファイル中に、そのパス
+  に存在するヘッダファイル名が含まれます。
+
+- システムヘッダ"spu_internals.h"をインクルードしたプログラムを
+  そのヘッダファイルへのパスを-Iオプションで指定してコンパイルした場合、
+  警告がコンソール上へ出力されます。
+
+  C:\support>spu-lv2-gcc -Wall -I%SCE_PS3_ROOT%/target/spu/include -c main.cpp
+  C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: specifying
+  ?vector types with __attribute__ ((mode)) is de precated
+  C:/usr/local/cell/096/target/spu/include/spu_internals.h:63: warning: use __attr
+  ibute__ ((vector_size)) instead
+
+- 構造体の別名宣言に__may_alias__属性を利用するプログラムをコンパイルすると
+  コンパイル内部エラーが発生します。
+
+  typedef struct
+  {
+      char a;
+      char b; 
+      char c;
+      char d;
+  } test;
+  typedef test __attribute__((__may_alias__)) test_a;
+
+- 以下のようにキャストした場合、その処理が正しく行われません。
+
+  dist += a->b[0] * (*reinterpret_cast< const vec_t * >
+  ( reinterpret_cast< const byte * >(arg)+ c->d[0] ));
+
+- 例のコードのようなプログラムを最適化してコンパイルしたにも関わらず、
+  不要な命令が出力される場合があります。
+
+  例)
+  -- プログラム ---
+     while(size>0){
+         *(dst++) = *(src++);
+         size--;
+     }
+  -- アセンブリコード ---
+     ld 11,0(4)
+     addi 0,3,8
+     addi 9,4,8
+     std 11,0(3)
+     rldicl 3,0,0,32 <- 不要
+     rldicl 4,9,0,32 <- 不要
+     bdnz .L4
+     blr"
+
+- <iostream>をインクルードしたプログラムにおいて、C/C++標準ライブラリは
+  _initializeでnewを利用します。
+
+- 例のように、template内で__may_alias__属性を利用するプログラムを
+  コンパイルした場合、コンパイラ内部エラーが発生します。
+
+  例)
+  template <typename T>
+  void f() 
+  { 
+    typedef T __attribute__((__may_alias__)) A;
+  }
+
+- コンパイラがプログラム最適化したにも関わらず不要なclrldi命令を
+  出力することがあります。
+
+- 例のコードのようなプログラムをコンパイルした場合に、警告がコンソール上へ
+  出力されます。
+
+  例)
+  struct Y { static int i; };
+
+  template <typename T> class X {
+      X () { Y::i; };
+  };
+  template class X<int>;
+
+  class Z {
+      Z () { Y::i; };
+  };
+
+- プログラムコンパイル時に-Iオプションで以下のように定義されるPPU_INCDIRS
+  を指定すると、コンパイルエラーとなります。
+
+  PPU_INCDIRS += myproject/include/
+
+- VMX命令を含むプログラムに対するコンパイラの最適化が十分ではない
+  という不具合があります。このためループ文の内部処理などに不要命令などが
+  残されることがあります。このような性能上の問題になるときは、ループ文の
+  処理をasm文で記述してください。
+
+- PPUプログラムでは、TLS領域に割り当てた変数へのalign指定を行っても
+  アラインメントが行われないことがあります。これはCell OS Lv-2の仕様です。
+
+- アセンブリ言語のPPUプログラムから他の関数を呼び出す際に、TOC pointer(r2)の
+  値を正しく設定するには、以下の注意事項があります。
+
+  (1) bl命令の後に必ずnop命令を置いてください。
+      こうすることで、呼び出される関数が異なるTOC pointerを使用する場合、
+      リンカがlinkage codeを生成し、nopを適切な命令で、置き換えることが
+      出来ます。
+      例:
+                 bl              .foo
+                 nop
+
+  (2) アセンブラソースファイル中に必ず".toc"セクションを含めてください。
+      (空でもかまいません)。これは、現状のリンカの制限事項となります。
+     例: ファイルの先頭に以下を置く
+           .section        ".toc","aw"
+           .section        ".text"
+
+<SPU側>
+- 例のコードのようなプログラムをコンパイルすると、
+  "type mismatch in conditional expression."というエラーが出力されます。
+
+  例)
+  vec_float4 test(int n)
+  {
+     return ((n == 0) ? (vec_float4)(0) : spu_shuffle((vec_float4)(0), 
+                                     (vec_float4)(0), (vec_uchar16)(0)));
+  }
+
+- SPUコンパイラは、16命令続けてロードもしくはストア命令が出力される場合、
+  lnop命令を挿入します。
+  lnop命令ではなくhbrを挿入するように仕様変更します。
+
+- 例のコードのように、__always_inline__の属性がついた関数を含むプログラムを
+  コンパイルした場合、コンパイルエラーとなります。
+
+  例)
+  __attribute__((__always_inline__)) uint32_t foo(Counter *pCount)
+  {
+    :
+    :
+  }
+
+- -fPICオプションをつけてコンパイルしたプログラムにおいて
+  構造体内で宣言されたメンバのアドレスが正しく設定されない場合があります。
+
+- 以下のようにインラインアセンブラなどでlqd命令のオフセットが16の倍数以外の
+  値を指定した場合に、コンパイラは、警告もしくはエラーを出力しません。
+
+  lqd register,8(register)
+
+- オプション-fpicを指定して位置独立(PIC)コードを生成した場合、C++の
+  仮想関数は使用できません。
+
+- 「Cell OS Lv-2 SPU C/C++ 言語拡張」の7章によれば、式中のオペランドが
+  double型で非正規化数(denormal number)の場合には、0.0または-0.0とみなさ
+  なければなりません。しかし、現状のコンパイラでは最適化の結果がこれに
+  従わない場合があるという不具合があります。
+
+- -funroll-loopsオプションと-frerun-cse-before-schedオプションを同時に
+  指定すると、誤ったコードが生成される不具合があります。
+  -frerun-cse-before-schedオプションは指定しないでください。
+
+- brsl命令が含まれているオブジェクトやelfをspu-lv2-objdumpで逆アセンブルした
+  場合に"brsl rt, s18"で示すs18は$pcへの加算値ではなく、s18と$pcのアドレスを
+  加算したアドレスを表示します。
+
+- spu-lv2-gccおよびspu-lv2-g++で、最適化オプション-O1以上を使用すると、
+  spu_roundfおよびsi_frds組み込み関数の引数がコンパイル時に計算できる場合に、
+  指定された丸めモード(デフォルトは最近値)で計算されず、切り捨てて
+  計算されてしまいます。
+
+  例)
+    vec_float f(void) {
+      vec_float4 v1=spu_roundtf(((vec_double2){
+        0,12345678.9
+      }));
+    }
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+<Windows/Linux共通>
+- ユーザが直接ppu-lv2-gdb/spu-lv2-gdbを起動する場合、スクリプト記述の 
+  問題でinfo-spursの引数が渡せないという不具合があります。 
+  gdbinit.ppuもしくはgdbinit.spuを下記のように書き換えてからお使い下さい。
+
+  1."define info-spurs"を検索 
+  2.検索した行の次の行に記述されている"monitor spursinfo \$arg0"を
+    "monitor spursinfo $arg0"に書き換える
+
+- PPUスレッドが複数あるプログラムをbedbgでデバッグしたときにGDBに 
+  "watch dog timeout" が表示されることがあるという不具合があります。
+
+- GDBのinfo-spursコマンド実行時、spurs_kernel.elfおよびstripされたelfの
+  ファイル情報は、常に "File not found" と表示されるという不具合があります。
+
+- bedbg -cオプションを用いて起動したPPUプログラムにて、繰り返し
+  SPUスレッドを生成する処理を行っていた場合、SPUスレッドの実行が
+  再開されない不具合があります。
+
+- 実行時の引数（arg/env）を渡す文字列に空文字("")を含む場合、
+  以降のarg/envの使用でarg/envを正しく認識できないという不具合が
+  あります。
+
+<Windows>
+- bedbgでRaw SPUをデバッグするための4つのコマンド（rawspustoplist,
+  rawspuid, rawspuinfo, lsaddr）が使用できないという不具合があります。
+  詳細は、技術情報200610-22を参照してください。
+  https://ps3.scedev.net/technotes/view/345
+

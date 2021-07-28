@@ -1,0 +1,364 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 150.004
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are the new features and fixed bugs of PLAYSTATION(R)3 
+Programmer Tool Toolchain package. 
+
+- Release 150.004 の変更点
+- Release 150.004 の不具合修正
+
+======================================================================
+Release 150.004 の変更点
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+- リンカオプション"-q"と"--gc-sections"を同時に指定できるように変更し
+  ました。
+  これにより、以下の制限事項が解除となります。
+  - リンカーオプションとして"-q"と"--gc-sections"を同時に利用した場合、
+    -qオプションは有効となりますが、--gc-sectionsオプションは無効とな
+    ります。
+
+<PPU側>
+- ベクタ型メンバ1個のみを持つ構造体に対して、__attribute__((vecreturn))
+  を指定すると、その構造体を返り値として使用したときに、VMXレジスタで
+  返す機能を追加しました。
+
+  例)
+  struct return_in_vec0 {
+    vector float f;
+  } __attribute__ ((vecreturn));
+
+  なお、この変更により以下の不具合を修正しました。
+  - ベクタ型メンバ1個のみの構造体を返り値とする関数は、返り値をVR3
+    レジスタで返さず、R3レジスタに返り値の番地を格納します。
+
+- ppu_intrinsics.hの組み込み関数__mftbの実装を、Cellプロセッサの
+  エラッタを考慮して変更しました。
+
+<SPU側>
+- inline宣言されていない関数に__attribute__((__always_inline__))を指定
+  した場合、-fpicオプションをつけてコンパイルすると、
+  "sorry, unimplemented: inlining failed in call to ..." というメッセー
+  ジが表示されていましたが、"you might need to add the inline keyword"
+  という警告を表示するように変更しました。
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+- GDB上の以下のコマンドより、同期オブジェクト情報が取得できるように
+  なりました。
+
+  info-mutex
+  info-lwmutex
+  info-cond
+  info-rwlock
+  info-semaphore
+  info-eventqueue
+
+  これに伴い、info-allコマンド実行時に、これらの同期オブジェクト情報も
+  表示されるようになりました。
+
+
+- DABR（データアクセスブレークポイント）の設定が行えるようになりました。
+  これにより、GDB上から、メモリアクセスに対するブレークポイントを設定
+  することが出来ます。
+
+======================================================================
+Release 150.004 の不具合修正
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+- プリコンパイルヘッダを使用してコンパイルを行う際に、-MMDオプションを
+  指定して依存ファイルを生成すると、プリコンパイルヘッダに対応する
+  ヘッダのファイル名が依存ファイルに書き込まれないという不具合がありま
+  した。本リリースでは、プリコンパイルヘッダのファイル名が依存ファイル
+  に書き込まれるように修正しました。
+  なお、現状のtoolchainでプリコンパイルヘッダが使用されるのは、最初に
+  指定したヘッダファイルに対してのみとなります。
+
+  例)
+  --- ソースファイル(test.cpp) ---
+  #include "test1.h"
+  #include "test2.h"
+  #include "test3.h"
+
+  --- コンパイル ---
+  $ ppu-lv2-g++ test1.h
+  $ ppu-lv2-g++ test2.h
+  $ ppu-lv2-g++ test3.h
+  $ ppu-lv2-g++ -MMD -c test.cpp
+
+  --- 以前のリリースで生成されるtest.d ---
+  test.o: test.cpp test2.h test3.h
+
+  --- 本リリースで生成されるtest.d ---
+  test.o: test.cpp test1.h.gch test2.h test3.h
+
+- C++においてテンプレートで定義されたクラスメンバに対して
+  __attribute__(( align )) を指定した場合に、コンパイラ内部エラーで
+  異常終了する不具合を修正しました。
+
+- {}を使うベクタリテラルの宣言において、{}内の要素を省略した場合の解釈
+  の仕方がC/C++言語拡張の定義とは異なっている不具合を修正しました。
+
+  以前のコンパイラでは、
+
+    vector unsigned int v4 = (vector unsigned int){0x01234567};
+
+  という文は、不具合により
+
+    vector unsigned int v4 = (vector unsigned int){0x01234567,
+                                                   0x01234567,
+                                                   0x01234567,
+                                                   0x01234567};
+
+  と等価だとみなしていました。
+
+  本リリースより、上記初期化構文は仕様書の定義通りに
+
+    vector unsigned int v4 = (vector unsigned int){0x01234567,
+                                                   0x0,
+                                                   0x0,
+                                                   0x0};
+
+  と解釈します。
+
+- C++プログラムでテンプレートクラス中にfriend関数を含むものをコンパイ
+  ルすると、コンパイラ内部エラーが発生することがあるという不具合を
+  修正しました。
+
+- 例のコードのようなプログラムをコンパイルした場合、const float変数bが
+  .dataセクションまたは.rodataセクションではなく、.bssセクションに置か
+  れることがある不具合を修正しました。
+
+  例)
+  const float a = 2.0f;
+  const float b = a + a;
+
+  但し、const vector変数に関しては既知の不具合があります。
+
+- 以下の不具合を修正しました。
+  - C++用のヘッダファイルをインクルードするプログラムが存在する
+    ディレクトリ内に、そのヘッダファイルと同名のサブディレクトリが
+    存在した場合、プログラムを以下のようにコンパイルを実施すると
+    コンパイルエラーとなります。
+
+    "ppu-lv2-gcc -I .. -c testfile.cpp"
+
+  - 例のコードのようなプログラムにおいて、変数bに正常な値が代入され
+    ないことがあります。
+
+    例)
+    {
+       namespace Units
+       {
+           const float a = 0.5f;
+           const float b= 1.0f / a;
+       }
+    }
+
+  - Windows版コンパイラで生成できるプリコンパイルヘッダのサイズは、
+    128Mバイトまでとなっています。
+
+  - クラスや構造体型に対して、__attribute__((align))の指定通りに
+    オブジェクトがアラインされない不具合があります。このような場合、
+    クラスや構造体の最初のメンバに対してアライン指定をしてください。
+    問題によっては回避出来る場合があります。
+
+    不具合のみられるコード：
+      template<class T> class test
+      {
+          public:
+                  T a[4];
+                  T b[4];
+                  T c[4];
+      };
+      typedef test<float> __attribute__ ((aligned (16))) align_test;
+
+     回避コード:
+       template<class T> class test
+       {
+           public:
+                    __attribute__ ((aligned (16))) T a[4];
+                    T b[4];
+                    T c[4];
+       };
+       typedef test<float> align_test;
+
+  - __restrict属性のついたポインタ変数に代入されたアドレスに対する
+    アクセスについては、その属性が有効になりません。
+
+<PPU側>
+- オプション"-fprefetch-loop-arrays"で、PPUのキャッシュブロックサイズ
+  (128バイト)を考慮するように修正しました。
+
+- リンク時に "defined in discarded section" というメッセージが出力され
+  ることがあるという不具合を修正しました。
+
+- ppu_intrinsics.hの以下の組み込み関数を使用すると警告が表示されるとい
+  う不具合を修正しました。
+
+    __lhbrx, __lwbrx, __ldbrx, __sthbrx, __stwbrx,
+    __stdbrx, __lwarx, __ldarx, __stwcx, __stdcx
+
+- リンカのアルゴリズムを修正してリンク時間の削減を行いました。
+
+- 以下のPPUの組み込み関数およびマクロを修正しました。
+
+  (1) ドキュメントに適合するように、
+      引数と戻り値をdouble型からfloatに変更
+
+      __fmadds, __fmsubs, __fnmadds, __fnmsubs, __fres, __fsqrts
+
+  (2) ドキュメントになく、PPUには実装されていない命令について、
+      組み込み関数定義を削除
+
+      __fre
+
+- ppu_intrinsics.hの組み込み関数 __setflm のレジスタ制約条件の誤りを
+  修正しました。
+
+- "--gc-sections"を指定した場合に、関数ディスクリプタが削除されないと
+  いう不具合を修正しました。
+
+- 関数ポインタ経由で関数を呼び出した場合に、コンパイラ内部エラーが発生
+  する場合があるという不具合を修正しました。
+
+- 以下の不具合を修正しました。
+  - __lwbrx, __stwcx関数を利用するプログラムを"-Wstrict-aliasing=2"の
+    コンパイラオプションをつけてコンパイルすると、以下の警告が出力
+    されます。
+    warning: type-punning to incomplete type might break strict-aliasing rules
+
+  - 例のコードのようなプログラムをコンパイルすると、コンパイラ内部エラー
+    が発生します。
+
+    例)
+    struct A
+    {
+      A(void*);
+      ~A();
+    };
+
+    void foo(const int i, bool b)
+    {
+      b ? A(0) : i;
+    }
+
+  - ppu-lv2-strip、もしくはspu-lv2-stripを使用した場合に、
+    以下のような警告がコンソール上へ出力されることがあります。
+
+      $ ppu-lv2-strip -s -o test_strip.elf test.elf
+      BFD: test.elf: warning: Empty loadable segment detected, 
+                              is this intentional ?
+      BFD: test_strip.elf: warning:
+                              allocated section `.tbss' not in segment
+
+    ただし、これらの警告が出力された場合でも、このコマンドによって
+    生成されるELFファイルの動作上の問題はありません。
+
+  - 例のコードのようなプログラムを実行させると、throwで例外エラーが
+    発生し、プログラムが停止します。
+
+    例)
+    void test()
+    {
+        char s[16];
+        throw s;
+    }
+
+    int main()
+    {
+        try {
+            test();
+        }
+        catch(char *s){
+            throw;
+        }
+        return 0;
+    }
+
+<SPU側>
+- gcc.infoファイルに、インラインアセンブラで使用する、SPUに特有の
+  Machine Constraintsの記述を追加しました。
+
+- if(flag) spu_ienable(); に対してコンパイラが生成するコードが、より
+  最適化されるように修正しました。
+
+- -fstack-checkオプションを指定した場合、スタックチェックのコードが
+  二重に出力されるという不具合を修正しました。
+
+- ?:演算子でspu_insert,spu_shuffle組み込み関数を使用すると、
+  "type mismatch in conditional expression" というメッセージが誤って
+  出力されるという不具合を修正しました。
+
+  例)
+  vec_float4 test(int n)
+  {
+     return ((n == 0) ? (vec_float4)(0) :
+                        spu_shuffle((vec_float4)(0),
+                                    (vec_float4)(0),
+                                    (vec_uchar16)(0)
+                        )
+            );
+  }
+
+- "creating run-time relocation" という警告を出すべき場合に出ないこと
+  があるという不具合を修正しました。
+
+- 以下のようにインラインアセンブラなどでlqd命令のオフセットが16の倍数
+  以外の値を指定した場合に、警告を出力するように修正しました。
+
+    lqd register,8(register)
+
+- __attribute__ ((__mode(TI))) を指定した変数に対する演算を行うと、
+  コンパイラ内部エラーが発生する場合があるという不具合を修正しました。
+
+- SPUコンパイラは、16命令続けてロードもしくはストア命令が出力される場合、
+  lnop命令を挿入していましたが、hbrp命令を挿入するように修正しました。
+
+- 以下の不具合を修正しました。
+  - -fPICオプションをつけてコンパイルしたプログラムにおいて構造体内で
+    宣言されたメンバのアドレスが正しく設定されない場合があります。
+
+----------------------------------------------------------------------
+GDB
+----------------------------------------------------------------------
+<Windows/Linux共通>
+- 以下の不具合を修正しました。
+  - ユーザが直接ppu-lv2-gdb/spu-lv2-gdbを起動する場合、スクリプト
+    記述の 問題でinfo-spursの引数が渡せないという不具合があります。
+    gdbinit.ppuもしくはgdbinit.spuを下記のように書き換えてから
+    お使い下さい。
+
+    1."define info-spurs"を検索 
+    2.検索した行の次の行に記述されている"monitor spursinfo \$arg0"を
+      "monitor spursinfo $arg0"に書き換える
+
+  - PPUスレッドが複数あるプログラムをbedbgでデバッグしたときにGDBに 
+    "watch dog timeout" が表示されることがあるという不具合があります。
+
+  - GDBのinfo-spursコマンド実行時、spurs_kernel.elfおよびstripされた
+    elfのファイル情報は、常に "File not found" と表示されるという
+    不具合があります。
+
+  - bedbg -cオプションを用いて起動したPPUプログラムにて、繰り返し
+    SPUスレッドを生成する処理を行っていた場合、SPUスレッドの実行が
+    再開されない不具合があります。
+
+  - 実行時の引数（arg/env）を渡す文字列に空文字("")を含む場合、
+    以降のarg/envの使用でarg/envを正しく認識できないという不具合が
+    あります。
+
+<Windows>
+- 以下の不具合を修正しました。
+  - bedbgでRaw SPUをデバッグするための4つのコマンド（rawspustoplist,
+    rawspuid, rawspuinfo, lsaddr）が使用できないという不具合があります。
+    詳細は、技術情報200610-22を参照してください。
+    https://ps3.scedev.net/technotes/view/345
+

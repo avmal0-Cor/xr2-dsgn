@@ -1,0 +1,390 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 181.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+  - FOOT SW
+
+  The wireless feature (Bluetooth(R)/Wireless LAN) can only be used 
+  on Reference Tools DEH-R1040 and later, which have the necessary 
+  authorization tools.
+  The antenna for the wireless feature is bundled with DEH-1040 and 
+  later Reference Tools. Do not attempt to connect DEH-R1030 and 
+  earlier Reference Tools.
+
+- For specifications regarding the Reference Tool, please refer to 
+  info/Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+System Software(GUI) 
+----------------------------------------------------------------------
+- Since a change has been made so that a process termination wait occurs 
+  when the power off processing is performed in the case of when booted 
+  from the debugger, with some of the samples that do not support 
+  the termination processing of game applications, a timeout occurs 
+  and the system is forcibly terminated with a warning sound when 
+  the power off processing is performed in the case of when booted from 
+  the debugger. 
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<Web Browser Utility>
+- Files cannot be downloaded with the downloader. 
+
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported. 
+
+< Photo Utility >
+- Only the "export function" to the photo column of the system software 
+  is supported. 
+  "import function" and "decode function" from the photo column of 
+  the system software will be supported in the future. 
+
+- When cellPhotoExportFinalize() is executed immediately after 
+  a photo file is registered in the system software by executing 
+  cellPhotoExportFromFile(), the application may hang up. 
+
+< Save Data Utility >
+(Added in Version 181.001)
+- The save data utility that runs on the SDK180 system software returns 
+  an incorrect error value instead of a specific value that should have been 
+  returned. 
+
+  The applicable functions are as shown below:
+  cellSaveDataListSave2()
+  cellSaveDataListLoad2()
+  cellSaveDataFixedSave2()
+  cellSaveDataFixedLoad2()
+  cellSaveDataAutoSave2()
+  cellSaveDataAutoLoad2()
+  cellSaveDataListAutoSave()
+  cellSaveDataListAutoLoad()
+
+< Message Dialog Utility >
+(Added in Version 181.001)
+- When the progress bar related API of the message dialog utility 
+  is called, the processing may be blocked for a long time.
+
+< Subdisplay Utility >
+(Added in Version 181.001)
+- The following constant is not defined in the header. 
+  target/ppu/include/sysutil/sysutil_subdisplay.h
+  #define CELL_SUBDISPLAY_ERROR_ZERO_REGISTERED ( 0x80029813 )
+
+  This will be added to the next release.
+  Note that the following constant will be left to keep the compatibility:
+  target/ppu/include/sysutil/sysutil_subdisplay.h
+  #define CELL_REMOTEPLAY_ERROR_ZERO_REGISTERED ( 0x80029813 )
+
+----------------------------------------------------------------------
+BD Emulator (HDD)
+----------------------------------------------------------------------
+- When using the BD emulator on Windows, dtcfsutil.exe does not operate 
+  on the msys. Please use dtcfsutil.exe on the command prompt. 
+  There is no problem when using the BD emulator on Linux.
+  Also note that the above restriction is applied when formatting the 
+  HDD format for the BD emulator.
+
+----------------------------------------------------------------------
+File System
+----------------------------------------------------------------------
+<cellftp>
+- The -u option of the put command does not work correctly.
+
+- Although the option -u of the copy command or the copydir command 
+  is specified, it does not work correctly if the copy destination is HOSTFS.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+- It may fail to make a connection with Internet Explorer 6.0.
+
+- Passive transfer mode (PASV) is currently not supported.
+
+- Rename commands (RNFR/RNTO) are currently not supported.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with 
+  sys_memory_container_create(), an ID that is the same as that of 
+  the memory container that has already been allocated is returned 
+  for a new memory container. When this occurs, the older memory 
+  container may not be destroyed with sys_memory_container_destroy() 
+  and may not be retrieved by the system even at the time of game 
+  process termination. 
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created 
+  with a game process at the same time is less than 10. 
+
+(Added in Version 181.001)
+- When 32 PRXs are loaded and the game process is terminated without 
+  unloading the PRXs, it is unable to terminate it.
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical 
+  character codes when vertical character displacement is performed 
+  internally.
+  To avoid this problem, directly specify the vertical character codes 
+  or use the single-byte () and {}.
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+- If the following compile options are specified when compiling 
+  a program on the PPU side, many warnings may be output. 
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs 
+  if -fsingle-precision-constant is specified as the compile option. 
+
+- When including the system header, include it outside extern "C" or 
+  extern "C++". 
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C". 
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below: 
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If a function in a PRX module is registered using atexit function,
+    and if main function finishes or exit function is invoked after the 
+    PRX module is stopped, a DSI (data storage interrupt) will occur.
+
+  * If atexit function is used in a C++ global constructor, the behavior 
+    is different from the C++ standard.  All the registered functions are 
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their 
+  instances in ELF, and pass the pointers to them to PRX.  If they are 
+  created in PRX, a DSI (data storage interrupt) may occur in function 
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be 
+  destroyed.  SPU ABI allows accessing memory at negative offsets from 
+  stack pointer up to -2000 as well as positive offsets, but using 
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf 
+  functions, etc.
+
+----------------------------------------------------------------------
+Vector Math
+----------------------------------------------------------------------
+- A function of the Vector Math library, that calculates the square 
+  root or the inverse number of the square root, does not meet the 
+  operation accuracy of the IEEE float type standard.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- When other USB devices are attached/detached, a few video frames 
+  may be lost during the transition.
+
+- Restrictions on the USB Video Class (UVC) Camera
+  1. Does not support a UVC camera that is not compliant with the UVC 
+     even though it is USB 2.0 compliant. 
+  2. Does not support a camera that has no streaming function.
+  3. Does not support a camera that is connected via the USB 1.1 hub.
+  4. Does not support the mirror function. 
+  5. Support only a single camera.
+  6. EyeToy USB Camera(for PlayStation 2) is given a higher priority 
+     when it is connected. 
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- The system echo-canceller does not support USB loudspeaker. 
+  Audio chat may suffer echo feedback or howling if chat outputs 
+  to USB loudspeaker.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- When connecting or disconnecting a device to a USB port of the 
+  machine body, other USB devices already connected may be 
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB 
+  ports of the machine body.
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz) 
+  can cause noise
+
+----------------------------------------------------------------------
+Host File Server dtcfilesv
+----------------------------------------------------------------------
+- In host-win32/dtcfilesv.exe, the value of the directory information 
+  d_namlen obtained by executing cellFsReaddir() toward the HOSTFS 
+  does not match with the value in d_name. 
+  This problem occurs only with the Windows version of dtcfilesv command.
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace 
+  on the program that is linked with libperf.a of SDK170 or before, 
+  it does not work on the target system that is updated to SDK 180 and later.
+  (applicable to libperf/ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs task>
+- In the SPURS lock free queue, when the following functions are called 
+  from multiple PPU threads at the same time, an error is not returned: 
+  cellSpursLFQueuePush()
+  cellSpursLFQueuePop()
+  Do not call them from multiple PPU threads at the same time, 
+  otherwise any one of the PPU threads may not return from the above function.
+
+- It is not allowed by the specifications to attach the event queue to 
+  the SPURS lock free queue that is initialized for SPU-SPU communication.
+  However, cellSpursLFQueueAttachLv2EventQueue() function returns CELL_OK 
+  for such operation. 
+
+  Note that when the same operation is performed in SDK170 or before, 
+  cellSpursLFQueueAttachLv2EventQueue() function returns the error code 
+  CELL_SPURS_TASK_ERROR_PERM.
+
+  This bug will be fixed in the future SDK. Do not execute 
+  cellSpursLFQueueAttachLv2EventQueue() function for the SPURS lock free queue 
+  that is initialized for SPU-SPU communication. 
+
+<libspurs job>
+- In Job 2.0, when executing a job that is built by specifying the alignment 
+  size that exceeds 16 bytes for the text section within the job module source,
+  the following functions return CELL_SPURS_JOB_ERROR_PERM. 
+  - cellSpursJoinJobChain()
+  - cellSpursJobChainGetError()
+
+- When handling the JOBLIST command processing, the following processing 
+  of the SPURS kernel and the system service are not executed. 
+
+  - Preemption of the workload (Transfer the execution right to other workload)
+  - Add and shutdown the workload
+  - Change the workload priority
+  - Initialize and discard the SPURS trace 
+
+  Due to this problem, on the SPU that grabs the first "maxGrabbedJob" 
+  number of the JOBLIST command jobs, theses processing delays until 
+  the execution of all the grabbed jobs are completed.
+
+  Note that maxGrabbedJob is an argument specified by 
+  cellSpursJobChainAttributeInitialize() or cellSpursCreateJobChain() 
+  and indicates the maximum number of jobs that a single SPU can 
+  grab at a time.  
+
+(Added in Version 181.001)
+- The inline function of the SPU cellSpursJobGetPointerList() does not return 
+  CELL_OK correctly.
+  It returns an appropriate error code in the case of an error, however 
+  an undefined value is returned instead of CELL_OK when it ended normally. 
+
+----------------------------------------------------------------------
+libgcm_tool
+----------------------------------------------------------------------
+- The windows version of libgcm_tool is available only with VisualStudio2005. 
+  Also note that the sample project file is created using VisualStudio2005.
+  Both the library and the sample are not compliant with VisualStudio2003.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- The user defined resource feature is currently handled as 
+  a beta version. 
+  When submitting a master disc using this user defined source feature, 
+  please make sure to switch to libsail that includes the official version. 
+
+(Added in Version 181.001)
+- When the PAMF file header exceeds 2KB, the movie playback 
+  using libsail may hang up in mid-flow.
+
+----------------------------------------------------------------------
+NP Commerce
+----------------------------------------------------------------------
+(Added in Version 181.001)
+- sceNpCommerceGetProductCategoryStart() does not behave correctly when 
+  CELL_SYSUTIL_LANG_CHINESE_T is specified to the 3rd argument "lang_code". 
+
+(Added in Version 181.001)
+- The following 4 language codes cannot be specified to the third argument 
+  "lang_code" of sceNpCommerceGetProductCategoryStart():
+
+  CELL_SYSUTIL_LANG_FINNISH (12) Finish
+  CELL_SYSUTIL_LANG_SWEDISH (13) Swedish
+  CELL_SYSUTIL_LANG_DANISH  (14) Danish
+  CELL_SYSUTIL_LANG_NORWEGIAN (15) Norwegian 
+
+----------------------------------------------------------------------
+NP Signaling
+----------------------------------------------------------------------
+(Added in Version 181.001)
+- From SDK 180 onwards, the following macros can be specified to 
+  the argument "code" of sceNpSignalingGetConnectionInfo(): 
+
+    SCE_NP_SIGNALING_CONN_INFO_BANDWIDTH   Estimated bandwidth (byte/second) 
+    SCE_NP_SIGNALING_CONN_INFO_PEER_NPID   NP ID of a peer
+
+  In sceNpSignalingGetConnectionInfo() section of the NP Signaling 
+  Reference document, it describes that only SCE_NP_SIGNALING_CONN_INFO_RTT 
+  can be specified, but this description is wrong.
+  From SDK 180 onwards, all 3 macros are available. 
+

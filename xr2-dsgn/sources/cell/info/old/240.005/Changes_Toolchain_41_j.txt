@@ -1,0 +1,44 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Toolchain 240.005
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+以下にPLAYSTATION(R)3 Reference Tool ツールチェーンパッケージの変更点と
+不具合修正を記述します。
+
+- Release 240.005 の不具合修正
+
+======================================================================
+Release 240.005 の不具合修正
+----------------------------------------------------------------------
+GCC
+----------------------------------------------------------------------
+<PPU/SPU共通>
+
+(B#55075)
+- 二つの異なる構造体へのポインタをキャストする際、一方にベクタ型の
+  フィールドが存在し、他方には存在しない場合、次のようなinternal
+  compiler errorが発生するという不具合を修正しました。
+  "xxxx.cpp:(xx): internal compiler error: in expand_expr_real_1, at expr.c:7665"
+
+(B#56742)
+- 同一のホスト上でコンパイラを複数同時に走らせてプリコンパイルヘッダの
+  コンパイルを行う場合、次のようなinternal compiler errorが発生するこ
+  とがあるという不具合を修正しました。
+  "internal error in mingw32_gt_pch_use_address,
+   at config/i386/host-mingw32.c(177): MapViewOfFileEx: Access is denied."
+
+(B#56742)
+- プリコンパイルヘッダのコンパイルを行う場合、次のようなinternal
+  compiler errorが発生することがあるという不具合を修正しました。
+  "internal error in mingw32_gt_pch_get_address,
+   at config/i386/host-mingw32.c(119): VirtualAlloc: Attempt to access invalid address."
+
+(B#57220)
+- C++のテンプレート定義の中でtypedefを行った型に対して、デバッグ情報が
+  正しく生成されないという不具合を修正しました。
+
+(B#57679)
+- 多くの変数が存在して、それらのアドレスがインライン展開に用いられる
+  場合に、不正なコードを生成することがある不具合を修正しました。
+

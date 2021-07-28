@@ -1,0 +1,1102 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 270.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 270.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 270.001
+======================================================================
+----------------------------------------------------------------------
+NP Signaling Utility
+----------------------------------------------------------------------
+- When signaling activation was performed concurrently among multiple 
+  devices connected to the same NAT Type 3 router, it failed to 
+  establish a connection. This problem has been fixed.
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - sceNpMatching2SignalingGetPingInfo() is a function that 
+    obtains the RTT for a room owner of specified room ID. 
+    However, although the NAT type of the room owner is 
+    NAT type 1 or NAT type 2, the function returns the time 
+    out error (SCE_NP_SIGNALING_ERROR_TIMEOUT) in most 
+    cases except when the room owner is accessible directly 
+    from the external network.
+    (TechnoteID:200810-16  https://ps3.scedev.net/technotes/view/820)
+
+  - When the room owner calls sceNpMatching2SetRoomMemberDataInternal() 
+    for another room member, a bug causes the setting made to be 
+    reflected for the room owner instead of the target room member.
+    (TechnoteID:200810-19  https://ps3.scedev.net/technotes/view/823)
+
+  - If two users attempt to join an empty lobby at the same time, 
+    one user ends up in an invalid lobby.
+    (TechnoteID:200811-19  https://ps3.scedev.net/technotes/view/847)
+
+  - When sceNpMatching2JoinRoom()  is executed on the
+    game application, the NP matching 2 utility notifies the 
+    result of this processing to join a room to the request 
+    callback function.
+    When joining to the room succeeds, the NP matching 2 
+    utility (after notifiying the processing result to the 
+    request callback function) sends its updated information 
+    to the server.
+    Normally, this sending of updated information completes 
+    immediately.  However, when the NP matching 2 utility 
+    becomes disconnected from the server before data can 
+    be sent, and when sceNpMatching2ContextStop() is 
+    called to stop the context of NP matching 2, a system 
+    crash occurs.
+    (TechnoteID:200901-05  https://ps3.scedev.net/technotes/view/863)
+
+  - When PLAYSTATION(R)3 (including the Reference Tool/Debugging 
+    Station) connects to the network, such as at startup, the system 
+    obtains an IP address and then NAT information through STUN.
+    If the NAT information could not be obtained thus, calling the following 
+    NP matching 2 utility functions will cause the error 0x800223d4 to be 
+    notified to the request callback function.
+
+    - sceNpMatching2CreateJoinRoom()
+    - sceNpMatching2JoinRoom()
+    - sceNpMatching2SetRoomDataExternal()
+    - sceNpMatching2SearchRoom()
+      (when using SCE_NP_MATCHING2_SEARCH_ROOM_OPTION_NAT_TYPE_FILTER)
+
+    When the 0x800223d4 error is notified, calling 
+    sceNpMatching2DestroyContext() will not destroy the context, and 
+    calling sceNpMatching2Term2() will cause the system to hang up.
+    (TechnoteID:200901-07  https://ps3.scedev.net/technotes/view/865)
+
+  - Termination processing cannot complete while the following 
+    NP functions are being executed by the game application.
+    - sceNpMatching2ContextStart()
+    (TechnoteID:200901-08  https://ps3.scedev.net/technotes/view/866)
+
+  - The sample samples\sdk\network\np\np_matching2\np_gui_matching2 
+    has a bug that causes a memory leak when a room member 
+    leaves the room.
+    (TechnoteID:200902-05  https://ps3.scedev.net/technotes/view/871)
+
+  - When the user is the room owner and the setting is 
+    such that room ownership is not to be delegated, 
+    repeated calls of the sceNpMatching2LeaveRoom() 
+    function may lead to a system crash, system hangup, 
+    or the NP matching 2 utility returning an error.
+    (TechnoteID:200902-09  https://ps3.scedev.net/technotes/view/875)
+
+  - There is a bug that causes a memory leak when 
+    sceNpMatching2AbortRequest() is called and 0(normal 
+    termination) is returned.
+    (TechnoteID:200903-03  https://ps3.scedev.net/technotes/view/882)
+
+----------------------------------------------------------------------
+NP Title User Storage Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - When calling either one of the following functions that download 
+    the TUS data for the first time, if a value that exceeds 3 * 1024 
+    Bytes is specified to the argument recvSize, the function wrongly 
+    reports that the data is not set in the TUS server:
+     sceNpTusGetData()
+     sceNpTusGetDataVUser()
+     sceNpTusGetDataAsync()
+     sceNpTusGetDataVUserAsync()
+    (TechnoteID:200902-13  https://ps3.scedev.net/technotes/view/879)
+
+- In the prototype declaration of the following TUS functions, 
+  there was no const modifier added to the argument slotIdArray. 
+  This problem has been fixed.
+
+  [cell\target\ppu\include\np\tustorage.h]
+  sceNpTusGetMultiSlotVariableAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusGetMultiSlotVariableVUserAsync()
+  sceNpTusDeleteMultiSlotDataAsync()
+
+----------------------------------------------------------------------
+NP DRM Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - After an "NPDRM package with lost rights" created with the 
+    --no-entitlement option is installed on the system software, 
+    the error SCE_NP_DRM_ERROR_UNKNOWN_VERSION (0x8002951a) 
+    will be returned when accessing an NPDRM file from the 
+    system software or the NP DRM utility.
+    (TechnoteID:200811-06  https://ps3.scedev.net/technotes/view/832)
+
+----------------------------------------------------------------------
+NP Trophy Utility
+----------------------------------------------------------------------
+- Unlocking the trophy in the thread with high priority had an impact 
+  on the CPU time that the game application was able to use. From 270 
+  onward, this has been changed to unlock the trophy in the thread 
+  with low priority.
+
+- The following problem has been fixed:
+
+  - There is a bug regarding the evaluation of the trophy set 
+    version performed when sceNpTrophyRegisterContext() is called. 
+    Because of this, when the trophy set version of the trophy 
+    configuration information that is installed on the HDD is 
+    compared to trophy configuration information with an earlier 
+    trophy set version, the SCE_NP_TROPHY_ERROR_ILLEGAL_UPDATE
+    (0x8002292A) error may be returned.
+    (TechnoteID:200901-04  https://ps3.scedev.net/technotes/view/862)
+
+- (B#66828)
+  While calling a trophy related API such as sceNpTrophyRegisterContext(),
+  the system crashed when the PPU thread load in the game application 
+  was high. This problem has been fixed.  (TechnoteID:200901-08 
+   https://ps3.scedev.net/technotes/view/866)
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- (B#65736)
+  In cellHttpRequestSetChunkedTransferStatus(), when POST was executed 
+  using the chunk encoding communication and if the chunk size was wrong,
+  POST failed. This problem has been fixed.
+
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+<Core Dump feature>
+- The following bug has been fixed.
+
+  (B#62250)
+  - Only the lower 4 bytes out of 16 bytes of the value of FPSCR 
+    (Floating Point Status and Control Register) in the SPU thread 
+    register information that is recorded within the core file is 
+    recorded.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+<PLAYSTATION(R)Home Coordination Utility>
+- In the samples\sdk\sysutil\gameexec\graphics.c,the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<System Cache Utility>
+- In the samples\sdk\sysutil\syscache\main.c,the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Disc Boot Game Utility>
+- In the samples\sdk\sysutil\discgame\discchange(getbootdiscinfo)\main.c,
+  the calculating formula of a parameter to be passed to cellGcmSetViewport() 
+  was not correct. This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Game Data Utility>
+- In the samples\sdk\sysutil\gamedata\main.c,the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<HDD Boot Game Utility>
+- In the samples\sdk\sysutil\hddgame\basic(makedir)\main.c,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct.
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Game Content Utility>
+- In the samples\sdk\sysutil\gamecontent\graphics.c,the calculating formula of 
+  a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- (B#67558)
+  On the ProDG Target Manager for PLAYSTATION(R)3, when the "Load Module" 
+  window was opened from "Target" -> "Load & Run Executable", and the 
+  "Load from device" option was selected to boot the execution file 
+  in /app_home, the following bug occurred. This problem has been fixed:
+
+  Conditions:
+  - cellGameBootCheck() is used as an access preparation function. 
+  - "For Development" is specified to "GameContentUtil Boot Path (Debugger) "
+    menu that can be navigated through "Settings Column -> Debug Settings".
+  Bug:
+  A correct path is not set to contentInfoPath and usrdirPath that can be 
+  obtained by cellGameContentPermit().
+
+  Due to this bug fix, usrdirPath is now set with "/app_home/(directory path 
+  of the boot binary on windows)" under the same condition where only 
+  "/app_home" was set before.
+
+<Storage Data Utility>
+- (B#65125)
+  In the 784th line of samples\sdk\sysutil\storagedata\main.c, variable 
+  initialization was mistakenly omitted. This problem has been fixed.
+  [SDK250 and before]
+        unsigned int fsize;
+  [From SDK270 onwards]
+        unsigned int fsize = 0;
+
+<Content Search Utility>
+- (B#66540)
+  When the game was ended without calling cellSearchFinalize(), and then 
+  cellSearchInitialize() was called again without turning off the power, 
+  the CELL_CONTENT_SEARCH_ERROR_ALREADY_INITIALIZED error was returned. 
+  This problem has been fixed.
+
+<Save Data Utility>
+- The following problems have been fixed:
+
+  - As for specific callback processings, which are called from 
+    the save data utility,the required time for the process may increase 
+    accordingly to the number of protected data files which are included 
+    in the target save data.
+    (TechnoteID:200811-01  https://ps3.scedev.net/technotes/view/827)
+
+  - When using the save data utility, all files that present within 
+    the save data are not listed under a specific condition and a wrong value 
+    is set to the member variables fileNum and sizeKB of 
+    the CellSaveDataStatGet structure.
+    (TechnoteID:200903-05  https://ps3.scedev.net/technotes/view/884)
+
+<Game Update Utility>
+- In the samples\sdk\sysutil\gameupdate\main_patch.cpp,the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\sysutil\gameupdate\main.cpp,the calculating formula 
+  of a parameter to be passed to cellGcmSetViewport() was not correct. This 
+  problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\sysutil\gameupdate_system\main_patch.cpp,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\sysutil\gameupdate_system\main.cpp,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+<Photo Utility>
+- The following problem has been fixed:
+
+  - When a 2MB or smaller memory container is specified to the argument 
+    container2 of cellPhotoDecodeInitialize() for decoding and the function 
+    is called, although the specified memory container size is sufficient for 
+    decoding, it unconditionally returns CELL_PHOTO_DECODE_ERROR_PARAM and 
+    fails to initialize the decode feature.
+    (TechnoteID:200810-17  https://ps3.scedev.net/technotes/view/821)
+
+<System BGM>
+- The following bug has been fixed:
+
+  - While the system BGM is being played back, if 
+    cellSysutilEnableBgmPlayback()    and cellSysutilDisableBgmPlayback() are 
+    called repeatedly for a short period of time, and then the system BGM is 
+    played back again, the following problems occur:
+    1. The system BGM is not played back.
+    2. The system BGM is played back again from the beginning.
+
+<Music Decode Utility>
+- The following problems have been fixed.
+
+    - When either of the commands CELL_MUSIC_DECODE_CMD_NEXT or 
+      CELL_MUSIC_DECODE_CMD_PREV is issued during decode processing, 
+      it may not move to the next or the previous music correctly. 
+    - When a specific music is used, the LPCM data cannot be obtained.
+    (TechnoteID:200810-13  https://ps3.scedev.net/technotes/view/817)
+
+    - When either of the shuffle mode or the repeat mode is changed while 
+      decoding a content, it stops playing.
+    - The start time of LPCM that is obtained by cellMusicDecodeRead() 
+      is not correct. 
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#66371)
+    In system software 2.50, outgoing packets will be abandoned 
+    if there are approximately 180 incoming/outgoing packets
+    accumulated in the kernel work area.
+    (TechnoteID:200902-04  https://ps3.scedev.net/technotes/view/870)
+
+- (B#66492)
+  When bind() is called for the socket that is created by SOCK_DGRAM_P2P and 
+  then SYS_NET_EADDRINUSE is returned, altough bind() can be called correctly
+  with a different value specified to sin_vport immediately after that, 
+  SYS_NET_EINVAL is returned. This problem has been fixed.
+
+----------------------------------------------------------------------
+libpamf
+----------------------------------------------------------------------
+- samples\sdk\codec\pamf_list
+  - (B#60447)
+    When the SN compiler was used to compile, a warning message was 
+    output. This problem has been fixed.
+
+----------------------------------------------------------------------
+libvdec
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - In the AVC decoder, when cellVdecDecodeAu is repeatedly issued 
+    immediately after cellVdecStartSeq is issued, CELL_VDEC_ERROR_BUSY 
+    is incorrectly returned.
+
+    Details:
+    Specifically, the maximum number of repeatable issuance of 
+    cellVdecDecodeAu is set to cmdDepth of cellVdecAttr. Before this 
+    maximum number of repeatable issuance 4 is reached, 
+    CELL_VDEC_ERROR_BUSY is wrongly returned.
+    Note that this problem occurs only when cellVdecDecodeAu is 
+    repeatedly issued for a very short period of time within 1 frame time 
+    just after cellVdecStartSeq is issued.
+
+    Work around:
+    This problem can be avoided by implementing a mechanism that issues 
+    cellVdecDecodeAu again when the error code CELL_VDEC_ERROR_BUSY is 
+    returned.
+
+----------------------------------------------------------------------
+C/C++ Standard Library
+----------------------------------------------------------------------
+- (B#49602) PPU
+  The following bug has been fixed:
+
+    Since SDK220, SIMD math functions cbrtf4 and cbrtf4fast in math.h 
+    have a bug and do not return results same as those of SDK210 or before.
+
+    Example:
+    vec_float4 vf = (vec_float4){1.73e-2f, 3.0f, 27.0f, FLT_MAX};
+    printf("%vf\n", cbrtf4(vf));
+
+   Result of SDK210 or before: 0.258632  1.442249  3.000000  6981462523904.000409
+   Result of SDK220 or later:  0.258681  1.372409 -5.020100  nan
+
+- (B#59235) PPU
+  The following macros were not defined as constant.
+  This problem has been fixed.
+    - HUGE_VAL
+    - HUGE_VALF
+    - HUGE_VALL
+    - INFINITY
+    - NAN
+
+- (B#63487) PPU
+  When using libcs.a, memcmp() might return 0 even when the values of
+  the compared memory areas did not match. This problem has been fixed.
+  Please refer to the technote 200811-04 for more details:
+  https://ps3.scedev.net/technotes/view/830
+
+- (B#63772) PPU
+  When using the following functions of libcs.a,
+  a sign of the return value might be reversed.
+    - strcmp()
+    - strncmp()
+    - strcasecmp()
+    - strncasecmp()
+  This problem has been fixed.
+
+- (B#61263) PPU
+  fread() could not read data correctly after fwrite() and fflush().
+  The problem has been fixed.
+
+- (B#61757) SPU
+  In C++, abs() could not be used without std:: when including math.h.
+  This bug has been fixed.
+
+- (B#61781) PPU
+  In C++, mspace_reallocalign() could not be used without std:: when including 
+  mspace.h. This bug has been fixed.
+
+- (B#61785) PPU
+  In C++, struct malloc_managed_size could not be used without std:: when 
+  including stdlib.h. This bug has been fixed.
+
+- (B#62924) PPU/SPU
+  The value of the macro LONG_MAX was not type long. 
+  This bug has been fixed.
+
+- (B#62925) PPU/SPU
+  In C++, the overloaded functions of abs() and div() were not defined
+  in stdlib.h. These functions have been added.
+
+- (B#55766) PPU/SPU
+  If, for example, "1.625e300" is converted by atof() or strtod() function, 
+  the result was not the same as the floating constant 1.625e300.  atoff(), 
+  strtof(), wcstod(), wcstof() functions also had similar problems.  
+  These problems have been fixed.
+
+- (B#65502) PPU/SPU
+  STL container was not allocated by using its proper alignment.
+  This problem has been fixed.
+  By this fix, the aligned versions of operator new will be called.
+  Care must be taken if you use your own operator new.
+  Please refer to the technote 200903-11 for more details:
+  https://ps3.scedev.net/technotes/view/890
+
+- (B#66582) PPU
+  After returning from main() or calling exit() or _Exit(), a game process 
+  was crashed in some cases during closing all FILE stream. 
+  This bug has been fixed.
+
+- (B#66763) PPU/SPU
+  If `-Wsystem-headers' and `-Wredundant-decls' were specified and a program
+  included assert.h twice or more, GCC warned for redundant declarations. 
+  This bug has been fixed.
+
+- (B#66537) PPU
+  An alignment exception occurred inside memcpy() when an address
+  that is not 4-byte aligned on RSX(TM) local memory is passed for
+  the second argument s2. 
+  This problem has been fixed.
+
+- (B#63312) PPU
+  PRX startup routine crashed if -mprx-with-runtime is specified and 
+  the definitions of the following macros do not exist.  
+  The problem has been fixed.
+  SYS_MODULE_START
+  SYS_MODULE_STOP
+  SYS_MODULE_EXIT
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#61755)
+  When the trick play mode was switched to the fast mode, it stopped 
+  playing. This problem has been fixed.
+
+- The following problem has been fixed:
+
+  - (B#64881)
+    After destroying CellSailDescriptor, the thread of libsail may hang up.
+    (TechnoteID:200812-02  https://ps3.scedev.net/technotes/view/850)
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+- In cellFaceDetection() and cellFaceDetectionFrontal(), SPU could read 
+  access the image buffer area on the main memory exceeding 2 lines at 
+  maximum. If the area was prohibited to get accessed from the SPU, a 
+  problem occurred. This problem has been fixed.
+
+- In cellFaceParts() and cellFacePartsAttribute(), the accuracy of 
+  detecting the positions of the eyes, the nose and the mouth has been 
+  improved.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#60514)
+    Process may drag on at Disc Eject.
+    (TechnoteID:200812-01 https://ps3.scedev.net/technotes/view/849)
+
+  - (B#61990, B#61012)
+    In CFS(SYS_DEV_HDD0), DISCFS and HOSTFS, when read/write by 
+    cellFsGetDirectoryEntries() and cellFsRead()/cellFsWrite() is 
+    performed to the same mount point at the same time, the written 
+    data may be corrupted.
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- (B#63883)
+  When the process was ended while the priority was being inherited, 
+  an exception occurred within the kernel. This problem has been fixed.
+
+- (B#58555)
+  When the process was ended and an interruption thread called a system 
+  call that generates an object at the same time, the system call 
+  returned EABORT incorrectly. This problem has been fixed.
+
+- (B#58898)
+  When sys_vm_unmap() was called at the same time, a kernel panic could 
+  occur. This problem has been fixed.
+
+- (B#61135)
+  When a system that has 256 MB or more physical memory got a value that 
+  is bigger than 256MB passed, a kernel panic occurred. This problem has 
+  been fixed.
+
+- (B#61318)
+  When performing physical memory allocation, fractional memory of 1 MB 
+  or less was unable to be allocated. This problem has been fixed.
+
+- (B#61665)
+  When multiple threads accessed a single page concurrently, and multiple 
+  times of page faults occurred, the number of page faults of the statistic
+  info of the virtual memory could be counted as once where it should have 
+  been counted as multiple times. This problem has been fixed.
+
+- (B#62660)
+  sys_vm_sync() could be in a WAIT state for quite a while. This problem 
+  has been fixed.
+  (TechnoteID:200810-20  https://ps3.scedev.net/technotes/view/824)
+
+- (B#65514)
+  When exit() was called while the PPU thread was accessing the virtual memory 
+  area and the page fault notification area, a system dead lock could occur. 
+  This problem has been fixed.
+
+- (B#66033)
+  When sys_vm_unmap() is executed while accessing the virtual memory area, 
+  a kernel panic could occur. This problem has been fixed. 
+
+- In the samples\sdk\lv2\vm_and_webbrowser\vm_and_webbrowser.ppu.cpp,
+  the calculating formula of a parameter to be passed to cellGcmSetViewport() 
+  was not correct. This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- (B#60452)
+  samples\sdk\usbd\usbhphone
+  samples\sdk\usbd\usbmouse
+  When the sample was ended, a shutdown sequence time out occurred. This 
+  problem has been fixed.
+
+- In the following functions, although a Video Class(BaseClass=0Eh) device 
+  was registered as an extended LDD, probe() was not called. This problem 
+  has been fixed.
+  - cellUsbdRegisterExtraLdd()
+  - cellUsbdRegisterExtraLdd2()
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- Memory used for storing path names no longer increases when
+  extremely large numbers of files are accessed. Specify false for the
+  sharedPath member of fios_parameter, and initialize FIOS using
+  FIOSInit().
+  (TechnoteID:200811-02   https://ps3.scedev.net/technotes/view/828)
+
+- The default behavior of when a Blu-ray disc is ejected has been 
+  improved so that a callback function for cell::fios::ps3media is 
+  no longer required. No code change is required even if you have 
+  already implemented the callback function.
+  (TechnoteID:200901-02   https://ps3.scedev.net/technotes/view/860)
+
+- In the sample program, the same operation was mistakenly freed
+  twice. This bug has been fixed.
+  (TechnoteID:200811-05   https://ps3.scedev.net/technotes/view/831)
+
+----------------------------------------------------------------------
+libfiber
+----------------------------------------------------------------------
+- (B#67152)
+  When the cell::Fiber::Ppu::Util::Runtime::wakeup() method at SPU was 
+  called to wake up worker PPU threads, if multiple worker PPU threads 
+  were in the WAIT state, it woke up only a single worker PPU thread and 
+  the rest of the worker PPU threads were left waiting. This problem has 
+  been fixed.
+
+- (B#63707)
+  samples\sdk\fiber\advanced\function_offload_tutorial\3_offload_to_spu
+  samples\sdk\fiber\advanced\function_offload_tutorial\4_gather_functions
+  The above samples could hang up depending on the timing. This problem 
+  has been fixed. 
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libovis> 
+- (B#58056)
+  The linker script format has been updated so that it can be used with 
+  the latest tool chain. Accordingly, libovis and -mspurs-task linker 
+  options can be now specified at the same time.
+  (Technote ID:200811-12  https://ps3.scedev.net/technotes/view/839)
+
+<libswcache>
+- (B#67087)
+  In the directory of DefaultCache(16way set associative), when the slot 
+  was filled with the same hash values, those entries whose reference count 
+  is zero was not released and reused. This problem ha been fixed.
+
+- (B#65624)
+  When a type that has const was specified to the template argument of the 
+  cell::swcache::Variable template class, a compilation error occurred. 
+  This problem has been fixed.
+
+- (B#63694)
+  When the CELL_SWCACHE_PATCH_XXX macro was in use, the code size after 
+  compilation became larger than that of SDK 240. This problem has been 
+  fixed.
+
+- (B#67339)
+  When DefaultCache was used by the Pointer class or the PatchObject 
+  class, and if the cache object that was once reserved on SPU was not
+  being accessed and so freed, the data could be corrupted depending on 
+  the timing. This problem has been fixed.
+  (Technote ID:200902-10  https://ps3.scedev.net/technotes/view/876)
+
+<libspudll>
+- (B#66282)
+  A linkage with the link type R_SPU_NONE was unable to be executed. 
+  This problem has been fixed.
+
+<libspurs job>
+- (B#63778)
+  In the job streamer, when CELL_SPURS_JOB_TYPE_MEMORY_CHECK was 
+  specified to the job descriptor to transfer the read only data from 
+  the main memory to the local storage, the local storage used was 16 
+  bytes bigger than specified. This problem has been fixed.
+
+- (B#66585)
+  When 0 was specified to the DMA list size of the job descriptor and 
+  a value other than 0 was specified to the input buffer size, garbage
+  could be added to the lower 4 bits of the input buffer address that 
+  was reserved when the job was executed. This problem has been fixed.
+
+- (B#61734)
+  When calling cellSpursCheckJob(), if a job descriptor with 
+  CELL_SPURS_JOB_TYPE_MEMORY_CHECK set was specified to the argument, 
+  CELL_SPURS_JOB_ERROR_MEMORY_SIZE could be returned incorrectly. 
+  This problem has been fixed.
+
+<libspurs job queue>
+- (B#63108)
+  When #define was executed for the CELL_SPURS_JOBDESCRIPTOR_ERROR_CHECK 
+  macro in the job queue, a compilation error occurred. This problem 
+  has been fixed. Also, the CELL_SPURS_JOBQUEUE_ERROR_CHECK macro has 
+  been removed.
+
+- (B#63693)
+  When a job with CELL_SPURS_JOB_TYPE_MEMORY_CHECK specified to its 
+  job descriptor was executed in the job queue, the input/output buffer
+  size of the job descriptor that is passed in the argument 
+  cellSpursJobMain2,cellSpursJobQueueMain became 16 bytes smaller than
+  the specified size. This problem has been fixed.
+
+- (B#62810)
+  When SPU sent a signal to a job queue job using 
+  cellSpursJobQueueSendSignal(), the job for which the signal was sent
+  was not executed correctly under the following condition. 
+  This problem has been fixed.
+
+  Condition:
+  The job queue is not running and a job is not pushed into the queue.
+
+- (B#62825)
+  When cellSpursJobQueueOpen() at SPU was called from multiple SPUs at
+  the same time, an invalid job queue handle was returned depending on
+  the timing. This problem has been fixed.
+
+- (B#63382)
+  cellSpursJobQueueClose() at SPU was not freeing the job queue handle
+  correctly. This problem has been fixed.
+
+- (B#63259)
+  In the following job queue interfaces, some argument error check was
+  omitted. This problem has been fixed.
+
+  Interfaces at PPU:
+  JobQueue::create(), cellSpursCreateJobQueue()
+  - pJobQueue, pCommandList
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  cellSpursJobQueueSemaphoreInitialize()
+  - pSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - pJobQueue
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  cellSpursJobQueueSemaphoreAcquire()
+  - pSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - count
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  JobQueue::push(), cellSpursJobQueuePush()
+  - pJob
+    CELL_SPURS_JOB_ERROR_NULL_POINTER
+
+  JobQueue::pushFlush(), cellSpursJobQueuePushFlush()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueClose()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  JobQueue::join(), cellSpursJobQueueJoin()
+  - exitCode
+    CELL_SPURS_JOB_ERROR_NULL_POINTER
+
+  Interfaces at SPU:
+  cellSpursJobQueuePush()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueSemaphoreAcquire()
+  - eaSemaphore
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - count
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueuePushFlush()
+  - eaJobQueue
+    CELL_SPURS_JOB_ERROR_ALIGN
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  cellSpursJobQueueClose()
+  - handle
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortConainer::push(), cellSpursJobQueuePortPush()
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::sync(), cellSpursJobQueuePortSync()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  PortContainer::pushFlush(), cellSpursJobQueuePortPushFlush()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::copyPush(), cellSpursJobQueuePortCopyPush()
+    CELL_SPURS_JOB_ERROR_PERM(without a buffer)
+  - tag
+    CELL_SPURS_JOB_ERROR_INVAL
+
+  PortContainer::finalize(), cellSpursJobQueuePortFinalize()
+  - eaPort
+    CELL_SPURS_JOB_ERROR_NULL_POINTER, CELL_SPURS_JOB_ERROR_ALIGN
+
+  PortContainer::initializeWithDescriptorBuffer(), cellSpursJobQueuePortInitializeWithDescriptorBuffer()
+  - numEntries
+    CELL_SPURS_JOB_ERROR_INVAL
+
+----------------------------------------------------------------------
+DECI3 CTRLP
+----------------------------------------------------------------------
+- host-common\samples\ctrlp
+  The warning message that was displayed when building by using Visual 
+  Studio 2008 has been removed.
+
+----------------------------------------------------------------------
+libmic
+----------------------------------------------------------------------
+- In the samples\sdk\mic\feedback\common.cpp,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\mic\multimics\common.cpp ,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\sdk\mic\feedback_dbgoutput\common.cpp ,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+- In the samples\sdk\voice\Common\common.cpp ,the calculating 
+  formula of a parameter to be passed to cellGcmSetViewport() was not correct. 
+  This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+tutorial Sample
+----------------------------------------------------------------------
+- In the samples\tutorial\performance_tips\SpuPostProcess\MotionBlur\render\surfUtil.cpp,
+  the calculating formula of a parameter to be passed to cellGcmSetViewport() 
+  was not correct. This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+- In the samples\tutorial\SpuGeometricProcess\lib\fwgcm_customized\FWGCMApplication.cpp,
+  the calculating formula of a parameter to be passed to cellGcmSetViewport() 
+  was not correct. This problem has been fixed as follows:
+   (Wrong) offset[1] = h - y + scale[1];
+   (Correct) offset[1] = y + h * 0.5f;
+  (TechnoteID:200808-06  https://ps3.scedev.net/technotes/view/785)
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- The following problem has been fixed: 
+
+  - (B#60414)
+    While calling cellCameraRead()to read image data from the camera, 
+    if the camera is disconnected, it delays to return back to the caller. 
+    Also, when cellCameraRead is called immediately after cellCameraStart(), 
+    the same delay occurs.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#66086)
+    A virtual controller that is registered using 
+    cellPadLddRegisterController()  is wrongly removed from the system 
+    by the Controller Auto-Off feature of the system software. 
+    (TechnoteID:200902-11 https://ps3.scedev.net/technotes/view/877)
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- In the vertex shader, the address of the branch instruction could be 
+  displayed incorrectly. This problem has been fixed.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- The fw_vertex_attribute sample could fail to obtain the parameter of 
+  the fragment shader. This problem has been fixed.
+
+- In the fw_aniso_opt sample, because the dependency with cellGtfLoader.a 
+  was not set, it ended as error when it was built alone. 
+  This problem has been fixed.
+
+- (B#68063)
+  The quad sample has been fixed so that the surface is cleared per flip.
+  Also, acquisition of the Tile size and the Surface size has been 
+  modified to follow the hardware limitations.
+
+- The following problem has been fixed:
+
+  - (B#62709)
+    Under certain conditions, the number of calls for a libgcm callback 
+    function becomes invalid.
+    (TechnoteID:200902-03 https://ps3.scedev.net/technotes/view/869)
+
+- (B#42962),(B#63876)
+  - Some crash dump display at the time of RSX(TM) error was not correct. 
+    This problem has been fixed.
+  - The min and max values of VertexTextureControl0 were not correct. 
+    This problem has been fixed.
+  - A wrong IOIF offset value was displayed when a "graphics error 512"
+    occurred. This problem has been fixed.
+
+- (B#58152)
+  From SNC 250.3 onward, when notocrestore=2 is specified to the 
+  compiler option using the newly added preprocess function __option(),
+  the macro now calls the callback wrapper function cellGcmCallbackForSnc(). 
+  With SNC 250.3 and older versions, cellGcmCallbackForSnc() is called
+  by declaring CELL_GCM_SNC_NOTOCRESTORE_2 as before.
+
+- (B#63605)
+  When cellGcmSetDefaultFifoSize() was called in the 
+  CELL_GCM_DEFAULT_FIFO_MODE_TRADITIONAL mode, it hung up. This problem
+  has been fixed.
+
+- (B#52722)
+  When an RSX(TM) error occurred with the 2D transfer system command, it
+  mistakenly handled the error as a 3D rendering system command error 
+  and displayed a wrong message. This problem has been fixed so that 
+  it displays a correct error message for the 2D transfer system command.
+
+- The following problem has been fixed:
+
+  - (B#65227)
+    cellGcmCgStripBranchesFromFragmentUCode() may cause the undesired 
+    removal of a branch block from a fragment program's microcode.
+    (TechnoteID:200812-05  https://ps3.scedev.net/technotes/view/853)
+
+- (B#65239)
+  The SPU version of cellGcmCgStripBranchesFromFragmentUCode() has been 
+  optimized.
+
+---------------------------------------------------------------------- 
+vectormath
+---------------------------------------------------------------------- 
+- The following problem has been fixed:
+
+  - A precision problem has been found in the SIMD value operation function 
+    "cbrtf4(vector float)" of the C/C++ standard library of the PPU version. 
+    Because the Vectormath function "cbrtf(floatInVec)" uses this function, 
+    the same precision problem occurs with the PPU version of the Vectormath.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- When cellMSMP3GetFrameInfo() was executed, the header ID variable was 
+  not set correctly in the returned data structure. 
+  This problem has been fixed.
+
+- cellMSSurroundSourceRollOff() could have undesired multi-threading 
+  related effects due to a missing mutex. 
+  This problem has been fixed.
+
+- Using an odd number of MP3 streams and the CELL_MS_DEBUG_FLAG together 
+  when initializing could cause the MultiStream SPU thread to fail 
+  on a DMA transfer.
+  This problem has been fixed.
+
+- The simple_pitchshift sample could not be build correctly in the SNC Release 
+  build mode because a wrong output file type was specified (*.elf in stead 
+  of *.self). 
+  This problem has been fixed so that it is correctly build with a .self file.
+
+- In the simple_pitchshift sample, the pitchshift DSP was specified in 
+  the code so that it ran on the unallocated memory (8 stream channels 
+  instead of the 3 available). 
+  This problem has been fixed.
+
+- A "Shutdown sequence timed out" error could occur after shutting down 
+  the target in the simple_logging sample. 
+  This problem has been fixed.
+
+- In an instance in the Auxiliary Return DSP effect, when a NULL pointer 
+  was specified as the return address, it attempted to use this address 
+  causing an SPU crash. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#56016)
+    A memory leak occurs when generating a cgb binary by specifying 
+    -mcgb option.
+
+  - (B#58429)
+    When pasting tokens in macros depending on macro arguments using 
+    Token-Pasting Operator(##), the following error message is displayed:
+    error C0129:invalid char 'D' in integer constant suffix
+
+  - (B#58665)
+    A hardware bug is triggered when the following conditions are met:
+      - Multisampling and depth value generation are enabled.
+      - r1.z or h3.zw is written in the last path.
+      - There is a texture instruction in the last path.
+    A workaround for this bug, which adds a fence and nop instruction 
+    if the triggering condition occurs, has been implemented.
+
+  - (B#64371)
+    Execution of pow(f1,f2+1) generates NaN instead of 0 when f1=f2=0.
+
+  - (B#65822)
+    The compiler may generate fragment shaders with some texCoords2D field 
+    bits turned off incorrectly.
+
+  - (B#66958)
+    Floating point constants using h suffix could be zeroed out if
+    a shader is compiled by libcgc on the target machine.
+
+  - (B#41103)
+    The CGC may crash when a vertex shader that has unused CLPx output 
+    attributes is compiled.
+
+  - (B#65738)
+    The CGC Capture sometimes records the captured path incorrectly 
+    on Windows and an extra upper directory (../) is added.
+
+  - (B#67841)
+    The Cg Compiler 2.0 perf-sample script may fail to properly parse input 
+    shader command-lines when quoted arguments or any of the following sce-cgc 
+    options are used:
+    -po, -capture, -output
+
+  - (B#67833)
+    The compile capture may not always calculate the hash of the specified spec.
+----------------------------------------------------------------------
+libcgb
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#45883)
+    A warning may be generated when building the 
+    cell\samples\sdk\graphics\cgb\userclip_psgl sample.
+
+  - (B#60474)
+    In the following Cgb samples, the links to header files contained 
+    in the project file for Visual Studio are not correct.
+    - cell\samples\sdk\graphics\cgb\levelC\cgbLevelC
+    - cell\samples\sdk\graphics\cgb\levelC\cgnv2cgbLevelC
+
+  - (B#63777)
+    The cgb format header file for the PPU and the SPU are not compatible.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#60325)
+    The depth buffer offset is not set correctly in the frame buffer 
+    object.
+
+  - (B#60326)
+    PSGL may crash if glBufferData is called with the creation size 
+    set to 0.
+
+  - (B#63620)
+    An assert is triggered when reallocating a buffer that has the same 
+    size as the mapped but already deleted buffer.
+
+  - (B#65807)
+    All GPUBezierTesselation related samples may not support 720 and 
+    480 system resolutions as well as 1080p.
+
+  - (B#65598)
+    When glGetQueryObjectuivARB() is called with GL_QUERY_RESULT_AVAILABLE_ARB 
+    specified to its argument pname, it may be blocked. 
+
+  - (B#66043)
+    When deleting a Cg program, a memory leak occurs.
+
+  - (B#67677)
+    When using an attribute set, if local memory allocation and deallocation 
+    are heavily done, vertices may be corrupted. 
+

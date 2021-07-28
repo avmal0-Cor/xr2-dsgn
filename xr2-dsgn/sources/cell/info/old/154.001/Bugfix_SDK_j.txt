@@ -1,0 +1,141 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 154.001
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの不具合修正を記述します。
+
+  - Release 154.001 の不具合修正
+
+======================================================================
+Release 154.001 の不具合修正
+======================================================================
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- cellGcmInit()において、cellGcmSetTexture(),cellGcmSetVertexTexture()を
+  １回のみ初期化するよう修正しました。
+
+- cellGcmSetFragmentProgramParameter(),
+  cellGcmSetFragmentProgramParameterPointer()において、パラメータ型 boolを
+  サポートするよう修正しました。
+  (この修正点は、技術情報 200701-12 の対策となります。)
+
+- cellGcmSetVertexProgramParameter()において、sce-cgc の
+  オプション -fkeep-unused をサポートするよう修正しました。
+
+- cellGcmCgGetEmbeddedConstantCount(),cellGcmCgGetEmbeddedConstantOffset()
+  において、未使用パラメータに対する対応を行いました。
+  また、cellGcmCgGetEmbeddedConstantOffset()は0、
+  cellGcmCgGetEmbeddedConstantOffset()は0xffffffffを返すよう修正しました。
+
+- cellGcmSetFragmentProgramParameterPointer()において、未使用パラメータが
+  存在するとsrcOffsetの配列要素に対応したパラメータ転送が正しく行われない
+  不具合を修正しました。
+  (この修正点は、技術情報 200702-03 の対策となります。)
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- Zcullメモリの更新を制御する閾値の設定に誤りがあった為、設定を修正しました。
+
+- cgCreateSamplerState()の引数cgTypeへ不正な値を渡した時に正しいエラー
+  CG_INVALID_PARAMETER_TYPE_ERRORを返すように修正しました。
+
+- glBindAttribSetSCE()を使用した際にcgGLAttribElementFunc()が正しく動作して
+  いなかった不具合を修正しました。
+
+- PSGLが内部でテンポラリとして使用しているローカルメモリ(Bounce Buffer)を
+  SDK132で  2MBから1KBに縮小しましたが状況によってはパフォーマンスの低下が
+  起きていました。
+  その為、Bounce Bufferのサイズを元の2MBに戻しました。
+
+- glBufferSurfaceSCE()の引数internalFormatにGL_COMPRESSED_RGBA_S3TC_DXT1_EXTを
+  指定した時に正しくサーフェースが作成されない不具合を修正しました。
+
+----------------------------------------------------------------------
+libgcm/PSGL
+----------------------------------------------------------------------
+- 以下の制限事項はSDK096以降より解除されております。
+
+  - フリップが完了前に終了通知が返ってくる。
+    詳細は技術情報200609-23を参照してください。
+    https://ps3.scedev.net/technotes/view/320
+
+----------------------------------------------------------------------
+Cgc
+----------------------------------------------------------------------
+- フラグメントシェーダ内にて以下の関数を使用した際にワーニングメッセージが
+  出力されていた不具合を修正しました。
+
+  float texDepth1D_precise( sampler1D s, float tc)
+  float texDepth1D_precise( sampler1D s, float2 tc )
+  float texDepth1Dlod_precise( sampler1D s, float4 tc )
+  float texDepth1Dproj_precise( sampler1D s, float2 tc )
+  float texDepth1Dproj_precise( sampler1D s, float3 tc )
+  float texDepth1Dbias_precise( sampler1D s, float tc, float bias )
+  float texDepth2D_precise( sampler2D s, float2 tc )
+  float texDepth2D_precise( sampler2D s, float3 tc )
+  float texDepth2Dlod_precise( sampler2D s, float4 tc )
+  float texDepth2Dproj_precise( sampler2D s, float3 tc )
+  float texDepth2Dproj_precise( sampler2D s, float4 tc )
+  float texDepth2Dbias_precise( sampler2D s, float2 tc, float bias )
+
+- "-firstallocreg"オプションが正しく動作していなかった不具合を修正しました。
+
+- 一部のシェーダがビルド出来なかった不具合を修正しました。
+
+- boolean型のパラメータをCG_BOOLのリソースタイプに設定していた不具合を修正
+  しました。
+
+----------------------------------------------------------------------
+システムユーティリティ
+----------------------------------------------------------------------
+<メッセージダイアログユーティリティ>
+- ゲーム起動時において、メッセージダイアログが表示されず、
+  ハングアップしてしまう場合があるという不具合を修正しました。 
+
+----------------------------------------------------------------------
+NP ベーシックユーティリティ
+----------------------------------------------------------------------
+- NPベーシックを登録する時、フレンドのいないユーザの場合、
+  SCE_NP_BASIC_EVENT_END_OF_INITIAL_PRESENCEが通知されないという
+  不具合を修正しました。
+
+----------------------------------------------------------------------
+MultiStream
+----------------------------------------------------------------------
+- タイムドメインディレイDSPエフェクト関数の返り値として、Wet処理が
+  継続中でも時々 CELL_MS_CALLBACK_FINISHSTREAM を返していた不具合を
+  修正し、正しCELL_MS_CALLBACK_FINISHEDDRYを返すようにしました。
+
+- インパルスレスポンスリバーブ関数の返り値として、Wet処理が継続中でも
+  時々CELL_MS_CALLBACK_FINISHSTREAMを返していた不具合を修正し、
+  正しくCELL_MS_CALLBACK_FINISHEDDRYを返すようにしました。
+
+- ディレイDSPエフェクト関数の返り値として、Wet処理が継続中でも
+  時々CELL_MS_CALLBACK_FINISHSTREAMを返していた不具合を修正し、
+  正しくCELL_MS_CALLBACK_FINISHEDDRYを返すようにしました。
+
+- ピッチシフト関数の返り値として、Wet処理が継続中でも
+  時々CELL_MS_CALLBACK_FINISHEDDRYを返していた不具合を修正し、
+  正しくCELL_MS_CALLBACK_FINISHSTREAMを返すようにしました。
+
+- ATRACストリームがループの場合、デコードしたデータの最初の
+  データブロックの終わりにノイズが入ってしまう不具合を修正しました。
+
+- 1ストリームデータの中で始めからサンプル数512までのデータをミュートで
+  再生してしまう不具合を修正しました。
+
+- cellMSFXAuxSendSetVolumes()において、センドの全ボリュームが
+  設定できない場合がある不具合を修正しました。
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+<USBドライバ>
+- SDK150以前において、インタラプト転送またはアイソクロナス転送を行う
+  USBデバイス（Low/Full/High Speedデバイスの種類に依存せず）に対して
+  挿抜を行うと、システムがハングアップする可能性がある不具合を修正し
+  ました。
+

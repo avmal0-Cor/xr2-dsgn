@@ -1,0 +1,678 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 230.001
+                    Copyright(C) 2008 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+The following are known bugs, limitations and cautions on 
+the Reference Tool SDK package.
+
+New updates have the release version of this package. 
+
+----------------------------------------------------------------------
+Reference Tool
+----------------------------------------------------------------------
+- A problem has been found that when a program that outputs voice 
+  from RSX(TM) is activated, and then one of the following is 
+  performed, voice is not output.
+  - Plug-in/out the HDMI cable
+  - Switch the TV monitor power from Off to On (including the AV Amp)
+  - Switch between the TV monitor channels and set the HDMI input again
+    (including the AV Amp)
+
+- The following devices are not supported now.
+
+  - CompactFlash(R)
+  - SD Memory Card
+
+- For specifications regarding the Reference Tool, please refer to 
+  SDK_doc/jp(en)/pdf/development_basic/Reference_System-Supplement_*.pdf.
+
+----------------------------------------------------------------------
+CBE Specifications
+----------------------------------------------------------------------
+- Currently, the CBE that is equipped with each tool version can use 
+  six SPUs. 
+
+----------------------------------------------------------------------
+libdbg
+----------------------------------------------------------------------
+(Updated to Release 230.001)
+- The following functions are no longer supported from SDK220 version:
+
+   - cellDbgRawSpuInitialize()
+   - cellDbgRawSpuHandleInterrupt()
+   - cellDbgRawSpuSetRunControl()
+   - cellDbgRawSpuLockExecutionControl()
+   - cellDbgRawSpuUnlockExecutionControl()
+
+  These functions will be obsoleted from the future SDKs.
+
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+- Validation of a media or the file system itself cannot be performed 
+  from the Check menu in the Game column.
+
+  When submitting a master disc, make sure to verify the disc that no error
+  is present using the Disc Image Generator for PLAYSTATION(R)3 or
+  the Disc Image Checker for PLAYSTATION(R)3.
+
+----------------------------------------------------------------------
+System Utilities
+----------------------------------------------------------------------
+< SubDisplay Utility>
+- (B#41848)
+  To use the subdisplay utility, the PSP(TM) system software version 3.72
+  or later is required.
+
+- (B#49155) 
+  When cellSubdisplay() is called at the same time as the wired LAN is 
+  initialized(the interface is started), it may fail to call the function.
+
+< Access Point Utility >
+- To check the connection with PSP(TM), a ps3scan utility that is to be
+  released from PSP(TM) SDK3.80 is required.
+
+< Remote Play Utility >
+- (B#41848)
+  To perform remote play with the PLAYSTATION(R)3 system software version
+  2.00, PSP(TM) system software version 3.72 or later is required.
+
+< Content Search Utility >
+- When file paths to the still image and animation thumbnails of content
+  are created using cellSearchPrepareFile() and the thumbnails are changed
+  from the system software, the changes will not be reflected unless
+  cellSearchPrepareFile() is executed again.
+
+<On-Screen Keyboard Utility>
+- The optional dictionary feature is not supported.
+
+< Message Dialog Utility >
+- (B#42912)
+  When a string, that is passed to the argument of cellMsgDialogOpen2(),
+  is other than the UTF-8, it ends normally where an error should have
+  been returned.
+  Also the string that is passed to the argument is not displayed.
+  Instead, the following message dialog is displayed:
+
+    "An error occurred.
+      (8002B301)"
+
+  Note that (8002B301) in the above dialog is displayed as (FFFFFFFF) in
+  SDK 200 or before.
+
+< Audio Setting Utility >
+- cellAudioInGetAvailableDeviceInfo() does not support devices such as
+  EyeToy USB Camera(for PlayStation 2)/PLAYSTATION(R)Eye.
+  Those devices will be supported in the future release.
+
+- In the multi microphone mode, cellAudioInRegisterDevice() is executed with
+  an audio input device type preferred by the application specified to the
+  argument deviceType in order to resister the audio input device into
+  the system.
+  When cellAudioInRegisterDevice() is called, the system software
+  automatically assign a device number regardless of whether a matching audio
+  input device is found or not. Whether the audio input device that has the
+  device number is available or not can be checked through polling using
+  cellMicIsAttached() of libmic or an event notification from libmic.
+
+  Since a device number is automatically assigned as described above,
+  when multiple USB devices(audio input device) of the type that the game
+  application prefers are connected to PLAYSTATION(R)3, which device being
+  connected to a USB port has which device number cannot be uniquely
+  identified.
+  In such case, a user interface should be implemented to identify it such as
+  by displaying an indicator (volume) or the like on the screen.
+  Note that a mechanism that can explicitly assign a device number to
+  a specific device will be provided in the future release.
+
+< Video Configuration Utility >
+- With SDK210 or before, the resolutions such as 960x1080/1280x1080/1440x1080/
+  1600x1080 were not available when the resolution of the movie output is set 
+  to WUXGA in the development environment, however this limitation has been
+  removed.
+
+< Music Utility >
+- When the execution of cellMusicSetPlaybackCommand() terminates normally,
+  the callback function [specified in the fourth argument, func,
+  of cellMusicInitialize()] is not called as it should be.
+  This bug does not occur with cellMusicSetPlaybackCommand2().
+  (TechnoteID:200803-08  https://ps3.scedev.net/technotes/view/701)
+
+- With the playback feature that does not use the memory container, when
+  all songs are repeated and the shuffle is set to ON, the last song
+  cannot be skipped (Next) and fast-rewinding to the previous song is not
+  possible with the first song, and then it stops playing. This problem
+  will be fixed in SDK 240.
+
+(Added to Release 230.001)
+- At the change of the songs, callback functions of
+  cellMusicSelectContents() / cellMusicSelectContents2() are not called.
+  The value to be returned by the playback function is
+  CELL_MUSIC_ERROR_BUSY / CELL_MUSIC2_ERROR_BUSY.
+  This bug will be fixed in the SDK240.
+
+(Added to Release 230.001)
+- When cellMusicSetSelectionContext() or cellMusicSetSelectionContext2() is 
+  executed while playing back an audio file using the music utility, 
+  the callback function may not be executed.
+  (TechnoteID:200804-27 https://ps3.scedev.net/technotes/view/736)
+
+< Game Update Utility >
+-  When the Reference Tool is booted having "Debugger mode" specified to
+   "Boot parameters" using the Administration Tool or the like,
+   the patch distribution feature of the Game Update utility cannot be
+   utilized.
+
+< Web Browser Utility>
+- Files cannot be downloaded with the downloader.
+
+- The handler onMouseOver/onMouseOut of JavaScript does not work
+  properly. Use onFocus/onBlur instead.
+
+- The performance may be slow when using ClickableMap.
+
+< Background Download utility >
+- The following is a notice regarding the behavior of background downloads
+  when they are performed while a game application is running.
+
+  Although a background download will usually continue while a game
+  application is running, it will be stopped by any one of the following
+  conditions.
+
+    - The game application has created more than one socket
+    - There is more than one connection that uses the NP signaling utility
+    - The AV chat utility or the AV chat 2 utility is being used
+
+  The background download will resume once the condition that stopped it
+  no longer applies. 
+  Please do not create a game application that is dependent on the progress of
+  background downloads.
+
+  If new conditions are added to the above list of conditions that stop
+  background downloads given the addition of a new utility, or if there are
+  any changes regarding this issue, it will be announced in this technote.
+  (TechnoteID:200803-15  https://ps3.scedev.net/technotes/view/708)
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- If you try to create upper limit or more memory containers with
+  sys_memory_container_create(), an ID that is the same as that of
+  the memory container that has already been allocated is returned
+  for a new memory container. When this occurs, the older memory
+  container may not be destroyed with sys_memory_container_destroy()
+  and may not be retrieved by the system even at the time of game
+  process termination.
+
+  [Workaround]
+  Please make sure that the number of memory containers to be created
+  with a game process at the same time is less than 10.
+
+- The PPU program whose stack size is set to 4KB by
+  SYS_PROCESS_PARAM can not be executed because a DSI occurs before
+  the main function is called.
+
+  [Workaround]
+  Please set the stack size of a Primary PPU Thread to 8 KB or more.
+
+- (B#47188)
+  When the game process is terminated without discarding the virtual
+  memory that is generated using sys_vm_memory_map(), the system may crash.
+
+  [Workaround]
+  Explicitly discard the virtual memory area that is generated using
+  sys_vm_memory() by calling sys_vm_unmap() before the game process is
+  terminated.
+
+- When a memory straddling both a vertual memory area and an unmapped
+  area is passed to the system call, the kernel may get panicked.
+
+  [Workaround]
+  When executing a system call that returns EFAULT, do not pass a
+  memory straddling both a virtual memory area and an unmapped area
+  in order to use it for exchanging a value between the user and the
+  kernel.
+
+(Added to Release 230.001)
+- When sys_vm_get_statistics() is called to obtain statistics information 
+  for a virtual memory area that has been allocated with a 1MB page size, 
+  the amount of physical memory being used as represented by the pmem_used 
+  variable of the sys_vm_statistics_t structure is always 0.
+  (TechnoteID:200804-19 https://ps3.scedev.net/technotes/view/728)
+
+(Added to Release 230.001)
+- A kernel panic can occur for a virtual memory area if its physical 
+  memory allocation is still locked with sys_vm_lock() when unmapped.
+  (TechnoteID:200805-01 https://ps3.scedev.net/technotes/view/737)
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- The vertical rendering function does not support the Chinese character
+  positioning.
+  Also, it does not replace the 2-byte () and {} into the vertical
+  character codes when vertical character displacement is performed
+  internally.
+  To avoid this problem, directly specify the vertical character codes
+  or use the single-byte () and {}.
+
+- The function for vertical writing does not support the proportional
+  vertical writing layout.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- As a part of the reduction in the memory usage of the system software
+  in SDK220, the amount of memory that is used by the file system by
+  default has been reduced.
+  Due to this change, the performance may be degraded slightly as
+  compared to SDK21x when data is written and read in finer units (16KB
+  or less). Also, when multiple file accesses are made from multiple
+  threads at the same time, the request processing time may slightly
+  increase.
+  The performance can be increased by adding memory upon request of the
+  application using an API such as cellFsSetIoBuffer that is newly added.
+
+- When the number of files to open at the same
+  time in the CFS(SYS_DEV_HDD0) exceeds the upper limit, an error is
+  returned from SDK220 onwards.
+  Please be noted that when you update SDK21x to SDK220, an error that
+  was not returned previously may be observed.
+
+(Added to Release 230.001)
+- (B#47766)
+  A bug has been found that blocks the file operation permanently
+  after you specify 0 for the file size at calling cellFsTruncate()
+  or cellFsFtruncate() for the /dev_hdd0.
+  (TechnoteID:200804-07 https://ps3.scedev.net/technotes/view/716)
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- dds2gtf cannot convert the following input formats correctly.
+  This problem will be fixed in the future release.
+  - G8R8_G8R8, R8G8_B8G8
+  - UYVY, YUY2
+  - R16F
+
+----------------------------------------------------------------------
+libperf
+----------------------------------------------------------------------
+- When the Lv-2 system call trace is enabled with the back trace
+  on the program that is linked with libperf.a of SDK170 or before,
+  it does not work on the target system that is updated to SDK 180 and
+  later.
+  (applicable to libperf/ppu sample)
+  Please use libperf.a that is released after SDK 180.
+
+- (B#43808)
+  The Tuner for PLAYSTATION(R)3 cannot be used to measure the performance
+  of the sample program of libperf because the measurement module on
+  the target is utilized.
+
+----------------------------------------------------------------------
+libftp
+----------------------------------------------------------------------
+- Transfer speeds start to slow significantly once more than two
+  simultaneous transfer streams are employed.
+
+- It may fail to make a connection with Internet Explorer 6.0.
+
+- Passive transfer mode (PASV) is currently not supported.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- When playing back a PAMF file, few frames(1 to 3 frames) at the end of
+  a stream cannot be obtained.
+
+- Only the playback of a MP4 file that is created by the recording utility
+  and is placed on the built-in HDD is guaranteed. Do not embed a source code
+  that plays back other types of MP4 file in the application.
+
+- The AVI file does not support the index in the OpenDML(AVI2.0) format.
+  It only supports the idx1 chunk format.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- When connecting or disconnecting a device to a USB port of the
+  machine body, other USB devices already connected may be
+  disconnected or may have an impact on its data communication.
+  To avoid these problems, connect a self power hub to one of the USB
+  ports of the machine body.
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- cellGcmSetZcull() cannot set the unbind feature for the Zcull area.
+  To set the unbind feature for the Zcull area, use cellGcmUnbindZcull().
+
+- When the tile setting is made for the overlapping areas in RSX(TM) using
+  cellGcmSetTile(), the address conversion feature of RSX(TM) will not work
+  correctly.
+
+  Accordingly, new functions cellGcmSetTileInfo() and cellGcmBindTile()
+  have been added to check whether the tile areas are overlapping.
+
+  Please use cellGcmSetTileInfo(), cellGcmBindTile() and cellGcmUnbindTile()
+  instead of cellGcmSetTile() and cellGcmSetInvalidateTile() for future
+  development.
+  cellGcmSetTile() and cellGcmSetInvalidateTile() will be removed in the
+  future release.
+
+(Added to Release 230.001)
+- (B#50684)
+  The bug has been found in the debug version libgcm(libgcm_cmddbg) as below:
+  Bug: 
+  An error is returned when you specify 2048 or more value for the
+  argument "index" of the debug version cellGcmSetRenderEnable().
+  
+  Usually, if you set the report area to the main memory using
+  cellGcmSetReportLocation(), you can specify up to 1M(1024*1024) for
+  the index. However this can not be specified in the debug version due to
+  the bug above.
+  This will be fixed in the future release.
+
+(Added to Release 230.001)
+- (B#51153)
+  The following bug has been found in the GCM Method Macro:
+  Bug: Unnecessary semicolons are added to the end of the following macros:
+
+        #define CELL_GCM_METHOD_HEADER_DRAW_INDEX_ARRAY(num) \
+          CELL_GCM_METHOD(CELL_GCM_METHOD_ADDRESS_DRAW_INDEX_ARRAY, num);
+
+        #define CELL_GCM_METHOD_HEADER_DRAW_INDEX_ARRAY_NI(num) \
+          CELL_GCM_METHOD_NI(CELL_GCM_METHOD_ADDRESS_DRAW_INDEX_ARRAY, num);
+
+        #define CELL_GCM_METHOD_HEADER_BEGIN_END(num) \
+          CELL_GCM_METHOD(CELL_GCM_METHOD_ADDRESS_BEGIN_END, num);
+
+  This will be fixed in the future release.
+
+(Added to Release 230.001)
+- When game applications built with SDK 220 are run on the system software 
+  in SDK 220 and later, screen flips take longer to execute.
+  (TechnoteID:200804-22  https://ps3.scedev.net/technotes/view/731)
+
+(Added to Release 230.001)
+- The event CELL_GCM_PM_SCLK_PREROP_VALID_PACKET may not be registered 
+  correctly with cellGcmSetPerfMonEvent() as a target event.
+  For this reason, the result of cellGcmGetPerfMonCounter() for 
+  CELL_GCM_PM_SCLK_PREROP_VALID_PACKET events can be incorrect.
+  (TechnoteID:200805-02  https://ps3.scedev.net/technotes/view/738)
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- Restrictions on the USB Video Class (UVC) Camera
+  1. Does not support a UVC camera that is not compliant with the UVC
+     even though it is USB 2.0 compliant.
+  2. Does not support a camera that has no streaming function.
+  3. Does not support a camera that is connected via the USB 1.1 hub.
+  4. Does not support the mirror function.
+  5. Support only a single camera.
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+(Added to Release 230.001)
+- There are errors in the macro names, which are indicated under 
+  "Description" of the cellPadSetPortSetting() function in the libpad 
+  reference, to be specified for the mode argument.
+  (TechnoteID:200804-20  https://ps3.scedev.net/technotes/view/729)
+
+----------------------------------------------------------------------
+libpad for Windows
+----------------------------------------------------------------------
+- Only Windows XP is supported.
+  Windows Vista will be supported in the future.
+
+----------------------------------------------------------------------
+dt Command
+----------------------------------------------------------------------
+- When boot=dbg is set using a dtcparam that is provided in SDK192 or
+  before and the boot parameter is displayed using the dtcparam command
+  in SDK200 or later, boot=unknown is displayed. Reset boot=dbg using the
+  dtcparam command in SDK200 or later.
+
+----------------------------------------------------------------------
+Sample Program(cell/samples)
+----------------------------------------------------------------------
+- When the following samples are built using the SNC PPU Toolchain,
+  they do not behave correctly and a deadlock occurs. Note that a sample
+  that is built using GCC411 runs normally.
+
+  samples/tutorial/ParticleSimulator/07_spu_particles_spurs_task
+  samples/tutorial/ParticleSimulator/08_spu_particles_gl_events
+
+- When booting the self file of the following samples using
+  the Reference Tool in the debugger mode, confirm that the following
+  message is output to the TTY:
+
+  Samples:
+    samples/sdk/network/np/np_game
+    samples/sdk/sysutil/subdisplay/msgdialog
+    samples/sdk/sysutil/avc2/voicechat
+
+  Message:
+   "*** network ready. myaddr: XXX.XXX.XXX.XXX ***"
+    (XXX.XXX.XXX.XXX indicates the IP address of your PLAYSTATION(R)3.)
+
+  When the self file is booted before the message is output, the samples
+  do not run correctly because it assumes that the network is not connected.
+
+- When the program is to be built on Visual Studio 2005 because the
+  solution/project files of Visual Studio 2003 taht comes with the sample
+  have been converted into Visual Studio 2005 version, it is required to
+  set as follows:
+
+  [Maximum number of parallel project builds] should be set with 1 from
+  [Tools] -> [Options] -> [Projects and Solutions] -> [Build and Run].
+  When this maximum number is set with 2 or more, it may fail to build a
+  project.
+
+- When the solution file that contains Framework.vcproj is converted
+  from VisualStudio2003 version into VisualStudio2005 version, a build
+  structure, which does not exist in the solution file of VisualStudio2003
+  version, is wrongly added.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- The *.pic file can be found under cell/samples/sdk/sound/multistream/
+  dspeffectsm, however, use the PPU object file(*.ppu.o), that is located
+  under cell/target/spu/lib/pic/multistream, in the game application.
+
+- cellMSSystemConfigureSysUtil() is to be deleted in the future.
+  Please migrate to cellMSSystemConfigureSysUtilEx(), that has been added
+  to SDK200.002, in the game application.
+
+- In Time Domain only mode, ADPCM data at low sample rates (< 24khz)
+  can cause noise.
+
+- When samples are compiled individually using the project file that is
+  contained in each sample, it is required to build dependencies among
+  the following samples.
+  Please refer to readme_*.txt of each sample for more details.
+  Note that when the whole samples are compiled using the project files
+  (samples.sln/samples-2005.sln) or the makefile contained immediately under
+  samples/sdk/sound/multistream, the dependencies can be ignored.
+
+  dsp_sample
+  eq_sample
+  rain_sample
+  simple_created_td
+  simple_created_fd
+
+- When each sample is compiled using the SNC compiler, the sample data may not
+  be loaded correctly because the environment variable CELL_SDK is used in
+  the sample data path.
+
+  When the CELL_SDK is defined with a path other than "/usr/local/cell/",
+  it is required to alter the SAMPLE_CELL_SDK path in the sample source
+  according to the environment.
+
+  This problem does not occur when the GCC compiler is used.
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- The Control Console Client library is available only with
+  the Visual Studio 2005.
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- When creating a room or joining a room in one of the NP matching 2
+  utility samples below, the On-Screen keyboard will be displayed
+  for entering the room password. A hang-up will occur if you attempt
+  to sign-out from the PLAYSTATION(R)Network while this on-screen keyboard
+  is displayed.
+
+    np_matching2_allow_block_list
+    np_matching2_group_room
+    np_matching2_room_password
+    np_matching2_slot_reservation
+    np_matching2_team_id
+  (TechnoteID:200803-14   https://ps3.scedev.net/technotes/view/707)
+
+(Added to Release 230.001)
+- When an error occurs and a session of the NP matching 2 service becomes 
+  disconnected, the session may remain on the server without being cleared 
+  as it should be.  This will enable you to obtain session information 
+  that should not normally be obtained. However, an attempt to join 
+  the session will fail.
+  (TechnoteID:200804-15   https://ps3.scedev.net/technotes/view/724)
+
+----------------------------------------------------------------------
+Standard C/C++ Library
+----------------------------------------------------------------------
+<SPU>
+- (B#20077) 
+  When the new_handler is not set in the C++ library, and failed to allocate
+  memory using "new", it enters into the infinite loop.
+
+- If the following compile options are specified when compiling
+  a program on the PPU side, many warnings may be output.
+
+  -Wall -Wundef -Wundef -Wsystem-headers -Wcast-qual
+
+- When compiling an SPU program that included math.h, an error occurs
+  if -fsingle-precision-constant is specified as the compile option.
+
+- When including the system header, include it outside extern "C" or
+  extern "C++".
+
+  For example, an error may occur if a program such as below is compiled:
+
+    extern "C" {
+      ...
+
+      #include <yyyy> // NG : Including within extern "C".
+
+      ...
+    }
+
+  The error can be avoided by rewriting the program as shown below:
+
+    #include <yyyy>
+    extern "C" {
+
+      ... 
+
+    }
+
+<PPU>
+- When starting up a program in which <iostream> is included, the constructor
+  of iostream will call the new operator. When you want to avoid calling
+  "new" before executing the main function, do not use iostream.
+
+<PPU>
+- There are following limitations on the usage of atexit function.
+
+  * If atexit function is used in a C++ global constructor, the behavior
+    is different from the C++ standard.  All the registered functions are
+    invoked prior to all the global destructors.
+
+<PPU>
+- If you use class ios_base or any of its derived classes (fstream,
+  iostream, stringstream, strstream, etc.) in PRX, create their
+  instances in ELF, and pass the pointers to them to PRX.  If they are
+  created in PRX, a DSI (data storage interrupt) may occur in function
+  _Fac_tidy() at the termination of the PPU program.
+
+<SPU>
+- If very large amount of stack or heap area is used, heap area may be
+  destroyed.  SPU ABI allows accessing memory at negative offsets from
+  stack pointer up to -2000 as well as positive offsets, but using
+  negative offsets is not guaranteed in some cases due to a bug.
+  Negative offsets from stack pointer are used in spu_printf(), leaf
+  functions, etc.
+
+----------------------------------------------------------------------
+libmixer
+----------------------------------------------------------------------
+(Added to Release 230.001)
+- The sample value to be specified for the argument "samples" of
+  cellSurMixerSurBusAddData() must be multiples of 4.
+
+----------------------------------------------------------------------
+NP IN-GAME Commerce 2 Utility
+----------------------------------------------------------------------
+(Added to Release 230.001)
+- In the checkout processing, the system returns an error without
+  prompting the user to enter a password even for an account which
+  requires password entry at purchasing.
+  Please invalidate the password entry at purchasing before using it.
+
+(Added to Release 230.001)
+- If you register a credit card in the checkout processing,
+  the process may become unstable.
+  Please register it from the "Account Management" 
+  on the System Sotware beforehand.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs Task>
+(Added to Release 230.001)
+- (B#50813)(B#50820)
+  When either of the functions listed below is executed on
+  a SPURS lock-free queue, which has been initialized by
+  cellSpursLFQueueInitialize() or cellSpursLFQueueInitializeIWL()
+  with CELL_SPURS_LFQUEUE_ANY2ANY set to the initializing functions'
+  direction argument, the PPU thread that called the function may be blocked.
+
+  - cellSpursLFQueueTryPush()
+  - cellSpursLFQueueTryPop()
+  (TechnoteID:200804-13 https://ps3.scedev.net/technotes/view/722)
+
+<libsync>
+(Added to Release 230.001)
+- (B#50813)(B#51237)
+  When a lock-free queue is initialized with CELL_SYNC_QUEUE_ANY2ANY
+  set to the argument "direction" of cellSyncLFQueueInitialize(),
+  a PPU thread calling one of the following functions on the
+  lock-free queue might not be blocked.
+
+  - cellSyncLFQueuePush()
+  - cellSyncLFQueuePop()
+  (TechnoteID:200804-14  https://ps3.scedev.net/technotes/view/723)
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+(Added to Release 230.001)
+- The FX Composer 2 2.4(2007-11-20) and the current NVShaderPerf package
+  cannot be installed at the same time due to the compatibility problem.
+  NVShaderPerf_16320.dll that is installed into the dll common directory
+  by the FX Composer 2 causes the NVShaderPerf to crash.
+  This problem will be fixed in the next release of the FX Composer 2.
+
+(Added to Release 230.001)
+- When a fragment shader, with a conditional branch or a loop block written 
+  at the end of its program, is compiled; the correct binary may not be output.
+  (TechnoteID:200804-18 https://ps3.scedev.net/technotes/view/727)
+

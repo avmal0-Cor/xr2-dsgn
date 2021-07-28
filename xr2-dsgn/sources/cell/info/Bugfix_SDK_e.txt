@@ -1,0 +1,106 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 320.001
+                    Copyright(C) 2010 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 320.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 320.001
+======================================================================
+----------------------------------------------------------------------
+System Software
+----------------------------------------------------------------------
+<Check menu in the Game column>
+- The following bug has been fixed in the check that is available from the 
+  Check menu in the Game column:
+  - The SPU GUID is not correctly output to the log.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<JDL>
+- The following problem has been fixed.
+
+  - When creating a SPURS job with JDL or the FunctionOffload utility, 
+    and when executing the job on an SPU, the SPU may hang up or stop 
+    with an assert.
+    (TechnoteID:200912-18 https://ps3.scedev.net/technotes/view/993)
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - (B#80383)
+    If the fios::schedulercache checkModification is enabled, read performance
+    can be degraded.
+
+  - (B#80536)
+    A single file in a PSARC archive is treated as empty when reading 
+    directories.
+
+  - (B#80825)
+    Some FIOS threads have the same name, making it difficult to monitor 
+    each of them.
+
+  - (B#80826)
+    If the pLayerID passed to overlay::addLayer() is NULL, an error 
+    is returned.
+
+  - (B#80997)
+    The PSARC tool doesn't align signed and encrypted files if "-j1" or
+    "--jobs=1" is specified, or if it runs on a single-core CPU.
+
+  - (B#81225)
+    FIOS will retry an I/O request forever if the file system returns
+    CELL_FS_EIO (in cases where there is no disc ejection).
+
+  - (B#81369)
+    The cache space check does not ensure enough 
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- (B#81777)
+  Because the root information was not completely deleted when the IP 
+  address was released, when it was attempted to connect to an environment 
+  where other IP address was assigned, a communication error could happen. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+DECI3
+----------------------------------------------------------------------
+- The following problems have been fixed.
+
+  - In SDK310 or later, a bug has been found in the target where it is 
+    deemed as though the BD remote controller is connected when the 
+    controller key is being played by CTRLP of DECI3. 
+
+  - In SDK310 or later, when file transferring from a host PC to 
+    a development machine using DECI3, data after the first 4GB cannot be 
+    transferred.
+    (TechnoteID:200912-19 https://ps3.scedev.net/technotes/view/994)
+
+----------------------------------------------------------------------
+BD Emulator
+----------------------------------------------------------------------
+- (B#75751)
+  In DECR-1000/DECR-1400/Debugging Station, a problem that occurs when 
+  either of the following procedures is performed have been fixed:
+
+  <Procedure1>
+  1. Select "BD Emulator (USB)" from [Settings] -> [Debug Setting] -> 
+     [Blu-ray Disc Access] menu
+  2. Boot the system in the system software mode
+  3. Power off the system without inserting a USB mass storage
+  4. The power of the system cannot be turned off correctly in the debugger mode
+  <Procedure2>
+  1. Select "BD Emulator (USB)" from [Settings] -> [Debug Setting] -> 
+     [Blu-ray Disc Access] menu
+  2. Set the system in the debugger mode and boot the system without 
+     inserting a USB mass storage
+  3. Booting the system takes considerable time
+

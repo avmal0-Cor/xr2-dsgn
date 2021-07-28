@@ -1,0 +1,514 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 160.008
+                    Copyright(C) 2007 Sony Computer Entertainment Inc.
+                                                   All Rights Reserved.
+======================================================================
+以下にReference Tool SDKパッケージの不具合修正を記述します。
+
+  - Release 160.008 の不具合修正
+
+======================================================================
+Release 160.008 の不具合修正
+======================================================================
+----------------------------------------------------------------------
+Win32版dtcfilesv(host-win32/bin/dtcfilesv.exe)
+----------------------------------------------------------------------
+- オープン済みのファイルに対してのファイルの削除ができない不具合を
+  修正しました。
+
+- ファイルパスの構成要素にファイルが含まれていた場合に
+  ENOTDIRが返らない不具合を修正しました。
+
+- cellFsFtruncate()/cellFsTruncate() のファイルサイズsizeに
+  ULLONG_MAXを指定したときにEINVALが返らない不具合を
+  修正しました。
+
+- "/host_root/c:/"へのcellFsOpenDir()/opendir() が失敗する不具合を
+  修正しました。
+
+- ファイルパスの長さが255バイト以上使えなかった不具合を修正しました。
+ （ただしホスト側で扱う絶対パスの長さが1055文字に制限されます。）
+
+----------------------------------------------------------------------
+CODEC
+----------------------------------------------------------------------
+<libpngdec>
+- カラーテーブルを含むPNGデータにおいて、SPUスレッドで
+  デコード処理を行った場合、デコード処理の１ライン毎に
+  カーネルとの通信が発生するため、カーネルの処理負荷が
+  増大し、音声がミュートするなど他の処理に悪影響を及ぼす
+  可能性がある不具合を修正しました。
+
+<libsail>
+- samples/streaming以下のサンプルにおいて、ピクセルアスペクト比を
+  反映した正しい画サイズで描画するように修正しました。
+
+----------------------------------------------------------------------
+C/C++標準ライブラリ
+----------------------------------------------------------------------
+<PPU/SPU>
+- complex.hの以下の関数に引数として実部も虚部も正の最大値、または実部も
+  虚部も負の最大値を与えると、誤った結果を返すという不具合を修正しました。
+  cacosh, cacoshf, cacoshl
+  ctan, ctanf, ctanl
+  ctanh, ctanhf, ctanhl
+  csqrt, csqrtf, csqrtl
+
+<PPU/SPU>
+- complex.hの以下の関数に引数として実部も虚部も正の最大値を与えると、
+  誤った結果を返すという不具合を修正しました。
+  clog, clogf, clogl
+  cpow, cpowf, cpowl
+
+<PPU/SPU>
+- wchar.hの以下の関数に不正な文字を含む文字列を与えると、第二引数で指定した
+  位置に正しいポインタを返さないという不具合を修正しました。
+  wcstod, wcstof, wcstold
+
+<PPU/SPU>
+- complex.hの以下の関数に引数として実部に1、虚部に0を与えると、誤った結果を
+  返すという不具合を修正しました。
+  catanh, catanhf, catanhl
+
+<PPU/SPU>
+- complex.hの以下の関数に引数として負の値を与えると、誤った結果を返すと
+  いう不具合を修正しました。
+  lgamma, lgammaf, lgammal
+
+<PPU/SPU>
+- math.hの以下の関数に引数として正の最大値を与えると、誤った結果を返すと
+  いう不具合を修正しました。
+  asinh, asinhf, asinhl
+
+<PPU/SPU>
+- math.hの以下の関数に引数として1.0を超える値を与えると、返されるNaNの符号が
+  負になっているという不具合を修正しました。
+  atanh, atanhf, atanhl
+
+<PPU/SPU>
+- math.hの以下の関数に引数として負の最大値を与えると、誤った結果を返すと
+  いう不具合を修正しました。
+  cosh, coshf, coshl
+
+<PPU>
+- 以下の不具合を修正しました。
+
+  - powf(0.1f, 46.0f) がINFINITYを返す(正しくは0.0f)という不具合があります。
+    powf(0.001f, -15.0f) が0.0fを返す(正しくはINFINITY)という不具合があります。
+    yが負の奇整数のとき powf(-INFINITY, y) が0.0fを返す(正しくは-0.0f)という
+    不具合があります。
+
+<PPU>
+- Mersenne Twister (libmt19937.a)を使用する場合に、コンパイラに-O0オプションを
+  指定すると、リンク時にエラーが発生するという不具合を修正しました。また、C++で
+  libmt19937.aの関数を使用できないという不具合を修正しました。
+
+<PPU/SPU>
+- ヘッダvalarrayの関数absにvalarray<int>型の引数を与えると、コンパイル時に
+  エラーが発生するという不具合を修正しました。
+
+<PPU>
+- ヘッダstdlib.hの関数memalignの第一引数に0xFFFFFFFFを与えると、プログラムの
+  実行が停止するという不具合を修正しました。
+
+<PPU/SPU>
+- 以下の不具合を修正しました。
+
+  - ヘッダstdlib.hをincludeしているプログラムを、以下のオプションのどれか
+    を使用してコンパイルした場合、PPU側ではリンク時、SPU側ではC++プログラ
+    ムのコンパイル時にエラーが発生します。
+    -D_NO_INLINE_DEFINITIONS
+    -std=c89
+    -std=gnu89
+    -std=c++98
+
+<PPU/SPU>
+- ヘッダbits/tt800.hを直接includeした場合に問題が発生しないようにするため、
+  include guardを使うように修正しました。
+
+<PPU/SPU>
+- ヘッダ中で使用している以下のマクロ名の先頭に_をつけるようにし、
+  アプリケーション作成時に定義する名称と重複しないようにしました。
+  CPOLY(x)        ppu/include/bits/sincos_c.h
+  POW2(x)         ppu/include/bits/sincos_c.h
+  SPOLY(x)        ppu/include/bits/sincos_c.h
+  LOWER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MATRIX_A        ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  UPPER_MASK      ppu/include/bits/mt19937_impl.h, spu/include/bits/mt19937.h
+  MAX_RESULT      ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LN2           ppu/include/bits/f_exp2f.h, spu/include/bits/f_exp2f.h
+  M_LOG2E         ppu/include/bits/f_expf.h, spu/include/bits/f_expf.h
+  M_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800         ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  N_TT800_QWORDS  ppu/include/bits/tt800_globals.h, 
+                  spu/include/bits/tt800_globals.h
+  VERSION_1       spu/include/bits/strncmp.h
+  VERSION_2       spu/include/bits/strncmp.h
+  VERSION_3       spu/include/bits/strncmp.h
+  VERSION_4       spu/include/bits/strncmp.h
+
+<PPU/SPU>
+- ヘッダvectorのメンバ関数vector::beginを使用すると警告が表示されるという
+  不具合を修正しました。
+  この修正に伴い、以下のGCCのNoticeも解除となりました。
+
+  <PPU側> 
+  - 例のコードのようなプログラムをコンパイルした場合、警告がコンソール上へ 
+    出力されることがあります。 
+ 
+    例) 
+    std::vector<bool> myArray 
+    std::vector<bool>::iterator it = myArray.begin() 
+
+<PPU/SPU>
+- 以下のヘッダを使用し、-Wshadowオプションを指定してコンパイルすると、
+  警告が表示されるという不具合を修正しました。
+  PPU側: complex, istream, string, valarray, xlocnum, xlocale
+  SPU側: strcat.h, strcpy.h, strncat.h, strncpy.h, complex, valarray
+
+<PPU>
+- ヘッダfenv.hの関数fegetexceptflagが正しい値を返さないという不具合を
+  修正しました。
+
+<PPU>
+- ヘッダfenv.hの関数feholdexceptが正しい値を返さないという不具合を
+  修正しました。
+
+<SPU>
+- 以下の不具合を修正しました。
+
+  - fenv.hの関数fesetroundで丸めモードを設定すると、vector double型のslice
+    1に対する演算にのみ設定が有効となり、double型の演算およびvector double
+    型のslice 0の演算では、最も近い偶数への丸め(デフォルト)のままとなって
+    しまう不具合があります。
+
+    fesetroundの代わりに以下のコードを使用することで、この問題を回避できます。
+    FE_TOWARDZEROを設定したいモードに置き換えてください。
+    vector unsigned int r=spu_mffpscr();
+    r=spu_sel(r,spu_splats(((unsigned int)FE_TOWARDZERO*5)<<8),
+              ((vector unsigned int){0x0000FF00,0,0,0}));
+    spu_mtfpscr(r);
+    技術情報「SPUの倍精度浮動小数点演算の丸めモード制御について」も参照し
+    てください。
+
+<PPU>
+- ヘッダfastmath.hの関数lrintfが正しい値を返さないという不具合を修正しました。
+
+<PPU>
+- closedir関数を何度も呼び出すと、mutex IDが枯渇するという不具合を
+  修正しました。
+
+<PPU>
+- 以下のヘッダファイルに、SN Systems製コンパイラをサポートするための
+  修正をしました。
+  ppu/include/bits/fmodf4.h
+  ppu/include/bits/remainderf4.h
+  ppu/include/stddef.h
+  ppu/include/yvals.h
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- Raw SPU を破棄したとき関連付けられた割り込みスレッド、割り込み
+  タグが回収されないという問題を修正しました。
+
+- sys_spu_thread_group_create() の属性の type が不正な値であった場合
+  本来 EINVAL であるところを ENOSYS を返す可能性がある問題を修正しました。
+
+- sys_spu_image_import() の仕様を変更し TRC と合わせました。
+  SELF ファイルを渡した場合、ENOEXEC が返ります。
+
+- sys_raw_spu_create()/sys_spu_thread_group_create() が EABORT を
+  返す可能性があるという問題を修正しました。
+
+- sys_mmapper_change_address_access_right() を用いて、同じ領域の
+  アクセス権を2回以上変更しようとする場合に、2回目以降の呼び出しに
+  失敗してしまう不具合を修正しました。
+
+----------------------------------------------------------------------
+システムソフトウェア(GUI) 
+----------------------------------------------------------------------
+- 以下の制限事項はSDK160以降より解除されております。
+
+  - システムソフトウェアに以下のメニューを追加しましたが、現在使用する
+    ことは出来ません。 
+     設定 -> 本体設定 -> NP Title ID 
+     ネットワーク ->Title Store Preview 
+
+----------------------------------------------------------------------
+システムユーティリティ
+----------------------------------------------------------------------
+< ビデオ設定ユーティリティ >
+- 以下の制限事項はSDK160以降より解除されております。
+
+  - CELL_VIDEO_OUT_PORT_NETWORKの機能は現在のSDKではサポートしておりません。
+    今後のバージョンアップにて正式にサポートする予定です。
+
+< オーディオ設定ユーティリティ >
+- 以下の制限事項はSDK160以降より解除されております。
+
+  - CELL_AUDIO_OUT_PORT_NETWORKの機能は現在のSDKではサポートしておりません。
+    今後のバージョンアップにて正式にサポートする予定です。
+
+< メッセージダイアログユーティリティ >
+- 以下の不具合を修正しました。
+
+  - cellMsgDialogAbort() によるメッセージダイアログの強制終了のあと、すぐに 
+    メッセージダイアログユーティリティやセーブデータユーティリティなどの
+    画面UI付きシステムユーティリティを呼び出すと、以前の SDK では問題なかった
+    ケースでも CELL_SYSUTIL_ERROR_BUSY が返る可能性があります。
+
+    CELL_SYSUTIL_ERROR_BUSY が返った場合、0.2秒ほどsleepしてからリトライする
+    などの処理で回避してください。
+
+< セーブデータユーティリティ >
+- 不正なコンテンツ情報を表示した後、他の正常なコンテンツ情報も
+  表示されなくなる場合があるという不具合を修正しました。
+
+- 新規セーブ時セーブデータアイコンが正しく表示されない場合がある
+  という不具合を修正しました。
+
+----------------------------------------------------------------------
+NPスコアランキングユーティリティ
+----------------------------------------------------------------------
+- sceNpScoreRecordScore(), sceNpScoreRecordScoreAsync()の
+  引数scoreCommentに、NULL及び空文字列を設定できるよう
+  修正しました。
+
+- スコアランキングの非同期APIでconstの付いた引数の
+  メモリはライブラリ内部で別メモリに保持するようにし、
+  関数リターン後に即開放出来るように修正いたしました。
+  ただし、sceNpScoreRecordGameDataAsync()の第6引数の添付データ
+  については必要となるメモリサイズが大きいため現状を仕様とし、
+  その旨リファレンスドキュメントに追記しました。
+
+----------------------------------------------------------------------
+NP ベーシックユーティリティ
+----------------------------------------------------------------------
+- OfflineやOut of Contextのイベントのとき、通知されたイベントが
+  常にPresenceイベントという不具合を修正しました。
+
+----------------------------------------------------------------------
+libhttp
+----------------------------------------------------------------------
+- 4GB以上のファイルをダウンロードできない不具合を修正しました。
+
+----------------------------------------------------------------------
+libnet
+----------------------------------------------------------------------
+- ネットワーク API を呼び出したときの Lv-2 kernel の
+  エラーコード(0x800100**) が -0x800100** と正の大きな値になる
+  不具合を修正しました。
+
+- socketselect()、socketpoll() の各 API でエラーが返ってきたとき、
+  ドキュメントの記述に反し、対象のソケットだけでなく複数のソケットが
+  ready 状態になるため、どのソケットに対してのエラーかを特定できない
+  という問題を修正しました。
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- SN Systems製 PPU Compiler でコンパイルできるようにインライン関数
+  ヘッダーファイルを修正しました。
+
+- SPU用ライブラリのcellGcmSetSurface()が正しくコマンドを生成して
+  いなかった不具合を修正しました。
+
+- RSX(R)エラー出力メッセージのTexture RemappingのInputの並びが
+  間違っていた不具合を修正しました。
+
+- tutorial/CgTutorial/GCM/ShadowMap サンプルにおいて、L1/R1ボタン操作
+  でのズーム方向が逆であった不具合を修正しました。
+
+- 以下の制限事項はSDK160以降より解除されております。
+
+  - 下記未使用定数を今後のバージョンで削除する予定です。
+    CELL_GCM_BLEND_COLOR
+    CELL_GCM_BLEND_EQUATION
+    CELL_GCM_FUNC_FUNC_ADD_SIGNED
+
+----------------------------------------------------------------------
+GTF
+----------------------------------------------------------------------
+- DDS2GTFでFP16フォーマットのテクスチャをSwizzle変換した際に
+  画像が90度左回転してしまう不具合を修正しました。
+
+- リニアフォーマットのキューブマップを作成する際にFaceを128バイトに
+  アラインしなくてもよい不具合を修正しました。
+
+----------------------------------------------------------------------
+libdbgfont
+----------------------------------------------------------------------
+- libdbgfont_gcm 内部で使用しているフラグメントプログラムが
+  GCM HUDを用いて解析できない不具合を修正しました。
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- 文字サイズの指定に、512.f 以上を指定した場合に斜体を扱うと、
+  内部演算処理のオーバーフローにより、正しく座標が扱われなくなり、
+  誤動作する不具合を修正しました。
+
+- 以下のオープン関数において、受け取り前のCellFont構造体が 0初期化されて
+  いないと、レンダラーが接続できない不具合を修正しました。
+  また、レンダラー関連関数を呼び出すとハングアップするCellFont構造体を
+  成功として返すことがある不具合を修正しました。
+
+  cellFontOpenFontset()
+  cellFontOpenFontsetOnMemory()
+  cellFontOpenFontFile()
+  cellFontOpenFontMemory()
+
+- 以下の不具合を修正しました。
+
+  - cellFontRenderSurfaceSetScissor() によるシザリング領域の再設定は、
+    領域を広げる方向には作用しなくなっています。
+    cellFontRenderSurfaceInit() から、やり直すようにしてください。
+
+- 以下の不具合を修正しました。
+
+  - レンダリングワークバッファの初期サイズは、cellFontCreateRenderer() 
+    の引数 CellFontRendererConfig に指定したバッファ初期サイズで確保
+    されますが、レンダリング関数を呼び出した時点で、その時、必要となった
+    バッファサイズに変更されてしまうため、初期サイズの指定に意味が
+    無くなっているという不具合があります。
+    (CellFontRendererConfig_setAllocateBuffer(&config,initSize,maxSize )
+     において、initSize == maxSize としても、メモリ確保動作の抑制ができません。)
+  この修正により、initSize == maxSize とすることで、メモリ再確保動作の抑制が
+  できるようになりました。
+
+- 以下の不具合を修正しました。
+
+  - 以下の関数において、ハングル文字が正しいベースライン位置に
+    レンダリングできないという不具合があります。
+    ハングル文字を取り扱う場合は使用しないでください。
+
+    グリフ情報を取得する関数
+    cellFontGenerateCharGlyph()
+    cellFontGenerateCharGlyphVertical()
+
+    グリフ情報からレンダリングする関数
+    cellFontGlyphRenderImage()
+    cellFontGlyphRenderImageHorizontal()
+    cellFontGlyphRenderImageVertical()
+
+    縦書きレンダリング関数
+    cellFontRenderCharGlyphImageVertical()
+
+    グリフ情報から縦書きレイアウト位置にレンダリングするための
+    位置情報を返す関数
+    cellFontGlyphGetVerticalShift()
+
+- 縦書き用のメトリクス情報に、正しい値が返っていない不具合を修正しました。
+   Vertical.bearingX  明らかに正しくない値が返っている問題を修正。
+   Vertical.advance   全角文字高さより小さい値が返っている問題を修正。
+   Vertical.bearingY  全角文字高さに合わせた値に修正。
+
+- 縦書き関数で斜体を指定した場合に、書き位置を基準にして傾いていない
+  問題を修正しました。
+
+- cellFontEndLibrary() を余分に呼び出した場合にもCELL_OK が返っていた
+  不具合を修正しました。
+
+- 関数の用途として必ず必要となるバッファのポインタに、NULL を指定していた場合、
+  ハングアップしていた不具合を修正しました。
+   cellFontOpenFontMemory()
+   cellFontOpenFontFile()
+   cellFontGetCharGlyphMetrics()
+   cellFontGetCharGlyphMetricsVertical()
+   cellFontGetRenderCharGlyphMetrics()
+   cellFontGetRenderCharGlyphMetricsVertical()
+   cellFontRenderCharGlyphImage()
+   cellFontRenderCharGlyphImageHorizontal()
+   cellFontRenderCharGlyphImageVertical() 
+
+- サンプルにおいて、コンパイル時に int32_t と uint32_t の型変数の
+  比較により、ワーニングエラーが発生していた問題を修正しました。
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<libspurs job>
+- 実効アドレスが同一であるがサイズが異なるリードオンリーデー
+  タが存在した場合に正しくリードオンリーデータ用の領域が確保
+  されない場合がある不具合を修正しました。
+
+- ジョブディスクリプタに同一のリードオンリーデータを複数個指
+  定した場合にジョブストリーマがメモリ破壊を起こす場合がある
+  不具合を修正しました。
+
+- ジョブディスクリプタでバッファサイズに255KBを超えるサイズを
+  指定してもエラーを返さない不具合を修正しました。
+
+- job_inout_dmaサンプルでjob_count_upが入力バッファを使用するよう設定
+  されていた不具合を修正して入出力バッファを使用するよう変更しました。
+
+- job_helloサンプルとjob_joblistサンプルでCellSpursJob128型の構造体の
+  変数が16バイトアラインで確保されていた不具合を修正しました。
+
+<libspurs task>
+- SPURS用GDBスクリプトのcell_spurs_print_taskコマンドが誤った情報を
+  表示する場合がある不具合を修正しました。 
+
+- sample_spurs_lfqueueサンプルでCellSpursLFQueue構造体のゼロ初期化を
+  行っていなかった不具合を修正しました。
+
+<libsync>
+- sample_sync_lfqueueサンプルでCellSyncLFQueue構造体のゼロ初期化を
+  行っていなかった不具合を修正しました。
+
+<libdaisy>
+- 以下の制限事項はSDK130以降より解除されております。
+
+  - cell::Daisy::Glueテンプレートクラスのインスタンス作成時の
+    テンプレート引数 tOutPort、tInPort、tMode について、以下の
+    ように指定した場合、そのインスタンスに対するstep()関数の
+    呼び出し時にデータフロー処理が全て完了していても、
+    本来の返り値である TERMINATED ではなく、QUEUE_IS_BUSY が
+    返り値として返り続ける可能性があります。
+
+    tOutPort
+    cell::Daisy::Pipe::OutPortテンプレートクラス または
+    cell::Daisy::GatherPipe::OutPortテンプレートクラス の
+    インスタンス作成時に、tMode = COPY（デフォルト値）を
+    指定したインスタンス
+
+    tInPort
+    cell::Daisy::Pipe::InPortテンプレートクラス または
+    cell::Daisy::ScatterPipe::InPortテンプレートクラス の
+    インスタンス作成時に、tMode = REFERENCE を指定した
+    インスタンス
+
+    tMode = ONE_PORT
+
+- QueueControl::SharedMemory{Reader,Writer}を用いて複数SPUからアクセスを
+  行うとDMAの完了待ちが正しく行われない不具合を修正しました。
+
+- tileサンプルで正しくメモリ領域を初期化していなかった不具合を修正しました。
+
+----------------------------------------------------------------------
+Control Console
+----------------------------------------------------------------------
+- cellConsolePerfDataSetColumnList()において、performance data を
+  使用しようとした場合にクラッシュを引き起こすという不具合を修正しました。
+
+----------------------------------------------------------------------
+GPIOシステムコール
+----------------------------------------------------------------------
+- SDK160より以前のSDKでは、GPIOデバイスを搭載していない機器では
+  GPIO System Callの返り値がエラーになっていたという不具合を修正しました。
+
+----------------------------------------------------------------------
+USB
+----------------------------------------------------------------------
+- USB1.x の HUB に接続されたデバイスを抜いたとき、detach 
+  コールバック関数が呼ばれないことがある不具合を修正しました。
+
+----------------------------------------------------------------------
+samples/simulation/PhysicsEffects/Demo/ParallelOptimization サンプル
+----------------------------------------------------------------------
+- Parallel_Physics_Samples-Walkthrough_j(e).pdf ファイルにおいて、
+  10ページ内の 図5 に不具合がありましたため修正しました。
+

@@ -1,0 +1,36 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PLAYSTATION(R)3 Programmer Tool Runtime Library 132.002
+                    Copyright(C) 2006 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+New features, Chages and Notes of the Reference Tool SDK package 
+are as follows.
+
+----------------------------------------------------------------------
+1 File System
+----------------------------------------------------------------------
+General
+=======
+<Specification Change>
+- With cellFsMkdir(), a change has been made so as to return the error 
+  macro CELL_FS_ENOSPC when there is no space for writing. 
+
+CFS/FAT
+=======
+<Specification Change>
+- With the following functions, the error macro CELL_FS_EPERM 
+  (permission is invalid) was returned. However, it has been changed 
+  so as to return CELL_FS_EACCES.  
+    cellFsOpen(), cellFsTruncate(), cellFsRename(), cellFsUnlink(),
+    cellFsMkdir(), cellFsRmdir()
+----------------------------------------------------------------------
+2 HID
+----------------------------------------------------------------------
+libpad
+======
+<New Feature>
+- Controller with the PS button, which is made by a third party,
+  has been supported. It has become possible, for example, to display 
+  the system dialog with the PS button. 
+
+

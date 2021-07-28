@@ -1,0 +1,644 @@
+[SCE CONFIDENTIAL DOCUMENT]
+PlayStation(R)3 Programmer Tool Runtime Library 310.001
+                    Copyright(C) 2009 Sony Computer Entertainment Inc.
+                                                  All Rights Reserved.
+======================================================================
+Bug Fixes of the Reference Tool SDK package are as follows.
+
+  - Release 310.001 Bug Fixes
+
+======================================================================
+Bug Fixes in Release 310.001
+======================================================================
+----------------------------------------------------------------------
+System Utility
+----------------------------------------------------------------------
+<System BGM>
+- The following problem has been fixed.
+
+  - When certain system utility functions are consecutively called 
+    in short intervals (for example, called every frame) in 
+    system software 3.00, the system hangs up.
+    (TechnoteID:200910-13 https://ps3.scedev.net/technotes/view/972)
+
+<ImeJp Utility>
+- (B#79841)
+  After a long string was input on the on-screen keyboard and the dialog 
+  was closed, if the ImeJp was opened, the utility froze. This problem 
+  has been fixed.
+
+<AV Chat 2 Utility>
+- When performing discontinuous transmission of audio packets, the accuracy 
+  to determine that no valid audio was being input to the microphone has
+  been increased.
+
+- The problem where the delay increased depending on the network environment 
+  has been fixed.
+
+----------------------------------------------------------------------
+dtlib
+----------------------------------------------------------------------
+- The memory access violation that occurred within dtlib has been fixed.
+
+- On the Debugging Station or the Reference Tool DECR-1400, when continuous 
+  data was sent using the user definition protocol of DECI3 from the host PC, 
+  a buffer overwrite occurred on the target. This problem has been fixed.
+
+- A bug was found in the target side where it failed to play back key data 
+  of the controller using CTRLP. This problem has been fixed.
+
+----------------------------------------------------------------------
+Core Dump Feature
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - (B#78876)
+    A PPU thread in the ZOMBIE state is not counted in the "Number of PPU
+    Threads" within the "Process data" data format.
+
+----------------------------------------------------------------------
+NVShaderPerf
+----------------------------------------------------------------------
+- (B#78590)
+  A fragment shader that contains some branches ended unexpectedly. 
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+libsail
+----------------------------------------------------------------------
+- (B#74640)
+  In samples\sdk\sail\player\simple_player and psgl_player samples, the 
+  specification of the playback starting position was commented out and 
+  treated as invalid. This problem has been fixed.
+
+- (B#77372)
+  When the repeat mode was set to CELL_SAIL_REPEAT_LOOP and the stream type 
+  was MP4 or AVI, it did not loop seamlessly. This problem has been fixed.
+
+- (B#72541)
+  When the repeat mode was set to CELL_SAIL_REPEAT_LOOP and trick play was 
+  performed with CELL_SAIL_START_FLAG_PAUSE_END specified to the playback 
+  command, it ended at the end of the movie. This problem has been fixed.
+
+- (B#77362)
+  When the repeat mode was set to CELL_SAIL_REPEAT_NEXT, switching among 
+  movies that have the same stream type and the same profile for both audio 
+  and video could not be performed seamlessly. This problem has been fixed.
+
+- (B#74640)
+  When CELL_SAIL_SEEK_ABSOLUTE_TIME_POSITION was specified to the start 
+  playback command and playback was started, the timing between when 
+  starting playback of audio and video was not synchronized to a large 
+  degree. This problem has been fixed so that the timing is synchronized 
+  with the specified time as much as possible.
+
+----------------------------------------------------------------------
+libsail_rec
+----------------------------------------------------------------------
+- (B#78489)
+  When free space in the file output destination was full, the recording 
+  termination processing could not be completed. This problem has been 
+  fixed.
+
+----------------------------------------------------------------------
+libsnd3
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#76591)
+    When a tone whose group number is other than 0 is specified to 
+    cellSnd3VoiceNoteOnByTone() and cellSnd3VoiceKeyOnByTone(), voice 
+    is not played back correctly.
+
+  - (B#78646)
+    When a negative value is specified to centerDetune of the tone parameter
+    (tone attribute) that is written in the header file (.HD3) of phonemic 
+    data that libsnd3 uses, voice is not played back correctly. 
+
+----------------------------------------------------------------------
+libpad
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#78629, B#78341)
+    With some USB controllers, when they are connected, the system software
+    does not work correctly.
+
+----------------------------------------------------------------------
+libusbd
+----------------------------------------------------------------------
+- (B#72703)
+  With some USB HDDs, when the power was switched off, the USB devices 
+  became unavailable. This problem has been fixed.  
+
+- (B#78245)
+  Some USB controllers were unable to be recognized. This problem has 
+  been fixed.  
+
+- (B#70991)
+  While using a USB headphone, if the EyeToy(TM) USB camera (for 
+  PlayStation(R)2) was connected or disconnected, the USB headphone became 
+  unavailable. This problem has been fixed.
+
+----------------------------------------------------------------------
+libcamera
+----------------------------------------------------------------------
+- Images of the EyeToy(TM) USB camera (for PlayStation(R)2) could be 
+  corrupted. This problem has been fixed.
+
+----------------------------------------------------------------------
+libdmux
+----------------------------------------------------------------------
+- In the samples\sdk\codec\pamf_dmux_trick_play sample, when changing 
+  from trick play to normal playback, the screen was not updated 
+  correctly. This problem has been fixed.
+
+  This problem relates to the AV synchronization. When the problem occurred 
+  the screen update was not done correctly for about 2 seconds.
+
+- (B#79723)
+  A corrupted AU was rarely cut out under a specific condition. This problem
+  has been fixed.
+
+  When the video/audio decoder decoded a corrupted AU, the decode output 
+  was invalid.
+
+----------------------------------------------------------------------
+libvdec
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - (B#78243)
+    When the codec type is set to CELL_VDEC_CODEC_TYPE_DIVX, if either 
+    of the following format types is specified to a picture to be obtained, 
+    the color of the output picture rarely becomes reddish.
+
+    - CELL_VDEC_PICFMT_RGBA32_ILV or CELL_VDEC_PICFMT_ARGB32_ILV 
+
+----------------------------------------------------------------------
+libfios
+----------------------------------------------------------------------
+- The following bugs were fixed:
+
+  - With --xml Option, PSARC Tool Unable to Create Archives 
+    (TechnoteID:200909-09 https://ps3.scedev.net/technotes/view/953)
+
+  - The psarc tool does not currently align encrypted files within
+    PSARC-MSELF archives at optimal offsets. This can result in slightly
+    reduced performance. A future version of the tool will fix the
+    problem.
+
+  - (B#72975)
+    If the size of a SDATA file in a PSARC-MSELF archive is obtained by
+    cell::fios::scheduler::getFileSize() or
+    cell::fios::scheduler::getFileSizeSync() with the
+    cell::fios::kOPF_SDATA attribute, it should be the size of the
+    original file instead of the SDATA file. However, it was the size of
+    the SDATA file.
+
+  - (B#76309)
+    cell::fios::overlay will access the wrong file if there are several
+    files which match the specified path.
+
+    For example, if the following files exist:
+
+      /sounds/audio.dat
+      /sounds/japanese/audio.dat
+
+    And overlay layers are added as:
+
+      addLayer("/", 0, 0, "/sounds", kDEFAULT, &layer1);
+      addLayer("/", 0, 0, "/sounds/japanese", kDEFAULT, &layer2);
+
+    Then if the application accesses "/audio.dat",
+    "/sounds/japanese/audio.dat" of layer2 should be used, but
+    "/sound/audio.dat" of layer1 is used instead.
+
+  - When reading SDATA file that is included in a PSARC-MSELF archive file 
+    in parts, the EFSSPECIFIC error returns when attempting to read the file 
+    from somewhere that is not the beginning of the file, and the read 
+    operation fails.
+    (TechnoteID:200911-01 https://ps3.scedev.net/technotes/view/973)
+
+----------------------------------------------------------------------
+Cell OS Lv-2
+----------------------------------------------------------------------
+- (B#70362)
+  When generating a PPU thread, FPSCR was not initialized to 0. This 
+  problem has been fixed.
+
+- (B#74510)
+  When multiple virtual memory optimization commands were issued
+  continuously, the Lv-2 got panicked. This problem has been fixed. 
+
+- (B#78519)
+  When using the virtual memory, the system rarely hung up. This problem
+  has been fixed.
+
+----------------------------------------------------------------------
+SPU Runtime Library
+----------------------------------------------------------------------
+<Common for libspurs job>
+- (B#76158)
+  When a job program that is not PIC was linked by specifying the 
+  -mspurs-job-initialize option, it resulted in an error. This problem 
+  has been fixed.
+
+<libspurs jobchain>
+- (B#78962)
+  The following errors were found in the crash dump message of the 
+  SPURS job chain. This problem has been fixed:
+
+  - The following messages are wrongly displayed or not displayed:
+   *ERROR* CALL stack underflow
+   *ERROR* CALL stack overflow
+  - The commands listed after the command that changes a command pointer such 
+    as CALL/RET/NEXT/RESET_PC in the command list is not displayed correctly.
+  - The "size" item in cache information of the job chain is not correct.
+
+- (B#76204)
+  __attribute__((aligned(128))) was not added to the cell::Spurs::JobChain 
+  class. This problem has been fixed.
+
+<libspurs jobqueue>
+- (B#78870)
+  When attempted to connect a port to an uninitialized or a destroyed SPURS 
+  job queue, an assert occurred within the SPURS. This problem has been fixed
+  and an appropriate error is now returned.
+  Due to this change, CELL_SPURS_JOB_ERROR_STAT has been added as an error code.
+- (B#78584)
+  Unnecessary interface that is not documented has been removed from the port 
+  container of the SPURS job queue.
+
+<libspudll>
+- A dynamic link error occurred where an unresolved WEAK symbol was not 
+  accepted when linking dynamically. This problem has been fixed.
+
+<libdaisy>
+- (B#76598)
+  In the samples\sdk\spu_library\libdaisy\spu_ppu sample, because no dependency
+  with libsample_spu_utils.a was set to the Makefile, a build error occurred. 
+  This problem has been fixed.
+
+<JDL>
+- (B#77759)
+  When a pointer argument with a buffer keyword added was specified to 
+  setParams(), a NULL pointer was not able to be specified. This restriction 
+  has been removed.
+
+- (B#77141)
+  When compiling a code that is generated using JDL, a warning was issued. This
+  problem has been fixed.
+
+- (B#77213)
+  When defining a JDL file function, a type that is composed of multiple words
+  such as "unsigned int" was unable to be specified as a type name of a return 
+  value. This problem has been fixed.
+
+<libspurs core>
+- (B#73871) 
+  When the deadline of the system workload was missed, a warning message was 
+  not output to the console on the Debugging Station and the Reference Tool 
+  DECR-1400 series. This problem has been fixed.
+
+<FunctionOffload Tutorial(samples\tutorial\FunctionOffloadToSpu)>
+- The following problem has been fixed.
+
+  - (B#76381)
+    In the samples\tutorial\FunctionOffloadToSpu\ppu_call_by_jdl sample, 
+    the use of the PPU function call feature from the asynchronous 
+    interface(xxxxx_async structure) is restricted with SDK300.
+
+----------------------------------------------------------------------
+NP Matching 2 Utility
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#79593)
+    If a request to join a room with sceNpMatching2JoinRoom()
+    is aborted by calling sceNpMatching2AbortRequest(), it is 
+    possible for the system to crash when 
+    sceNpMatching2LeaveRoom() or sceNpMatching2ContextStop() 
+    is subsequently called.
+    (TechnoteID:200910-02 https://ps3.scedev.net/technotes/view/961)
+
+  - (B#79694)
+    If a room member except the room owner calls any of 
+    the following request functions immediately before being
+    kicked out of the room, the processing result (completion 
+    event) will not be notified in the request callback 
+    function.
+    sceNpMatching2LeaveRoom()
+    sceNpMatching2GetRoomDataInternal()
+    sceNpMatching2SetRoomDataInternal()
+    sceNpMatching2GetRoomMemberDataInternal()
+    sceNpMatching2SetRoomMemberDataInternal()
+    sceNpMatching2SetSignalingOptParam()
+    sceNpMatching2SendRoomChatMessage()
+    sceNpMatching2SendRoomMessage()
+    (TechnoteID:200910-03 https://ps3.scedev.net/technotes/view/962)
+
+  - (B#78839)
+    When sceNpMatching2SearchRoom() is called to search 
+    for rooms, the NP matching 2 utility will unexpectedly 
+    hang up if the following conditions are both true for the 
+    array specified by the member attrId of the argument 
+    reqParam (an SceNpMatching2SearchRoomRequest structure).
+
+    1. The target portion of the array (as specified by the 
+       member attrIdNum, which specifies the number of 
+       target elements) includes a 0.
+
+    2. An invalid value is specified to one of the following 
+       attribute IDs:
+       Among the following attribute IDs, attribute ID that is 
+       not set previously is specified
+       - SCE_NP_MATCHING2_ROOM_SEARCHABLE_INT_ATTR_EXTERNAL_*_ID
+       - SCE_NP_MATCHING2_ROOM_SEARCHABLE_BIN_ATTR_EXTERNAL_*_ID
+       - SCE_NP_MATCHING2_ROOM_BIN_ATTR_EXTERNAL_*_ID
+    (TechnoteID:200909-13 https://ps3.scedev.net/technotes/view/957)
+
+----------------------------------------------------------------------
+NP DRM Utility
+----------------------------------------------------------------------
+- The bug described in the following technote has been fixed:
+
+  - Packaging of a compressed NPDRM SELF by the make_package_npdrm 
+    command may fail.
+    (Technote ID:200907-02  https://ps3.scedev.net/technotes/view/928)
+
+----------------------------------------------------------------------
+NP Title User Storage Utility 
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - When sceNpTusTerm() is called to terminate the NP 
+    title user storage utility, it may take some time for 
+    the function to return if the following conditions are 
+    both true.
+ 
+    1. "NP Debug" is set to "On" in the system software menu
+
+       "Settings" column > Debug Settings > NP Debug 
+
+    2. There are unfinished NP title user storage transactions
+    (Technote ID:200909-12  https://ps3.scedev.net/technotes/view/956)
+
+----------------------------------------------------------------------
+NP Score Ranking Utility
+----------------------------------------------------------------------
+- When NULL is specified to the argument tmpRank of sceNpScoreRecordScore() 
+  or sceNpScoreRecordScoreAsync(), it hang up. This problem has been fixed. 
+
+----------------------------------------------------------------------
+NP Basic Utility
+----------------------------------------------------------------------
+- The following problem has been fixed:
+
+  - Event data is accumulated even after handler is unregistered by 
+    calling sceNpBasicUnregisterHandler().
+    (Technote ID:200909-04 https://ps3.scedev.net/technotes/view/948)
+
+----------------------------------------------------------------------
+libkey2char
+----------------------------------------------------------------------
+- (B#76248)
+  A tilde(~) was unable to be input by itself by the German keyboard.
+  This problem has been fixed.
+  (It was treated as a diacritical mark.)
+
+- (B#76252)
+  When the AltGr button was pressed on the French keyboard, a circonflexe
+  was unable to be input by itself. This problem has been fixed.
+  (It was treated as a diacritical mark.)
+
+----------------------------------------------------------------------
+libface
+----------------------------------------------------------------------
+- In the samples\sdk\vision\face\sample_camera_util sample, the following 
+  problems have been fixed:
+
+  - (B#78157)
+    When the EyeToy(TM) USB camera (for PlayStation(R)2) is connected at 
+    the time of boot, an application error may occur.
+
+  - When the EyeToy(TM) USB camera (for PlayStation(R)2) is connected or 
+    disconnected while it is being booted, the camera input may be stopped.
+
+----------------------------------------------------------------------
+libfs
+----------------------------------------------------------------------
+- The following problem has been fixed.
+
+  - (B#74139)
+    When cellFsAllocateFileAreaWithoutZeroFill() is called for 
+    the system cache (/dev_hdd1) or the mount point 
+    for debug(/dev_ms, /dev_usb), if the following conditions are all met, 
+    the system freezes.
+    (Condition1) The file size increases when the API is called.
+    (Condition2) The number of block size allocated to the file size is same 
+                 before and after the API is called(no change in the block 
+                 allocation).
+
+----------------------------------------------------------------------
+libfont
+----------------------------------------------------------------------
+- In the samples\sdk\font\fw_cubeWithFont sample, some fonts that were 
+  no longer being used were not closed by the initialization processing 
+  that is added to SDK280. This problem has been fixed:
+
+  SampleApp.cpp : line 706 
+    +
+    +              //J Return a font set that is no longer being used
+    +              Fonts_DetachFont( cf );
+
+- When cellFontOpenFontMemory() failed to open a font due to lack of memory,  
+  CELL_FONT_ERROR_OPEN_FAILED was returned instead of 
+  CELL_FONT_ERROR_ALLOCATION_FAILED. This problem has been fixed.
+
+----------------------------------------------------------------------
+libl10n
+----------------------------------------------------------------------
+- In the samples\sdk\l10n sample, the following sample code has been 
+  modified:
+
+  UTF8stoUTF16s.c : line 35
+  Before modification:
+  if( (utf16 = malloc( u8len * sizeof(uint16_t) )) == NULL ) {
+  After modification:
+  if( (utf16 = malloc( u16len * sizeof(uint16_t) )) == NULL ) {
+
+----------------------------------------------------------------------
+libgcm
+----------------------------------------------------------------------
+- (B#75686,B#76012)
+  The bug described in the following technote has been fixed:
+
+  - Limitations of Using the -mno-toc Option with PRX 
+    (TechnoteID:200907-14  https://ps3.scedev.net/technotes/view/941)
+
+- (B#76118)
+  When compiled using the SNC with "diag 194" enabled, it resulted in 
+  an error. This problem has been fixed. 
+
+- (B#76838)
+  When the libgcm_cmddbg.a debug library performed a step execution by 
+  using DEBUG_FINISH, it resulted in a deadlock. This problem has been 
+  fixed. The following functions are applicable:
+  cellGcmSetJumpCommand()
+  cellGcmSetReturnCommand()
+  cellGcmSetCallCommand()
+
+- (B#79940)
+  The default setting of TXP Demotion has been changed to "disabled". 
+  (TechnoteID:200910-10 https://ps3.scedev.net/technotes/view/969)
+
+----------------------------------------------------------------------
+libdbgrsx
+----------------------------------------------------------------------
+- (B#69340)
+  The value of CELL_DBG_RSX_GRAPHICS_BUNDLE_STATE_ID_COLOR_MASK was wrong.
+  This problem has been fixed.
+
+----------------------------------------------------------------------
+librudp
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#76318)
+    While calling cellRudpProcessEvents(), if cellRudpEnd() is called from 
+    another thread, it results in a deadlock or crashes.
+
+    The application should make sure that cellRudpProcessEvents() is not
+    called from another thread when terminating a library by calling 
+    cellRudpEnd().
+
+  - (B#78914)
+    When any one of CELL_RUDP_OPTION_READ_TIMEOUT,
+    CELL_RUDP_OPTION_WRITE_TIMEOUT or CELL_RUDP_OPTION_FLUSH_TIMEOUT 
+    is specified to the argument "option" of cellRudpGetOption(), a value 
+    other than CELL_RUDP_SUCCESS is returned although the function call is 
+    successful, however note that an error is not returned.
+
+  - (B#78916)
+    When it is attempted to obtain a timeout value of 
+    CELL_RUDP_OPTION_WRITE_TIMEOUT via cellRudpGetOption(), 
+    CELL_RUDP_OPTION_FLUSH_TIMEOUT is wrongly obtained.
+
+  - (B#78840)
+    When a context is deleted, the aggregation timeout time is reset and then 
+    the RUDP packets may not be sent for a while.
+    This phenomenon does not occur when the aggregation feature is disabled.
+
+----------------------------------------------------------------------
+libvoice
+----------------------------------------------------------------------
+- In the samples\sdk\voice\Chat sample, when checking the sequence of 
+  network data, the packet received at the beginning could not be 
+  handled correctly. This problem has been fixed.
+
+- When using a system workload, libvoice and recording utility can 
+  now be used at the same time. 
+  (TechnoteID:200909-08 https://ps3.scedev.net/technotes/view/952)
+
+- cellVoiceGetPortInfo()returns correct microphone port state when 
+  a microphone is used exclusively by libvoice.
+
+----------------------------------------------------------------------
+libmstream
+----------------------------------------------------------------------
+- Fixed warnings in dsp_sample when building with SNC (due to a mismatch 
+  of parameter types).
+
+- simple_logging, simple_mp3chain, simple_mp3stream makefiles contained 
+  warnings about build settings for SNC builds due to an invalid compiler 
+  switch.This has been fixed.
+
+- simple_create_fd contained build warnings about NULL pointer being 
+  redefined due to custom defintion of NULL. This has been removed and 
+  NULL is now included correctly.
+
+- The per-stream OpenAL user rolloff curve running on SPU (by default 
+  it runs on SPU) was ignored. This has been fixed.
+
+- cellMSCoreSetMask() with CELL_MS_DSPALLSLOTS flag causes memory corruption. 
+  This has been fixed so that the mask for all slots will be set.
+
+- cellMSStreamClearRouting() could fail with CELL_MS_ERROR_BUSMISMATCH. 
+  This has been fixed.
+
+----------------------------------------------------------------------
+C/C++ Standard Library
+----------------------------------------------------------------------
+<PPU/SPU>
+- (B#74991)
+  The prototype of the member function operator=(auto_ptr<Ty> right) of
+  the auto_ptr class was not correct. This problem has been fixed.
+
+<PPU>
+- (B#73532)
+  The function fmodf4(x,y) of math.h returned a wrong value when the x element 
+  was divisible by the corresponding y element. This problem has been fixed.
+
+<PPU>
+- (B#16130,B#71107)
+  The iostream header is now available with PRX.
+  When using the ios_base class and its derived classes(fstream, iostream, 
+  stringstream or strstream, etc) (including when using the iostream header), 
+  make sure to statically link libstdc++.a with PRX.
+
+<SPU>
+- (B#74148)
+  When only either of malloc or memalign of stdlib.h was in use, an unnecessary
+  code was linked. This problem has been fixed and the unnecessary code is no 
+  longer linked when the --gc-sections option is specified at the time of link.
+
+<PPU/SPU>
+- (B#76103)
+  An undefined macro was used in the #if or the #elif conditional expressions 
+  that are located in the header of the standard library. 
+  This problem has been   fixed and it is now used only when defined.
+
+----------------------------------------------------------------------
+Custom Theme
+----------------------------------------------------------------------
+- The following problems in the RAF compiler have been fixed:
+
+  - A source file in which multiple actors with the same id are defined 
+    is not treated as an error.
+  - When a *.dae file in which nodes are nested is input, the compiler crashes.
+
+----------------------------------------------------------------------
+cgc
+----------------------------------------------------------------------
+- The following problems have been fixed:
+
+  - (B#73914)
+    cgc preprocessor crashes on macros.
+    Preprocessor crashes in macro expansion,
+    particularly in stringification (#arg)
+
+  - (B#77466)
+    Using cellCgb functions while linked with libcgc 
+    resulted in erroneous behavior.
+    There was incorrect endian swapping inside libcgc 
+    for handling Cgb format.
+
+  - (B#70548)
+    Compiler failed to identify and remove dead if statements.
+
+----------------------------------------------------------------------
+PSGL
+----------------------------------------------------------------------
+- The following bug has been fixed.
+
+  - (B#78836)
+    When GL_SKIP_FIRST_VSYNC_SCE is enabled together with
+    RESC_PAL_TEMPORAL_MODE_60_DROP in PAL monitor environment,
+    the frame rate should drop from 60Hz to 25Hz.
+    However, a case where frame rate unexpectedly drops to 19.75Hz 
+    is observed.
+    This was due to improper use of GCM callback functions,
+    when matching RESC versions should have been used
+    when RESC is turned on.
+
